@@ -49,7 +49,7 @@ Siga os passos abaixo para configurar e executar o projeto localmente.
 
 1.  **Clone o repositório:**
     ```bash
-    git clone https://github.com/seu-usuario/crowbar-mobile.git
+    git clone https://github.com/aguileraz/crowbar-mobile.git
     cd crowbar-mobile
     ```
 
