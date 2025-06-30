@@ -1,0 +1,311 @@
+# 🏗️ API9 - Laravel 11 TALL Stack Development Guidelines
+
+**Project:** API9 Real Estate Management System
+**Status:** ✅ Production Ready (June 2025)
+**Stack:** Laravel 11 + Vue 3 + Inertia.js + Tailwind CSS + Docker
+
+---
+
+## 🔄 **PROJECT CONTEXT**
+
+### **Essential Reading Order:**
+1. **`ai-docs/planning/PROJECT_PLAN.md`** - Architecture & project overview
+2. **`ai-docs/PROJECT_COMPLETION_SUMMARY.md`** - Current production status
+3. **`ai-docs/tasks/TASKS.md`** - Current task list and priorities
+4. **`ai-docs/technical/TECHNICAL_DOCUMENTATION.md`** - Technical specifications
+
+### **Project Status Awareness:**
+- **Backend:** ✅ 100% Complete (5 Models, 5 Services, 5 Controllers, 75+ API endpoints)
+- **Frontend:** ✅ 100% Complete (Vue 2→3 migration, Vuex→Pinia, Vuetify→Tailwind)
+- **Testing:** ✅ 100% Complete (Laravel Dusk, Pest, 90%+ coverage, UAT passed)
+- **Infrastructure:** ✅ 100% Complete (Docker, PHP 8.4, MariaDB, Redis, Nginx)
+- **Current Phase:** 🔄 Production Deployment & Go-Live
+
+### **Language & Communication:**
+- **Portuguese** for comments, documentation, and user-facing content
+- **English** for technical code, variables, and system messages
+- **Follow established patterns** from existing codebase
+
+---
+
+## 🏗️ **ARCHITECTURE & CODE STANDARDS**
+
+### **Laravel 11 Specific Rules:**
+- **Use `src/bootstrap/app.php`** for middleware and app configuration (no Kernel.php)
+- **Commands auto-register** in `app/Console/Commands/` (Laravel 11+)
+- **Environment variables** via config files: `config('app.name')` not `env('APP_NAME')`
+- **Modern Eloquent** with relationships, scopes, and business methods
+- **Service Layer Pattern** for complex business logic
+
+### **Code Organization:**
+- **Max 500 lines/file** - refactor into smaller modules if exceeded
+- **Modular by feature/responsibility** (Models, Services, Controllers, DTOs)
+- **Clear imports** (prefer relative within packages)
+- **Consistent naming** following Laravel conventions
+
+### **Modern Laravel Patterns:**
+```php
+// Service Layer Example
+class ClienteModernService {
+    public function createWithValidation(ClienteDTO $dto): ClienteModern
+    {
+        // Business logic here
+    }
+}
+
+// Controller Example
+class ClienteModernController {
+    public function store(ClienteCreateRequest $request): JsonResponse
+    {
+        $cliente = $this->service->createWithValidation($request->toDTO());
+        return ClienteResource::make($cliente);
+    }
+}
+```
+
+---
+
+## 🧪 **TESTING FRAMEWORK**
+
+### **Testing Stack:**
+- **Pest PHP** for unit and feature tests (primary)
+- **Laravel Dusk** for browser/E2E tests
+- **Vitest** for Vue 3 frontend tests
+- **PHPUnit** as fallback for complex scenarios
+
+### **Test Organization:**
+```
+src/tests/
+├── Feature/           # Feature tests (API, integration)
+│   ├── Api/          # API endpoint tests
+│   ├── Auth/         # Authentication tests
+│   ├── Property/     # Property management tests
+│   └── Financial/    # Financial module tests
+├── Unit/             # Unit tests
+│   ├── Models/       # Model tests
+│   ├── Services/     # Service layer tests
+│   └── Controllers/  # Controller tests
+└── Browser/          # Laravel Dusk tests
+```
+
+### **Testing Requirements:**
+- **Unit tests for ALL new features** (expected use, edge cases, failure scenarios)
+- **Update existing tests** when modifying logic
+- **90%+ test coverage** target
+- **Test naming:** descriptive and follows Pest conventions
+
+### **Test Commands:**
+```bash
+# Run all tests
+./vendor/bin/pest
+
+# Run with coverage
+./vendor/bin/pest --coverage
+
+# Run Dusk tests
+php artisan dusk
+
+# Run frontend tests
+npm run test
+```
+
+---
+
+## ✅ **TASK MANAGEMENT**
+
+### **Task Workflow:**
+1. **Check current task list** before starting work
+2. **Update task status** to IN_PROGRESS when starting
+3. **Mark COMPLETE** immediately when finished
+4. **Commit changes** after each completed task
+5. **Add new discoveries** to appropriate backlog
+
+### **Task Documentation:**
+- **Use task management tools** for complex work
+- **Update `ai-docs/tasks/TASKS.md`** for major changes
+- **Follow SCRUM methodology** for sprint planning
+- **Document completion dates** and achievements
+
+### **Current Priority Areas:**
+- 🔴 **High:** UAT bug fixes, production deployment
+- 🟡 **Medium:** User training, monitoring setup
+- 🟢 **Low:** Future enhancements, optimization
+
+---
+
+## 📚 **DOCUMENTATION STANDARDS**
+
+### **Required Documentation Updates:**
+- **README.md** - For new features, dependencies, or setup changes
+- **`ai-docs/api/API.md`** - For new API endpoints or changes
+- **`ai-docs/technical/TECHNICAL_DOCUMENTATION.md`** - For architecture changes
+- **Inline comments** - Complex business logic with `// Reason:` explanations
+
+### **Documentation Quality:**
+- **Clear, concise explanations** for mid-level developers
+- **Code examples** for complex implementations
+- **API documentation** with request/response examples
+- **Deployment procedures** kept up-to-date
+
+---
+
+## 🔒 **SECURITY & PERFORMANCE**
+
+### **Security Requirements:**
+- **CSRF protection** on all forms
+- **XSS prevention** with proper data sanitization
+- **Authentication** via Laravel Sanctum + WorkOS
+- **Authorization** using Policies and Gates
+- **Input validation** with Form Requests
+- **SQL injection prevention** with Eloquent ORM
+
+### **Performance Standards:**
+- **Sub-2-second page loads** (current: <1s achieved)
+- **API responses <500ms** average
+- **Database query optimization** (avoid N+1 queries)
+- **Redis caching** for frequently accessed data
+- **Eager loading** for relationships
+
+### **Performance Monitoring:**
+```php
+// Good: Eager loading
+$users = User::with('posts', 'comments')->get();
+
+// Good: Batch loading
+$posts = Post::whereIn('user_id', $users->pluck('id'))->get();
+```
+
+---
+
+## 🧠 **AI DEVELOPMENT RULES**
+
+### **Code Editing:**
+- **Edit in smaller chunks** (<150 lines) to avoid JSON parsing issues
+- **Use str-replace-editor** for modifications, never recreate entire files
+- **Confirm file paths exist** before referencing in code
+- **Ask for clarification** when requirements are uncertain
+
+### **Package Management:**
+- **Use verified Laravel packages only** (never hallucinate packages)
+- **Use package managers** for dependencies: `composer require`, `npm install`
+- **Never manually edit** package.json or composer.json for dependencies
+- **Check compatibility** with Laravel 11 and PHP 8.4
+
+### **Development Workflow:**
+- **Read codebase context** before making changes
+- **Follow established patterns** from existing code
+- **Test changes thoroughly** before committing
+- **Update memories** for important decisions and patterns
+
+---
+
+## 🎯 **ACCEPTANCE CRITERIA & QUALITY GATES**
+
+### **Definition of Done:**
+- [ ] **Functionality** meets requirements
+- [ ] **Tests** written and passing (90%+ coverage)
+- [ ] **Documentation** updated
+- [ ] **Security** validated (no critical vulnerabilities)
+- [ ] **Performance** meets targets (<2s load time)
+- [ ] **Code review** completed
+- [ ] **Deployment** configured and tested
+
+### **Quality Standards:**
+- **Test Coverage:** >90% (current: 90%+)
+- **Performance:** <2s page loads (current: <1s)
+- **Security:** Zero critical vulnerabilities
+- **Code Quality:** PSR-12 standards, Laravel conventions
+- **Documentation:** Complete and up-to-date
+
+### **Validation Commands:**
+```bash
+# Run all tests with coverage
+./vendor/bin/pest --coverage
+
+# Code quality check
+./vendor/bin/pint --test
+
+# Security scan
+composer audit
+
+# Performance test
+php artisan route:cache && php artisan config:cache
+```
+
+---
+
+## 🚀 **DEPLOYMENT & PRODUCTION**
+
+### **Environment Management:**
+- **Development:** Docker Compose with hot reload
+- **Testing:** SQLite for fast test execution
+- **Production:** MariaDB + Redis + Nginx + Supervisor
+
+### **Deployment Checklist:**
+- [ ] Environment variables configured
+- [ ] Database migrations run
+- [ ] Assets compiled (`npm run build`)
+- [ ] Cache cleared and optimized
+- [ ] Queue workers running
+- [ ] Monitoring configured
+- [ ] Backup procedures tested
+
+### **Production Commands:**
+```bash
+# Optimize for production
+php artisan optimize
+php artisan route:cache
+php artisan config:cache
+php artisan view:cache
+
+# Asset compilation
+npm run build
+```
+
+---
+
+## 🎯 **DEVELOPMENT WORKFLOW**
+
+### **Standard Flow:**
+```
+READ CONTEXT → PLAN CHANGES → DEVELOP → TEST → VALIDATE → DOCUMENT → DEPLOY
+```
+
+### **For New Features:**
+1. **Analyze requirements** and existing patterns
+2. **Create/update tasks** in task management
+3. **Write tests first** (TDD approach)
+4. **Implement feature** following Laravel conventions
+5. **Update documentation** and API specs
+6. **Validate acceptance criteria**
+7. **Deploy to staging** for testing
+
+### **For Bug Fixes:**
+1. **Reproduce issue** with test case
+2. **Fix implementation**
+3. **Verify fix** with existing and new tests
+4. **Update documentation** if needed
+5. **Deploy fix** to appropriate environment
+
+---
+
+## 📊 **PROJECT METRICS & MONITORING**
+
+### **Current Achievements:**
+- **20,000+ lines** of enterprise-grade code
+- **100+ RESTful API endpoints**
+- **90%+ test coverage**
+- **Sub-2-second page loads**
+- **90% UAT satisfaction rate**
+- **Zero critical security vulnerabilities**
+
+### **Monitoring Requirements:**
+- **System performance** (response times, uptime)
+- **User activity** and satisfaction
+- **Error rates** and exception tracking
+- **Resource usage** (CPU, memory, database)
+- **Security events** and access logs
+
+---
+
+**🎯 Remember: This is a production-ready system. Focus on stability, performance, and user experience in all changes.**
