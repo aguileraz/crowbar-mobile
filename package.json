@@ -14,12 +14,16 @@
     "start": "react-native start",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "env:dev": "node scripts/switch-env.js development",
+    "env:staging": "node scripts/switch-env.js staging",
+    "env:prod": "node scripts/switch-env.js production"
   },
   "dependencies": {
+    "@react-native/new-app-screen": "0.80.1",
     "react": "19.1.0",
     "react-native": "0.80.1",
-    "@react-native/new-app-screen": "0.80.1"
+    "react-native-config": "^1.5.5"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
