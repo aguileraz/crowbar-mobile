@@ -1,72 +1,79 @@
 /**
- * Crowbar Mobile App
- * React Native application for project management
+ * Crowbar Mobile App - Aplicativo React Native para marketplace de caixas misteriosas
+ *
+ * Este é o componente raiz da aplicação que configura todos os providers necessários:
+ * - Redux Store com persistência
+ * - React Native Paper (Material Design 3)
+ * - React Navigation
+ * - SafeAreaProvider
  *
  * @format
  */
 
 import React, { useEffect } from 'react';
-import { StatusBar, StyleSheet, useColorScheme } from 'react-native';
-import { Provider as PaperProvider } from 'react-native-paper';
+import { StatusBar, LogBox } from 'react-native';
 import { Provider as ReduxProvider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
+import { Provider as PaperProvider } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-// Import configurations
+// Store e persistência
 import { store, persistor } from './src/store';
-import { initializeFirebaseServices } from './src/config/firebase';
-import { validateEnvironment } from './src/config/env';
 
-// Import navigation
+// Navegação
 import AppNavigator from './src/navigation/AppNavigator';
 
-// Import components
+// Tema e configurações
+import { theme } from './src/theme';
+import { env, validateEnvironment } from './src/config/env';
+
+// Componentes de loading
 import LoadingScreen from './src/components/LoadingScreen';
 
+// Configurações de desenvolvimento
+if (__DEV__) {
+  // Ignorar warnings específicos do React Native
+  LogBox.ignoreLogs([
+    'Non-serializable values were found in the navigation state',
+    'VirtualizedLists should never be nested',
+  ]);
+}
+
 /**
- * Main App Component
- * Sets up providers and initializes services
+ * Componente principal da aplicação
  */
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  /**
-   * Initialize app services
-   */
+const App: React.FC = () => {
   useEffect(() => {
-    const initializeApp = async () => {
-      try {
-        // Validate environment variables
-        validateEnvironment();
-
-        // Initialize Firebase services
-        await initializeFirebaseServices();
-
-        console.log('✅ App initialized successfully');
-      } catch (error) {
-        console.error('❌ App initialization failed:', error);
-      }
-    };
-
-    initializeApp();
+    // Validar variáveis de ambiente na inicialização
+    try {
+      validateEnvironment();
+      console.log('✅ Environment validation passed');
+      console.log(`🚀 App starting in ${env.NODE_ENV} mode`);
+      console.log(`📡 API Base URL: ${env.API_BASE_URL}`);
+    } catch (error) {
+      console.error('❌ Environment validation failed:', error);
+    }
   }, []);
 
   return (
-    <SafeAreaProvider>
-      <ReduxProvider store={store}>
-        <PersistGate loading={<LoadingScreen />} persistor={persistor}>
-          <PaperProvider>
-            <StatusBar
-              barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-              backgroundColor="transparent"
-              translucent
-            />
-            <AppNavigator />
-          </PaperProvider>
-        </PersistGate>
-      </ReduxProvider>
-    </SafeAreaProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <ReduxProvider store={store}>
+          <PersistGate loading={<LoadingScreen />} persistor={persistor}>
+            <PaperProvider theme={theme}>
+              <StatusBar
+                barStyle="dark-content"
+                backgroundColor={theme.colors.surface}
+                translucent={false}
+              />
+              <AppNavigator />
+            </PaperProvider>
+          </PersistGate>
+        </ReduxProvider>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
-}
+};
 
 export default App;

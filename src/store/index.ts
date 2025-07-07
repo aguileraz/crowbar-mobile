@@ -3,9 +3,20 @@ import { persistStore, persistReducer } from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { combineReducers } from '@reduxjs/toolkit';
 
-// Import reducers (will be created as needed)
-// import authReducer from './slices/authSlice';
-// import userReducer from './slices/userSlice';
+// Import reducers
+import authReducer from './slices/authSlice';
+import boxReducer from './slices/boxSlice';
+import cartReducer from './slices/cartSlice';
+import favoritesReducer from './slices/favoritesSlice';
+import userReducer from './slices/userSlice';
+import ordersReducer from './slices/ordersSlice';
+import boxOpeningReducer from './slices/boxOpeningSlice';
+import reviewsReducer from './slices/reviewsSlice';
+import notificationsReducer from './slices/notificationsSlice';
+import realtimeReducer from './slices/realtimeSlice';
+import offlineReducer from './slices/offlineSlice';
+import analyticsReducer from './slices/analyticsSlice';
+import notificationsReducer from './slices/notificationsSlice';
 
 /**
  * Redux store configuration with persistence
@@ -20,8 +31,19 @@ const persistConfig = {
 
 // Root reducer (will be expanded as slices are added)
 const rootReducer = combineReducers({
-  // auth: authReducer,
-  // user: userReducer,
+  auth: authReducer,
+  boxes: boxReducer,
+  cart: cartReducer,
+  favorites: favoritesReducer,
+  user: userReducer,
+  orders: ordersReducer,
+  boxOpening: boxOpeningReducer,
+  reviews: reviewsReducer,
+  notifications: notificationsReducer,
+  realtime: realtimeReducer,
+  offline: offlineReducer,
+  analytics: analyticsReducer,
+  notifications: notificationsReducer,
   // Add other reducers here
 });
 

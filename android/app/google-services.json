@@ -1,36 +1,26 @@
 {
   "project_info": {
-    "project_number": "123456789012",
-    "project_id": "crowbar-mobile-dev",
-    "storage_bucket": "crowbar-mobile-dev.appspot.com"
+    "project_number": "1003266798913",
+    "project_id": "crowbar-mobile-develop",
+    "storage_bucket": "crowbar-mobile-develop.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:123456789012:android:abcdef1234567890abcdef",
+        "mobilesdk_app_id": "1:1003266798913:android:da3999ebbe0ced603d1dc0",
         "android_client_info": {
           "package_name": "com.crowbarmobile"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "123456789012-abcdefghijklmnopqrstuvwxyz123456.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDummyKeyForDevelopment-Replace-With-Real-Key"
+          "current_key": "AIzaSyBZHgvEV4C0-jZKBbv4BwzAG1b-QC6Gimg"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "123456789012-abcdefghijklmnopqrstuvwxyz123456.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }

@@ -6,13 +6,20 @@ import {
   Alert,
 } from 'react-native';
 import { List, Switch, Button, Card, Title } from 'react-native-paper';
+import { useDispatch, useSelector } from 'react-redux';
 import { env } from '../config/env';
+import { logout, selectUser, selectIsLoading } from '../store/slices/authSlice';
+import { AppDispatch } from '../store';
 
 /**
  * Settings Screen - App configuration and preferences
  */
 
 const SettingsScreen: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const user = useSelector(selectUser);
+  const isLoading = useSelector(selectIsLoading);
+
   const [debugMode, setDebugMode] = React.useState(env.DEBUG_MODE);
   const [analyticsEnabled, setAnalyticsEnabled] = React.useState(env.ANALYTICS_ENABLED);
 
@@ -63,6 +70,31 @@ const SettingsScreen: React.FC = () => {
   const clearAppData = () => {
     // TODO: Implement actual data clearing
     Alert.alert('Dados Limpos', 'Todos os dados foram removidos.', [{ text: 'OK' }]);
+  };
+
+  /**
+   * Handle logout
+   */
+  const handleLogout = () => {
+    Alert.alert(
+      'Sair',
+      'Tem certeza que deseja sair da sua conta?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        { text: 'Sair', style: 'destructive', onPress: performLogout },
+      ]
+    );
+  };
+
+  /**
+   * Perform logout
+   */
+  const performLogout = async () => {
+    try {
+      await dispatch(logout()).unwrap();
+    } catch (error) {
+      Alert.alert('Erro', 'Erro ao fazer logout. Tente novamente.');
+    }
   };
 
   return (
@@ -139,6 +171,30 @@ const SettingsScreen: React.FC = () => {
           </Card.Content>
         </Card>
 
+        {/* User Info */}
+        {user && (
+          <Card style={styles.card}>
+            <Card.Content>
+              <Title>Conta</Title>
+              <List.Item
+                title="Usuário"
+                description={user.displayName || 'Sem nome'}
+                left={props => <List.Icon {...props} icon="account" />}
+              />
+              <List.Item
+                title="Email"
+                description={user.email || 'Sem email'}
+                left={props => <List.Icon {...props} icon="email" />}
+              />
+              <List.Item
+                title="Email Verificado"
+                description={user.emailVerified ? 'Sim' : 'Não'}
+                left={props => <List.Icon {...props} icon="email-check" />}
+              />
+            </Card.Content>
+          </Card>
+        )}
+
         {/* Actions */}
         <Card style={styles.card}>
           <Card.Content>
@@ -149,6 +205,15 @@ const SettingsScreen: React.FC = () => {
               style={styles.button}
               textColor="#F44336">
               Limpar Dados do App
+            </Button>
+            <Button
+              mode="contained"
+              onPress={handleLogout}
+              loading={isLoading}
+              disabled={isLoading}
+              style={styles.button}
+              buttonColor="#F44336">
+              Sair da Conta
             </Button>
           </Card.Content>
         </Card>

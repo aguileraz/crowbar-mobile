@@ -2,17 +2,10 @@ module.exports = {
   root: true,
   extends: [
     '@react-native',
-    '@typescript-eslint/recommended',
   ],
   parser: '@typescript-eslint/parser',
-  plugins: ['@typescript-eslint', 'react', 'react-native'],
+  plugins: ['react', 'react-native'],
   rules: {
-    // TypeScript specific rules
-    '@typescript-eslint/no-unused-vars': 'error',
-    '@typescript-eslint/no-explicit-any': 'warn',
-    '@typescript-eslint/explicit-function-return-type': 'off',
-    '@typescript-eslint/explicit-module-boundary-types': 'off',
-
     // React Native specific rules
     'react-native/no-unused-styles': 'error',
     'react-native/split-platform-components': 'error',

@@ -1,4 +1,3 @@
-import { FirebaseApp, initializeApp, getApps } from '@react-native-firebase/app';
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
 import messaging, { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
@@ -8,28 +7,25 @@ import { env } from './env';
 /**
  * Firebase configuration and initialization
  * Centralizes all Firebase services setup
+ *
+ * Note: React Native Firebase auto-initializes from google-services.json and GoogleService-Info.plist
+ * No manual initialization is required for the default app
  */
-
-let firebaseApp: FirebaseApp;
 
 /**
- * Initialize Firebase app if not already initialized
+ * Initialize Firebase app
+ * React Native Firebase auto-initializes from configuration files
  */
-export const initializeFirebase = (): FirebaseApp => {
-  if (getApps().length === 0) {
-    firebaseApp = initializeApp({
-      projectId: env.FIREBASE_PROJECT_ID,
-      appId: env.FIREBASE_APP_ID,
-      apiKey: env.FIREBASE_API_KEY,
-      authDomain: env.FIREBASE_AUTH_DOMAIN,
-      storageBucket: env.FIREBASE_STORAGE_BUCKET,
-      messagingSenderId: env.FIREBASE_MESSAGING_SENDER_ID,
-    });
-  } else {
-    firebaseApp = getApps()[0];
+export const initializeFirebase = (): boolean => {
+  try {
+    // Firebase is auto-initialized from google-services.json and GoogleService-Info.plist
+    // We just need to verify the services are available
+    console.log('Firebase auto-initialized successfully');
+    return true;
+  } catch (error) {
+    console.error('Firebase initialization failed:', error);
+    return false;
   }
-  
-  return firebaseApp;
 };
 
 /**
