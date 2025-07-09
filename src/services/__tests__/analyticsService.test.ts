@@ -483,4 +483,374 @@ describe('AnalyticsService', () => {
       });
     });
   });
+
+  describe('Crowbar Custom Events', () => {
+    beforeEach(async () => {
+      (AsyncStorage.getItem as jest.Mock).mockResolvedValue(null);
+      await analyticsService.initialize();
+    });
+
+    describe('E-commerce Events', () => {
+      it('deve rastrear visualização de item', async () => {
+        jest.spyOn(analyticsService, 'logEvent');
+
+        const item = {
+          item_id: 'box-123',
+          item_name: 'Mystery Box Premium',
+          item_category: 'Electronics',
+          price: 199.90,
+          currency: 'BRL'
+        };
+
+        await analyticsService.trackViewItem(item);
+
+        expect(analyticsService.logEvent).toHaveBeenCalledWith(
+          'view_item',
+          expect.objectContaining({
+            ...item,
+            currency: 'BRL'
+          })
+        );
+      });
+
+      it('deve rastrear adição ao carrinho', async () => {
+        jest.spyOn(analyticsService, 'logEvent');
+
+        const item = {
+          item_id: 'box-123',
+          item_name: 'Mystery Box Premium',
+          item_category: 'Electronics',
+          quantity: 2,
+          price: 199.90
+        };
+
+        await analyticsService.trackAddToCart(item);
+
+        expect(analyticsService.logEvent).toHaveBeenCalledWith(
+          'add_to_cart',
+          expect.objectContaining({
+            ...item,
+            currency: 'BRL',
+            value: 399.80
+          })
+        );
+      });
+
+      it('deve rastrear início do checkout', async () => {
+        jest.spyOn(analyticsService, 'logEvent');
+
+        const items = [
+          { item_id: '1', item_name: 'Box 1', price: 100 },
+          { item_id: '2', item_name: 'Box 2', price: 200 }
+        ];
+
+        await analyticsService.trackBeginCheckout(items, 300, 'BRL');
+
+        expect(analyticsService.logEvent).toHaveBeenCalledWith(
+          'begin_checkout',
+          expect.objectContaining({
+            items,
+            value: 300,
+            currency: 'BRL',
+            item_count: 2
+          })
+        );
+      });
+    });
+
+    describe('Mystery Box Events', () => {
+      it('deve rastrear visualização de caixa', async () => {
+        jest.spyOn(analyticsService, 'logEvent');
+
+        const box = {
+          box_id: 'box-456',
+          box_name: 'Epic Gaming Box',
+          category: 'Gaming',
+          price: 299.90,
+          rarity_level: 'epic'
+        };
+
+        await analyticsService.trackBoxViewed(box);
+
+        expect(analyticsService.logEvent).toHaveBeenCalledWith(
+          'box_viewed',
+          expect.objectContaining({
+            ...box,
+            view_time: expect.any(Number)
+          })
+        );
+      });
+
+      it('deve rastrear abertura de caixa', async () => {
+        jest.spyOn(analyticsService, 'logEvent');
+
+        const items = [
+          { id: '1', name: 'Item 1', rarity: 'rare', value: 150 },
+          { id: '2', name: 'Item 2', rarity: 'common', value: 50 }
+        ];
+
+        await analyticsService.trackBoxOpening(
+          'box-456',
+          'Epic Gaming Box',
+          299.90,
+          items
+        );
+
+        expect(analyticsService.logEvent).toHaveBeenCalledWith(
+          'box_opened',
+          expect.objectContaining({
+            box_id: 'box-456',
+            box_name: 'Epic Gaming Box',
+            cost: 299.90,
+            total_value: 200,
+            profit: -99.90,
+            items_count: 2,
+            rare_items: 1
+          })
+        );
+      });
+
+      it('deve rastrear compartilhamento de caixa', async () => {
+        jest.spyOn(analyticsService, 'logEvent');
+
+        await analyticsService.trackBoxShared({
+          box_id: 'box-789',
+          box_name: 'Mystery Tech Box',
+          share_method: 'whatsapp',
+          items_received: 5
+        });
+
+        expect(analyticsService.logEvent).toHaveBeenCalledWith(
+          'box_shared',
+          expect.objectContaining({
+            box_id: 'box-789',
+            box_name: 'Mystery Tech Box',
+            share_method: 'whatsapp',
+            items_received: 5,
+            share_time: expect.any(Number)
+          })
+        );
+      });
+    });
+
+    describe('Engagement Events', () => {
+      it('deve rastrear submissão de review', async () => {
+        jest.spyOn(analyticsService, 'logEvent');
+
+        await analyticsService.trackReviewSubmitted({
+          box_id: 'box-123',
+          rating: 5,
+          has_comment: true,
+          has_photo: false
+        });
+
+        expect(analyticsService.logEvent).toHaveBeenCalledWith(
+          'review_submitted',
+          expect.objectContaining({
+            box_id: 'box-123',
+            rating: 5,
+            has_comment: true,
+            has_photo: false,
+            submit_time: expect.any(Number)
+          })
+        );
+      });
+
+      it('deve rastrear compartilhamento social', async () => {
+        jest.spyOn(analyticsService, 'logEvent');
+
+        await analyticsService.trackSocialShare({
+          content_type: 'box_opening',
+          content_id: 'opening-123',
+          share_method: 'instagram'
+        });
+
+        expect(analyticsService.logEvent).toHaveBeenCalledWith(
+          'social_share',
+          expect.objectContaining({
+            content_type: 'box_opening',
+            content_id: 'opening-123',
+            share_method: 'instagram',
+            share_time: expect.any(Number)
+          })
+        );
+      });
+    });
+
+    describe('Performance Events', () => {
+      it('deve rastrear latência da API', async () => {
+        jest.spyOn(analyticsService, 'logEvent');
+        const mockDispatch = jest.fn();
+        (store.dispatch as jest.Mock) = mockDispatch;
+
+        await analyticsService.trackApiLatency(
+          '/api/boxes',
+          'GET',
+          250,
+          200
+        );
+
+        expect(analyticsService.logEvent).toHaveBeenCalledWith(
+          'api_latency',
+          expect.objectContaining({
+            endpoint: '/api/boxes',
+            method: 'GET',
+            response_time_ms: 250,
+            status_code: 200,
+            is_success: true
+          })
+        );
+
+        expect(mockDispatch).toHaveBeenCalledWith(
+          recordApiResponseTime({
+            endpoint: '/api/boxes',
+            responseTime: 250
+          })
+        );
+      });
+
+      it('deve rastrear tempo de carregamento de tela', async () => {
+        jest.spyOn(analyticsService, 'logEvent');
+
+        await analyticsService.trackScreenLoadTime('ShopScreen', 1500);
+
+        expect(analyticsService.logEvent).toHaveBeenCalledWith(
+          'screen_load_time',
+          expect.objectContaining({
+            screen_name: 'ShopScreen',
+            load_time_ms: 1500,
+            is_slow: false
+          })
+        );
+      });
+
+      it('deve marcar tela como lenta se > 3000ms', async () => {
+        jest.spyOn(analyticsService, 'logEvent');
+
+        await analyticsService.trackScreenLoadTime('BoxDetailsScreen', 4500);
+
+        expect(analyticsService.logEvent).toHaveBeenCalledWith(
+          'screen_load_time',
+          expect.objectContaining({
+            screen_name: 'BoxDetailsScreen',
+            load_time_ms: 4500,
+            is_slow: true
+          })
+        );
+      });
+    });
+
+    describe('Privacy and LGPD', () => {
+      it('deve definir consentimento de analytics', async () => {
+        jest.spyOn(analyticsService, 'logEvent');
+
+        await analyticsService.setAnalyticsConsent(true);
+
+        expect(AsyncStorage.setItem).toHaveBeenCalledWith(
+          'analytics_consent',
+          'true'
+        );
+        expect(analyticsService.logEvent).toHaveBeenCalledWith(
+          'analytics_consent_updated',
+          expect.objectContaining({
+            consented: true,
+            update_time: expect.any(Number)
+          })
+        );
+      });
+
+      it('deve verificar consentimento de analytics', async () => {
+        (AsyncStorage.getItem as jest.Mock).mockResolvedValueOnce('true');
+
+        const consent = await analyticsService.checkAnalyticsConsent();
+
+        expect(consent).toBe(true);
+        expect(AsyncStorage.getItem).toHaveBeenCalledWith('analytics_consent');
+      });
+
+      it('deve deletar dados do usuário (LGPD)', async () => {
+        jest.spyOn(analyticsService, 'setUserId');
+        jest.spyOn(analyticsService, 'logEvent');
+
+        await analyticsService.deleteUserData();
+
+        expect(analyticsService.setUserId).toHaveBeenCalledWith(null);
+        expect(AsyncStorage.multiRemove).toHaveBeenCalledWith([
+          'analytics_user_id',
+          'analytics_user_properties',
+          'analytics_pending_events',
+          'analytics_consent',
+          'debug_analytics_events'
+        ]);
+        expect(analyticsService.logEvent).toHaveBeenCalledWith(
+          'user_data_deleted',
+          expect.objectContaining({
+            deletion_time: expect.any(Number)
+          })
+        );
+      });
+    });
+
+    describe('User Properties and Audiences', () => {
+      it('deve definir segmento do usuário', async () => {
+        jest.spyOn(analyticsService, 'setUserProperties');
+
+        await analyticsService.setUserSegment('vip_customer');
+
+        expect(analyticsService.setUserProperties).toHaveBeenCalledWith({
+          user_segment: 'vip_customer',
+          segment_updated_at: expect.any(String)
+        });
+      });
+
+      it('deve calcular nível de engajamento - alto', async () => {
+        jest.spyOn(analyticsService, 'setUserProperties');
+
+        await analyticsService.setEngagementProperties({
+          total_purchases: 15,
+          boxes_opened: 25,
+          total_spent: 2500
+        });
+
+        expect(analyticsService.setUserProperties).toHaveBeenCalledWith(
+          expect.objectContaining({
+            total_purchases: 15,
+            boxes_opened: 25,
+            total_spent: 2500,
+            engagement_level: 'high'
+          })
+        );
+      });
+
+      it('deve calcular nível de engajamento - médio', async () => {
+        jest.spyOn(analyticsService, 'setUserProperties');
+
+        await analyticsService.setEngagementProperties({
+          total_purchases: 7,
+          boxes_opened: 12
+        });
+
+        expect(analyticsService.setUserProperties).toHaveBeenCalledWith(
+          expect.objectContaining({
+            engagement_level: 'medium'
+          })
+        );
+      });
+
+      it('deve calcular nível de engajamento - baixo', async () => {
+        jest.spyOn(analyticsService, 'setUserProperties');
+
+        await analyticsService.setEngagementProperties({
+          total_purchases: 2,
+          boxes_opened: 3
+        });
+
+        expect(analyticsService.setUserProperties).toHaveBeenCalledWith(
+          expect.objectContaining({
+            engagement_level: 'low'
+          })
+        );
+      });
+    });
+  });
 });

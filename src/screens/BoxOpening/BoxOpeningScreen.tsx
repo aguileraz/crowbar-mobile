@@ -51,6 +51,7 @@ import { MysteryBox } from '../../types/api';
 
 // Theme
 import { theme, getSpacing } from '../../theme';
+import { analyticsService } from '../../services/analyticsService';
 
 /**
  * Tela de Abertura de Caixas
@@ -129,7 +130,39 @@ const BoxOpeningScreen: React.FC<BoxOpeningScreenProps> = ({
       dispatch(startOpeningAnimation());
       
       // Open box on server
-      await dispatch(openMysteryBox(currentBox.id)).unwrap();
+      const result = await dispatch(openMysteryBox(currentBox.id)).unwrap();
+      
+      // Rastrear abertura da caixa
+      if (result && result.items_received) {
+        analyticsService.trackBoxOpening(
+          currentBox.id,
+          currentBox.name,
+          currentBox.price,
+          result.items_received.map((item: any) => ({
+            id: item.id,
+            name: item.name,
+            rarity: item.rarity,
+            value: item.estimated_value || 0,
+          }))
+        );
+        
+        // Rastrear conversão
+        analyticsService.trackPurchase(
+          `box_opening_${Date.now()}`,
+          currentBox.price,
+          'BRL',
+          [{
+            item_id: currentBox.id,
+            item_name: currentBox.name,
+            item_category: currentBox.category.name,
+            quantity: 1,
+            price: currentBox.price,
+          }]
+        );
+        
+        // Rastrear engajamento
+        analyticsService.trackEngagement('box_opened', currentBox.name, currentBox.price);
+      }
       
       // Wait for opening animation to complete
       setTimeout(() => {
@@ -139,6 +172,12 @@ const BoxOpeningScreen: React.FC<BoxOpeningScreenProps> = ({
     } catch (error: any) {
       Alert.alert('Erro', error.message || 'Erro ao abrir caixa');
       setCanStartOpening(true);
+      
+      // Rastrear erro
+      analyticsService.trackError(
+        new Error(`Box opening failed: ${error.message}`),
+        'box_opening'
+      );
     }
   };
 

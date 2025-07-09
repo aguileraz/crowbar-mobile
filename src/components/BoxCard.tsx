@@ -170,7 +170,7 @@ const BoxCard: React.FC<BoxCardProps> = ({
   };
 
   return (
-    <TouchableOpacity onPress={onPress} style={[getCardStyle(), style]}>
+    <TouchableOpacity onPress={handlePress} style={[getCardStyle(), style]}>
       <Card style={styles.card} elevation={2}>
         {/* Imagem */}
         <View style={styles.imageContainer}>
@@ -189,7 +189,7 @@ const BoxCard: React.FC<BoxCardProps> = ({
               boxId={box.id}
               size={20}
               style={styles.favoriteButton}
-              onPress={onFavoritePress}
+              onPress={handleFavoritePress}
             />
           )}
           

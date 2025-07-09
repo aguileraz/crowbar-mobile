@@ -73,3 +73,11 @@ yarn-error.log
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+# Performance optimization
+.metro-cache/
+bundle-reports/
+bundle-analysis/
+*.cpuprofile
+*.heapsnapshot
+*.heapprofile

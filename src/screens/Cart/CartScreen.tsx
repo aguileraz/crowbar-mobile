@@ -54,6 +54,7 @@ import { CartItem } from '../../types/api';
 
 // Theme
 import { theme, getSpacing, getBorderRadius } from '../../theme';
+import { analyticsService } from '../../services/analyticsService';
 
 /**
  * Tela do Carrinho

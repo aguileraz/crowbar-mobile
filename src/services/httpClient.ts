@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { env } from '../config/env';
+import { analyticsService } from './analyticsService';
 
 /**
  * Cliente HTTP para comunicação com a API
@@ -31,6 +32,10 @@ class HttpClient {
         if (this.authToken) {
           config.headers.Authorization = `Bearer ${this.authToken}`;
         }
+        
+        // Adicionar timestamp para rastreamento de performance
+        (config as any).metadata = { startTime: Date.now() };
+        
         return config;
       },
       (error) => Promise.reject(error)
@@ -38,13 +43,63 @@ class HttpClient {
 
     // Response interceptor
     this.client.interceptors.response.use(
-      (response) => response,
+      (response) => {
+        // Rastrear latência da API
+        const config = response.config as any;
+        if (config.metadata?.startTime) {
+          const responseTime = Date.now() - config.metadata.startTime;
+          const endpoint = config.url || 'unknown';
+          const method = config.method?.toUpperCase() || 'GET';
+          
+          // Rastrear no analytics
+          analyticsService.trackApiLatency(
+            endpoint,
+            method,
+            responseTime,
+            response.status
+          );
+          
+          // Rastrear chamada da API para métricas gerais
+          analyticsService.trackApiCall(
+            endpoint,
+            method,
+            config.metadata.startTime
+          );
+        }
+        
+        return response;
+      },
       (error) => {
+        // Rastrear erro
+        if (error.config) {
+          const config = error.config as any;
+          const responseTime = config.metadata?.startTime ? 
+            Date.now() - config.metadata.startTime : 0;
+          const endpoint = config.url || 'unknown';
+          const method = config.method?.toUpperCase() || 'GET';
+          const status = error.response?.status || 0;
+          
+          // Rastrear latência mesmo em caso de erro
+          analyticsService.trackApiLatency(
+            endpoint,
+            method,
+            responseTime,
+            status
+          );
+          
+          // Rastrear erro específico
+          analyticsService.trackError(
+            new Error(`API Error: ${status} ${endpoint}`),
+            'http_client'
+          );
+        }
+        
         // Tratar erros de autenticação
         if (error.response?.status === 401) {
           this.authToken = null;
           // Aqui poderia disparar um evento para logout
         }
+        
         return Promise.reject(error);
       }
     );

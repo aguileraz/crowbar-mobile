@@ -20,6 +20,7 @@ import { AppDispatch } from '../store';
 import { shareOpeningResult } from '../store/slices/boxOpeningSlice';
 import { BoxOpeningResult, MysteryBox } from '../types/api';
 import { theme, getSpacing, getBorderRadius } from '../theme';
+import { analyticsService } from '../services/analyticsService';
 
 /**
  * Modal de Compartilhamento de Resultado
@@ -122,6 +123,24 @@ const ShareResultModal: React.FC<ShareResultModalProps> = ({
             resultId: openingResult.id,
             platform: 'native',
           }));
+          
+          // Rastrear compartilhamento
+          analyticsService.trackBoxShared({
+            box_id: box.id,
+            box_name: box.name,
+            share_method: 'native_share',
+            items_received: openingResult.items.length,
+          });
+          
+          // Rastrear compartilhamento social
+          analyticsService.trackSocialShare({
+            content_type: 'box_opening_result',
+            content_id: openingResult.id,
+            share_method: 'native',
+          });
+          
+          // Rastrear engajamento
+          analyticsService.trackEngagement('share_result', 'box_opening', totalValue);
         }
         
         Alert.alert('Sucesso', 'Resultado compartilhado!');
@@ -146,6 +165,25 @@ const ShareResultModal: React.FC<ShareResultModalProps> = ({
           resultId: openingResult.id,
           platform,
         })).unwrap();
+        
+        // Rastrear compartilhamento
+        analyticsService.trackBoxShared({
+          box_id: box.id,
+          box_name: box.name,
+          share_method: platform,
+          items_received: openingResult.items.length,
+        });
+        
+        // Rastrear compartilhamento social
+        analyticsService.trackSocialShare({
+          content_type: 'box_opening_result',
+          content_id: openingResult.id,
+          share_method: platform,
+        });
+        
+        // Rastrear engajamento
+        const totalValue = getTotalValue();
+        analyticsService.trackEngagement(`share_${platform}`, 'box_opening', totalValue);
         
         Alert.alert('Sucesso', `Compartilhado no ${platform}!`);
         onDismiss();

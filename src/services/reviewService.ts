@@ -103,6 +103,14 @@ class ReviewService {
     const response = await httpClient.post(`${this.baseURL}/${reviewId}/helpful`, {
       helpful,
     });
+    
+    // Rastrear engajamento com review
+    analyticsService.trackEngagement(
+      helpful ? 'mark_review_helpful' : 'mark_review_not_helpful',
+      'review',
+      1
+    );
+    
     return response.data;
   }
 

@@ -1,27 +1,34 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, Suspense } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSelector } from 'react-redux';
 
-// Import screens
+// Importar utilitário de lazy loading
+import { lazyWithPreload, usePreloadComponents } from '../utils/lazyWithPreload';
+
+// Import screens com lazy loading
 import HomeScreen from '../screens/HomeScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import ShopScreen from '../screens/Shop/ShopScreen';
-import BoxDetailsScreen from '../screens/Box/BoxDetailsScreen';
-import SearchScreen from '../screens/Search/SearchScreen';
-import CategoryScreen from '../screens/Category/CategoryScreen';
-import CartScreen from '../screens/Cart/CartScreen';
-import CheckoutScreen from '../screens/Checkout/CheckoutScreen';
-import FavoritesScreen from '../screens/Favorites/FavoritesScreen';
-import ProfileScreen from '../screens/Profile/ProfileScreen';
-import AddressesScreen from '../screens/Address/AddressesScreen';
-import AddEditAddressScreen from '../screens/Address/AddEditAddressScreen';
-import OrderHistoryScreen from '../screens/Orders/OrderHistoryScreen';
-import BoxOpeningScreen from '../screens/BoxOpening/BoxOpeningScreen';
-import ReviewsScreen from '../screens/Reviews/ReviewsScreen';
-import NotificationsScreen from '../screens/Notifications/NotificationsScreen';
-import NotificationSettingsScreen from '../screens/Notifications/NotificationSettingsScreen';
+
+// Lazy load das telas secundárias para melhor performance
+const BoxDetailsScreen = lazyWithPreload(() => import('../screens/Box/BoxDetailsScreen'));
+const SearchScreen = lazyWithPreload(() => import('../screens/Search/SearchScreen'));
+const CategoryScreen = lazyWithPreload(() => import('../screens/Category/CategoryScreen'));
+const CartScreen = lazyWithPreload(() => import('../screens/Cart/CartScreen'));
+const CheckoutScreen = lazyWithPreload(() => import('../screens/Checkout/CheckoutScreen'));
+const FavoritesScreen = lazyWithPreload(() => import('../screens/Favorites/FavoritesScreen'));
+const ProfileScreen = lazyWithPreload(() => import('../screens/Profile/ProfileScreen'));
+const AddressesScreen = lazyWithPreload(() => import('../screens/Address/AddressesScreen'));
+const AddEditAddressScreen = lazyWithPreload(() => import('../screens/Address/AddEditAddressScreen'));
+const OrderHistoryScreen = lazyWithPreload(() => import('../screens/Orders/OrderHistoryScreen'));
+const BoxOpeningScreen = lazyWithPreload(() => import('../screens/BoxOpening/BoxOpeningScreen'));
+const ReviewsScreen = lazyWithPreload(() => import('../screens/Reviews/ReviewsScreen'));
+const NotificationsScreen = lazyWithPreload(() => import('../screens/Notifications/NotificationsScreen'));
+const NotificationSettingsScreen = lazyWithPreload(() => import('../screens/Notifications/NotificationSettingsScreen'));
+const AnalyticsScreen = lazyWithPreload(() => import('../screens/Analytics/AnalyticsScreen'));
+const PrivacyControlsScreen = lazyWithPreload(() => import('../screens/Privacy/PrivacyControlsScreen'));
 
 // Import navigators
 import AuthNavigator from './AuthNavigator';
@@ -68,9 +75,26 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator();
 
 /**
+ * Componente wrapper para telas lazy loaded
+ */
+const LazyScreen = ({ component: Component, ...props }: any) => (
+  <Suspense fallback={<LoadingScreen />}>
+    <Component {...props} />
+  </Suspense>
+);
+
+/**
  * Bottom Tab Navigator
  */
 const TabNavigator = () => {
+  // Pré-carregar telas críticas quando o tab navigator é montado
+  usePreloadComponents([
+    BoxDetailsScreen,
+    SearchScreen,
+    CartScreen,
+    ProfileScreen,
+  ]);
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -80,6 +104,9 @@ const TabNavigator = () => {
           borderTopWidth: 1,
           borderTopColor: '#e0e0e0',
         },
+        // Otimizar navegação entre tabs
+        detachInactiveScreens: true,
+        lazy: true,
       }}>
       <Tab.Screen
         name="Home"
@@ -143,20 +170,54 @@ const AppNavigator = () => {
           // Usuário autenticado - mostrar app principal
           <>
             <Stack.Screen name="Main" component={TabNavigator} />
-            <Stack.Screen name="Search" component={SearchScreen} />
-            <Stack.Screen name="Category" component={CategoryScreen} />
-            <Stack.Screen name="Cart" component={CartScreen} />
-            <Stack.Screen name="Checkout" component={CheckoutScreen} />
-            <Stack.Screen name="Favorites" component={FavoritesScreen} />
-            <Stack.Screen name="Profile" component={ProfileScreen} />
-            <Stack.Screen name="Addresses" component={AddressesScreen} />
-            <Stack.Screen name="AddEditAddress" component={AddEditAddressScreen} />
-            <Stack.Screen name="OrderHistory" component={OrderHistoryScreen} />
-            <Stack.Screen name="BoxOpening" component={BoxOpeningScreen} />
-            <Stack.Screen name="Reviews" component={ReviewsScreen} />
-            <Stack.Screen name="Notifications" component={NotificationsScreen} />
-            <Stack.Screen name="NotificationSettings" component={NotificationSettingsScreen} />
-            <Stack.Screen name="BoxDetails" component={BoxDetailsScreen} />
+            <Stack.Screen name="Search">
+              {(props) => <LazyScreen component={SearchScreen} {...props} />}
+            </Stack.Screen>
+            <Stack.Screen name="Category">
+              {(props) => <LazyScreen component={CategoryScreen} {...props} />}
+            </Stack.Screen>
+            <Stack.Screen name="Cart">
+              {(props) => <LazyScreen component={CartScreen} {...props} />}
+            </Stack.Screen>
+            <Stack.Screen name="Checkout">
+              {(props) => <LazyScreen component={CheckoutScreen} {...props} />}
+            </Stack.Screen>
+            <Stack.Screen name="Favorites">
+              {(props) => <LazyScreen component={FavoritesScreen} {...props} />}
+            </Stack.Screen>
+            <Stack.Screen name="Profile">
+              {(props) => <LazyScreen component={ProfileScreen} {...props} />}
+            </Stack.Screen>
+            <Stack.Screen name="Addresses">
+              {(props) => <LazyScreen component={AddressesScreen} {...props} />}
+            </Stack.Screen>
+            <Stack.Screen name="AddEditAddress">
+              {(props) => <LazyScreen component={AddEditAddressScreen} {...props} />}
+            </Stack.Screen>
+            <Stack.Screen name="OrderHistory">
+              {(props) => <LazyScreen component={OrderHistoryScreen} {...props} />}
+            </Stack.Screen>
+            <Stack.Screen name="BoxOpening">
+              {(props) => <LazyScreen component={BoxOpeningScreen} {...props} />}
+            </Stack.Screen>
+            <Stack.Screen name="Reviews">
+              {(props) => <LazyScreen component={ReviewsScreen} {...props} />}
+            </Stack.Screen>
+            <Stack.Screen name="Notifications">
+              {(props) => <LazyScreen component={NotificationsScreen} {...props} />}
+            </Stack.Screen>
+            <Stack.Screen name="NotificationSettings">
+              {(props) => <LazyScreen component={NotificationSettingsScreen} {...props} />}
+            </Stack.Screen>
+            <Stack.Screen name="BoxDetails">
+              {(props) => <LazyScreen component={BoxDetailsScreen} {...props} />}
+            </Stack.Screen>
+            <Stack.Screen name="Analytics">
+              {(props) => <LazyScreen component={AnalyticsScreen} {...props} />}
+            </Stack.Screen>
+            <Stack.Screen name="PrivacyControls">
+              {(props) => <LazyScreen component={PrivacyControlsScreen} {...props} />}
+            </Stack.Screen>
           </>
         ) : (
           // Usuário não autenticado - mostrar telas de auth

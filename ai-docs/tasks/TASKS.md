@@ -601,27 +601,37 @@ Este documento contém todas as tarefas do projeto Crowbar Mobile organizadas se
 - **Descrição**: Integrar Firebase Analytics para métricas
 - **Prioridade**: 🟢 Média
 - **Estimativa**: 5 pontos de história
-- **Assignee**: TBD
-- **Status**: [ ] Não Iniciado
+- **Assignee**: Claude AI
+- **Status**: [x] Concluído
 - **Critérios de Aceitação**:
-  - Rastreamento de eventos e comportamento
-  - Métricas de conversão
-  - Performance da aplicação
-  - Dashboard de analytics
+  - ✅ Rastreamento de eventos e comportamento
+  - ✅ Métricas de conversão
+  - ✅ Performance da aplicação
+  - ✅ Dashboard de analytics
+  - ✅ Eventos customizados do Crowbar (e-commerce, caixas, engajamento)
+  - ✅ Privacy controls e LGPD compliance
+  - ✅ AnalyticsScreen com visualização de métricas
+  - ✅ PerformanceMonitor em tempo real
 - **Dependências**: NOTIF-001
 - **Acceptance Criteria**: Seção 5.6 do ACCEPTANCE_CRITERIA.md
+- **Data de Conclusão**: 2025-01-09
 
 #### **⚡ PERFORMANCE-001: Otimização de Performance**
 - **Descrição**: Otimizar performance e bundle size
 - **Prioridade**: 🟢 Média
 - **Estimativa**: 8 pontos de história
-- **Assignee**: TBD
-- **Status**: [ ] Não Iniciado
+- **Assignee**: Claude AI
+- **Status**: [/] Em Progresso
+- **Data de Início**: 2025-01-09
 - **Critérios de Aceitação**:
-  - Lazy loading de componentes
-  - Otimização de imagens
+  - Lazy loading de componentes com React.lazy()
+  - Otimização de imagens com react-native-fast-image
   - Code splitting e bundle analysis
   - Otimizações específicas do React Native
+  - Configuração do Hermes engine
+  - Memoização com reselect no Redux
+  - Otimização de listas com FlashList
+  - Guia de performance com métricas
 - **Dependências**: ANIMATIONS-001
 - **Acceptance Criteria**: Seção 5.7 do ACCEPTANCE_CRITERIA.md
 
@@ -631,9 +641,9 @@ Este documento contém todas as tarefas do projeto Crowbar Mobile organizadas se
 
 ### **Resumo Atual**
 - **Total de Tarefas**: 35 tarefas identificadas
-- **Tarefas Concluídas**: 23 ✅ (Sprint 1-5 Completos + TESTS-002 + TESTS-003)
+- **Tarefas Concluídas**: 24 ✅ (Sprint 1-5 Completos + TESTS-002 + TESTS-003 + ANALYTICS-001)
 - **Tarefas em Andamento**: 0 🔄
-- **Tarefas Pendentes**: 12 ⏳
+- **Tarefas Pendentes**: 11 ⏳
 
 ### **Distribuição por Prioridade**
 - **🔴 Crítica**: 11 tarefas (31%)
@@ -649,9 +659,10 @@ Este documento contém todas as tarefas do projeto Crowbar Mobile organizadas se
 - **Sprint 6**: 🎯 EM ANDAMENTO - 58 pontos (Qualidade)
   - ✅ TESTS-002: 8 pontos (Testes de Integração)
   - ✅ TESTS-003: 13 pontos (Testes E2E)
-  - ⏳ Pendentes: 37 pontos
+  - ✅ ANALYTICS-001: 5 pontos (Sistema de Analytics)
+  - ⏳ Pendentes: 32 pontos
 - **Total Estimado**: ~292 pontos de história
-- **Progresso**: 255/292 pontos (87% concluído)
+- **Progresso**: 260/292 pontos (89% concluído)
 
 ---
 

@@ -4,6 +4,7 @@ import {
   ScrollView,
   StyleSheet,
   ViewStyle,
+  Dimensions,
 } from 'react-native';
 import {
   Text,
@@ -15,7 +16,11 @@ import {
   DataTable,
   Switch,
   Divider,
+  ProgressBar,
+  Surface,
+  useTheme,
 } from 'react-native-paper';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useSelector } from 'react-redux';
 import {
   selectAnalyticsEnabled,
@@ -32,8 +37,10 @@ import { theme, getSpacing } from '../theme';
 
 /**
  * Dashboard de Analytics para desenvolvimento
- * Mostra métricas e eventos em tempo real
+ * Mostra métricas e eventos em tempo real com gráficos e visualizações
  */
+
+const { width: screenWidth } = Dimensions.get('window');
 
 interface AnalyticsDashboardProps {
   style?: ViewStyle;
@@ -42,6 +49,7 @@ interface AnalyticsDashboardProps {
 const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ style }) => {
   const [debugEvents, setDebugEvents] = useState<any[]>([]);
   const [refreshing, setRefreshing] = useState(false);
+  const muiTheme = useTheme();
 
   // Redux state
   const isEnabled = useSelector(selectAnalyticsEnabled);
@@ -119,6 +127,57 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ style }) => {
 
   return (
     <ScrollView style={[styles.container, style]} showsVerticalScrollIndicator={false}>
+      {/* Métricas Principais */}
+      <View style={styles.metricsGrid}>
+        <Surface style={styles.metricCard}>
+          <MaterialCommunityIcons 
+            name="account-multiple" 
+            size={32} 
+            color={muiTheme.colors.primary} 
+          />
+          <Text variant="headlineSmall" style={styles.metricNumber}>
+            {screenHistory.length}
+          </Text>
+          <Text variant="bodySmall">Telas Visitadas</Text>
+        </Surface>
+
+        <Surface style={styles.metricCard}>
+          <MaterialCommunityIcons 
+            name="clock-fast" 
+            size={32} 
+            color={muiTheme.colors.secondary} 
+          />
+          <Text variant="headlineSmall" style={styles.metricNumber}>
+            {Object.keys(performanceMetrics.apiResponseTimes).length}
+          </Text>
+          <Text variant="bodySmall">APIs Rastreadas</Text>
+        </Surface>
+
+        <Surface style={styles.metricCard}>
+          <MaterialCommunityIcons 
+            name="cash" 
+            size={32} 
+            color={muiTheme.colors.tertiary} 
+          />
+          <Text variant="headlineSmall" style={styles.metricNumber}>
+            {conversionEvents.length}
+          </Text>
+          <Text variant="bodySmall">Conversões</Text>
+        </Surface>
+
+        <Surface style={styles.metricCard}>
+          <MaterialCommunityIcons 
+            name="alert-circle" 
+            size={32} 
+            color={muiTheme.colors.error} 
+          />
+          <Text variant="headlineSmall" style={styles.metricNumber}>
+            {Object.values(performanceMetrics.errorCounts).reduce((sum, count) => sum + count, 0)}
+          </Text>
+          <Text variant="bodySmall">Erros</Text>
+        </Surface>
+      </View>
+
       {/* Status Card */}
       <Card style={styles.card}>
         <Card.Content>
@@ -155,10 +214,33 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ style }) => {
         </Card.Content>
       </Card>
 
-      {/* Performance Metrics */}
+      {/* Performance Metrics com Gráficos */}
       <Card style={styles.card}>
         <Card.Content>
           <Title>Métricas de Performance</Title>
+          
+          {/* Gráfico de Barras Simples para Tempo de Tela */}
+          <View style={styles.chartContainer}>
+            <Text style={styles.chartTitle}>Tempo de Carregamento por Tela</Text>
+            {Object.entries(performanceMetrics.screenLoadTimes)
+              .slice(-5)
+              .map(([screen, time]) => {
+                const percentage = Math.min(time / 3000, 1); // 3s como máximo
+                return (
+                  <View key={screen} style={styles.barChartRow}>
+                    <Text style={styles.barLabel}>{screen}</Text>
+                    <View style={styles.barContainer}>
+                      <ProgressBar 
+                        progress={percentage} 
+                        color={percentage > 0.7 ? muiTheme.colors.error : muiTheme.colors.primary}
+                        style={styles.progressBar}
+                      />
+                      <Text style={styles.barValue}>{formatDuration(time)}</Text>
+                    </View>
+                  </View>
+                );
+              })}
+          </View>
           
           {performanceMetrics.appStartTime && (
             <Paragraph>
@@ -166,27 +248,32 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ style }) => {
             </Paragraph>
           )}
           
-          <Divider style={styles.divider} />
-          
-          <Text style={styles.sectionTitle}>Tempos de Carregamento de Tela</Text>
-          {Object.entries(performanceMetrics.screenLoadTimes).map(([screen, time]) => (
-            <View key={screen} style={styles.metricRow}>
-              <Text style={styles.metricLabel}>{screen}:</Text>
-              <Text style={styles.metricValue}>{formatDuration(time)}</Text>
-            </View>
-          ))}
           
           <Divider style={styles.divider} />
           
           <Text style={styles.sectionTitle}>Tempos de Resposta da API</Text>
-          {Object.entries(performanceMetrics.apiResponseTimes).map(([endpoint, times]) => (
-            <View key={endpoint} style={styles.metricRow}>
-              <Text style={styles.metricLabel}>{endpoint}:</Text>
-              <Text style={styles.metricValue}>
-                {formatDuration(getAverageResponseTime(times))} (média)
-              </Text>
-            </View>
-          ))}
+          {Object.entries(performanceMetrics.apiResponseTimes).map(([endpoint, times]) => {
+            const avgTime = getAverageResponseTime(times);
+            const percentage = Math.min(avgTime / 1000, 1); // 1s como máximo
+            return (
+              <View key={endpoint} style={styles.apiMetricRow}>
+                <View style={styles.apiHeader}>
+                  <Text style={styles.metricLabel}>{endpoint}</Text>
+                  <Text style={styles.metricValue}>
+                    {formatDuration(avgTime)} (média)
+                  </Text>
+                </View>
+                <ProgressBar 
+                  progress={percentage} 
+                  color={percentage > 0.5 ? muiTheme.colors.warning : muiTheme.colors.primary}
+                  style={styles.apiProgressBar}
+                />
+                <Text style={styles.apiCallCount}>
+                  {times.length} chamadas
+                </Text>
+              </View>
+            );
+          })}
           
           <Divider style={styles.divider} />
           
@@ -224,17 +311,51 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ style }) => {
         </Card.Content>
       </Card>
 
-      {/* Conversion Events */}
+      {/* Conversion Events com Métricas */}
       {conversionEvents.length > 0 && (
         <Card style={styles.card}>
           <Card.Content>
             <Title>Eventos de Conversão</Title>
+            
+            {/* Resumo de Conversões */}
+            <View style={styles.conversionSummary}>
+              <Surface style={styles.conversionMetric}>
+                <Text variant="bodySmall">Total de Conversões</Text>
+                <Text variant="headlineMedium" style={styles.conversionValue}>
+                  {conversionEvents.length}
+                </Text>
+              </Surface>
+              
+              <Surface style={styles.conversionMetric}>
+                <Text variant="bodySmall">Valor Total</Text>
+                <Text variant="headlineMedium" style={styles.conversionValue}>
+                  R$ {conversionEvents
+                    .reduce((sum, event) => sum + (event.value || 0), 0)
+                    .toFixed(2)}
+                </Text>
+              </Surface>
+            </View>
+            
+            <Divider style={styles.divider} />
+            
+            {/* Lista de Eventos */}
             {conversionEvents.slice(-5).map((event, index) => (
               <View key={index} style={styles.conversionEvent}>
-                <Text style={styles.eventName}>{event.event}</Text>
+                <View style={styles.conversionEventHeader}>
+                  <Chip 
+                    icon="tag" 
+                    style={styles.conversionChip}
+                    textStyle={styles.conversionChipText}
+                  >
+                    {event.event}
+                  </Chip>
+                  {event.value && (
+                    <Text style={styles.conversionAmount}>
+                      R$ {event.value.toFixed(2)}
+                    </Text>
+                  )}
+                </View>
                 <Text style={styles.eventDetails}>
-                  {event.value && event.currency && `${event.currency} ${event.value.toFixed(2)}`}
-                  {' • '}
                   {formatTimestamp(event.timestamp)}
                 </Text>
               </View>
@@ -287,33 +408,68 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ style }) => {
         </Card.Content>
       </Card>
 
-      {/* Settings */}
+      {/* Settings com Indicadores Visuais */}
       <Card style={styles.card}>
         <Card.Content>
-          <Title>Configurações</Title>
+          <Title>Configurações de Analytics</Title>
           
           <View style={styles.settingRow}>
-            <Text>Crashlytics</Text>
+            <View style={styles.settingInfo}>
+              <MaterialCommunityIcons 
+                name="bug" 
+                size={24} 
+                color={muiTheme.colors.primary} 
+              />
+              <Text style={styles.settingLabel}>Crashlytics</Text>
+            </View>
             <Switch value={settings.enableCrashlytics} disabled />
           </View>
           
           <View style={styles.settingRow}>
-            <Text>Monitoramento de Performance</Text>
+            <View style={styles.settingInfo}>
+              <MaterialCommunityIcons 
+                name="speedometer" 
+                size={24} 
+                color={muiTheme.colors.primary} 
+              />
+              <Text style={styles.settingLabel}>Monitoramento de Performance</Text>
+            </View>
             <Switch value={settings.enablePerformanceMonitoring} disabled />
           </View>
           
           <View style={styles.settingRow}>
-            <Text>Rastreamento de Usuário</Text>
+            <View style={styles.settingInfo}>
+              <MaterialCommunityIcons 
+                name="account-eye" 
+                size={24} 
+                color={muiTheme.colors.primary} 
+              />
+              <Text style={styles.settingLabel}>Rastreamento de Usuário</Text>
+            </View>
             <Switch value={settings.enableUserTracking} disabled />
           </View>
           
           <View style={styles.settingRow}>
-            <Text>Rastreamento de Conversão</Text>
+            <View style={styles.settingInfo}>
+              <MaterialCommunityIcons 
+                name="cash-check" 
+                size={24} 
+                color={muiTheme.colors.primary} 
+              />
+              <Text style={styles.settingLabel}>Rastreamento de Conversão</Text>
+            </View>
             <Switch value={settings.enableConversionTracking} disabled />
           </View>
           
           <View style={styles.settingRow}>
-            <Text>Modo Debug</Text>
+            <View style={styles.settingInfo}>
+              <MaterialCommunityIcons 
+                name="bug-check" 
+                size={24} 
+                color={muiTheme.colors.primary} 
+              />
+              <Text style={styles.settingLabel}>Modo Debug</Text>
+            </View>
             <Switch value={settings.enableDebugMode} disabled />
           </View>
         </Card.Content>
@@ -326,6 +482,24 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: getSpacing('md'),
+  },
+  metricsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    marginBottom: getSpacing('md'),
+  },
+  metricCard: {
+    width: (screenWidth - getSpacing('md') * 3) / 2,
+    padding: getSpacing('md'),
+    marginBottom: getSpacing('md'),
+    alignItems: 'center',
+    elevation: 2,
+    borderRadius: 8,
+  },
+  metricNumber: {
+    fontWeight: 'bold',
+    marginVertical: getSpacing('xs'),
   },
   card: {
     marginBottom: getSpacing('md'),
@@ -371,9 +545,61 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: theme.colors.onSurface,
     marginBottom: getSpacing('sm'),
+    marginTop: getSpacing('md'),
   },
   divider: {
     marginVertical: getSpacing('md'),
+  },
+  chartContainer: {
+    marginTop: getSpacing('md'),
+  },
+  chartTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: getSpacing('md'),
+    color: theme.colors.onSurface,
+  },
+  barChartRow: {
+    marginBottom: getSpacing('md'),
+  },
+  barLabel: {
+    fontSize: 12,
+    color: theme.colors.onSurfaceVariant,
+    marginBottom: getSpacing('xs'),
+  },
+  barContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  progressBar: {
+    flex: 1,
+    height: 8,
+    borderRadius: 4,
+  },
+  barValue: {
+    fontSize: 11,
+    marginLeft: getSpacing('sm'),
+    minWidth: 50,
+    textAlign: 'right',
+    color: theme.colors.onSurfaceVariant,
+  },
+  apiMetricRow: {
+    marginBottom: getSpacing('md'),
+  },
+  apiHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: getSpacing('xs'),
+  },
+  apiProgressBar: {
+    height: 6,
+    borderRadius: 3,
+    marginVertical: getSpacing('xs'),
+  },
+  apiCallCount: {
+    fontSize: 11,
+    color: theme.colors.onSurfaceVariant,
   },
   metricRow: {
     flexDirection: 'row',
@@ -395,10 +621,44 @@ const styles = StyleSheet.create({
     color: theme.colors.error,
     fontWeight: 'bold',
   },
+  conversionSummary: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginVertical: getSpacing('md'),
+  },
+  conversionMetric: {
+    flex: 1,
+    padding: getSpacing('md'),
+    marginHorizontal: getSpacing('xs'),
+    alignItems: 'center',
+    borderRadius: 8,
+    elevation: 1,
+  },
+  conversionValue: {
+    fontWeight: 'bold',
+    color: theme.colors.primary,
+  },
   conversionEvent: {
     paddingVertical: getSpacing('sm'),
     borderBottomWidth: 1,
     borderBottomColor: theme.colors.outline,
+  },
+  conversionEventHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  conversionChip: {
+    height: 24,
+    backgroundColor: theme.colors.primaryContainer,
+  },
+  conversionChipText: {
+    fontSize: 12,
+  },
+  conversionAmount: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: theme.colors.primary,
   },
   debugEvent: {
     paddingVertical: getSpacing('sm'),
@@ -438,6 +698,15 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: getSpacing('sm'),
+  },
+  settingInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  settingLabel: {
+    marginLeft: getSpacing('sm'),
+    fontSize: 14,
   },
 });
 

@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import analytics from '@react-native-firebase/analytics';
 import { store } from '../store';
 import { 
   recordApiResponseTime, 
@@ -10,6 +11,12 @@ import {
 /**
  * Serviço de Analytics
  * Integração com Firebase Analytics e métricas customizadas
+ * 
+ * Eventos customizados do Crowbar:
+ * - E-commerce: view_item, add_to_cart, purchase, remove_from_cart
+ * - Caixas Mistério: box_viewed, box_opened, box_shared, box_favorited
+ * - Engajamento: user_engagement, social_share, review_submitted
+ * - Performance: api_latency, screen_load_time, app_performance
  */
 
 class AnalyticsService {
@@ -62,14 +69,19 @@ class AnalyticsService {
    */
   private async initializeFirebaseAnalytics(): Promise<void> {
     try {
-      // Mock Firebase Analytics initialization
-      // In real implementation, this would be:
-      // import analytics from '@react-native-firebase/analytics';
-      // await analytics().setAnalyticsCollectionEnabled(true);
+      // Habilitar coleta de analytics
+      await analytics().setAnalyticsCollectionEnabled(true);
       
-      console.log('Firebase Analytics initialized (mock)');
+      // Configurar propriedades padrão do usuário
+      await analytics().setUserProperties({
+        app_version: '1.0.0',
+        platform: 'mobile',
+        last_login: new Date().toISOString(),
+      });
+      
+      console.log('Firebase Analytics inicializado com sucesso');
     } catch (error) {
-      console.error('Error initializing Firebase Analytics:', error);
+      console.error('Erro ao inicializar Firebase Analytics:', error);
       throw error;
     }
   }
@@ -88,12 +100,12 @@ class AnalyticsService {
       // Sanitize parameters for Firebase
       const sanitizedParams = this.sanitizeParameters(parameters);
       
-      // Mock Firebase Analytics event logging
-      // In real implementation:
-      // import analytics from '@react-native-firebase/analytics';
-      // await analytics().logEvent(name, sanitizedParams);
+      // Enviar evento para Firebase Analytics
+      await analytics().logEvent(name, sanitizedParams);
       
-      console.log('Analytics Event:', name, sanitizedParams);
+      if (__DEV__) {
+        console.log('Analytics Event:', name, sanitizedParams);
+      }
       
       // Store locally for debugging
       if (__DEV__) {
@@ -113,12 +125,12 @@ class AnalyticsService {
     try {
       const sanitizedProps = this.sanitizeParameters(properties);
       
-      // Mock Firebase Analytics user properties
-      // In real implementation:
-      // import analytics from '@react-native-firebase/analytics';
-      // await analytics().setUserProperties(sanitizedProps);
+      // Definir propriedades do usuário no Firebase
+      await analytics().setUserProperties(sanitizedProps);
       
-      console.log('Analytics User Properties:', sanitizedProps);
+      if (__DEV__) {
+        console.log('Analytics User Properties:', sanitizedProps);
+      }
       
       // Store locally
       await AsyncStorage.setItem(
@@ -141,12 +153,12 @@ class AnalyticsService {
       if (userId) {
         await AsyncStorage.setItem(this.STORAGE_KEYS.USER_ID, userId);
         
-        // Mock Firebase Analytics user ID
-        // In real implementation:
-        // import analytics from '@react-native-firebase/analytics';
-        // await analytics().setUserId(userId);
+        // Definir ID do usuário no Firebase
+        await analytics().setUserId(userId);
         
-        console.log('Analytics User ID set:', userId);
+        if (__DEV__) {
+          console.log('Analytics User ID definido:', userId);
+        }
       } else {
         await AsyncStorage.removeItem(this.STORAGE_KEYS.USER_ID);
       }
@@ -280,6 +292,355 @@ class AnalyticsService {
       });
     } catch (error) {
       console.error('Error tracking engagement:', error);
+    }
+  }
+
+  /**
+   * Eventos E-commerce
+   */
+  
+  // Visualização de item
+  async trackViewItem(item: {
+    item_id: string;
+    item_name: string;
+    item_category: string;
+    price: number;
+    currency?: string;
+  }): Promise<void> {
+    try {
+      await this.logEvent('view_item', {
+        ...item,
+        currency: item.currency || 'BRL',
+      });
+    } catch (error) {
+      console.error('Erro ao rastrear view_item:', error);
+    }
+  }
+
+  // Adicionar ao carrinho
+  async trackAddToCart(item: {
+    item_id: string;
+    item_name: string;
+    item_category: string;
+    quantity: number;
+    price: number;
+    currency?: string;
+  }): Promise<void> {
+    try {
+      await this.logEvent('add_to_cart', {
+        ...item,
+        currency: item.currency || 'BRL',
+        value: item.price * item.quantity,
+      });
+    } catch (error) {
+      console.error('Erro ao rastrear add_to_cart:', error);
+    }
+  }
+
+  // Remover do carrinho
+  async trackRemoveFromCart(item: {
+    item_id: string;
+    item_name: string;
+    item_category: string;
+    quantity: number;
+    price: number;
+    currency?: string;
+  }): Promise<void> {
+    try {
+      await this.logEvent('remove_from_cart', {
+        ...item,
+        currency: item.currency || 'BRL',
+        value: item.price * item.quantity,
+      });
+    } catch (error) {
+      console.error('Erro ao rastrear remove_from_cart:', error);
+    }
+  }
+
+  // Início do checkout
+  async trackBeginCheckout(items: Array<any>, value: number, currency?: string): Promise<void> {
+    try {
+      await this.logEvent('begin_checkout', {
+        items,
+        value,
+        currency: currency || 'BRL',
+        item_count: items.length,
+      });
+    } catch (error) {
+      console.error('Erro ao rastrear begin_checkout:', error);
+    }
+  }
+
+  /**
+   * Eventos de Caixas Mistério
+   */
+  
+  // Caixa visualizada
+  async trackBoxViewed(box: {
+    box_id: string;
+    box_name: string;
+    category: string;
+    price: number;
+    rarity_level?: string;
+  }): Promise<void> {
+    try {
+      await this.logEvent('box_viewed', {
+        ...box,
+        view_time: Date.now(),
+      });
+    } catch (error) {
+      console.error('Erro ao rastrear box_viewed:', error);
+    }
+  }
+
+  // Caixa compartilhada
+  async trackBoxShared(box: {
+    box_id: string;
+    box_name: string;
+    share_method: string;
+    items_received?: number;
+  }): Promise<void> {
+    try {
+      await this.logEvent('box_shared', {
+        ...box,
+        share_time: Date.now(),
+      });
+    } catch (error) {
+      console.error('Erro ao rastrear box_shared:', error);
+    }
+  }
+
+  // Caixa favoritada
+  async trackBoxFavorited(box: {
+    box_id: string;
+    box_name: string;
+    action: 'add' | 'remove';
+  }): Promise<void> {
+    try {
+      await this.logEvent('box_favorited', {
+        ...box,
+        is_favorited: box.action === 'add',
+      });
+    } catch (error) {
+      console.error('Erro ao rastrear box_favorited:', error);
+    }
+  }
+
+  /**
+   * Eventos de Engajamento
+   */
+  
+  // Review submetido
+  async trackReviewSubmitted(review: {
+    box_id: string;
+    rating: number;
+    has_comment: boolean;
+    has_photo: boolean;
+  }): Promise<void> {
+    try {
+      await this.logEvent('review_submitted', {
+        ...review,
+        submit_time: Date.now(),
+      });
+    } catch (error) {
+      console.error('Erro ao rastrear review_submitted:', error);
+    }
+  }
+
+  // Compartilhamento social
+  async trackSocialShare(content: {
+    content_type: string;
+    content_id: string;
+    share_method: string;
+  }): Promise<void> {
+    try {
+      await this.logEvent('social_share', {
+        ...content,
+        share_time: Date.now(),
+      });
+    } catch (error) {
+      console.error('Erro ao rastrear social_share:', error);
+    }
+  }
+
+  /**
+   * Eventos de Performance
+   */
+  
+  // Latência da API
+  async trackApiLatency(endpoint: string, method: string, responseTime: number, status: number): Promise<void> {
+    try {
+      await this.logEvent('api_latency', {
+        endpoint,
+        method,
+        response_time_ms: responseTime,
+        status_code: status,
+        is_success: status >= 200 && status < 300,
+      });
+
+      // Também armazenar no Redux para dashboard
+      store.dispatch(recordApiResponseTime({ endpoint, responseTime }));
+    } catch (error) {
+      console.error('Erro ao rastrear api_latency:', error);
+    }
+  }
+
+  // Tempo de carregamento de tela
+  async trackScreenLoadTime(screenName: string, loadTime: number): Promise<void> {
+    try {
+      await this.logEvent('screen_load_time', {
+        screen_name: screenName,
+        load_time_ms: loadTime,
+        is_slow: loadTime > 3000,
+      });
+    } catch (error) {
+      console.error('Erro ao rastrear screen_load_time:', error);
+    }
+  }
+
+  // Performance geral do app
+  async trackAppPerformance(metrics: {
+    fps?: number;
+    memory_usage?: number;
+    battery_level?: number;
+    network_type?: string;
+  }): Promise<void> {
+    try {
+      await this.logEvent('app_performance', {
+        ...metrics,
+        timestamp: Date.now(),
+      });
+    } catch (error) {
+      console.error('Erro ao rastrear app_performance:', error);
+    }
+  }
+
+  /**
+   * Configuração de User Properties e Audiences
+   */
+  
+  // Configurar segmento do usuário
+  async setUserSegment(segment: string): Promise<void> {
+    try {
+      await this.setUserProperties({
+        user_segment: segment,
+        segment_updated_at: new Date().toISOString(),
+      });
+    } catch (error) {
+      console.error('Erro ao definir segmento do usuário:', error);
+    }
+  }
+
+  // Configurar propriedades de engajamento
+  async setEngagementProperties(properties: {
+    total_purchases?: number;
+    total_spent?: number;
+    boxes_opened?: number;
+    favorite_category?: string;
+    last_purchase_date?: string;
+  }): Promise<void> {
+    try {
+      await this.setUserProperties({
+        ...properties,
+        engagement_level: this.calculateEngagementLevel(properties),
+      });
+    } catch (error) {
+      console.error('Erro ao definir propriedades de engajamento:', error);
+    }
+  }
+
+  // Calcular nível de engajamento
+  private calculateEngagementLevel(properties: any): string {
+    const { total_purchases = 0, boxes_opened = 0 } = properties;
+    
+    if (total_purchases > 10 || boxes_opened > 20) return 'high';
+    if (total_purchases > 5 || boxes_opened > 10) return 'medium';
+    return 'low';
+  }
+
+  /**
+   * Rastreamento de Conversões
+   */
+  
+  // Rastrear conversão de marketing
+  async trackMarketingConversion(campaign: {
+    source: string;
+    medium: string;
+    campaign_name: string;
+    conversion_value?: number;
+  }): Promise<void> {
+    try {
+      await this.logEvent('marketing_conversion', {
+        ...campaign,
+        conversion_time: Date.now(),
+      });
+
+      // Registrar conversão no Redux
+      if (campaign.conversion_value) {
+        store.dispatch(recordConversion({
+          event: 'marketing_conversion',
+          value: campaign.conversion_value,
+          currency: 'BRL',
+        }));
+      }
+    } catch (error) {
+      console.error('Erro ao rastrear conversão de marketing:', error);
+    }
+  }
+
+  /**
+   * Privacy Controls e LGPD Compliance
+   */
+  
+  // Definir consentimento do usuário
+  async setAnalyticsConsent(consented: boolean): Promise<void> {
+    try {
+      await analytics().setAnalyticsCollectionEnabled(consented);
+      await AsyncStorage.setItem('analytics_consent', consented.toString());
+      
+      await this.logEvent('analytics_consent_updated', {
+        consented,
+        update_time: Date.now(),
+      });
+    } catch (error) {
+      console.error('Erro ao definir consentimento:', error);
+    }
+  }
+
+  // Verificar consentimento
+  async checkAnalyticsConsent(): Promise<boolean> {
+    try {
+      const consent = await AsyncStorage.getItem('analytics_consent');
+      return consent === 'true';
+    } catch (error) {
+      console.error('Erro ao verificar consentimento:', error);
+      return false;
+    }
+  }
+
+  // Deletar dados do usuário (LGPD)
+  async deleteUserData(): Promise<void> {
+    try {
+      // Limpar ID do usuário
+      await this.setUserId(null);
+      
+      // Limpar propriedades armazenadas localmente
+      await AsyncStorage.multiRemove([
+        this.STORAGE_KEYS.USER_ID,
+        this.STORAGE_KEYS.USER_PROPERTIES,
+        this.STORAGE_KEYS.PENDING_EVENTS,
+        'analytics_consent',
+        'debug_analytics_events',
+      ]);
+      
+      // Resetar sessão
+      this.sessionId = await this.getOrCreateSessionId();
+      
+      await this.logEvent('user_data_deleted', {
+        deletion_time: Date.now(),
+      });
+    } catch (error) {
+      console.error('Erro ao deletar dados do usuário:', error);
     }
   }
 
