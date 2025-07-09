@@ -32,6 +32,9 @@ import LoadingScreen from '../components/LoadingScreen';
 // Import hooks
 import useAuthListener from '../hooks/useAuthListener';
 
+// Import services
+import { navigationService } from '../services/navigationService';
+
 // Import selectors
 import { selectIsAuthenticated, selectIsInitializing } from '../store/slices/authSlice';
 
@@ -130,7 +133,7 @@ const AppNavigator = () => {
   }
 
   return (
-    <NavigationContainer>
+    <NavigationContainer ref={navigationService.getNavigationRef()}>
       <Stack.Navigator
         screenOptions={{
           headerShown: false,

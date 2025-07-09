@@ -1,352 +1,453 @@
-import { useEffect, useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useState, useCallback } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { AppDispatch } from '../store';
 import {
-  initializeOffline,
+  selectIsOnline,
+  selectNetworkInfo,
+  selectSyncStatus,
+  selectPendingActions,
+  selectCacheStatus,
+  selectCanSync,
   syncOfflineData,
   addPendingAction,
-  clearOfflineCache,
-  selectIsOnline,
-  selectSyncStatus,
-  selectSyncError,
-  selectCacheStatus,
-  selectPendingActions,
-  selectOfflineSettings,
-  selectCanSync,
 } from '../store/slices/offlineSlice';
-import { offlineService } from '../services/offlineService';
+import offlineService, { CacheStrategy, SyncPriority } from '../services/offlineService';
 
 /**
- * Hook personalizado para gerenciar funcionalidades offline
+ * Hook principal para funcionalidades offline
+ * Fornece acesso a todas as funcionalidades offline de forma simplificada
  */
-
-interface UseOfflineOptions {
-  autoSync?: boolean;
-  syncInterval?: number; // in milliseconds
-}
-
-export const useOffline = (options: UseOfflineOptions = {}) => {
-  const {
-    autoSync = true,
-    syncInterval = 5 * 60 * 1000, // 5 minutes
-  } = options;
-
+export const useOffline = () => {
   const dispatch = useDispatch<AppDispatch>();
-
-  // Selectors
   const isOnline = useSelector(selectIsOnline);
+  const networkInfo = useSelector(selectNetworkInfo);
   const syncStatus = useSelector(selectSyncStatus);
-  const syncError = useSelector(selectSyncError);
-  const cacheStatus = useSelector(selectCacheStatus);
   const pendingActions = useSelector(selectPendingActions);
-  const settings = useSelector(selectOfflineSettings);
+  const cacheStatus = useSelector(selectCacheStatus);
   const canSync = useSelector(selectCanSync);
 
-  /**
-   * Initialize offline functionality
-   */
-  const initialize = useCallback(async () => {
-    try {
-      await dispatch(initializeOffline()).unwrap();
-    } catch (error) {
-      console.error('Failed to initialize offline:', error);
-    }
-  }, [dispatch]);
+  // Sincronizar dados
+  const sync = useCallback(
+    async (force = false) => {
+      try {
+        const result = await dispatch(syncOfflineData(force)).unwrap();
+        return result;
+      } catch (error) {
+        console.error('Erro ao sincronizar:', error);
+        throw error;
+      }
+    },
+    [dispatch]
+  );
 
-  /**
-   * Sync data with server
-   */
-  const sync = useCallback(async (force = false) => {
-    try {
-      await dispatch(syncOfflineData(force)).unwrap();
-    } catch (error) {
-      console.error('Failed to sync offline data:', error);
-    }
-  }, [dispatch]);
+  // Adicionar ação para execução quando voltar online
+  const addOfflineAction = useCallback(
+    async (type: string, data: any, priority: SyncPriority = SyncPriority.NORMAL) => {
+      try {
+        await dispatch(addPendingAction({ type, data })).unwrap();
+        
+        // Se online, tentar executar imediatamente
+        if (isOnline) {
+          await sync();
+        }
+      } catch (error) {
+        console.error('Erro ao adicionar ação offline:', error);
+        throw error;
+      }
+    },
+    [dispatch, isOnline, sync]
+  );
 
-  /**
-   * Add action to pending queue
-   */
-  const addToPendingQueue = useCallback(async (actionType: string, data: any) => {
-    try {
-      await dispatch(addPendingAction({ type: actionType, data })).unwrap();
-    } catch (error) {
-      console.error('Failed to add pending action:', error);
-    }
-  }, [dispatch]);
+  // Verificar se está no modo offline
+  const isOfflineMode = useCallback(() => {
+    return offlineService.isOfflineMode();
+  }, []);
 
-  /**
-   * Clear cache
-   */
+  // Limpar cache
   const clearCache = useCallback(async (cacheType?: string) => {
     try {
-      await dispatch(clearOfflineCache(cacheType)).unwrap();
+      await offlineService.clearCache(cacheType);
     } catch (error) {
-      console.error('Failed to clear cache:', error);
-    }
-  }, [dispatch]);
-
-  /**
-   * Get cached data
-   */
-  const getCachedData = useCallback(async (dataType: string) => {
-    try {
-      switch (dataType) {
-        case 'boxes':
-          return await offlineService.getCachedBoxes();
-        case 'categories':
-          return await offlineService.getCachedCategories();
-        case 'userProfile':
-          return await offlineService.getCachedUserProfile();
-        case 'cart':
-          return await offlineService.getCachedCart();
-        default:
-          return null;
-      }
-    } catch (error) {
-      console.error('Failed to get cached data:', error);
-      return null;
+      console.error('Erro ao limpar cache:', error);
+      throw error;
     }
   }, []);
-
-  /**
-   * Cache data
-   */
-  const cacheData = useCallback(async (dataType: string, data: any) => {
-    try {
-      switch (dataType) {
-        case 'boxes':
-          await offlineService.cacheBoxes(data);
-          break;
-        case 'categories':
-          await offlineService.cacheCategories(data);
-          break;
-        case 'userProfile':
-          await offlineService.cacheUserProfile(data);
-          break;
-        case 'cart':
-          await offlineService.cacheCart(data);
-          break;
-        default:
-          console.warn('Unknown data type for caching:', dataType);
-      }
-    } catch (error) {
-      console.error('Failed to cache data:', error);
-    }
-  }, []);
-
-  /**
-   * Check if data is cached and fresh
-   */
-  const isCacheFresh = useCallback((dataType: string, maxAge?: number): boolean => {
-    const defaultMaxAge = settings.cacheExpiration;
-    const ageLimit = maxAge || defaultMaxAge;
-    
-    const cache = cacheStatus[dataType as keyof typeof cacheStatus];
-    if (!cache?.lastUpdated) return false;
-    
-    const age = Date.now() - cache.lastUpdated;
-    return age < ageLimit;
-  }, [cacheStatus, settings.cacheExpiration]);
-
-  /**
-   * Auto-sync when coming online
-   */
-  useEffect(() => {
-    if (isOnline && autoSync && canSync && pendingActions.length > 0) {
-      sync();
-    }
-  }, [isOnline, autoSync, canSync, pendingActions.length, sync]);
-
-  /**
-   * Periodic sync
-   */
-  useEffect(() => {
-    if (!autoSync || !isOnline) return;
-
-    const interval = setInterval(() => {
-      if (canSync) {
-        sync();
-      }
-    }, syncInterval);
-
-    return () => clearInterval(interval);
-  }, [autoSync, isOnline, canSync, sync, syncInterval]);
-
-  /**
-   * Initialize on mount
-   */
-  useEffect(() => {
-    initialize();
-  }, [initialize]);
 
   return {
-    // State
+    // Estados
     isOnline,
+    networkInfo,
     syncStatus,
-    syncError,
-    cacheStatus,
     pendingActions,
-    settings,
+    cacheStatus,
     canSync,
     
-    // Actions
-    initialize,
+    // Métodos
     sync,
-    addToPendingQueue,
+    addOfflineAction,
+    isOfflineMode,
     clearCache,
-    getCachedData,
-    cacheData,
     
-    // Utilities
-    isCacheFresh,
-    hasPendingActions: pendingActions.length > 0,
+    // Flags úteis
     isSyncing: syncStatus === 'syncing',
-    hasError: !!syncError,
+    hasPendingActions: pendingActions.length > 0,
+    lastSyncError: syncStatus === 'error',
   };
 };
 
 /**
- * Hook específico para dados de caixas offline
+ * Hook para cache de dados com estratégias
+ */
+export const useOfflineCache = <T>(
+  key: string,
+  fetcher: () => Promise<T>,
+  options?: {
+    strategy?: CacheStrategy;
+    priority?: SyncPriority;
+    autoFetch?: boolean;
+  }
+) => {
+  const [data, setData] = useState<T | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+  const isOnline = useSelector(selectIsOnline);
+
+  const {
+    strategy = CacheStrategy.CACHE_FIRST,
+    priority = SyncPriority.NORMAL,
+    autoFetch = true,
+  } = options || {};
+
+  // Buscar dados
+  const fetch = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const result = await offlineService.getCachedData(
+        key,
+        strategy,
+        fetcher
+      );
+      
+      setData(result);
+      return result;
+    } catch (err) {
+      setError(err as Error);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, [key, strategy, fetcher]);
+
+  // Atualizar cache
+  const updateCache = useCallback(
+    async (newData: T) => {
+      try {
+        await offlineService.cacheData(key, newData, priority, strategy);
+        setData(newData);
+      } catch (err) {
+        setError(err as Error);
+        throw err;
+      }
+    },
+    [key, priority, strategy]
+  );
+
+  // Auto fetch on mount
+  useEffect(() => {
+    if (autoFetch) {
+      fetch();
+    }
+  }, [autoFetch, fetch]);
+
+  // Refetch quando voltar online
+  useEffect(() => {
+    if (isOnline && strategy === CacheStrategy.NETWORK_FIRST) {
+      fetch();
+    }
+  }, [isOnline, strategy, fetch]);
+
+  return {
+    data,
+    loading,
+    error,
+    fetch,
+    updateCache,
+    isFromCache: !isOnline || strategy === CacheStrategy.CACHE_FIRST,
+  };
+};
+
+/**
+ * Hook para cache de imagens
+ */
+export const useOfflineImage = (url: string | null, priority: SyncPriority = SyncPriority.LOW) => {
+  const [cachedUrl, setCachedUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    if (!url) {
+      setCachedUrl(null);
+      return;
+    }
+
+    const cacheImage = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const cached = await offlineService.cacheImage(url, priority);
+        setCachedUrl(cached);
+      } catch (err) {
+        setError(err as Error);
+        setCachedUrl(url); // Fallback para URL original
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    cacheImage();
+  }, [url, priority]);
+
+  return {
+    uri: cachedUrl || url,
+    loading,
+    error,
+    isFromCache: cachedUrl !== url,
+  };
+};
+
+/**
+ * Hook para executar ações com suporte offline
+ */
+export const useOfflineAction = <T = any>(
+  actionType: string,
+  executor: (data: any) => Promise<T>,
+  options?: {
+    priority?: SyncPriority;
+    optimisticUpdate?: (data: any) => void;
+    onSuccess?: (result: T) => void;
+    onError?: (error: Error) => void;
+  }
+) => {
+  const { isOnline } = useOffline();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+  const dispatch = useDispatch<AppDispatch>();
+
+  const {
+    priority = SyncPriority.NORMAL,
+    optimisticUpdate,
+    onSuccess,
+    onError,
+  } = options || {};
+
+  const execute = useCallback(
+    async (data: any) => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        // Atualização otimista
+        if (optimisticUpdate) {
+          optimisticUpdate(data);
+        }
+
+        if (isOnline) {
+          // Executar ação imediatamente
+          const result = await executor(data);
+          if (onSuccess) onSuccess(result);
+          return result;
+        } else {
+          // Adicionar à fila offline
+          await dispatch(
+            addPendingAction({
+              type: actionType,
+              data,
+            })
+          ).unwrap();
+          
+          // Simular sucesso para UX
+          if (onSuccess) onSuccess({} as T);
+          return {} as T;
+        }
+      } catch (err) {
+        const error = err as Error;
+        setError(error);
+        if (onError) onError(error);
+        throw error;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [isOnline, actionType, executor, dispatch, optimisticUpdate, onSuccess, onError]
+  );
+
+  return {
+    execute,
+    loading,
+    error,
+    isOffline: !isOnline,
+  };
+};
+
+/**
+ * Hook para sincronização diferencial
+ */
+export const useOfflineDiffSync = <T extends { id?: string; _id?: string }>(
+  dataType: string,
+  currentData: T[]
+) => {
+  const [changes, setChanges] = useState<{
+    added: T[];
+    modified: T[];
+    deleted: string[];
+  } | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+
+  const calculateDiff = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const diff = await offlineService.syncDifferential(dataType, currentData);
+      setChanges(diff as any);
+      return diff;
+    } catch (err) {
+      setError(err as Error);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, [dataType, currentData]);
+
+  useEffect(() => {
+    calculateDiff();
+  }, [calculateDiff]);
+
+  return {
+    changes,
+    loading,
+    error,
+    hasChanges: changes ? 
+      (changes.added.length > 0 || changes.modified.length > 0 || changes.deleted.length > 0) : 
+      false,
+  };
+};
+
+/**
+ * Hook específico para dados de boxes offline
  */
 export const useOfflineBoxes = () => {
-  const { getCachedData, cacheData, isCacheFresh, isOnline } = useOffline();
-
-  const getBoxes = useCallback(async (forceRefresh = false) => {
-    // Try cache first if online or if cache is fresh
-    if (!forceRefresh && (!isOnline || isCacheFresh('boxes'))) {
-      const cached = await getCachedData('boxes');
-      if (cached) return cached;
+  const { data, loading, error, fetch } = useOfflineCache(
+    'offline_boxes',
+    async () => {
+      // Simular chamada para API
+      // const response = await boxService.getBoxes();
+      // return response.data;
+      return [];
+    },
+    {
+      strategy: CacheStrategy.STALE_WHILE_REVALIDATE,
+      priority: SyncPriority.NORMAL,
     }
+  );
 
-    // If online, fetch fresh data
-    if (isOnline) {
-      try {
-        // This would be the actual API call
-        // const fresh = await boxService.getBoxes();
-        // await cacheData('boxes', fresh.data);
-        // return fresh.data;
-      } catch (error) {
-        // Fallback to cache on error
-        const cached = await getCachedData('boxes');
-        if (cached) return cached;
-        throw error;
-      }
-    }
-
-    // Offline fallback
-    const cached = await getCachedData('boxes');
-    if (cached) return cached;
-    
-    throw new Error('Nenhum dado disponível offline');
-  }, [getCachedData, cacheData, isCacheFresh, isOnline]);
-
-  return { getBoxes };
+  return {
+    boxes: data || [],
+    loading,
+    error,
+    refresh: fetch,
+  };
 };
 
 /**
  * Hook específico para carrinho offline
  */
 export const useOfflineCart = () => {
-  const { getCachedData, cacheData, addToPendingQueue, isOnline } = useOffline();
-
-  const addToCart = useCallback(async (boxId: string, quantity: number) => {
-    if (isOnline) {
-      try {
-        // Try online first
-        // const result = await cartService.addToCart(boxId, quantity);
-        // await cacheData('cart', result);
-        // return result;
-      } catch (error) {
-        // Add to pending queue on error
-        await addToPendingQueue('ADD_TO_CART', { boxId, quantity });
-        throw error;
-      }
-    } else {
-      // Add to pending queue when offline
-      await addToPendingQueue('ADD_TO_CART', { boxId, quantity });
-      
-      // Update local cache optimistically
-      const cachedCart = await getCachedData('cart') || { items: [], total_items: 0 };
-      const updatedCart = {
-        ...cachedCart,
-        items: [...cachedCart.items, { box_id: boxId, quantity, pending: true }],
-        total_items: cachedCart.total_items + quantity,
-      };
-      
-      await cacheData('cart', updatedCart);
-      return updatedCart;
+  const { addOfflineAction } = useOffline();
+  
+  const addToCart = useOfflineAction(
+    'ADD_TO_CART',
+    async (data: { boxId: string; quantity: number }) => {
+      // Simular adição ao carrinho
+      // return await cartService.addToCart(data.boxId, data.quantity);
+      return { success: true };
+    },
+    {
+      priority: SyncPriority.CRITICAL,
+      optimisticUpdate: (data) => {
+        console.log('Adicionando ao carrinho (otimista):', data);
+      },
     }
-  }, [getCachedData, cacheData, addToPendingQueue, isOnline]);
+  );
 
-  const getCart = useCallback(async () => {
-    const cached = await getCachedData('cart');
-    if (cached) return cached;
-    
-    if (isOnline) {
-      try {
-        // const fresh = await cartService.getCart();
-        // await cacheData('cart', fresh);
-        // return fresh;
-      } catch (error) {
-        console.error('Failed to fetch cart:', error);
-      }
+  const removeFromCart = useOfflineAction(
+    'REMOVE_FROM_CART',
+    async (data: { itemId: string }) => {
+      // Simular remoção do carrinho
+      // return await cartService.removeFromCart(data.itemId);
+      return { success: true };
+    },
+    {
+      priority: SyncPriority.CRITICAL,
+      optimisticUpdate: (data) => {
+        console.log('Removendo do carrinho (otimista):', data);
+      },
     }
-    
-    // Return empty cart as fallback
-    return { items: [], total_items: 0, total: 0 };
-  }, [getCachedData, cacheData, isOnline]);
+  );
 
-  return { addToCart, getCart };
+  return {
+    addToCart: addToCart.execute,
+    removeFromCart: removeFromCart.execute,
+    isLoading: addToCart.loading || removeFromCart.loading,
+    error: addToCart.error || removeFromCart.error,
+  };
 };
 
 /**
- * Hook específico para perfil de usuário offline
+ * Hook específico para perfil offline
  */
 export const useOfflineProfile = () => {
-  const { getCachedData, cacheData, addToPendingQueue, isOnline } = useOffline();
-
-  const getProfile = useCallback(async () => {
-    const cached = await getCachedData('userProfile');
-    if (cached) return cached;
-    
-    if (isOnline) {
-      try {
-        // const fresh = await userService.getProfile();
-        // await cacheData('userProfile', fresh);
-        // return fresh;
-      } catch (error) {
-        console.error('Failed to fetch profile:', error);
-      }
+  const { data, loading, error, fetch } = useOfflineCache(
+    'offline_user_profile',
+    async () => {
+      // Simular busca de perfil
+      // return await userService.getProfile();
+      return null;
+    },
+    {
+      strategy: CacheStrategy.CACHE_FIRST,
+      priority: SyncPriority.HIGH,
     }
-    
-    throw new Error('Perfil não disponível offline');
-  }, [getCachedData, cacheData, isOnline]);
+  );
 
-  const updateProfile = useCallback(async (data: any) => {
-    if (isOnline) {
-      try {
-        // const result = await userService.updateProfile(data);
-        // await cacheData('userProfile', result);
-        // return result;
-      } catch (error) {
-        await addToPendingQueue('UPDATE_PROFILE', data);
-        throw error;
-      }
-    } else {
-      await addToPendingQueue('UPDATE_PROFILE', data);
-      
-      // Update cache optimistically
-      const cached = await getCachedData('userProfile');
-      if (cached) {
-        const updated = { ...cached, ...data };
-        await cacheData('userProfile', updated);
-        return updated;
-      }
+  const updateProfile = useOfflineAction(
+    'UPDATE_PROFILE',
+    async (profileData: any) => {
+      // Simular atualização de perfil
+      // return await userService.updateProfile(profileData);
+      return { success: true };
+    },
+    {
+      priority: SyncPriority.HIGH,
+      optimisticUpdate: (data) => {
+        console.log('Atualizando perfil (otimista):', data);
+      },
     }
-  }, [getCachedData, cacheData, addToPendingQueue, isOnline]);
+  );
 
-  return { getProfile, updateProfile };
+  return {
+    profile: data,
+    loading,
+    error,
+    refresh: fetch,
+    updateProfile: updateProfile.execute,
+    isUpdating: updateProfile.loading,
+    updateError: updateProfile.error,
+  };
 };
 
 export default useOffline;

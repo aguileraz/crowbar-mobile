@@ -1,7 +1,8 @@
 module.exports = {
   preset: 'react-native',
+  setupFiles: ['<rootDir>/jest-env-setup.js'],
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
-  testEnvironment: 'jsdom',
+  testEnvironment: 'node',
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   transform: {
     '^.+\\.(js|jsx|ts|tsx)$': 'babel-jest',
@@ -26,4 +27,7 @@ module.exports = {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
   testTimeout: 10000,
+  globals: {
+    __DEV__: true,
+  },
 };

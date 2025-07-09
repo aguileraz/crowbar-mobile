@@ -16,7 +16,6 @@ import notificationsReducer from './slices/notificationsSlice';
 import realtimeReducer from './slices/realtimeSlice';
 import offlineReducer from './slices/offlineSlice';
 import analyticsReducer from './slices/analyticsSlice';
-import notificationsReducer from './slices/notificationsSlice';
 
 /**
  * Redux store configuration with persistence
@@ -43,7 +42,6 @@ const rootReducer = combineReducers({
   realtime: realtimeReducer,
   offline: offlineReducer,
   analytics: analyticsReducer,
-  notifications: notificationsReducer,
   // Add other reducers here
 });
 

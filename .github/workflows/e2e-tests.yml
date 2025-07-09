@@ -1,0 +1,259 @@
+name: E2E Tests
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  schedule:
+    # Executar testes E2E toda noite às 2AM
+    - cron: '0 2 * * *'
+
+env:
+  NODE_VERSION: '18'
+  JAVA_VERSION: '17'
+
+jobs:
+  test-android:
+    name: E2E Tests Android
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Cache Gradle
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          npm install -g detox-cli
+
+      - name: Build Android app for Detox
+        run: |
+          npm run test:e2e:build:android
+
+      - name: AVD cache
+        uses: actions/cache@v3
+        id: avd-cache
+        with:
+          path: |
+            ~/.android/avd/*
+            ~/.android/adb*
+          key: avd-30-default
+
+      - name: Create AVD and generate snapshot for caching
+        if: steps.avd-cache.outputs.cache-hit != 'true'
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 30
+          target: google_apis
+          arch: x86_64
+          force-avd-creation: false
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: false
+          script: echo "Generated AVD snapshot for caching."
+
+      - name: Run Detox E2E tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 30
+          target: google_apis
+          arch: x86_64
+          force-avd-creation: false
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot-save
+          disable-animations: true
+          script: |
+            npm run test:e2e:android -- --headless --record-videos failing --record-logs failing
+
+      - name: Upload test artifacts
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: detox-artifacts-android
+          path: |
+            e2e/artifacts
+            e2e/reports
+            e2e/screenshots
+            e2e/videos
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results-android
+          path: e2e/reports/test-report.html
+
+  test-ios:
+    name: E2E Tests iOS
+    runs-on: macos-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Setup Ruby (for CocoaPods)
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.0'
+          bundler-cache: true
+
+      - name: Cache CocoaPods
+        uses: actions/cache@v3
+        with:
+          path: ios/Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          npm install -g detox-cli
+          cd ios && pod install && cd ..
+
+      - name: Build iOS app for Detox
+        run: |
+          npm run test:e2e:build:ios
+
+      - name: Run Detox E2E tests
+        run: |
+          npm run test:e2e:ios -- --headless --record-videos failing --record-logs failing
+
+      - name: Upload test artifacts
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: detox-artifacts-ios
+          path: |
+            e2e/artifacts
+            e2e/reports
+            e2e/screenshots
+            e2e/videos
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results-ios
+          path: e2e/reports/test-report.html
+
+  test-report:
+    name: Generate Test Report
+    needs: [test-android, test-ios]
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Download Android artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: test-results-android
+          path: test-results/android
+
+      - name: Download iOS artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: test-results-ios
+          path: test-results/ios
+
+      - name: Merge test results
+        run: |
+          mkdir -p merged-results
+          cp -r test-results/* merged-results/
+
+      - name: Upload merged results
+        uses: actions/upload-artifact@v3
+        with:
+          name: e2e-test-results-all
+          path: merged-results
+
+      - name: Comment PR with results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const testResults = {
+              android: 'test-results/android/test-report.html',
+              ios: 'test-results/ios/test-report.html'
+            };
+            
+            let comment = '## 🧪 E2E Test Results\n\n';
+            
+            for (const [platform, file] of Object.entries(testResults)) {
+              if (fs.existsSync(file)) {
+                comment += `### ${platform.toUpperCase()}\n`;
+                comment += `✅ Tests completed\n\n`;
+              } else {
+                comment += `### ${platform.toUpperCase()}\n`;
+                comment += `❌ No test results found\n\n`;
+              }
+            }
+            
+            comment += `\n[View full test artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+  notify-failure:
+    name: Notify Test Failures
+    needs: [test-android, test-ios]
+    runs-on: ubuntu-latest
+    if: failure()
+
+    steps:
+      - name: Send Slack notification
+        if: env.SLACK_WEBHOOK_URL != ''
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+            --data '{
+              "text": "❌ E2E Tests Failed",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*E2E Tests Failed* 🚨\n*Repository:* ${{ github.repository }}\n*Branch:* ${{ github.ref }}\n*Run:* <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Details>"
+                  }
+                }
+              ]
+            }' \
+            $SLACK_WEBHOOK_URL

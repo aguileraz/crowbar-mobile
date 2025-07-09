@@ -28,8 +28,9 @@ import AppNavigator from './src/navigation/AppNavigator';
 import { theme } from './src/theme';
 import { env, validateEnvironment } from './src/config/env';
 
-// Componentes de loading
+// Componentes
 import LoadingScreen from './src/components/LoadingScreen';
+import NotificationInitializer from './src/components/NotificationInitializer';
 
 // Configurações de desenvolvimento
 if (__DEV__) {
@@ -67,6 +68,7 @@ const App: React.FC = () => {
                 backgroundColor={theme.colors.surface}
                 translucent={false}
               />
+              <NotificationInitializer />
               <AppNavigator />
             </PaperProvider>
           </PersistGate>

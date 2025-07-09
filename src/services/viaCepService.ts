@@ -26,15 +26,15 @@ class ViaCepService {
    * Buscar endereço por CEP
    */
   async getAddressByCep(cep: string): Promise<ViaCepResponse> {
-    try {
-      // Remove caracteres não numéricos
-      const cleanCep = cep.replace(/\D/g, '');
-      
-      // Valida formato do CEP
-      if (cleanCep.length !== 8) {
-        throw new Error('CEP deve ter 8 dígitos');
-      }
+    // Remove caracteres não numéricos
+    const cleanCep = cep.replace(/\D/g, '');
+    
+    // Valida formato do CEP
+    if (cleanCep.length !== 8) {
+      throw new Error('CEP deve ter 8 dígitos');
+    }
 
+    try {
       const response = await axios.get<ViaCepResponse>(
         `${this.baseURL}/${cleanCep}/json/`,
         {
@@ -60,20 +60,20 @@ class ViaCepService {
    * Buscar CEPs por endereço (busca reversa)
    */
   async getCepsByAddress(uf: string, city: string, street: string): Promise<ViaCepResponse[]> {
+    // Valida parâmetros
+    if (!uf || !city || !street) {
+      throw new Error('UF, cidade e rua são obrigatórios');
+    }
+
+    if (uf.length !== 2) {
+      throw new Error('UF deve ter 2 caracteres');
+    }
+
+    if (street.length < 3) {
+      throw new Error('Nome da rua deve ter pelo menos 3 caracteres');
+    }
+
     try {
-      // Valida parâmetros
-      if (!uf || !city || !street) {
-        throw new Error('UF, cidade e rua são obrigatórios');
-      }
-
-      if (uf.length !== 2) {
-        throw new Error('UF deve ter 2 caracteres');
-      }
-
-      if (street.length < 3) {
-        throw new Error('Nome da rua deve ter pelo menos 3 caracteres');
-      }
-
       const response = await axios.get<ViaCepResponse[]>(
         `${this.baseURL}/${uf}/${city}/${street}/json/`,
         {

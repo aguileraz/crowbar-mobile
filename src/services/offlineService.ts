@@ -1,4 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import NetInfo, { NetInfoState } from '@react-native-community/netinfo';
+import LZString from 'lz-string';
+import ReactNativeBlobUtil from 'react-native-blob-util';
 import { store } from '../store';
 import { setNetworkStatus, updateCacheStatus } from '../store/slices/offlineSlice';
 import { boxService } from './boxService';
@@ -6,8 +9,54 @@ import { userService } from './userService';
 import { cartService } from './cartService';
 
 /**
- * Serviço para gerenciamento de funcionalidades offline
+ * Serviço avançado para gerenciamento de funcionalidades offline
+ * 
+ * Funcionalidades:
+ * - Detecção real de rede com @react-native-community/netinfo
+ * - Cache inteligente com estratégias de invalidação
+ * - Compressão de dados com lz-string
+ * - Sincronização diferencial (apenas mudanças)
+ * - Priorização de sincronização
+ * - Cache de imagens com gestão eficiente
+ * - Modo offline completo
  */
+
+// Tipos para priorização
+export enum SyncPriority {
+  CRITICAL = 1,  // Dados críticos (carrinho, pedidos)
+  HIGH = 2,      // Dados importantes (perfil, favoritos)
+  NORMAL = 3,    // Dados normais (boxes, categorias)
+  LOW = 4,       // Dados menos importantes (reviews, analytics)
+}
+
+// Interface para cache metadata
+interface CacheMetadata {
+  version: string;
+  timestamp: number;
+  hash: string;
+  compressed: boolean;
+  size: number;
+  priority: SyncPriority;
+}
+
+// Interface para ação pendente
+interface PendingAction {
+  id: string;
+  type: string;
+  data: any;
+  timestamp: number;
+  retryCount: number;
+  priority: SyncPriority;
+}
+
+// Estratégias de cache
+export enum CacheStrategy {
+  CACHE_FIRST = 'cache-first',      // Sempre usa cache se disponível
+  NETWORK_FIRST = 'network-first',  // Tenta rede primeiro, cache como fallback
+  CACHE_ONLY = 'cache-only',        // Apenas cache
+  NETWORK_ONLY = 'network-only',    // Apenas rede
+  STALE_WHILE_REVALIDATE = 'stale-while-revalidate', // Retorna cache e atualiza em background
+}
 
 class OfflineService {
   private readonly CACHE_KEYS = {
@@ -17,277 +66,506 @@ class OfflineService {
     CART: 'offline_cart',
     PENDING_ACTIONS: 'offline_pending_actions',
     CACHE_METADATA: 'offline_cache_metadata',
+    SYNC_STATE: 'offline_sync_state',
+    IMAGE_CACHE: 'offline_image_cache',
+    DIFF_SYNC: 'offline_diff_sync',
   };
 
-  private networkListener: any = null;
+  private readonly CACHE_VERSION = '1.0.0';
+  private readonly IMAGE_CACHE_DIR = `${ReactNativeBlobUtil.fs.dirs.CacheDir}/crowbar_images`;
+  
+  private networkUnsubscribe: (() => void) | null = null;
+  private syncQueue: Map<string, PendingAction> = new Map();
+  private isSyncing = false;
 
   /**
-   * Inicializar serviço offline
+   * Inicializar serviço offline avançado
    */
   async initialize(): Promise<any> {
     try {
-      // Setup network listener
+      // Configurar listener de rede real
       this.setupNetworkListener();
       
-      // Load cache metadata
+      // Criar diretório de cache de imagens
+      await this.setupImageCache();
+      
+      // Carregar metadados de cache
       const cacheStatus = await this.getCacheStatus();
       
-      // Load pending actions
+      // Carregar ações pendentes
       const pendingActions = await this.getPendingActions();
+      
+      // Configurar sincronização automática
+      this.setupAutoSync();
+      
+      // Limpar cache antigo
+      await this.cleanupOldCache();
       
       return {
         cacheStatus,
         pendingActions,
+        networkState: await NetInfo.fetch(),
       };
     } catch (error) {
-      console.error('Error initializing offline service:', error);
+      console.error('Erro ao inicializar serviço offline:', error);
       throw error;
     }
   }
 
   /**
-   * Setup network listener
+   * Configurar listener de rede real com NetInfo
    */
   private setupNetworkListener(): void {
-    // Mock network listener - in real app would use @react-native-community/netinfo
-    const checkNetworkStatus = () => {
-      const isOnline = navigator.onLine !== false; // Default to online
+    this.networkUnsubscribe = NetInfo.addEventListener((state: NetInfoState) => {
+      const wasOffline = !store.getState().offline?.isOnline;
+      const isNowOnline = state.isConnected && state.isInternetReachable !== false;
       
+      // Atualizar status no Redux
       store.dispatch(setNetworkStatus({
-        isOnline,
+        isOnline: isNowOnline,
         networkInfo: {
-          type: 'unknown',
-          isConnected: isOnline,
-          isInternetReachable: isOnline,
-          details: null,
+          type: state.type,
+          isConnected: state.isConnected,
+          isInternetReachable: state.isInternetReachable,
+          details: state.details,
         },
       }));
-    };
-
-    // Initial check
-    checkNetworkStatus();
-
-    // Listen for network changes
-    if (typeof window !== 'undefined') {
-      window.addEventListener('online', checkNetworkStatus);
-      window.addEventListener('offline', checkNetworkStatus);
       
-      this.networkListener = () => {
-        window.removeEventListener('online', checkNetworkStatus);
-        window.removeEventListener('offline', checkNetworkStatus);
-      };
+      // Se voltou online, processar ações pendentes
+      if (wasOffline && isNowOnline) {
+        this.processPendingActionsInBackground();
+      }
+    });
+  }
+
+  /**
+   * Configurar diretório de cache de imagens
+   */
+  private async setupImageCache(): Promise<void> {
+    try {
+      const exists = await ReactNativeBlobUtil.fs.exists(this.IMAGE_CACHE_DIR);
+      if (!exists) {
+        await ReactNativeBlobUtil.fs.mkdir(this.IMAGE_CACHE_DIR);
+      }
+    } catch (error) {
+      console.error('Erro ao criar diretório de cache de imagens:', error);
     }
   }
 
   /**
-   * Cache boxes data
+   * Configurar sincronização automática
    */
-  async cacheBoxes(boxes: any[], metadata?: any): Promise<void> {
+  private setupAutoSync(): void {
+    // Sincronização periódica a cada 5 minutos quando online
+    setInterval(async () => {
+      const state = store.getState();
+      if (state.offline?.isOnline && state.offline?.settings?.autoSync) {
+        await this.syncInBackground();
+      }
+    }, 5 * 60 * 1000);
+  }
+
+  /**
+   * Comprimir dados antes de armazenar
+   */
+  private compressData(data: any): string {
     try {
-      const cacheData = {
-        data: boxes,
+      const jsonString = JSON.stringify(data);
+      return LZString.compressToUTF16(jsonString);
+    } catch (error) {
+      console.error('Erro ao comprimir dados:', error);
+      return JSON.stringify(data);
+    }
+  }
+
+  /**
+   * Descomprimir dados do cache
+   */
+  private decompressData(compressed: string): any {
+    try {
+      const decompressed = LZString.decompressFromUTF16(compressed);
+      return decompressed ? JSON.parse(decompressed) : null;
+    } catch (error) {
+      console.error('Erro ao descomprimir dados:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Gerar hash para verificação de mudanças
+   */
+  private generateHash(data: any): string {
+    const str = JSON.stringify(data);
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      const char = str.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Converte para 32bit integer
+    }
+    return hash.toString(36);
+  }
+
+  /**
+   * Cache inteligente com estratégia
+   */
+  async cacheData(
+    key: string,
+    data: any,
+    priority: SyncPriority = SyncPriority.NORMAL,
+    strategy: CacheStrategy = CacheStrategy.NETWORK_FIRST
+  ): Promise<void> {
+    try {
+      const compressed = this.compressData(data);
+      const metadata: CacheMetadata = {
+        version: this.CACHE_VERSION,
         timestamp: Date.now(),
-        metadata: metadata || {},
+        hash: this.generateHash(data),
+        compressed: true,
+        size: compressed.length,
+        priority,
       };
       
-      await AsyncStorage.setItem(this.CACHE_KEYS.BOXES, JSON.stringify(cacheData));
+      // Armazenar dados comprimidos
+      await AsyncStorage.setItem(key, compressed);
       
-      // Update cache status
+      // Armazenar metadados
+      await AsyncStorage.setItem(
+        `${key}_metadata`,
+        JSON.stringify(metadata)
+      );
+      
+      // Atualizar status no Redux
       store.dispatch(updateCacheStatus({
-        type: 'boxes',
+        type: this.getCacheTypeFromKey(key),
         data: {
           lastUpdated: Date.now(),
-          count: boxes.length,
-          size: JSON.stringify(cacheData).length,
+          size: compressed.length,
         },
       }));
     } catch (error) {
-      console.error('Error caching boxes:', error);
+      console.error('Erro ao cachear dados:', error);
       throw error;
     }
   }
 
   /**
-   * Get cached boxes
+   * Recuperar dados do cache com estratégia
    */
-  async getCachedBoxes(): Promise<any[] | null> {
+  async getCachedData<T>(
+    key: string,
+    strategy: CacheStrategy = CacheStrategy.CACHE_FIRST,
+    fetcher?: () => Promise<T>
+  ): Promise<T | null> {
     try {
-      const cached = await AsyncStorage.getItem(this.CACHE_KEYS.BOXES);
+      // Se estratégia é NETWORK_ONLY e temos fetcher
+      if (strategy === CacheStrategy.NETWORK_ONLY && fetcher) {
+        return await fetcher();
+      }
       
-      if (!cached) return null;
+      // Verificar cache
+      const cached = await AsyncStorage.getItem(key);
+      const metadataStr = await AsyncStorage.getItem(`${key}_metadata`);
       
-      const cacheData = JSON.parse(cached);
-      const now = Date.now();
-      const cacheAge = now - cacheData.timestamp;
-      const maxAge = 24 * 60 * 60 * 1000; // 24 hours
-      
-      if (cacheAge > maxAge) {
-        // Cache expired
-        await this.clearCache('boxes');
+      if (!cached || !metadataStr) {
+        // Se não tem cache e estratégia permite, buscar da rede
+        if (fetcher && strategy !== CacheStrategy.CACHE_ONLY) {
+          const freshData = await fetcher();
+          await this.cacheData(key, freshData);
+          return freshData;
+        }
         return null;
       }
       
-      return cacheData.data;
+      const metadata: CacheMetadata = JSON.parse(metadataStr);
+      const decompressed = this.decompressData(cached);
+      
+      // Verificar validade do cache
+      const now = Date.now();
+      const maxAge = this.getMaxAgeForPriority(metadata.priority);
+      const isExpired = (now - metadata.timestamp) > maxAge;
+      
+      // Estratégia STALE_WHILE_REVALIDATE
+      if (strategy === CacheStrategy.STALE_WHILE_REVALIDATE && fetcher) {
+        // Retornar cache imediatamente
+        if (decompressed) {
+          // Atualizar em background se expirado
+          if (isExpired) {
+            this.updateInBackground(key, fetcher);
+          }
+          return decompressed;
+        }
+      }
+      
+      // Estratégia NETWORK_FIRST
+      if (strategy === CacheStrategy.NETWORK_FIRST && fetcher) {
+        try {
+          const freshData = await fetcher();
+          await this.cacheData(key, freshData);
+          return freshData;
+        } catch (error) {
+          // Em caso de erro, usar cache se disponível
+          return decompressed;
+        }
+      }
+      
+      // Estratégia CACHE_FIRST (padrão)
+      if (!isExpired && decompressed) {
+        return decompressed;
+      }
+      
+      // Cache expirado, tentar buscar novos dados
+      if (fetcher && strategy !== CacheStrategy.CACHE_ONLY) {
+        try {
+          const freshData = await fetcher();
+          await this.cacheData(key, freshData);
+          return freshData;
+        } catch (error) {
+          // Em caso de erro, retornar cache expirado
+          return decompressed;
+        }
+      }
+      
+      return decompressed;
     } catch (error) {
-      console.error('Error getting cached boxes:', error);
+      console.error('Erro ao recuperar dados do cache:', error);
       return null;
     }
   }
 
   /**
-   * Cache categories data
+   * Atualizar cache em background
    */
-  async cacheCategories(categories: any[]): Promise<void> {
+  private async updateInBackground<T>(key: string, fetcher: () => Promise<T>): Promise<void> {
     try {
-      const cacheData = {
-        data: categories,
+      const freshData = await fetcher();
+      await this.cacheData(key, freshData);
+    } catch (error) {
+      console.error('Erro ao atualizar cache em background:', error);
+    }
+  }
+
+  /**
+   * Obter tempo máximo de cache baseado na prioridade
+   */
+  private getMaxAgeForPriority(priority: SyncPriority): number {
+    switch (priority) {
+      case SyncPriority.CRITICAL:
+        return 1 * 60 * 60 * 1000; // 1 hora
+      case SyncPriority.HIGH:
+        return 6 * 60 * 60 * 1000; // 6 horas
+      case SyncPriority.NORMAL:
+        return 24 * 60 * 60 * 1000; // 24 horas
+      case SyncPriority.LOW:
+        return 7 * 24 * 60 * 60 * 1000; // 7 dias
+      default:
+        return 24 * 60 * 60 * 1000; // 24 horas padrão
+    }
+  }
+
+  /**
+   * Cache de imagem com gestão eficiente
+   */
+  async cacheImage(url: string, priority: SyncPriority = SyncPriority.LOW): Promise<string> {
+    try {
+      const filename = this.generateHash(url) + '.jpg';
+      const filepath = `${this.IMAGE_CACHE_DIR}/${filename}`;
+      
+      // Verificar se já está em cache
+      const exists = await ReactNativeBlobUtil.fs.exists(filepath);
+      if (exists) {
+        // Verificar idade do cache
+        const stat = await ReactNativeBlobUtil.fs.stat(filepath);
+        const age = Date.now() - parseInt(stat.lastModified);
+        const maxAge = this.getMaxAgeForPriority(priority);
+        
+        if (age < maxAge) {
+          return `file://${filepath}`;
+        }
+      }
+      
+      // Baixar imagem
+      const response = await ReactNativeBlobUtil.config({
+        fileCache: true,
+        path: filepath,
+      }).fetch('GET', url);
+      
+      // Registrar no índice de cache
+      await this.updateImageCacheIndex(url, filepath, priority);
+      
+      return `file://${filepath}`;
+    } catch (error) {
+      console.error('Erro ao cachear imagem:', error);
+      return url; // Retornar URL original em caso de erro
+    }
+  }
+
+  /**
+   * Atualizar índice de cache de imagens
+   */
+  private async updateImageCacheIndex(url: string, filepath: string, priority: SyncPriority): Promise<void> {
+    try {
+      const indexStr = await AsyncStorage.getItem(this.CACHE_KEYS.IMAGE_CACHE);
+      const index = indexStr ? JSON.parse(indexStr) : {};
+      
+      index[url] = {
+        filepath,
         timestamp: Date.now(),
+        priority,
       };
       
-      await AsyncStorage.setItem(this.CACHE_KEYS.CATEGORIES, JSON.stringify(cacheData));
-      
-      store.dispatch(updateCacheStatus({
-        type: 'categories',
-        data: {
-          lastUpdated: Date.now(),
-          count: categories.length,
-        },
-      }));
+      await AsyncStorage.setItem(this.CACHE_KEYS.IMAGE_CACHE, JSON.stringify(index));
     } catch (error) {
-      console.error('Error caching categories:', error);
+      console.error('Erro ao atualizar índice de cache de imagens:', error);
+    }
+  }
+
+  /**
+   * Limpar cache de imagens antigas
+   */
+  async cleanupImageCache(): Promise<void> {
+    try {
+      const indexStr = await AsyncStorage.getItem(this.CACHE_KEYS.IMAGE_CACHE);
+      if (!indexStr) return;
+      
+      const index = JSON.parse(indexStr);
+      const now = Date.now();
+      const updatedIndex: any = {};
+      
+      for (const [url, data] of Object.entries(index)) {
+        const { filepath, timestamp, priority } = data as any;
+        const age = now - timestamp;
+        const maxAge = this.getMaxAgeForPriority(priority);
+        
+        if (age > maxAge) {
+          // Remover arquivo
+          try {
+            await ReactNativeBlobUtil.fs.unlink(filepath);
+          } catch (error) {
+            console.warn('Erro ao remover imagem do cache:', error);
+          }
+        } else {
+          updatedIndex[url] = data;
+        }
+      }
+      
+      await AsyncStorage.setItem(this.CACHE_KEYS.IMAGE_CACHE, JSON.stringify(updatedIndex));
+    } catch (error) {
+      console.error('Erro ao limpar cache de imagens:', error);
+    }
+  }
+
+  /**
+   * Sincronização diferencial - apenas mudanças
+   */
+  async syncDifferential(dataType: string, currentData: any[]): Promise<any[]> {
+    try {
+      // Obter estado de sincronização anterior
+      const syncStateStr = await AsyncStorage.getItem(this.CACHE_KEYS.SYNC_STATE);
+      const syncState = syncStateStr ? JSON.parse(syncStateStr) : {};
+      
+      const lastSync = syncState[dataType] || { timestamp: 0, hashes: {} };
+      
+      // Gerar hashes atuais
+      const currentHashes: { [key: string]: string } = {};
+      currentData.forEach(item => {
+        const id = item.id || item._id;
+        if (id) {
+          currentHashes[id] = this.generateHash(item);
+        }
+      });
+      
+      // Identificar mudanças
+      const changes = {
+        added: [] as any[],
+        modified: [] as any[],
+        deleted: [] as string[],
+      };
+      
+      // Itens adicionados ou modificados
+      currentData.forEach(item => {
+        const id = item.id || item._id;
+        if (!id) return;
+        
+        if (!lastSync.hashes[id]) {
+          changes.added.push(item);
+        } else if (lastSync.hashes[id] !== currentHashes[id]) {
+          changes.modified.push(item);
+        }
+      });
+      
+      // Itens deletados
+      Object.keys(lastSync.hashes).forEach(id => {
+        if (!currentHashes[id]) {
+          changes.deleted.push(id);
+        }
+      });
+      
+      // Atualizar estado de sincronização
+      syncState[dataType] = {
+        timestamp: Date.now(),
+        hashes: currentHashes,
+      };
+      await AsyncStorage.setItem(this.CACHE_KEYS.SYNC_STATE, JSON.stringify(syncState));
+      
+      return changes;
+    } catch (error) {
+      console.error('Erro na sincronização diferencial:', error);
       throw error;
     }
   }
 
   /**
-   * Get cached categories
+   * Adicionar ação pendente com prioridade
    */
-  async getCachedCategories(): Promise<any[] | null> {
+  async addPendingAction(
+    action: Omit<PendingAction, 'id' | 'timestamp' | 'retryCount'>,
+    priority: SyncPriority = SyncPriority.NORMAL
+  ): Promise<void> {
     try {
-      const cached = await AsyncStorage.getItem(this.CACHE_KEYS.CATEGORIES);
-      
-      if (!cached) return null;
-      
-      const cacheData = JSON.parse(cached);
-      return cacheData.data;
-    } catch (error) {
-      console.error('Error getting cached categories:', error);
-      return null;
-    }
-  }
-
-  /**
-   * Cache user profile
-   */
-  async cacheUserProfile(profile: any): Promise<void> {
-    try {
-      const cacheData = {
-        data: profile,
+      const pendingAction: PendingAction = {
+        ...action,
+        id: Date.now().toString() + Math.random().toString(36),
         timestamp: Date.now(),
+        retryCount: 0,
+        priority,
       };
       
-      await AsyncStorage.setItem(this.CACHE_KEYS.USER_PROFILE, JSON.stringify(cacheData));
+      // Adicionar à fila de sincronização
+      this.syncQueue.set(pendingAction.id, pendingAction);
       
-      store.dispatch(updateCacheStatus({
-        type: 'user',
-        data: {
-          lastUpdated: Date.now(),
-        },
-      }));
-    } catch (error) {
-      console.error('Error caching user profile:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Get cached user profile
-   */
-  async getCachedUserProfile(): Promise<any | null> {
-    try {
-      const cached = await AsyncStorage.getItem(this.CACHE_KEYS.USER_PROFILE);
-      
-      if (!cached) return null;
-      
-      const cacheData = JSON.parse(cached);
-      return cacheData.data;
-    } catch (error) {
-      console.error('Error getting cached user profile:', error);
-      return null;
-    }
-  }
-
-  /**
-   * Cache cart data
-   */
-  async cacheCart(cart: any): Promise<void> {
-    try {
-      const cacheData = {
-        data: cart,
-        timestamp: Date.now(),
-      };
-      
-      await AsyncStorage.setItem(this.CACHE_KEYS.CART, JSON.stringify(cacheData));
-      
-      store.dispatch(updateCacheStatus({
-        type: 'cart',
-        data: {
-          lastUpdated: Date.now(),
-        },
-      }));
-    } catch (error) {
-      console.error('Error caching cart:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Get cached cart
-   */
-  async getCachedCart(): Promise<any | null> {
-    try {
-      const cached = await AsyncStorage.getItem(this.CACHE_KEYS.CART);
-      
-      if (!cached) return null;
-      
-      const cacheData = JSON.parse(cached);
-      return cacheData.data;
-    } catch (error) {
-      console.error('Error getting cached cart:', error);
-      return null;
-    }
-  }
-
-  /**
-   * Add pending action
-   */
-  async addPendingAction(action: any): Promise<void> {
-    try {
+      // Persistir
       const existing = await this.getPendingActions();
-      const updated = [...existing, action];
+      const updated = [...existing, pendingAction].sort((a, b) => a.priority - b.priority);
       
       await AsyncStorage.setItem(this.CACHE_KEYS.PENDING_ACTIONS, JSON.stringify(updated));
+      
+      // Tentar processar imediatamente se online
+      const state = store.getState();
+      if (state.offline?.isOnline) {
+        this.processPendingActionsInBackground();
+      }
     } catch (error) {
-      console.error('Error adding pending action:', error);
+      console.error('Erro ao adicionar ação pendente:', error);
       throw error;
     }
   }
 
   /**
-   * Get pending actions
+   * Processar ações pendentes em background
    */
-  async getPendingActions(): Promise<any[]> {
+  private async processPendingActionsInBackground(): Promise<void> {
+    if (this.isSyncing) return;
+    
     try {
-      const cached = await AsyncStorage.getItem(this.CACHE_KEYS.PENDING_ACTIONS);
-      return cached ? JSON.parse(cached) : [];
-    } catch (error) {
-      console.error('Error getting pending actions:', error);
-      return [];
+      this.isSyncing = true;
+      await this.processPendingActions();
+    } finally {
+      this.isSyncing = false;
     }
   }
 
   /**
-   * Process pending actions
+   * Processar ações pendentes com priorização
    */
   async processPendingActions(): Promise<{ processedActions: any[]; remainingActions: any[] }> {
     try {
@@ -295,39 +573,44 @@ class OfflineService {
       const processedActions: any[] = [];
       const remainingActions: any[] = [];
       
-      for (const action of pendingActions) {
+      // Ordenar por prioridade
+      const sortedActions = pendingActions.sort((a, b) => a.priority - b.priority);
+      
+      for (const action of sortedActions) {
         try {
           await this.executeAction(action);
           processedActions.push(action);
+          this.syncQueue.delete(action.id);
         } catch (error) {
-          console.error('Error processing action:', action, error);
+          console.error('Erro ao processar ação:', action, error);
           
-          // Increment retry count
+          // Incrementar contador de tentativas
           action.retryCount = (action.retryCount || 0) + 1;
           
-          // Keep action if retry count is less than max
-          if (action.retryCount < 3) {
+          // Manter ação se ainda tem tentativas
+          const maxRetries = action.priority === SyncPriority.CRITICAL ? 5 : 3;
+          if (action.retryCount < maxRetries) {
             remainingActions.push(action);
           } else {
-            console.warn('Max retries reached for action:', action);
+            console.warn('Máximo de tentativas atingido para ação:', action);
           }
         }
       }
       
-      // Update pending actions
+      // Atualizar ações pendentes
       await AsyncStorage.setItem(this.CACHE_KEYS.PENDING_ACTIONS, JSON.stringify(remainingActions));
       
       return { processedActions, remainingActions };
     } catch (error) {
-      console.error('Error processing pending actions:', error);
+      console.error('Erro ao processar ações pendentes:', error);
       throw error;
     }
   }
 
   /**
-   * Execute a pending action
+   * Executar uma ação pendente
    */
-  private async executeAction(action: any): Promise<void> {
+  private async executeAction(action: PendingAction): Promise<void> {
     switch (action.type) {
       case 'ADD_TO_CART':
         await cartService.addToCart(action.data.boxId, action.data.quantity);
@@ -341,176 +624,369 @@ class OfflineService {
       case 'UPDATE_PROFILE':
         await userService.updateProfile(action.data);
         break;
+      case 'CREATE_ORDER':
+        // await orderService.createOrder(action.data);
+        break;
       case 'ADD_FAVORITE':
         // await favoritesService.addFavorite(action.data.boxId);
         break;
       case 'REMOVE_FAVORITE':
         // await favoritesService.removeFavorite(action.data.boxId);
         break;
+      case 'ADD_REVIEW':
+        // await reviewService.addReview(action.data);
+        break;
       default:
-        console.warn('Unknown action type:', action.type);
+        console.warn('Tipo de ação desconhecido:', action.type);
     }
   }
 
   /**
-   * Sync data with server
+   * Sincronizar dados com estratégia inteligente
    */
   async syncData(force: boolean = false): Promise<any> {
     try {
       const state = store.getState();
       const isOnline = state.offline?.isOnline;
+      const settings = state.offline?.settings;
       
+      // Verificar condições de sincronização
       if (!isOnline && !force) {
-        throw new Error('No internet connection');
+        throw new Error('Sem conexão com a internet');
       }
       
-      // Process pending actions first
+      // Verificar se deve sincronizar apenas em WiFi
+      if (settings?.syncOnWifiOnly && state.offline?.networkInfo?.type !== 'wifi' && !force) {
+        throw new Error('Sincronização permitida apenas em WiFi');
+      }
+      
+      // Processar ações pendentes primeiro
       await this.processPendingActions();
       
-      // Sync fresh data from server
-      const [boxes, categories, userProfile, cart] = await Promise.allSettled([
-        boxService.getBoxes(),
-        boxService.getCategories(),
-        userService.getProfile(),
-        cartService.getCart(),
+      // Sincronizar dados com priorização
+      const syncResults: any = {};
+      
+      // Dados críticos primeiro
+      const criticalData = await Promise.allSettled([
+        this.syncCart(),
+        this.syncUserProfile(),
       ]);
       
-      // Cache successful responses
-      if (boxes.status === 'fulfilled') {
-        await this.cacheBoxes(boxes.value.data);
-      }
+      syncResults.cart = criticalData[0].status;
+      syncResults.userProfile = criticalData[1].status;
       
-      if (categories.status === 'fulfilled') {
-        await this.cacheCategories(categories.value);
-      }
+      // Dados normais
+      const normalData = await Promise.allSettled([
+        this.syncBoxes(),
+        this.syncCategories(),
+      ]);
       
-      if (userProfile.status === 'fulfilled') {
-        await this.cacheUserProfile(userProfile.value);
-      }
+      syncResults.boxes = normalData[0].status;
+      syncResults.categories = normalData[1].status;
       
-      if (cart.status === 'fulfilled') {
-        await this.cacheCart(cart.value);
-      }
-      
+      // Atualizar status de cache
       const cacheStatus = await this.getCacheStatus();
       const pendingActions = await this.getPendingActions();
       
       return {
         cacheStatus,
         pendingActions,
-        syncResults: {
-          boxes: boxes.status,
-          categories: categories.status,
-          userProfile: userProfile.status,
-          cart: cart.status,
-        },
+        syncResults,
+        timestamp: Date.now(),
       };
     } catch (error) {
-      console.error('Error syncing data:', error);
+      console.error('Erro ao sincronizar dados:', error);
       throw error;
     }
   }
 
   /**
-   * Clear cache
+   * Sincronizar boxes com cache inteligente
+   */
+  private async syncBoxes(): Promise<void> {
+    try {
+      const boxes = await this.getCachedData(
+        this.CACHE_KEYS.BOXES,
+        CacheStrategy.NETWORK_FIRST,
+        async () => {
+          const response = await boxService.getBoxes();
+          return response.data;
+        }
+      );
+      
+      if (boxes) {
+        await this.cacheData(this.CACHE_KEYS.BOXES, boxes, SyncPriority.NORMAL);
+      }
+    } catch (error) {
+      console.error('Erro ao sincronizar boxes:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Sincronizar categorias
+   */
+  private async syncCategories(): Promise<void> {
+    try {
+      const categories = await this.getCachedData(
+        this.CACHE_KEYS.CATEGORIES,
+        CacheStrategy.NETWORK_FIRST,
+        async () => await boxService.getCategories()
+      );
+      
+      if (categories) {
+        await this.cacheData(this.CACHE_KEYS.CATEGORIES, categories, SyncPriority.NORMAL);
+      }
+    } catch (error) {
+      console.error('Erro ao sincronizar categorias:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Sincronizar perfil do usuário
+   */
+  private async syncUserProfile(): Promise<void> {
+    try {
+      const profile = await this.getCachedData(
+        this.CACHE_KEYS.USER_PROFILE,
+        CacheStrategy.NETWORK_FIRST,
+        async () => await userService.getProfile()
+      );
+      
+      if (profile) {
+        await this.cacheData(this.CACHE_KEYS.USER_PROFILE, profile, SyncPriority.HIGH);
+      }
+    } catch (error) {
+      console.error('Erro ao sincronizar perfil:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Sincronizar carrinho
+   */
+  private async syncCart(): Promise<void> {
+    try {
+      const cart = await this.getCachedData(
+        this.CACHE_KEYS.CART,
+        CacheStrategy.NETWORK_FIRST,
+        async () => await cartService.getCart()
+      );
+      
+      if (cart) {
+        await this.cacheData(this.CACHE_KEYS.CART, cart, SyncPriority.CRITICAL);
+      }
+    } catch (error) {
+      console.error('Erro ao sincronizar carrinho:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Sincronização em background
+   */
+  private async syncInBackground(): Promise<void> {
+    try {
+      await this.syncData();
+      await this.cleanupOldCache();
+      await this.cleanupImageCache();
+    } catch (error) {
+      console.error('Erro na sincronização em background:', error);
+    }
+  }
+
+  /**
+   * Obter ações pendentes
+   */
+  async getPendingActions(): Promise<PendingAction[]> {
+    try {
+      const cached = await AsyncStorage.getItem(this.CACHE_KEYS.PENDING_ACTIONS);
+      return cached ? JSON.parse(cached) : [];
+    } catch (error) {
+      console.error('Erro ao obter ações pendentes:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Limpar cache específico ou todo o cache
    */
   async clearCache(cacheType?: string): Promise<void> {
     try {
       if (cacheType) {
-        // Clear specific cache
+        // Limpar cache específico
         const key = this.CACHE_KEYS[cacheType.toUpperCase() as keyof typeof this.CACHE_KEYS];
         if (key) {
           await AsyncStorage.removeItem(key);
+          await AsyncStorage.removeItem(`${key}_metadata`);
         }
       } else {
-        // Clear all cache
+        // Limpar todo o cache
         const keys = Object.values(this.CACHE_KEYS);
-        await AsyncStorage.multiRemove(keys);
+        const keysWithMetadata = keys.flatMap(key => [key, `${key}_metadata`]);
+        await AsyncStorage.multiRemove(keysWithMetadata);
+        
+        // Limpar cache de imagens
+        try {
+          await ReactNativeBlobUtil.fs.unlink(this.IMAGE_CACHE_DIR);
+          await this.setupImageCache();
+        } catch (error) {
+          console.warn('Erro ao limpar cache de imagens:', error);
+        }
       }
     } catch (error) {
-      console.error('Error clearing cache:', error);
+      console.error('Erro ao limpar cache:', error);
       throw error;
     }
   }
 
   /**
-   * Get cache status
+   * Obter status do cache
    */
   async getCacheStatus(): Promise<any> {
     try {
-      const cacheStatus = {
+      const cacheStatus: any = {
         boxes: { lastUpdated: null, count: 0, size: 0 },
         categories: { lastUpdated: null, count: 0 },
         user: { lastUpdated: null },
         cart: { lastUpdated: null },
+        totalSize: 0,
+        imageCache: { count: 0, size: 0 },
       };
       
-      // Check each cache
+      // Verificar cada cache
       for (const [type, key] of Object.entries(this.CACHE_KEYS)) {
         try {
-          const cached = await AsyncStorage.getItem(key);
-          if (cached) {
-            const data = JSON.parse(cached);
+          if (type === 'IMAGE_CACHE') {
+            // Status especial para cache de imagens
+            const indexStr = await AsyncStorage.getItem(key);
+            if (indexStr) {
+              const index = JSON.parse(indexStr);
+              cacheStatus.imageCache.count = Object.keys(index).length;
+            }
+            continue;
+          }
+          
+          const metadataStr = await AsyncStorage.getItem(`${key}_metadata`);
+          if (metadataStr) {
+            const metadata: CacheMetadata = JSON.parse(metadataStr);
             const cacheKey = type.toLowerCase() as keyof typeof cacheStatus;
             
             if (cacheStatus[cacheKey]) {
-              (cacheStatus[cacheKey] as any).lastUpdated = data.timestamp;
-              
-              if (data.data && Array.isArray(data.data)) {
-                (cacheStatus[cacheKey] as any).count = data.data.length;
-              }
-              
-              (cacheStatus[cacheKey] as any).size = cached.length;
+              cacheStatus[cacheKey].lastUpdated = metadata.timestamp;
+              cacheStatus[cacheKey].size = metadata.size;
+              cacheStatus.totalSize += metadata.size;
             }
           }
         } catch (error) {
-          console.warn(`Error checking cache for ${type}:`, error);
+          console.warn(`Erro ao verificar cache para ${type}:`, error);
         }
+      }
+      
+      // Calcular tamanho do cache de imagens
+      try {
+        const files = await ReactNativeBlobUtil.fs.ls(this.IMAGE_CACHE_DIR);
+        for (const file of files) {
+          const stat = await ReactNativeBlobUtil.fs.stat(`${this.IMAGE_CACHE_DIR}/${file}`);
+          cacheStatus.imageCache.size += parseInt(stat.size);
+        }
+        cacheStatus.totalSize += cacheStatus.imageCache.size;
+      } catch (error) {
+        console.warn('Erro ao calcular tamanho do cache de imagens:', error);
       }
       
       return cacheStatus;
     } catch (error) {
-      console.error('Error getting cache status:', error);
+      console.error('Erro ao obter status do cache:', error);
       throw error;
     }
   }
 
   /**
-   * Cleanup old cache
+   * Limpar cache antigo
    */
   async cleanupOldCache(): Promise<void> {
     try {
       const now = Date.now();
-      const maxAge = 7 * 24 * 60 * 60 * 1000; // 7 days
+      const settings = store.getState().offline?.settings;
+      const maxCacheSize = settings?.maxCacheSize || 50 * 1024 * 1024; // 50MB padrão
       
+      // Verificar tamanho total do cache
+      const cacheStatus = await this.getCacheStatus();
+      if (cacheStatus.totalSize > maxCacheSize) {
+        // Limpar caches menos prioritários primeiro
+        const priorities = [SyncPriority.LOW, SyncPriority.NORMAL, SyncPriority.HIGH];
+        
+        for (const priority of priorities) {
+          if (cacheStatus.totalSize <= maxCacheSize) break;
+          
+          // Limpar caches com essa prioridade
+          for (const [type, key] of Object.entries(this.CACHE_KEYS)) {
+            const metadataStr = await AsyncStorage.getItem(`${key}_metadata`);
+            if (metadataStr) {
+              const metadata: CacheMetadata = JSON.parse(metadataStr);
+              if (metadata.priority === priority) {
+                await AsyncStorage.removeItem(key);
+                await AsyncStorage.removeItem(`${key}_metadata`);
+                cacheStatus.totalSize -= metadata.size;
+              }
+            }
+          }
+        }
+      }
+      
+      // Limpar caches expirados
       for (const key of Object.values(this.CACHE_KEYS)) {
         try {
-          const cached = await AsyncStorage.getItem(key);
-          if (cached) {
-            const data = JSON.parse(cached);
-            if (data.timestamp && (now - data.timestamp) > maxAge) {
+          const metadataStr = await AsyncStorage.getItem(`${key}_metadata`);
+          if (metadataStr) {
+            const metadata: CacheMetadata = JSON.parse(metadataStr);
+            const maxAge = this.getMaxAgeForPriority(metadata.priority);
+            
+            if ((now - metadata.timestamp) > maxAge) {
               await AsyncStorage.removeItem(key);
+              await AsyncStorage.removeItem(`${key}_metadata`);
             }
           }
         } catch (error) {
-          console.warn(`Error cleaning up cache for ${key}:`, error);
+          console.warn(`Erro ao limpar cache para ${key}:`, error);
         }
       }
     } catch (error) {
-      console.error('Error cleaning up old cache:', error);
+      console.error('Erro ao limpar cache antigo:', error);
     }
   }
 
   /**
-   * Destroy service
+   * Obter tipo de cache a partir da chave
+   */
+  private getCacheTypeFromKey(key: string): keyof typeof this.CACHE_KEYS {
+    const entry = Object.entries(this.CACHE_KEYS).find(([_, value]) => value === key);
+    return (entry?.[0]?.toLowerCase() || 'unknown') as keyof typeof this.CACHE_KEYS;
+  }
+
+  /**
+   * Verificar se está no modo offline
+   */
+  isOfflineMode(): boolean {
+    const state = store.getState();
+    return !state.offline?.isOnline || false;
+  }
+
+  /**
+   * Destruir serviço e limpar recursos
    */
   destroy(): void {
-    if (this.networkListener) {
-      this.networkListener();
-      this.networkListener = null;
+    if (this.networkUnsubscribe) {
+      this.networkUnsubscribe();
+      this.networkUnsubscribe = null;
     }
+    
+    this.syncQueue.clear();
   }
 }
 
+// Exportar instância única
 export const offlineService = new OfflineService();
 export default offlineService;

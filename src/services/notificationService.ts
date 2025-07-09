@@ -1,7 +1,9 @@
-import messaging from '@react-native-firebase/messaging';
-import { PermissionsAndroid, Platform, Alert } from 'react-native';
+import messaging, { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
+import { PermissionsAndroid, Platform, Alert, Linking } from 'react-native';
 import { httpClient } from './httpClient';
 import { Notification, NotificationSettings, PaginatedResponse } from '../types/api';
+import notifee, { AndroidImportance } from '@notifee/react-native';
+import { navigationService } from './navigationService';
 
 /**
  * Serviço para gerenciamento de notificações push
@@ -154,26 +156,10 @@ class NotificationService {
   /**
    * Tratar abertura por notificação
    */
-  private handleNotificationOpen(remoteMessage: any): void {
+  handleNotificationOpen(remoteMessage: any): void {
     // Navegar para tela específica baseada no tipo de notificação
     const { data } = remoteMessage;
-    
-    if (data?.type) {
-      switch (data.type) {
-        case 'order_update':
-          // Navegar para detalhes do pedido
-          break;
-        case 'new_box':
-          // Navegar para detalhes da caixa
-          break;
-        case 'promotion':
-          // Navegar para promoção
-          break;
-        default:
-          // Navegar para lista de notificações
-          break;
-      }
-    }
+    navigationService.navigateFromNotification(data);
   }
 
   /**
@@ -293,6 +279,160 @@ class NotificationService {
     } catch (error) {
       console.error('Error clearing badge count:', error);
     }
+  }
+
+  /**
+   * Verificar status de permissão
+   */
+  async checkPermission(): Promise<'granted' | 'denied' | 'not-determined'> {
+    try {
+      const authStatus = await messaging().hasPermission();
+      return this.getPermissionStatus(authStatus);
+    } catch (error) {
+      console.error('Error checking permission:', error);
+      return 'denied';
+    }
+  }
+
+  /**
+   * Abrir configurações do app
+   */
+  async openSettings(): Promise<void> {
+    try {
+      if (Platform.OS === 'ios') {
+        Linking.openURL('app-settings:');
+      } else {
+        Linking.openSettings();
+      }
+    } catch (error) {
+      console.error('Error opening settings:', error);
+      Alert.alert(
+        'Erro',
+        'Não foi possível abrir as configurações. Acesse manualmente pelas configurações do dispositivo.'
+      );
+    }
+  }
+
+  /**
+   * Configurar canal de notificação Android
+   */
+  async createNotificationChannel(): Promise<void> {
+    if (Platform.OS === 'android') {
+      await notifee.createChannel({
+        id: 'default',
+        name: 'Notificações Gerais',
+        importance: AndroidImportance.HIGH,
+        vibration: true,
+        lights: true,
+      });
+
+      await notifee.createChannel({
+        id: 'orders',
+        name: 'Pedidos',
+        importance: AndroidImportance.HIGH,
+        vibration: true,
+        lights: true,
+      });
+
+      await notifee.createChannel({
+        id: 'promotions',
+        name: 'Ofertas e Promoções',
+        importance: AndroidImportance.DEFAULT,
+        vibration: false,
+        lights: true,
+      });
+    }
+  }
+
+  /**
+   * Exibir notificação local
+   */
+  async displayLocalNotification(notification: {
+    title: string;
+    body: string;
+    data?: any;
+    android?: any;
+    ios?: any;
+  }): Promise<void> {
+    try {
+      await notifee.displayNotification({
+        title: notification.title,
+        body: notification.body,
+        data: notification.data,
+        android: {
+          channelId: notification.data?.channelId || 'default',
+          pressAction: {
+            id: 'default',
+          },
+          ...notification.android,
+        },
+        ios: notification.ios,
+      });
+    } catch (error) {
+      console.error('Error displaying local notification:', error);
+    }
+  }
+
+  /**
+   * Listeners de mensagens (retornam funções de cleanup)
+   */
+  onMessage(handler: (message: FirebaseMessagingTypes.RemoteMessage) => void): () => void {
+    return messaging().onMessage(handler);
+  }
+
+  onBackgroundMessage(handler: (message: FirebaseMessagingTypes.RemoteMessage) => void): () => void {
+    messaging().setBackgroundMessageHandler(handler);
+    return () => {}; // Firebase não fornece cleanup para background handler
+  }
+
+  onTokenRefresh(handler: (token: string) => void): () => void {
+    return messaging().onTokenRefresh(handler);
+  }
+
+  onNotificationOpenedApp(handler: (message: FirebaseMessagingTypes.RemoteMessage) => void): () => void {
+    return messaging().onNotificationOpenedApp(handler);
+  }
+
+  /**
+   * Obter notificação inicial (app aberto por notificação)
+   */
+  async getInitialNotification(): Promise<FirebaseMessagingTypes.RemoteMessage | null> {
+    return messaging().getInitialNotification();
+  }
+
+  /**
+   * Configurar manipuladores de interação com notifee
+   */
+  async setupNotifeeHandlers(): Promise<void> {
+    // Evento quando usuário interage com notificação
+    notifee.onForegroundEvent(({ type, detail }) => {
+      switch (type) {
+        case 1: // EventType.DISMISSED
+          console.log('Notificação dispensada');
+          break;
+        case 7: // EventType.PRESS
+          console.log('Notificação pressionada', detail.notification);
+          // Navegar baseado nos dados da notificação
+          if (detail.notification?.data) {
+            this.handleNotificationNavigation(detail.notification.data);
+          }
+          break;
+      }
+    });
+
+    // Background event handler
+    notifee.onBackgroundEvent(async ({ type, detail }) => {
+      if (type === 7) { // EventType.PRESS
+        console.log('Background notification pressed', detail.notification);
+      }
+    });
+  }
+
+  /**
+   * Navegar baseado nos dados da notificação
+   */
+  private handleNotificationNavigation(data: any): void {
+    navigationService.navigateFromNotification(data);
   }
 }
 
