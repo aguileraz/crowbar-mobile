@@ -1,5 +1,6 @@
 import { httpClient } from './httpClient';
 import { Review, PaginatedResponse } from '../types/api';
+import { analyticsService } from './analyticsService';
 
 /**
  * Serviço para gerenciamento de reviews e avaliações

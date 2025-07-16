@@ -5,6 +5,15 @@
  * usando Detox e Jest.
  */
 
+// Importar globals do Detox
+const { device, element, by, expect, waitFor } = require('detox');
+
+// Tornar Detox globals disponíveis
+global.device = device;
+global.element = element;
+global.by = by;
+global.waitFor = waitFor;
+
 // Configurações de timeout para elementos lentos
 const TIMEOUT_CONFIG = {
   DEFAULT: 5000,
