@@ -78,7 +78,11 @@
     "build:smoke-test": "node scripts/smoke-test-builds.js",
     "build:validate": "node scripts/final-build-validation.js",
     "release:prepare": "npm run build:validate",
-    "release:validate": "npm run build:smoke-test"
+    "release:validate": "npm run build:smoke-test",
+    "test:device": "node scripts/device-test-runner.js",
+    "test:device:report": "cat device-test-report.json",
+    "device:info": "echo 'Connect devices and run: npm run test:device'",
+    "device:setup": "npx react-native doctor"
   },
   "dependencies": {
     "@notifee/react-native": "^7.8.0",
