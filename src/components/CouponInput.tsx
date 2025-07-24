@@ -8,7 +8,7 @@ import {
   Button,
   HelperText,
 } from 'react-native-paper';
-import { theme, getSpacing } from '../theme';
+import { theme as _theme, getSpacing } from '../theme';
 
 /**
  * Componente de Input de Cupom
@@ -43,8 +43,8 @@ const CouponInput: React.FC<CouponInputProps> = ({
     try {
       await onApply(code.trim().toUpperCase());
       setCode('');
-    } catch (error: any) {
-      setError(error.message || 'Cupom inválido');
+    } catch (err: any) {
+      setError(err.message || 'Cupom inválido');
     } finally {
       setIsApplying(false);
     }

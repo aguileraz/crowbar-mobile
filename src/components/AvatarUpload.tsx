@@ -21,7 +21,7 @@ import {
 } from '../store/slices/userSlice';
 
 // Theme
-import { theme, getSpacing } from '../theme';
+import { theme, getSpacing as _getSpacing } from '../theme';
 
 /**
  * Componente de Upload de Avatar
@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
 });
 
 // Show edit overlay on press
-const enhancedStyles = StyleSheet.create({
+const _enhancedStyles = StyleSheet.create({
   ...styles,
   avatarContainer: {
     ...styles.avatarContainer,

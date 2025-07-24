@@ -96,8 +96,8 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
   const loadCart = async () => {
     try {
       await dispatch(fetchCart()).unwrap();
-    } catch (error) {
-      console.error('Error loading cart:', error);
+    } catch (err) {
+      console.error('Error loading cart:', err);
     }
   };
 
@@ -121,7 +121,7 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
 
     try {
       await dispatch(updateCartItem({ itemId, quantity })).unwrap();
-    } catch (error) {
+    } catch (err) {
       Alert.alert('Erro', 'Erro ao atualizar quantidade');
     }
   };
@@ -141,7 +141,7 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
           onPress: async () => {
             try {
               await dispatch(removeFromCart(itemId)).unwrap();
-            } catch (error) {
+            } catch (err) {
               Alert.alert('Erro', 'Erro ao remover item');
             }
           },
@@ -165,7 +165,7 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
           onPress: async () => {
             try {
               await dispatch(clearCart()).unwrap();
-            } catch (error) {
+            } catch (err) {
               Alert.alert('Erro', 'Erro ao limpar carrinho');
             }
           },
@@ -181,7 +181,7 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
     try {
       await dispatch(applyCoupon(code)).unwrap();
       Alert.alert('Sucesso', 'Cupom aplicado com sucesso!');
-    } catch (error) {
+    } catch (err) {
       Alert.alert('Erro', 'Cupom inválido ou expirado');
     }
   };
@@ -192,7 +192,7 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
   const handleRemoveCoupon = async () => {
     try {
       await dispatch(removeCoupon()).unwrap();
-    } catch (error) {
+    } catch (err) {
       Alert.alert('Erro', 'Erro ao remover cupom');
     }
   };
@@ -203,7 +203,7 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
   const handleCalculateShipping = async (zipCode: string) => {
     try {
       await dispatch(calculateShippingByZip(zipCode)).unwrap();
-    } catch (error) {
+    } catch (err) {
       Alert.alert('Erro', 'Erro ao calcular frete');
     }
   };

@@ -1,4 +1,4 @@
-const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
+const { getDefaultConfig: _getDefaultConfig, mergeConfig: _mergeConfig } = require('@react-native/metro-config');
 
 /**
  * Metro configuration otimizada para performance
@@ -6,7 +6,7 @@ const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
  *
  * @type {import('@react-native/metro-config').MetroConfig}
  */
-const config = {
+const _config = {
   transformer: {
     minifierConfig: {
       // Otimizações do minificador para produção

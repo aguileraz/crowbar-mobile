@@ -108,8 +108,8 @@ const CheckoutScreen: React.FC<CheckoutScreenProps> = ({ navigation }) => {
       if (defaultPayment) {
         setSelectedPaymentMethod(defaultPayment.id);
       }
-    } catch (error: any) {
-      setError(error.message || 'Erro ao carregar dados do checkout');
+    } catch (err: any) {
+      setError(err.message || 'Erro ao carregar dados do checkout');
     } finally {
       setIsLoading(false);
     }
@@ -181,8 +181,8 @@ const CheckoutScreen: React.FC<CheckoutScreenProps> = ({ navigation }) => {
           },
         ]
       );
-    } catch (error: any) {
-      Alert.alert('Erro', error.message || 'Erro ao processar pedido');
+    } catch (err: any) {
+      Alert.alert('Erro', err.message || 'Erro ao processar pedido');
     } finally {
       setIsProcessing(false);
     }

@@ -21,8 +21,7 @@ import {
   clearCart,
   fillAddressForm,
   fillPaymentForm,
-  expectVisible,
-  expectText
+  expectVisible
 } from '../../helpers/actions';
 
 describe('Cart and Checkout Flow', () => {

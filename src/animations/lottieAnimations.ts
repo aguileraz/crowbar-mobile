@@ -2,7 +2,7 @@
  * Configurações e helpers para animações Lottie
  */
 
-import LottieView from 'lottie-react-native';
+import _LottieView from 'lottie-react-native';
 import { SharedValue, useAnimatedProps, interpolate } from 'react-native-reanimated';
 
 // Caminhos para os arquivos Lottie

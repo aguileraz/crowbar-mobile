@@ -91,8 +91,8 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ navigation })
   const loadNotifications = async () => {
     try {
       await dispatch(fetchNotifications({ page: 1, filters })).unwrap();
-    } catch (error) {
-      console.error('Error loading notifications:', error);
+    } catch (err) {
+      console.error('Error loading notifications:', err);
     }
   };
 
@@ -134,8 +134,8 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ navigation })
           page: pagination.currentPage + 1, 
           filters 
         })).unwrap();
-      } catch (error) {
-        console.error('Error loading more notifications:', error);
+      } catch (err) {
+        console.error('Error loading more notifications:', err);
       } finally {
         setLoadingMore(false);
       }
@@ -148,8 +148,8 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ navigation })
   const handleMarkAllAsRead = async () => {
     try {
       await dispatch(markAllAsRead()).unwrap();
-    } catch (error) {
-      console.error('Error marking all as read:', error);
+    } catch (err) {
+      console.error('Error marking all as read:', err);
     }
   };
 

@@ -131,8 +131,8 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
     try {
       // TODO: Load from AsyncStorage
       setSearchHistory(['caixa gamer', 'eletrônicos', 'roupas']);
-    } catch (error) {
-      console.error('Error loading search history:', error);
+    } catch (err) {
+      console.error('Error loading search history:', err);
     }
   };
 
@@ -144,8 +144,8 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
       const newHistory = [query, ...searchHistory.filter(item => item !== query)].slice(0, 10);
       setSearchHistory(newHistory);
       // TODO: Save to AsyncStorage
-    } catch (error) {
-      console.error('Error saving search history:', error);
+    } catch (err) {
+      console.error('Error saving search history:', err);
     }
   };
 
@@ -157,8 +157,8 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
     try {
       await dispatch(searchBoxes({ query, filters: activeFilters })).unwrap();
       saveToHistory(query);
-    } catch (error) {
-      console.error('Search error:', error);
+    } catch (err) {
+      console.error('Search error:', err);
     } finally {
       setIsSearching(false);
     }

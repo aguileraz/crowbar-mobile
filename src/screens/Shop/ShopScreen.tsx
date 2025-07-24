@@ -98,8 +98,8 @@ const ShopScreen: React.FC<ShopScreenProps> = ({ navigation }) => {
         dispatch(fetchNewBoxes(8)).unwrap(),
         dispatch(fetchCategories()).unwrap(),
       ]);
-    } catch (error) {
-      console.error('Error loading initial data:', error);
+    } catch (err) {
+      console.error('Error loading initial data:', err);
     }
   };
 

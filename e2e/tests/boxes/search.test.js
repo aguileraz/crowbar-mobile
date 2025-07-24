@@ -5,7 +5,7 @@
  * na listagem de caixas mistério.
  */
 
-import { TEST_IDS, TEST_BOXES, EXPECTED_TEXTS } from '../../helpers/testData';
+import { TEST_IDS, TEST_BOXES } from '../../helpers/testData';
 import { 
   login, 
   navigateToBoxes, 

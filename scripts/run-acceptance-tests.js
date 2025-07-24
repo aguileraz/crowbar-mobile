@@ -222,7 +222,7 @@ async function runSecurityTests() {
       name: 'Environment Variables Check',
       command: 'node -e "console.log(Object.keys(process.env).filter(k => k.includes(\'SECRET\') || k.includes(\'KEY\')).length)"',
       validator: (output) => {
-        const secretCount = parseInt(output.trim());
+        const secretCount = parseInt(output.trim(), 10);
         return secretCount === 0; // No secrets in environment
       }
     }
@@ -300,7 +300,7 @@ async function runAccessibilityTests() {
     }
   ];
   
-  let allPassed = true;
+  const allPassed = true;
   
   for (const check of accessibilityChecks) {
     log.info(`Running ${check.name}...`);
@@ -335,7 +335,7 @@ async function runCompatibilityTests() {
       command: 'node --version',
       validator: (output) => {
         const version = output.trim().replace('v', '');
-        const major = parseInt(version.split('.')[0]);
+        const major = parseInt(version.split('.')[0], 10);
         return major >= 16; // Minimum Node 16
       }
     },

@@ -66,8 +66,8 @@ const ShippingCalculator: React.FC<ShippingCalculatorProps> = ({
 
     try {
       await onCalculate(cleanZip);
-    } catch (error: any) {
-      setError(error.message || 'Erro ao calcular frete');
+    } catch (err: any) {
+      setError(err.message || 'Erro ao calcular frete');
     } finally {
       setIsCalculating(false);
     }

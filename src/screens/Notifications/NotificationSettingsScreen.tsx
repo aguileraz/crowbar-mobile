@@ -84,8 +84,8 @@ const NotificationSettingsScreen: React.FC<NotificationSettingsScreenProps> = ({
     try {
       setIsLoading(true);
       await dispatch(fetchNotificationSettings()).unwrap();
-    } catch (error) {
-      console.error('Error loading settings:', error);
+    } catch (err) {
+      console.error('Error loading settings:', err);
     } finally {
       setIsLoading(false);
     }
@@ -102,10 +102,10 @@ const NotificationSettingsScreen: React.FC<NotificationSettingsScreenProps> = ({
 
     try {
       await dispatch(updateNotificationSettings({ [key]: value })).unwrap();
-    } catch (error: any) {
+    } catch (err: any) {
       // Revert local change on error
       setLocalSettings(localSettings);
-      Alert.alert('Erro', error.message || 'Erro ao atualizar configuração');
+      Alert.alert('Erro', err.message || 'Erro ao atualizar configuração');
     }
   };
 
@@ -116,8 +116,8 @@ const NotificationSettingsScreen: React.FC<NotificationSettingsScreenProps> = ({
     try {
       await notificationService.sendTestNotification();
       Alert.alert('Sucesso', 'Notificação de teste enviada!');
-    } catch (error: any) {
-      Alert.alert('Erro', error.message || 'Erro ao enviar notificação de teste');
+    } catch (err: any) {
+      Alert.alert('Erro', err.message || 'Erro ao enviar notificação de teste');
     }
   };
 

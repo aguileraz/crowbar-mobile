@@ -10,7 +10,7 @@ import {
   runOnJS,
 } from 'react-native-reanimated';
 import HapticFeedback from 'react-native-haptic-feedback';
-import { DURATIONS, SPRING_CONFIGS, EASINGS, HAPTIC_FEEDBACK, SCALE_VALUES } from './constants';
+import { DURATIONS, SPRING_CONFIGS, EASINGS, HAPTIC_FEEDBACK } from './constants';
 
 interface FeedbackOptions {
   haptic?: boolean;

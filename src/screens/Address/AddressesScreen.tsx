@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   StyleSheet,
@@ -80,8 +80,8 @@ const AddressesScreen: React.FC<AddressesScreenProps> = ({ navigation }) => {
   const loadAddresses = async () => {
     try {
       await dispatch(fetchUserAddresses()).unwrap();
-    } catch (error) {
-      console.error('Error loading addresses:', error);
+    } catch (err) {
+      console.error('Error loading addresses:', err);
     }
   };
 
@@ -116,8 +116,8 @@ const AddressesScreen: React.FC<AddressesScreenProps> = ({ navigation }) => {
       await userService.setDefaultAddress(addressId);
       await loadAddresses();
       Alert.alert('Sucesso', 'Endereço padrão atualizado!');
-    } catch (error: any) {
-      Alert.alert('Erro', error.message || 'Erro ao definir endereço padrão');
+    } catch (err: any) {
+      Alert.alert('Erro', err.message || 'Erro ao definir endereço padrão');
     }
   };
 
@@ -139,8 +139,8 @@ const AddressesScreen: React.FC<AddressesScreenProps> = ({ navigation }) => {
               await userService.deleteAddress(addressId);
               await loadAddresses();
               Alert.alert('Sucesso', 'Endereço excluído!');
-            } catch (error: any) {
-              Alert.alert('Erro', error.message || 'Erro ao excluir endereço');
+            } catch (err: any) {
+              Alert.alert('Erro', err.message || 'Erro ao excluir endereço');
             } finally {
               setDeletingId(null);
             }

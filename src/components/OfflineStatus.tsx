@@ -7,7 +7,6 @@ import {
 import {
   Text,
   Chip,
-  IconButton,
   ProgressBar,
   Button,
 } from 'react-native-paper';

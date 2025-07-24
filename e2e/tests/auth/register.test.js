@@ -6,7 +6,7 @@
  */
 
 import { TEST_USERS, TEST_IDS, EXPECTED_TEXTS } from '../../helpers/testData';
-import { expectVisible, expectText } from '../../helpers/actions';
+import { expectVisible } from '../../helpers/actions';
 
 describe('Register Flow', () => {
   beforeEach(async () => {

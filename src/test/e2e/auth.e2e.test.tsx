@@ -6,7 +6,7 @@
 import React from 'react';
 import { act } from '@testing-library/react-native';
 import { renderWithProviders, testUtils, scenarios, assertions, TEST_USER } from './setup';
-// Note: AuthNavigator import would be the actual auth navigation component
+import AuthNavigator from '../../navigation/AuthNavigator';
 import { authService } from '../../services/authService';
 
 // Mock auth service

@@ -96,7 +96,7 @@ describe('Testes de Integração - Interceptors', () => {
 
       // Assert
       expect(capturedHeaders['Content-Type']).toBe('application/json');
-      expect(capturedHeaders['Accept']).toBe('application/json');
+      expect(capturedHeaders.Accept).toBe('application/json');
     });
 
     it('deve preservar headers customizados', async () => {

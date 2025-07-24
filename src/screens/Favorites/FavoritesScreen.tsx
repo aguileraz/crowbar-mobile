@@ -90,8 +90,8 @@ const FavoritesScreen: React.FC<FavoritesScreenProps> = ({ navigation }) => {
   const loadFavorites = async () => {
     try {
       await dispatch(fetchFavorites(1)).unwrap();
-    } catch (error) {
-      console.error('Error loading favorites:', error);
+    } catch (err) {
+      console.error('Error loading favorites:', err);
     }
   };
 
@@ -112,8 +112,8 @@ const FavoritesScreen: React.FC<FavoritesScreenProps> = ({ navigation }) => {
       setLoadingMore(true);
       try {
         await dispatch(fetchFavorites(pagination.currentPage + 1)).unwrap();
-      } catch (error) {
-        console.error('Error loading more favorites:', error);
+      } catch (err) {
+        console.error('Error loading more favorites:', err);
       } finally {
         setLoadingMore(false);
       }
@@ -169,8 +169,8 @@ const FavoritesScreen: React.FC<FavoritesScreenProps> = ({ navigation }) => {
   const handleRemoveFavorite = async (boxId: string) => {
     try {
       await dispatch(removeFromFavorites(boxId)).unwrap();
-    } catch (error) {
-      console.error('Error removing favorite:', error);
+    } catch (err) {
+      console.error('Error removing favorite:', err);
     }
   };
 

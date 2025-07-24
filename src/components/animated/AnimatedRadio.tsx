@@ -47,7 +47,7 @@ export const AnimatedRadio: React.FC<AnimatedRadioProps> = ({
 
   useEffect(() => {
     radioAnimation(scale, selected, { haptic });
-  }, [selected, haptic]);
+  }, [selected, haptic, scale]);
 
   const handlePress = useCallback(() => {
     if (!disabled && !selected) {
@@ -58,12 +58,12 @@ export const AnimatedRadio: React.FC<AnimatedRadioProps> = ({
   const handlePressIn = useCallback(() => {
     'worklet';
     borderScale.value = withSpring(0.9, SPRING_CONFIGS.stiff);
-  }, []);
+  }, [borderScale]);
 
   const handlePressOut = useCallback(() => {
     'worklet';
     borderScale.value = withSpring(1, SPRING_CONFIGS.smooth);
-  }, []);
+  }, [borderScale]);
 
   const getSize = () => {
     switch (size) {

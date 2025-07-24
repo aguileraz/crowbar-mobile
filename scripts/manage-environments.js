@@ -6,8 +6,8 @@
  */
 
 const fs = require('fs');
-const path = require('path');
-const { execSync } = require('child_process');
+const _path = require('path');
+const { execSync: _execSync } = require('child_process');
 
 // Configuration
 const ENVIRONMENTS = ['development', 'staging', 'production'];

@@ -111,8 +111,8 @@ const ReviewsScreen: React.FC<ReviewsScreenProps> = ({
         page: 1, 
         filters 
       })).unwrap();
-    } catch (error) {
-      console.error('Error loading reviews:', error);
+    } catch (err) {
+      console.error('Error loading reviews:', err);
     }
   };
 
@@ -122,8 +122,8 @@ const ReviewsScreen: React.FC<ReviewsScreenProps> = ({
   const loadStatistics = async () => {
     try {
       await dispatch(fetchReviewStatistics(box.id)).unwrap();
-    } catch (error) {
-      console.error('Error loading statistics:', error);
+    } catch (err) {
+      console.error('Error loading statistics:', err);
     }
   };
 
@@ -133,8 +133,8 @@ const ReviewsScreen: React.FC<ReviewsScreenProps> = ({
   const loadUserReview = async () => {
     try {
       await dispatch(fetchUserReview(box.id)).unwrap();
-    } catch (error) {
-      console.error('Error loading user review:', error);
+    } catch (err) {
+      console.error('Error loading user review:', err);
     }
   };
 
@@ -187,8 +187,8 @@ const ReviewsScreen: React.FC<ReviewsScreenProps> = ({
           page: pagination.currentPage + 1, 
           filters 
         })).unwrap();
-      } catch (error) {
-        console.error('Error loading more reviews:', error);
+      } catch (err) {
+        console.error('Error loading more reviews:', err);
       } finally {
         setLoadingMore(false);
       }
@@ -374,7 +374,7 @@ const ReviewsScreen: React.FC<ReviewsScreenProps> = ({
       <View style={styles.filtersContainer}>
         <SegmentedButtons
           value={ratingFilter ? ratingFilter.toString() : 'all'}
-          onValueChange={(value) => setRatingFilter(value === 'all' ? undefined : parseInt(value))}
+          onValueChange={(value) => setRatingFilter(value === 'all' ? undefined : parseInt(value, 10))}
           buttons={getRatingFilterOptions().slice(0, 4).map(option => ({
             value: option.value,
             label: option.label,

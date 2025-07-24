@@ -65,12 +65,12 @@ const HomeScreen: React.FC = () => {
     trackButtonClick('test_firebase', 'home_screen');
 
     try {
-      const isConnected = await testFirebaseConnection();
-      setFirebaseStatus(isConnected);
+      const firebaseConnected = await testFirebaseConnection();
+      setFirebaseStatus(firebaseConnected);
       
       Alert.alert(
         'Firebase Test',
-        isConnected ? 'Conexão bem-sucedida!' : 'Falha na conexão',
+        firebaseConnected ? 'Conexão bem-sucedida!' : 'Falha na conexão',
         [{ text: 'OK' }]
       );
     } catch (error) {

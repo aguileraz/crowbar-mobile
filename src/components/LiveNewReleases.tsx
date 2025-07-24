@@ -8,7 +8,6 @@ import {
 } from 'react-native';
 import {
   Text,
-  Card,
   Chip,
   IconButton,
   Button,
@@ -162,7 +161,7 @@ const LiveNewReleases: React.FC<LiveNewReleasesProps> = ({
   /**
    * Render new release item
    */
-  const renderNewRelease = (release: NewRelease, index: number) => {
+  const renderNewRelease = (release: NewRelease, _index: number) => {
     const rarityColor = getRarityColor(release.rarity);
 
     return (

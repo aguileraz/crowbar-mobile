@@ -5,7 +5,7 @@
  * revelação de itens e compartilhamento.
  */
 
-import { TEST_IDS, TEST_BOXES, EXPECTED_TEXTS } from '../../helpers/testData';
+import { TEST_IDS, EXPECTED_TEXTS } from '../../helpers/testData';
 import { 
   login, 
   navigateToProfile,
@@ -183,7 +183,7 @@ describe('Mystery Box Opening', () => {
     
     // Verificar quantidade de caixas não abertas
     const unopenedCount = await element(by.id('unopened-count')).getText();
-    const count = parseInt(unopenedCount);
+    const count = parseInt(unopenedCount, 10);
     
     if (count >= 2) {
       // Abrir primeira caixa

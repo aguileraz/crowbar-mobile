@@ -169,13 +169,13 @@ const BoxOpeningScreen: React.FC<BoxOpeningScreenProps> = ({
         dispatch(startRevealingItems());
       }, 2000);
       
-    } catch (error: any) {
-      Alert.alert('Erro', error.message || 'Erro ao abrir caixa');
+    } catch (err: any) {
+      Alert.alert('Erro', err.message || 'Erro ao abrir caixa');
       setCanStartOpening(true);
       
       // Rastrear erro
       analyticsService.trackError(
-        new Error(`Box opening failed: ${error.message}`),
+        new Error(`Box opening failed: ${err.message}`),
         'box_opening'
       );
     }

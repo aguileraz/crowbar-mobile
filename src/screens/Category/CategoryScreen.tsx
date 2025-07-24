@@ -121,8 +121,8 @@ const CategoryScreen: React.FC<CategoryScreenProps> = ({ navigation, route }) =>
       
       // Load boxes
       await loadBoxes();
-    } catch (error) {
-      console.error('Error loading category data:', error);
+    } catch (err) {
+      console.error('Error loading category data:', err);
     }
   };
 
@@ -141,8 +141,8 @@ const CategoryScreen: React.FC<CategoryScreenProps> = ({ navigation, route }) =>
       };
 
       await dispatch(fetchBoxes(filters)).unwrap();
-    } catch (error) {
-      console.error('Error loading boxes:', error);
+    } catch (err) {
+      console.error('Error loading boxes:', err);
     }
   };
 

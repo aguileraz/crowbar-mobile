@@ -7,7 +7,6 @@ import {
 } from 'react-native';
 import {
   Text,
-  Card,
   Chip,
   IconButton,
   Badge,
@@ -90,7 +89,7 @@ const LiveStockUpdates: React.FC<LiveStockUpdatesProps> = ({
     }
 
     setStockUpdates(updates);
-  }, [liveBoxUpdates, maxItems, stockUpdates.length, showAnimation, scale]);
+  }, [liveBoxUpdates, maxItems, showAnimation, scale]);
 
   /**
    * Clear new update count when user views
@@ -138,7 +137,7 @@ const LiveStockUpdates: React.FC<LiveStockUpdatesProps> = ({
   /**
    * Render stock update item
    */
-  const renderStockUpdate = (update: StockUpdate, index: number) => {
+  const renderStockUpdate = (update: StockUpdate, _index: number) => {
     const updateInfo = getUpdateInfo(update.type);
     const stockDiff = update.currentStock - update.previousStock;
 

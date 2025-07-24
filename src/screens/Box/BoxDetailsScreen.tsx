@@ -105,8 +105,8 @@ const BoxDetailsScreen: React.FC<BoxDetailsScreenProps> = ({ navigation, route }
         loadReviews(),
         loadRelatedBoxes(),
       ]);
-    } catch (error) {
-      console.error('Error loading box details:', error);
+    } catch (err) {
+      console.error('Error loading box details:', err);
     }
   };
 
@@ -117,8 +117,8 @@ const BoxDetailsScreen: React.FC<BoxDetailsScreenProps> = ({ navigation, route }
     try {
       const favorite = await userService.isFavorite(boxId);
       setIsFavorite(favorite);
-    } catch (error) {
-      console.error('Error loading favorite status:', error);
+    } catch (err) {
+      console.error('Error loading favorite status:', err);
     }
   };
 
@@ -129,8 +129,8 @@ const BoxDetailsScreen: React.FC<BoxDetailsScreenProps> = ({ navigation, route }
     try {
       const response = await boxService.getBoxReviews(boxId, 1, 5);
       setReviews(response.data);
-    } catch (error) {
-      console.error('Error loading reviews:', error);
+    } catch (err) {
+      console.error('Error loading reviews:', err);
     }
   };
 
@@ -141,8 +141,8 @@ const BoxDetailsScreen: React.FC<BoxDetailsScreenProps> = ({ navigation, route }
     try {
       const related = await boxService.getRelatedBoxes(boxId, 4);
       setRelatedBoxes(related);
-    } catch (error) {
-      console.error('Error loading related boxes:', error);
+    } catch (err) {
+      console.error('Error loading related boxes:', err);
     }
   };
 
@@ -158,7 +158,7 @@ const BoxDetailsScreen: React.FC<BoxDetailsScreenProps> = ({ navigation, route }
         await userService.addToFavorites(boxId);
         setIsFavorite(true);
       }
-    } catch (error) {
+    } catch (err) {
       Alert.alert('Erro', 'Erro ao atualizar favoritos');
     }
   };
@@ -180,7 +180,7 @@ const BoxDetailsScreen: React.FC<BoxDetailsScreenProps> = ({ navigation, route }
           { text: 'Ver carrinho', onPress: () => navigation.navigate('Cart') },
         ]
       );
-    } catch (error) {
+    } catch (err) {
       Alert.alert('Erro', 'Erro ao adicionar ao carrinho');
     } finally {
       setIsAddingToCart(false);
@@ -196,7 +196,7 @@ const BoxDetailsScreen: React.FC<BoxDetailsScreenProps> = ({ navigation, route }
     try {
       await cartService.addToCart(box.id, quantity);
       navigation.navigate('Cart');
-    } catch (error) {
+    } catch (err) {
       Alert.alert('Erro', 'Erro ao processar compra');
     }
   };
@@ -213,8 +213,8 @@ const BoxDetailsScreen: React.FC<BoxDetailsScreenProps> = ({ navigation, route }
         url: `https://crowbar.app/boxes/${box.id}`,
         title: box.name,
       });
-    } catch (error) {
-      console.error('Error sharing:', error);
+    } catch (err) {
+      console.error('Error sharing:', err);
     }
   };
 

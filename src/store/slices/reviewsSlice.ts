@@ -281,7 +281,7 @@ const reviewsSlice = createSlice({
           // Recalculate average
           const total = Object.values(state.statistics.ratingDistribution).reduce((sum, count) => sum + count, 0);
           const weightedSum = Object.entries(state.statistics.ratingDistribution).reduce(
-            (sum, [rating, count]) => sum + (parseInt(rating) * count), 0
+            (sum, [rating, count]) => sum + (parseInt(rating, 10) * count), 0
           );
           state.statistics.averageRating = weightedSum / total;
         }

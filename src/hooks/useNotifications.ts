@@ -54,8 +54,8 @@ export const useNotifications = (options: UseNotificationsOptions = {}) => {
   const initialize = useCallback(async () => {
     try {
       await dispatch(initializeNotifications()).unwrap();
-    } catch (error) {
-      console.error('Failed to initialize notifications:', error);
+    } catch (err) {
+      console.error('Failed to initialize notifications:', err);
     }
   }, [dispatch]);
 
@@ -65,8 +65,8 @@ export const useNotifications = (options: UseNotificationsOptions = {}) => {
   const loadNotifications = useCallback(async (page = 1, reset = false) => {
     try {
       await dispatch(fetchNotifications({ page, reset })).unwrap();
-    } catch (error) {
-      console.error('Failed to load notifications:', error);
+    } catch (err) {
+      console.error('Failed to load notifications:', err);
     }
   }, [dispatch]);
 
@@ -76,8 +76,8 @@ export const useNotifications = (options: UseNotificationsOptions = {}) => {
   const markNotificationAsRead = useCallback(async (notificationId: string) => {
     try {
       await dispatch(markAsRead(notificationId)).unwrap();
-    } catch (error) {
-      console.error('Failed to mark notification as read:', error);
+    } catch (err) {
+      console.error('Failed to mark notification as read:', err);
     }
   }, [dispatch]);
 
@@ -87,8 +87,8 @@ export const useNotifications = (options: UseNotificationsOptions = {}) => {
   const markAllNotificationsAsRead = useCallback(async () => {
     try {
       await dispatch(markAllAsRead()).unwrap();
-    } catch (error) {
-      console.error('Failed to mark all notifications as read:', error);
+    } catch (err) {
+      console.error('Failed to mark all notifications as read:', err);
     }
   }, [dispatch]);
 
@@ -98,8 +98,8 @@ export const useNotifications = (options: UseNotificationsOptions = {}) => {
   const deleteNotificationById = useCallback(async (notificationId: string) => {
     try {
       await dispatch(deleteNotification(notificationId)).unwrap();
-    } catch (error) {
-      console.error('Failed to delete notification:', error);
+    } catch (err) {
+      console.error('Failed to delete notification:', err);
     }
   }, [dispatch]);
 
@@ -109,8 +109,8 @@ export const useNotifications = (options: UseNotificationsOptions = {}) => {
   const updateNotificationSettings = useCallback(async (newSettings: any) => {
     try {
       await dispatch(updateSettings(newSettings)).unwrap();
-    } catch (error) {
-      console.error('Failed to update notification settings:', error);
+    } catch (err) {
+      console.error('Failed to update notification settings:', err);
     }
   }, [dispatch]);
 
@@ -121,8 +121,8 @@ export const useNotifications = (options: UseNotificationsOptions = {}) => {
     try {
       const result = await dispatch(requestPermission()).unwrap();
       return result;
-    } catch (error) {
-      console.error('Failed to request notification permission:', error);
+    } catch (err) {
+      console.error('Failed to request notification permission:', err);
       return { granted: false };
     }
   }, [dispatch]);
@@ -180,8 +180,8 @@ export const useNotifications = (options: UseNotificationsOptions = {}) => {
           unsubscribeBackground();
           unsubscribeTokenRefresh();
         };
-      } catch (error) {
-        console.error('Error setting up notification listeners:', error);
+      } catch (err) {
+        console.error('Error setting up notification listeners:', err);
       }
     };
 

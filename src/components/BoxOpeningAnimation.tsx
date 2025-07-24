@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import {
   View,
   StyleSheet,
@@ -30,14 +30,14 @@ interface BoxOpeningAnimationProps {
   isLoading: boolean;
 }
 
-const { width: screenWidth } = Dimensions.get('window');
+const { width: _screenWidth } = Dimensions.get('window');
 
 const BoxOpeningAnimation: React.FC<BoxOpeningAnimationProps> = ({
   box,
   animationState,
-  fadeAnim,
-  scaleAnim,
-  rotateAnim,
+  fadeAnim: _fadeAnim,
+  scaleAnim: _scaleAnim,
+  rotateAnim: _rotateAnim,
   onOpenPress,
   canOpen,
   isLoading,
@@ -55,18 +55,10 @@ const BoxOpeningAnimation: React.FC<BoxOpeningAnimationProps> = ({
   // Glow animation
   const glowAnim = useRef(new Animated.Value(0)).current;
 
-  // Start particle animation when opening
-  useEffect(() => {
-    if (animationState === 'opening') {
-      startParticleAnimation();
-      startGlowAnimation();
-    }
-  }, [animationState]);
-
   /**
    * Start particle explosion animation
    */
-  const startParticleAnimation = () => {
+  const startParticleAnimation = useCallback(() => {
     const animations = particleAnims.map((particle, index) => {
       const angle = (index * 45) * (Math.PI / 180); // 45 degrees apart
       const distance = 100;
@@ -104,12 +96,12 @@ const BoxOpeningAnimation: React.FC<BoxOpeningAnimationProps> = ({
     });
 
     Animated.parallel(animations).start();
-  };
+  }, [particleAnims]);
 
   /**
    * Start glow animation
    */
-  const startGlowAnimation = () => {
+  const startGlowAnimation = useCallback(() => {
     Animated.loop(
       Animated.sequence([
         Animated.timing(glowAnim, {
@@ -124,7 +116,15 @@ const BoxOpeningAnimation: React.FC<BoxOpeningAnimationProps> = ({
         }),
       ])
     ).start();
-  };
+  }, [glowAnim]);
+
+  // Start particle animation when opening
+  useEffect(() => {
+    if (animationState === 'opening') {
+      startParticleAnimation();
+      startGlowAnimation();
+    }
+  }, [animationState, startGlowAnimation, startParticleAnimation]);
 
   /**
    * Get box image

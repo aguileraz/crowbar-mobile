@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import {
   View,
   StyleSheet,
@@ -36,15 +36,18 @@ const ItemRevealCard: React.FC<ItemRevealCardProps> = ({
   const rotateAnim = useRef(new Animated.Value(0)).current;
   const glowAnim = useRef(new Animated.Value(0)).current;
 
-  // Start reveal animation on mount
-  useEffect(() => {
-    startRevealAnimation();
-  }, []);
+  /**
+   * Check if item is rare
+   */
+  const isRareItem = useCallback((): boolean => {
+    const rarity = item.rarity?.toLowerCase();
+    return rarity === 'epic' || rarity === 'legendary' || rarity === 'mythic';
+  }, [item.rarity]);
 
   /**
    * Start reveal animation
    */
-  const startRevealAnimation = () => {
+  const startRevealAnimation = useCallback(() => {
     // Delay based on index for staggered effect
     const delay = index * 200;
     
@@ -90,15 +93,12 @@ const ItemRevealCard: React.FC<ItemRevealCardProps> = ({
         )
       ] : []),
     ]).start();
-  };
+  }, [index, fadeAnim, rotateAnim, glowAnim, scaleAnim, isRareItem]);
 
-  /**
-   * Check if item is rare
-   */
-  const isRareItem = (): boolean => {
-    const rarity = item.rarity?.toLowerCase();
-    return rarity === 'epic' || rarity === 'legendary' || rarity === 'mythic';
-  };
+  // Start reveal animation on mount
+  useEffect(() => {
+    startRevealAnimation();
+  }, [startRevealAnimation]);
 
   /**
    * Get rarity color

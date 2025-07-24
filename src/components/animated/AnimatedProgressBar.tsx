@@ -70,7 +70,7 @@ export const AnimatedProgressBar: React.FC<AnimatedProgressBarProps> = ({
         false
       );
     }
-  }, [progress, animated, variant, haptic]);
+  }, [progress, animated, variant, haptic, progressValue, stripeOffset]);
 
   const progressAnimatedStyle = useAnimatedStyle(() => {
     const width = interpolate(
@@ -235,7 +235,7 @@ export const AnimatedCircularProgress: React.FC<CircularProgressProps> = ({
     } else {
       progressValue.value = normalizedProgress;
     }
-  }, [progress, animated]);
+  }, [progress, animated, progressValue]);
 
   const animatedStyle = useAnimatedStyle(() => {
     const strokeDashoffset = interpolate(
@@ -265,6 +265,7 @@ export const AnimatedCircularProgress: React.FC<CircularProgressProps> = ({
 
   return (
     <View style={[styles.circularContainer, { width: size, height: size }]}>
+      {/* TODO: Add react-native-svg dependency to enable circular progress
       <Svg width={size} height={size} style={StyleSheet.absoluteFillObject}>
         <Circle
           cx={size / 2}
@@ -287,6 +288,11 @@ export const AnimatedCircularProgress: React.FC<CircularProgressProps> = ({
           transform={`rotate(-90 ${size / 2} ${size / 2})`}
         />
       </Svg>
+      */}
+      {/* Temporary fallback: Show text-only progress */}
+      <View style={[StyleSheet.absoluteFillObject, styles.circularFallback]}>
+        <View style={[styles.circularBackground, { backgroundColor }]} />
+      </View>
       {showLabel && (
         <Animated.Text
           style={[
@@ -356,6 +362,16 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: '#333333',
+  },
+  circularFallback: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  circularBackground: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 999,
+    opacity: 0.2,
   },
 });
 

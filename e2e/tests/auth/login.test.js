@@ -6,7 +6,7 @@
  */
 
 import { TEST_USERS, TEST_IDS, EXPECTED_TEXTS } from '../../helpers/testData';
-import { login, logout, expectVisible, expectText } from '../../helpers/actions';
+import { login, logout, expectVisible } from '../../helpers/actions';
 
 describe('Login Flow', () => {
   beforeEach(async () => {

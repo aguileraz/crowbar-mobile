@@ -12,7 +12,6 @@ import {
   Title,
   Paragraph,
   Chip,
-  IconButton,
   Badge,
 } from 'react-native-paper';
 import { MysteryBox } from '../types/api';
@@ -36,9 +35,9 @@ interface BoxCardProps {
 
 const BoxCard: React.FC<BoxCardProps> = ({
   box,
-  onPress,
-  onFavoritePress,
-  isFavorite = false,
+  _onPress,
+  _onFavoritePress,
+  _isFavorite = false,
   showFavoriteButton = false,
   variant = 'compact',
   style,

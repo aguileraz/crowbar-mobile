@@ -89,8 +89,8 @@ const OrderHistoryScreen: React.FC<OrderHistoryScreenProps> = ({ navigation }) =
   const loadOrders = async () => {
     try {
       await dispatch(fetchOrders({ page: 1, filters })).unwrap();
-    } catch (error) {
-      console.error('Error loading orders:', error);
+    } catch (err) {
+      console.error('Error loading orders:', err);
     }
   };
 
@@ -135,8 +135,8 @@ const OrderHistoryScreen: React.FC<OrderHistoryScreenProps> = ({ navigation }) =
           page: pagination.currentPage + 1, 
           filters 
         })).unwrap();
-      } catch (error) {
-        console.error('Error loading more orders:', error);
+      } catch (err) {
+        console.error('Error loading more orders:', err);
       } finally {
         setLoadingMore(false);
       }

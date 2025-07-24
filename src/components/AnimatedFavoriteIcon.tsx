@@ -5,7 +5,7 @@ import {
   ViewStyle,
 } from 'react-native';
 import { IconButton } from 'react-native-paper';
-import { scaleAnimation, feedbackAnimations } from '../utils/animations';
+import { scaleAnimation as _scaleAnimation, feedbackAnimations as _feedbackAnimations } from '../utils/animations';
 import { theme } from '../theme';
 
 /**

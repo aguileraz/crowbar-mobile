@@ -7,7 +7,7 @@
  */
 
 const fs = require('fs');
-const path = require('path');
+const _path = require('path');
 const { execSync } = require('child_process');
 const readline = require('readline');
 
@@ -158,7 +158,7 @@ function updateAndroidVersion(newVersion) {
   // Calculate version code (major * 10000 + minor * 100 + patch)
   const versionCode = version.major * 10000 + version.minor * 100 + version.patch;
   
-  let updatedGradle = gradleFile
+  const updatedGradle = gradleFile
     .replace(/versionCode\s+\d+/, `versionCode ${versionCode}`)
     .replace(/versionName\s+"[^"]+"/, `versionName "${newVersion}"`);
   
@@ -178,7 +178,7 @@ function updateIosVersion(newVersion) {
   // Calculate bundle version (major.minor.patch format)
   const bundleVersion = `${version.major}.${version.minor}.${version.patch}`;
   
-  let updatedPlist = plistFile
+  const updatedPlist = plistFile
     .replace(
       /(<key>CFBundleShortVersionString<\/key>\s*<string>)[^<]+(<\/string>)/,
       `$1${newVersion}$2`
@@ -195,7 +195,7 @@ function updateIosVersion(newVersion) {
 /**
  * Generate changelog entry
  */
-async function generateChangelog(version, releaseType) {
+async function generateChangelog(version, _releaseType) {
   log.info('Generating changelog...');
   
   const date = new Date().toISOString().split('T')[0];

@@ -24,7 +24,7 @@ import { AppDispatch } from '../store';
 import { fetchCategories, selectCategories } from '../store/slices/boxSlice';
 
 // Types
-import { SearchFilters, Category } from '../types/api';
+import { SearchFilters } from '../types/api';
 
 // Theme
 import { theme, getSpacing, getBorderRadius } from '../theme';
@@ -58,7 +58,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
     if (visible && categories.length === 0) {
       dispatch(fetchCategories());
     }
-  }, [visible, categories.length]);
+  }, [visible, categories.length, dispatch]);
 
   // Update local filters when props change
   useEffect(() => {

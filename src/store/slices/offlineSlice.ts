@@ -108,8 +108,8 @@ export const initializeOffline = createAsyncThunk(
     try {
       const result = await offlineService.initialize();
       return result;
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Erro ao inicializar sistema offline');
+    } catch (err: any) {
+      return rejectWithValue(err.message || 'Erro ao inicializar sistema offline');
     }
   }
 );
@@ -129,8 +129,8 @@ export const syncOfflineData = createAsyncThunk(
       
       const result = await offlineService.syncData(force);
       return result;
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Erro ao sincronizar dados');
+    } catch (err: any) {
+      return rejectWithValue(err.message || 'Erro ao sincronizar dados');
     }
   }
 );
@@ -144,8 +144,8 @@ export const clearOfflineCache = createAsyncThunk(
     try {
       await offlineService.clearCache(cacheType);
       return cacheType;
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Erro ao limpar cache');
+    } catch (err: any) {
+      return rejectWithValue(err.message || 'Erro ao limpar cache');
     }
   }
 );
@@ -167,8 +167,8 @@ export const addPendingAction = createAsyncThunk(
       
       await offlineService.addPendingAction(pendingAction);
       return pendingAction;
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Erro ao adicionar ação pendente');
+    } catch (err: any) {
+      return rejectWithValue(err.message || 'Erro ao adicionar ação pendente');
     }
   }
 );
@@ -188,8 +188,8 @@ export const processPendingActions = createAsyncThunk(
       
       const result = await offlineService.processPendingActions();
       return result;
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Erro ao processar ações pendentes');
+    } catch (err: any) {
+      return rejectWithValue(err.message || 'Erro ao processar ações pendentes');
     }
   }
 );
@@ -238,13 +238,13 @@ const offlineSlice = createSlice({
     // Pending actions
     removePendingAction: (state, action: PayloadAction<string>) => {
       state.pendingActions = state.pendingActions.filter(
-        action => action.id !== action.payload
+        pendingAction => pendingAction.id !== action.payload
       );
     },
     
     incrementRetryCount: (state, action: PayloadAction<string>) => {
       const actionIndex = state.pendingActions.findIndex(
-        action => action.id === action.payload
+        pendingAction => pendingAction.id === action.payload
       );
       
       if (actionIndex !== -1) {

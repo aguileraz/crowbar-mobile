@@ -7,7 +7,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
+const { execSync: _execSync } = require('child_process');
 
 // Configuration
 const CONFIG = {
@@ -550,7 +550,7 @@ async function main() {
     // Analyze platforms
     const platforms = [];
     let totalSize = 0;
-    let allRecommendations = [];
+    const allRecommendations = [];
 
     // Analyze Android
     const androidAnalysis = analyzeAndroidBundle();

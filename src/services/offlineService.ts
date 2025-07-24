@@ -375,7 +375,7 @@ class OfflineService {
       if (exists) {
         // Verificar idade do cache
         const stat = await ReactNativeBlobUtil.fs.stat(filepath);
-        const age = Date.now() - parseInt(stat.lastModified);
+        const age = Date.now() - parseInt(stat.lastModified, 10);
         const maxAge = this.getMaxAgeForPriority(priority);
         
         if (age < maxAge) {
@@ -889,7 +889,7 @@ class OfflineService {
         const files = await ReactNativeBlobUtil.fs.ls(this.IMAGE_CACHE_DIR);
         for (const file of files) {
           const stat = await ReactNativeBlobUtil.fs.stat(`${this.IMAGE_CACHE_DIR}/${file}`);
-          cacheStatus.imageCache.size += parseInt(stat.size);
+          cacheStatus.imageCache.size += parseInt(stat.size, 10);
         }
         cacheStatus.totalSize += cacheStatus.imageCache.size;
       } catch (error) {

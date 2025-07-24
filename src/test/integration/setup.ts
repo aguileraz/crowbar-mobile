@@ -154,7 +154,7 @@ export const loginTestUser = async () => {
   
   // Set auth token for subsequent requests
   const token = response.data.token;
-  httpClient.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  httpClient.defaults.headers.common.Authorization = `Bearer ${token}`;
   
   return response.data;
 };
@@ -168,7 +168,7 @@ export const logoutTestUser = async () => {
   } catch (error) {
     // Ignore logout errors in tests
   } finally {
-    delete httpClient.defaults.headers.common['Authorization'];
+    delete httpClient.defaults.headers.common.Authorization;
   }
 };
 

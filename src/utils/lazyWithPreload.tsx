@@ -65,7 +65,7 @@ export function usePreloadComponents(
         console.warn('Erro ao pré-carregar componentes:', error);
       }
     );
-  }, []);
+  }, [components]);
 }
 
 /**
@@ -79,16 +79,9 @@ export const LazyBoundary: React.FC<{
     <React.Suspense
       fallback={
         fallback || (
-          <div
-            style={{
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'center',
-              padding: 20,
-            }}
-          >
+          <React.Fragment>
             Carregando...
-          </div>
+          </React.Fragment>
         )
       }
     >

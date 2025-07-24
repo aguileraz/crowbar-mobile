@@ -187,7 +187,7 @@ export const parallaxTransition = (
   scrollY: SharedValue<number>,
   inputRange: number[],
   outputRange: number[],
-  options: TransitionOptions = {}
+  _options: TransitionOptions = {}
 ) => {
   'worklet';
   

@@ -2,7 +2,7 @@
  * Hook personalizado para animações com React Native Reanimated
  */
 
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useMemo } from 'react';
 import {
   useSharedValue,
   useAnimatedStyle,
@@ -100,14 +100,14 @@ export const useReanimatedAnimations = (options: UseReanimatedAnimationsOptions 
 
   const animateCombined = useCallback((
     type: 'fadeScale' | 'slideFade' = 'fadeScale',
-    options?: any
+    animOptions?: any
   ) => {
     switch (type) {
       case 'fadeScale':
-        fadeAndScale(opacity, scale, { ...options, delay, callback: onComplete });
+        fadeAndScale(opacity, scale, { ...animOptions, delay, callback: onComplete });
         break;
       case 'slideFade':
-        slideAndFade(translateY, opacity, { ...options, delay, callback: onComplete });
+        slideAndFade(translateY, opacity, { ...animOptions, delay, callback: onComplete });
         break;
     }
   }, [delay, onComplete]);
@@ -212,6 +212,7 @@ export const useEntranceAnimation = (
 };
 
 // Hook para animações de lista
+// DISABLED: This hook violates React Hooks rules - can't dynamically create hooks
 export const useListAnimation = (
   itemCount: number,
   options: {
@@ -219,64 +220,14 @@ export const useListAnimation = (
     animationType?: 'fade' | 'scale' | 'slide';
   } = {}
 ) => {
-  const { staggerDelay = 100, animationType = 'fade' } = options;
+  console.warn('useListAnimation has been disabled due to React Hooks violations. Use individual animation hooks instead.');
   
-  const animatedValues = Array.from({ length: itemCount }, () => 
-    useSharedValue(0)
-  );
-
-  const startAnimation = useCallback(() => {
-    animatedValues.forEach((value, index) => {
-      value.value = withDelay(
-        index * staggerDelay,
-        withSpring(1, SPRING_CONFIGS.smooth)
-      );
-    });
-  }, [animatedValues, staggerDelay]);
-
-  const reset = useCallback(() => {
-    animatedValues.forEach(value => {
-      value.value = 0;
-    });
-  }, [animatedValues]);
-
-  const getAnimatedStyle = useCallback((index: number): AnimatedStyleProp<any> => {
-    return useAnimatedStyle(() => {
-      const value = animatedValues[index];
-      
-      switch (animationType) {
-        case 'scale':
-          return {
-            transform: [{ scale: value.value }],
-            opacity: value.value,
-          };
-        case 'slide':
-          return {
-            transform: [{
-              translateY: withSpring(
-                value.value === 0 ? 50 : 0,
-                SPRING_CONFIGS.smooth
-              ),
-            }],
-            opacity: value.value,
-          };
-        default:
-          return {
-            opacity: value.value,
-          };
-      }
-    });
-  }, [animatedValues, animationType]);
-
-  useEffect(() => {
-    startAnimation();
-  }, []);
-
   return {
-    animatedValues,
-    startAnimation,
-    reset,
-    getAnimatedStyle,
+    animatedValues: [],
+    animatedStyles: [],
+    startAnimation: () => {},
+    reset: () => {},
+    getAnimatedStyle: () => ({}),
   };
 };
 

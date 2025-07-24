@@ -686,7 +686,7 @@ async function main() {
     ];
 
     let completedTasks = 0;
-    let totalTasks = tasks.length;
+    const totalTasks = tasks.length;
 
     for (const task of tasks) {
       log.info(`Generating ${task.name}...`);

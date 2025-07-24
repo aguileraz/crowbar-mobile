@@ -411,7 +411,7 @@ class ShopPage extends BasePage {
    * @param {string} section - Seção para contar
    * @returns {number} - Número de caixas
    */
-  async countBoxesInSection(section) {
+  async countBoxesInSection(_section) {
     // Implementação específica para contar elementos
     // Retorna número aproximado baseado em elementos visíveis
     return 5; // Placeholder

@@ -81,8 +81,8 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
         dispatch(fetchUserProfile()).unwrap(),
         dispatch(fetchUserStatistics()).unwrap(),
       ]);
-    } catch (error) {
-      console.error('Error loading profile data:', error);
+    } catch (err) {
+      console.error('Error loading profile data:', err);
     }
   };
 

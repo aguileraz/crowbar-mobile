@@ -273,10 +273,10 @@ export const useOfflineAction = <T = any>(
           return {} as T;
         }
       } catch (err) {
-        const error = err as Error;
-        setError(error);
-        if (onError) onError(error);
-        throw error;
+        const errorObj = err as Error;
+        setError(errorObj);
+        if (onError) onError(errorObj);
+        throw errorObj;
       } finally {
         setLoading(false);
       }
@@ -433,8 +433,8 @@ export const useOfflineProfile = () => {
     },
     {
       priority: SyncPriority.HIGH,
-      optimisticUpdate: (data) => {
-        console.log('Atualizando perfil (otimista):', data);
+      optimisticUpdate: (profileData) => {
+        console.log('Atualizando perfil (otimista):', profileData);
       },
     }
   );

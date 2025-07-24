@@ -78,8 +78,8 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ navigation })
         page: reset ? 1 : pagination.page + 1, 
         reset 
       })).unwrap();
-    } catch (error) {
-      console.error('Error loading notifications:', error);
+    } catch (err) {
+      console.error('Error loading notifications:', err);
     }
   }, [dispatch, pagination.page]);
 
@@ -104,8 +104,8 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ navigation })
     try {
       await dispatch(markAsRead(notificationId)).unwrap();
       trackEngagement('mark_as_read', 'notification');
-    } catch (error) {
-      console.error('Error marking as read:', error);
+    } catch (err) {
+      console.error('Error marking as read:', err);
     }
   }, [dispatch, trackEngagement]);
 
@@ -116,8 +116,8 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ navigation })
     try {
       await dispatch(markAllAsRead()).unwrap();
       trackButtonClick('mark_all_as_read', 'notifications');
-    } catch (error) {
-      console.error('Error marking all as read:', error);
+    } catch (err) {
+      console.error('Error marking all as read:', err);
     }
   }, [dispatch, trackButtonClick]);
 
@@ -137,8 +137,8 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ navigation })
             try {
               await dispatch(deleteNotification(notificationId)).unwrap();
               trackEngagement('delete_notification', 'notification');
-            } catch (error) {
-              console.error('Error deleting notification:', error);
+            } catch (err) {
+              console.error('Error deleting notification:', err);
             }
           },
         },

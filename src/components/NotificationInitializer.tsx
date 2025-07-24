@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Platform } from 'react-native';
+import { Platform as _Platform } from 'react-native';
 import { useDispatch } from 'react-redux';
 import messaging from '@react-native-firebase/messaging';
 import notifee from '@notifee/react-native';

@@ -4,7 +4,7 @@ import {
   Animated,
   StyleSheet,
   ViewStyle,
-  Dimensions,
+  Dimensions as _Dimensions,
 } from 'react-native';
 import { theme, getSpacing, getBorderRadius } from '../theme';
 import { feedbackAnimations } from '../utils/animations';

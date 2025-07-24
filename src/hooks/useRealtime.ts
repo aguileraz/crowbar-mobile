@@ -60,8 +60,8 @@ export const useRealtime = (options: UseRealtimeOptions = {}) => {
       if (subscribeToStats) {
         realtimeService.subscribeToLiveStats();
       }
-    } catch (error) {
-      console.error('Failed to connect to realtime:', error);
+    } catch (err) {
+      console.error('Failed to connect to realtime:', err);
     }
   }, [dispatch, subscribeToGlobal, subscribeToStats]);
 
@@ -71,8 +71,8 @@ export const useRealtime = (options: UseRealtimeOptions = {}) => {
   const disconnect = useCallback(async () => {
     try {
       await dispatch(disconnectRealtime()).unwrap();
-    } catch (error) {
-      console.error('Failed to disconnect from realtime:', error);
+    } catch (err) {
+      console.error('Failed to disconnect from realtime:', err);
     }
   }, [dispatch]);
 
@@ -82,8 +82,8 @@ export const useRealtime = (options: UseRealtimeOptions = {}) => {
   const subscribeBox = useCallback(async (boxId: string) => {
     try {
       await dispatch(subscribeToBox(boxId)).unwrap();
-    } catch (error) {
-      console.error('Failed to subscribe to box:', error);
+    } catch (err) {
+      console.error('Failed to subscribe to box:', err);
     }
   }, [dispatch]);
 
@@ -93,24 +93,14 @@ export const useRealtime = (options: UseRealtimeOptions = {}) => {
   const subscribeOrder = useCallback(async (orderId: string) => {
     try {
       await dispatch(subscribeToOrder(orderId)).unwrap();
-    } catch (error) {
-      console.error('Failed to subscribe to order:', error);
+    } catch (err) {
+      console.error('Failed to subscribe to order:', err);
     }
   }, [dispatch]);
 
-  /**
-   * Get box stock info
-   */
-  const getBoxStock = useCallback((boxId: string) => {
-    return useSelector(selectBoxStock(boxId));
-  }, []);
-
-  /**
-   * Get order status info
-   */
-  const getOrderStatus = useCallback((orderId: string) => {
-    return useSelector(selectOrderStatus(orderId));
-  }, []);
+  // Remove these functions as they violate React Hooks rules
+  // useSelector cannot be called inside callbacks
+  // Components should use useSelector directly
 
   /**
    * Auto-connect on mount

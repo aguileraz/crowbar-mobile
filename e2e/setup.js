@@ -6,7 +6,7 @@
  */
 
 // Importar globals do Detox
-const { device, element, by, expect, waitFor } = require('detox');
+const { device, element, by, waitFor } = require('detox');
 
 // Tornar Detox globals disponíveis
 global.device = device;
@@ -46,7 +46,7 @@ global.TIMEOUT_CONFIG = TIMEOUT_CONFIG;
 global.DEVICE_CONFIG = DEVICE_CONFIG;
 
 // Configurações para expectativas do Detox
-const detoxConfig = {
+const _detoxConfig = {
   timeout: TIMEOUT_CONFIG.DEFAULT,
   interval: 500
 };
@@ -60,32 +60,32 @@ beforeEach(() => {
 global.sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 // Helper para aguardar elemento aparecer
-global.waitForElement = async (element, timeout = TIMEOUT_CONFIG.DEFAULT) => {
-  await waitFor(element).toBeVisible().withTimeout(timeout);
+global.waitForElement = async (targetElement, timeout = TIMEOUT_CONFIG.DEFAULT) => {
+  await waitFor(targetElement).toBeVisible().withTimeout(timeout);
 };
 
 // Helper para aguardar elemento desaparecer
-global.waitForElementToDisappear = async (element, timeout = TIMEOUT_CONFIG.DEFAULT) => {
-  await waitFor(element).toBeNotVisible().withTimeout(timeout);
+global.waitForElementToDisappear = async (targetElement, timeout = TIMEOUT_CONFIG.DEFAULT) => {
+  await waitFor(targetElement).toBeNotVisible().withTimeout(timeout);
 };
 
 // Helper para aguardar e tocar em elemento
-global.waitAndTap = async (element, timeout = TIMEOUT_CONFIG.DEFAULT) => {
-  await waitFor(element).toBeVisible().withTimeout(timeout);
-  await element.tap();
+global.waitAndTap = async (targetElement, timeout = TIMEOUT_CONFIG.DEFAULT) => {
+  await waitFor(targetElement).toBeVisible().withTimeout(timeout);
+  await targetElement.tap();
 };
 
 // Helper para aguardar e digitar texto
-global.waitAndType = async (element, text, timeout = TIMEOUT_CONFIG.DEFAULT) => {
-  await waitFor(element).toBeVisible().withTimeout(timeout);
-  await element.clearText();
-  await element.typeText(text);
+global.waitAndType = async (targetElement, text, timeout = TIMEOUT_CONFIG.DEFAULT) => {
+  await waitFor(targetElement).toBeVisible().withTimeout(timeout);
+  await targetElement.clearText();
+  await targetElement.typeText(text);
 };
 
 // Helper para scroll até elemento
-global.scrollToElement = async (scrollView, element, direction = 'down', offset = 0.5) => {
+global.scrollToElement = async (scrollView, targetElement, direction = 'down', offset = 0.5) => {
   await scrollView.scroll(500, direction, offset);
-  await waitFor(element).toBeVisible().withTimeout(TIMEOUT_CONFIG.SLOW);
+  await waitFor(targetElement).toBeVisible().withTimeout(TIMEOUT_CONFIG.SLOW);
 };
 
 // Helper para aguardar carregamento

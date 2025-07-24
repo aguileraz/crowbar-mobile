@@ -10,7 +10,7 @@ import {
   interpolate,
   Extrapolate,
 } from 'react-native-reanimated';
-import { LinearGradient } from 'react-native-linear-gradient';
+import { LinearGradient as _LinearGradient } from 'react-native-linear-gradient';
 import { DURATIONS, EASINGS } from './constants';
 
 interface SkeletonOptions {
