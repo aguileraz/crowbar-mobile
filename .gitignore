@@ -93,3 +93,8 @@ performance-report.json
 
 # Claude AI files
 .claude/
+
+# Large files
+*.psd
+commandlinetools.zip
+*.zip

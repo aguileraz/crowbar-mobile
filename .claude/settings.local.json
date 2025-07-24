@@ -42,7 +42,13 @@
       "Bash(source ~/.bashrc)",
       "Bash(adb:*)",
       "Bash(curl:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(git config:*)",
+      "Bash(gh auth:*)",
+      "Bash(gh repo list:*)",
+      "Bash(gh repo create:*)",
+      "Bash(git remote set-url:*)",
+      "Bash(git rm:*)"
     ],
     "deny": []
   }
