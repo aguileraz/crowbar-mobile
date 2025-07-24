@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import logger from '../../services/loggerService';
 import {
   View,
   StyleSheet,
@@ -85,7 +86,7 @@ const NotificationSettingsScreen: React.FC<NotificationSettingsScreenProps> = ({
       setIsLoading(true);
       await dispatch(fetchNotificationSettings()).unwrap();
     } catch (err) {
-      console.error('Error loading settings:', err);
+      logger.error('Error loading settings:', err);
     } finally {
       setIsLoading(false);
     }

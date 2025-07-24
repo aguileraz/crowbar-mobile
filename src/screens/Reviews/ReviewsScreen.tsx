@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import logger from '../../services/loggerService';
 import {
   View,
   StyleSheet,
@@ -112,7 +113,7 @@ const ReviewsScreen: React.FC<ReviewsScreenProps> = ({
         filters 
       })).unwrap();
     } catch (err) {
-      console.error('Error loading reviews:', err);
+      logger.error('Error loading reviews:', err);
     }
   };
 
@@ -123,7 +124,7 @@ const ReviewsScreen: React.FC<ReviewsScreenProps> = ({
     try {
       await dispatch(fetchReviewStatistics(box.id)).unwrap();
     } catch (err) {
-      console.error('Error loading statistics:', err);
+      logger.error('Error loading statistics:', err);
     }
   };
 
@@ -134,7 +135,7 @@ const ReviewsScreen: React.FC<ReviewsScreenProps> = ({
     try {
       await dispatch(fetchUserReview(box.id)).unwrap();
     } catch (err) {
-      console.error('Error loading user review:', err);
+      logger.error('Error loading user review:', err);
     }
   };
 
@@ -188,7 +189,7 @@ const ReviewsScreen: React.FC<ReviewsScreenProps> = ({
           filters 
         })).unwrap();
       } catch (err) {
-        console.error('Error loading more reviews:', err);
+        logger.error('Error loading more reviews:', err);
       } finally {
         setLoadingMore(false);
       }

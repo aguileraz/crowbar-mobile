@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import logger from '../services/loggerService';
 import {
   View,
   StyleSheet,
@@ -129,7 +130,7 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
       try {
         await dispatch(markAsRead(notification.id)).unwrap();
       } catch (error) {
-        console.error('Error marking as read:', error);
+        logger.error('Error marking as read:', error);
       }
     }
 
@@ -145,7 +146,7 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
       await dispatch(markAsRead(notification.id)).unwrap();
       setShowMenu(false);
     } catch (error) {
-      console.error('Error marking as read:', error);
+      logger.error('Error marking as read:', error);
     }
   };
 
@@ -157,7 +158,7 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
       await dispatch(deleteNotification(notification.id)).unwrap();
       setShowMenu(false);
     } catch (error) {
-      console.error('Error deleting notification:', error);
+      logger.error('Error deleting notification:', error);
     }
   };
 

@@ -1,3 +1,5 @@
+import logger from '../../loggerService';
+
 import 'react-native-testing-library/extend-expect';
 import 'jest-extended';
 
@@ -204,7 +206,7 @@ console.warn = (...args) => {
 
 // Configuração para capturar erros não tratados
 process.on('unhandledRejection', (reason, promise) => {
-  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
 });
 
 // Configuração para React Native específica
@@ -338,4 +340,4 @@ process.env.TZ = 'UTC';
 process.env.NODE_ENV = 'test';
 process.env.JEST_WORKER_ID = '1';
 
-console.log('🧪 Setup de testes de integração carregado com sucesso!');
+logger.debug('🧪 Setup de testes de integração carregado com sucesso!');

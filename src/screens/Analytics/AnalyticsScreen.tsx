@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import logger from '../../services/loggerService';
 import {
   ScrollView,
   StyleSheet,
@@ -63,7 +64,7 @@ const AnalyticsScreen: React.FC = () => {
       // Rastrear visualização da tela
       await analyticsService.logScreenView('AnalyticsScreen', 'Analytics');
     } catch (error) {
-      console.error('Erro ao carregar dados de analytics:', error);
+      logger.error('Erro ao carregar dados de analytics:', error);
     } finally {
       setIsLoading(false);
     }

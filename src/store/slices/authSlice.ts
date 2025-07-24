@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { firebaseAuth } from '../../config/firebase';
+import logger from '../../services/loggerService';
 
 /**
  * Authentication Redux Slice
@@ -59,7 +60,7 @@ export const loginWithEmail = createAsyncThunk(
       const userCredential = await firebaseAuth().signInWithEmailAndPassword(email, password);
       return mapFirebaseUser(userCredential.user);
     } catch (error: any) {
-      console.error('Login error:', error);
+      logger.error('Login error:', error);
       
       // Mapear erros do Firebase para mensagens em português
       let errorMessage = 'Erro desconhecido ao fazer login';
@@ -111,7 +112,7 @@ export const registerWithEmail = createAsyncThunk(
       
       return mapFirebaseUser(userCredential.user);
     } catch (error: any) {
-      console.error('Registration error:', error);
+      logger.error('Registration error:', error);
       
       let errorMessage = 'Erro desconhecido ao criar conta';
       
@@ -147,7 +148,7 @@ export const logout = createAsyncThunk(
       await firebaseAuth().signOut();
       return null;
     } catch (error: any) {
-      console.error('Logout error:', error);
+      logger.error('Logout error:', error);
       return rejectWithValue('Erro ao fazer logout');
     }
   }
@@ -163,7 +164,7 @@ export const resetPassword = createAsyncThunk(
       await firebaseAuth().sendPasswordResetEmail(email);
       return email;
     } catch (error: any) {
-      console.error('Password reset error:', error);
+      logger.error('Password reset error:', error);
       
       let errorMessage = 'Erro ao enviar email de recuperação';
       
@@ -204,7 +205,7 @@ export const checkAuthState = createAsyncThunk(
         });
       });
     } catch (error: any) {
-      console.error('Auth state check error:', error);
+      logger.error('Auth state check error:', error);
       return rejectWithValue('Erro ao verificar estado de autenticação');
     }
   }

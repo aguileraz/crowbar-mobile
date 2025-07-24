@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import logger from '../services/loggerService';
 import {
   View,
   ScrollView,
@@ -46,7 +47,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ style }) =>
       const report = bundleAnalyzer.generateFullReport();
       setBundleReport(report);
     } catch (error) {
-      console.error('Error loading bundle analysis:', error);
+      logger.error('Error loading bundle analysis:', error);
     } finally {
       setRefreshing(false);
     }

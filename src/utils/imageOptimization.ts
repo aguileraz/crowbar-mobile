@@ -1,4 +1,5 @@
 import { Dimensions, PixelRatio } from 'react-native';
+import logger from '../services/loggerService';
 
 /**
  * Utilitários para otimização de imagens
@@ -306,9 +307,9 @@ export const preloadImages = async (urls: string[]): Promise<void> => {
     });
 
     await Promise.all(preloadPromises);
-    console.log(`Preloaded ${urls.length} images`);
+    logger.debug(`Preloaded ${urls.length} images`);
   } catch (error) {
-    console.error('Error preloading images:', error);
+    logger.error('Error preloading images:', error);
   }
 };
 

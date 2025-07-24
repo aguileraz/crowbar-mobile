@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import logger from '../services/loggerService';
 import {
   StyleSheet,
   Animated,
@@ -80,7 +81,7 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({
         animatePulse();
       }
     } catch (error) {
-      console.error('Error toggling favorite:', error);
+      logger.error('Error toggling favorite:', error);
       // Revert optimistic update on error
       if (isFavorite) {
         dispatch(addFavoriteLocal(boxId));

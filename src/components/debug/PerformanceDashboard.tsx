@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import logger from '../../services/loggerService';
 import {
   View,
   ScrollView,
@@ -110,7 +111,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
     try {
       const report = await getPerformanceReport();
       if (report) {
-        console.log('Performance Report:', report);
+        logger.debug('Performance Report:', report);
         Alert.alert('Success', 'Performance report exported to console');
       }
     } catch (error) {

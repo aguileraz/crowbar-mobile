@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import logger from '../../services/loggerService';
 import {
   View,
   StyleSheet,
@@ -81,7 +82,7 @@ const AddressesScreen: React.FC<AddressesScreenProps> = ({ navigation }) => {
     try {
       await dispatch(fetchUserAddresses()).unwrap();
     } catch (err) {
-      console.error('Error loading addresses:', err);
+      logger.error('Error loading addresses:', err);
     }
   };
 

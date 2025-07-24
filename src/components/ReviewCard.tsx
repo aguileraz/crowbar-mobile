@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import logger from '../services/loggerService';
 import {
   View,
   StyleSheet,
@@ -94,7 +95,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({
         helpful,
       })).unwrap();
     } catch (error) {
-      console.error('Error marking review helpful:', error);
+      logger.error('Error marking review helpful:', error);
     }
   };
 
@@ -109,7 +110,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({
       })).unwrap();
       setShowMenu(false);
     } catch (error) {
-      console.error('Error reporting review:', error);
+      logger.error('Error reporting review:', error);
     }
   };
 

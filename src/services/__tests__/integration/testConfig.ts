@@ -1,6 +1,7 @@
 import axios, { AxiosInstance } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { apiClient, ApiClient } from '../../api';
+import logger from '../../loggerService';
 
 /**
  * Configuração de ambiente de testes de integração
@@ -351,17 +352,17 @@ export const testServer = {
   // Inicializar servidor de testes
   start: async (port: number = 3001) => {
     // Implementar servidor mock para testes E2E
-    console.log(`🧪 Servidor de testes iniciado na porta ${port}`);
+    logger.debug(`🧪 Servidor de testes iniciado na porta ${port}`);
   },
   
   // Parar servidor de testes
   stop: async () => {
-    console.log('🧪 Servidor de testes parado');
+    logger.debug('🧪 Servidor de testes parado');
   },
   
   // Configurar rotas do servidor
   setupRoutes: (routes: any) => {
-    console.log('🧪 Rotas configuradas:', Object.keys(routes));
+    logger.debug('🧪 Rotas configuradas:', Object.keys(routes));
   },
 };
 

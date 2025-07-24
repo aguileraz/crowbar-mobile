@@ -5,6 +5,7 @@
 
 import { store } from '../../store';
 import { httpClient } from '../../services/httpClient';
+import logger from '../../services/loggerService';
 
 // Test configuration
 export const TEST_CONFIG = {
@@ -80,7 +81,7 @@ export const setupIntegrationTest = async () => {
     (response) => response,
     (error) => {
       // Log API errors for debugging
-      console.error('API Integration Test Error:', {
+      logger.error('API Integration Test Error:', {
         url: error.config?.url,
         method: error.config?.method,
         status: error.response?.status,
@@ -182,7 +183,7 @@ export const cleanupTestData = async () => {
     await httpClient.delete('/test/cleanup');
   } catch (error) {
     // Ignore cleanup errors
-    console.warn('Test cleanup failed:', error);
+    logger.warn('Test cleanup failed:', error);
   }
 };
 
@@ -204,7 +205,7 @@ export const checkAPIAvailability = async (): Promise<boolean> => {
 export const skipIfAPIUnavailable = async () => {
   const isAvailable = await checkAPIAvailability();
   if (!isAvailable) {
-    console.warn('API not available, skipping integration test');
+    logger.warn('API not available, skipping integration test');
     return true;
   }
   return false;

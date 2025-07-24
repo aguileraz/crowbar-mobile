@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import { firebaseAuth } from '../config/firebase';
 import { setUser, finishInitialization } from '../store/slices/authSlice';
 import { AppDispatch } from '../store';
+import logger from '../services/loggerService';
 
 /**
  * Hook para escutar mudanças no estado de autenticação do Firebase
@@ -12,10 +13,10 @@ export const useAuthListener = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    console.log('🔐 Setting up Firebase Auth listener...');
+    logger.debug('🔐 Setting up Firebase Auth listener...');
 
     const unsubscribe = firebaseAuth().onAuthStateChanged((user) => {
-      console.log('🔐 Auth state changed:', user ? 'User logged in' : 'User logged out');
+      logger.debug('🔐 Auth state changed:', user ? 'User logged in' : 'User logged out');
       
       if (user) {
         // Usuário logado - mapear para o formato do Redux
@@ -39,7 +40,7 @@ export const useAuthListener = () => {
 
     // Cleanup function
     return () => {
-      console.log('🔐 Cleaning up Firebase Auth listener...');
+      logger.debug('🔐 Cleaning up Firebase Auth listener...');
       unsubscribe();
     };
   }, [dispatch]);

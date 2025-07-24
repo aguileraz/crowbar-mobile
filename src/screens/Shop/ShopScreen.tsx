@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import logger from '../../services/loggerService';
 import {
   View,
   StyleSheet,
@@ -99,7 +100,7 @@ const ShopScreen: React.FC<ShopScreenProps> = ({ navigation }) => {
         dispatch(fetchCategories()).unwrap(),
       ]);
     } catch (err) {
-      console.error('Error loading initial data:', err);
+      logger.error('Error loading initial data:', err);
     }
   };
 

@@ -8,6 +8,7 @@ import perf from '@react-native-firebase/perf';
 import analytics from '@react-native-firebase/analytics';
 import { Platform } from 'react-native';
 import config from '../../config/environments';
+import logger from './loggerService';
 
 // Types
 interface ErrorContext {
@@ -69,9 +70,9 @@ class MonitoringService {
       }
 
       this.isInitialized = true;
-      console.log('🔍 Monitoring services initialized');
+      logger.debug('🔍 Monitoring services initialized');
     } catch (error) {
-      console.error('Failed to initialize monitoring services:', error);
+      logger.error('Failed to initialize monitoring services:', error);
     }
   }
 
@@ -90,9 +91,9 @@ class MonitoringService {
         platform: Platform.OS,
       });
 
-      console.log('📊 Crashlytics initialized');
+      logger.debug('📊 Crashlytics initialized');
     } catch (error) {
-      console.error('Failed to initialize Crashlytics:', error);
+      logger.error('Failed to initialize Crashlytics:', error);
     }
   }
 
@@ -113,9 +114,9 @@ class MonitoringService {
         await appStartTrace.stop();
       }, 3000);
 
-      console.log('⚡ Performance Monitoring initialized');
+      logger.debug('⚡ Performance Monitoring initialized');
     } catch (error) {
-      console.error('Failed to initialize Performance Monitoring:', error);
+      logger.error('Failed to initialize Performance Monitoring:', error);
     }
   }
 
@@ -134,9 +135,9 @@ class MonitoringService {
         platform: Platform.OS,
       });
 
-      console.log('📈 Analytics initialized');
+      logger.debug('📈 Analytics initialized');
     } catch (error) {
-      console.error('Failed to initialize Analytics:', error);
+      logger.error('Failed to initialize Analytics:', error);
     }
   }
 
@@ -166,9 +167,9 @@ class MonitoringService {
       // Log the error
       crashlytics().recordError(error);
 
-      console.error('🚨 Error logged to Crashlytics:', error.message);
+      logger.error('🚨 Error logged to Crashlytics:', error.message);
     } catch (logError) {
-      console.error('Failed to log error to Crashlytics:', logError);
+      logger.error('Failed to log error to Crashlytics:', logError);
     }
   }
 
@@ -184,7 +185,7 @@ class MonitoringService {
       
       this.logError(error, context);
     } catch (logError) {
-      console.error('Failed to log non-fatal error:', logError);
+      logger.error('Failed to log non-fatal error:', logError);
     }
   }
 
@@ -201,9 +202,9 @@ class MonitoringService {
         await analytics().setUserId(userId);
       }
 
-      console.log('👤 User ID set for monitoring');
+      logger.debug('👤 User ID set for monitoring');
     } catch (error) {
-      console.error('Failed to set user ID:', error);
+      logger.error('Failed to set user ID:', error);
     }
   }
 
@@ -230,9 +231,9 @@ class MonitoringService {
         });
       }
 
-      console.log('👤 User properties set for monitoring');
+      logger.debug('👤 User properties set for monitoring');
     } catch (error) {
-      console.error('Failed to set user properties:', error);
+      logger.error('Failed to set user properties:', error);
     }
   }
 
@@ -254,9 +255,9 @@ class MonitoringService {
       await trace.start();
       this.activeTraces.set(traceName, trace);
 
-      console.log(`⏱️ Started trace: ${traceName}`);
+      logger.debug(`⏱️ Started trace: ${traceName}`);
     } catch (error) {
-      console.error(`Failed to start trace ${traceName}:`, error);
+      logger.error(`Failed to start trace ${traceName}:`, error);
     }
   }
 
@@ -271,10 +272,10 @@ class MonitoringService {
       if (trace) {
         await trace.stop();
         this.activeTraces.delete(traceName);
-        console.log(`⏹️ Stopped trace: ${traceName}`);
+        logger.debug(`⏹️ Stopped trace: ${traceName}`);
       }
     } catch (error) {
-      console.error(`Failed to stop trace ${traceName}:`, error);
+      logger.error(`Failed to stop trace ${traceName}:`, error);
     }
   }
 
@@ -292,10 +293,10 @@ class MonitoringService {
 
       // Log to console in development
       if (config.IS_DEV) {
-        console.log(`📊 Metric recorded: ${metric.name} = ${metric.value}${metric.unit || ''}`);
+        logger.debug(`📊 Metric recorded: ${metric.name} = ${metric.value}${metric.unit || ''}`);
       }
     } catch (error) {
-      console.error('Failed to record metric:', error);
+      logger.error('Failed to record metric:', error);
     }
   }
 
@@ -311,9 +312,9 @@ class MonitoringService {
         screen_class: screenClass || screenName,
       });
 
-      console.log(`📱 Screen view tracked: ${screenName}`);
+      logger.debug(`📱 Screen view tracked: ${screenName}`);
     } catch (error) {
-      console.error('Failed to track screen view:', error);
+      logger.error('Failed to track screen view:', error);
     }
   }
 
@@ -326,9 +327,9 @@ class MonitoringService {
     try {
       await analytics().logEvent(eventName, parameters);
 
-      console.log(`📈 Event tracked: ${eventName}`);
+      logger.debug(`📈 Event tracked: ${eventName}`);
     } catch (error) {
-      console.error('Failed to track event:', error);
+      logger.error('Failed to track event:', error);
     }
   }
 
@@ -345,9 +346,9 @@ class MonitoringService {
         crashlytics().recordError(error);
       }
 
-      console.log(`💥 Crash tracked: ${error.message}`);
+      logger.debug(`💥 Crash tracked: ${error.message}`);
     } catch (logError) {
-      console.error('Failed to track crash:', logError);
+      logger.error('Failed to track crash:', logError);
     }
   }
 
@@ -377,7 +378,7 @@ class MonitoringService {
    */
   clearPerformanceMetrics(): void {
     this.performanceMetrics.clear();
-    console.log('🧹 Performance metrics cleared');
+    logger.debug('🧹 Performance metrics cleared');
   }
 
   /**
@@ -385,11 +386,11 @@ class MonitoringService {
    */
   testCrash(): void {
     if (!config.IS_DEV) {
-      console.warn('Crash testing is only available in development');
+      logger.warn('Crash testing is only available in development');
       return;
     }
 
-    console.log('🧪 Testing crash reporting...');
+    logger.debug('🧪 Testing crash reporting...');
     crashlytics().crash();
   }
 
@@ -398,11 +399,11 @@ class MonitoringService {
    */
   testNonFatalError(): void {
     if (!config.IS_DEV) {
-      console.warn('Error testing is only available in development');
+      logger.warn('Error testing is only available in development');
       return;
     }
 
-    console.log('🧪 Testing non-fatal error reporting...');
+    logger.debug('🧪 Testing non-fatal error reporting...');
     this.logNonFatalError('Test non-fatal error', {
       screen: 'TestScreen',
       action: 'test_error',

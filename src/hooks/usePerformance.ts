@@ -1,6 +1,7 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
 import { InteractionManager, AppState, AppStateStatus } from 'react-native';
 import { bundleAnalyzer } from '../utils/bundleAnalyzer';
+import logger from '../services/loggerService';
 
 /**
  * Hook personalizado para monitoramento de performance
@@ -69,7 +70,7 @@ export const usePerformance = (options: UsePerformanceOptions = {}) => {
     }));
 
     if (logToConsole) {
-      console.log(`${componentName} render #${renderCountRef.current} took ${renderTime}ms`);
+      logger.debug(`${componentName} render #${renderCountRef.current} took ${renderTime}ms`);
     }
 
     renderStartTime.current = 0;
@@ -101,7 +102,7 @@ export const usePerformance = (options: UsePerformanceOptions = {}) => {
       }));
 
       if (logToConsole) {
-        console.log(`${componentName} interaction completed in ${interactionTime}ms`);
+        logger.debug(`${componentName} interaction completed in ${interactionTime}ms`);
       }
 
       interactionStartTime.current = 0;
@@ -209,7 +210,7 @@ export const useListPerformance = (listName: string = 'List') => {
     }));
 
     if (__DEV__) {
-      console.log(`${listName} scroll completed in ${scrollTime}ms at ${Math.round(fps)} FPS`);
+      logger.debug(`${listName} scroll completed in ${scrollTime}ms at ${Math.round(fps)} FPS`);
     }
   }, [listName]);
 
@@ -252,7 +253,7 @@ export const useNavigationPerformance = () => {
     setNavigationMetrics(prev => ({ ...prev, isTransitioning: true }));
     
     if (__DEV__) {
-      console.log(`Navigation to ${routeName} started`);
+      logger.debug(`Navigation to ${routeName} started`);
     }
   }, []);
 
@@ -266,7 +267,7 @@ export const useNavigationPerformance = () => {
     }));
 
     if (__DEV__) {
-      console.log(`Navigation to ${routeName} completed in ${transitionTime}ms`);
+      logger.debug(`Navigation to ${routeName} completed in ${transitionTime}ms`);
     }
   }, []);
 
@@ -274,7 +275,7 @@ export const useNavigationPerformance = () => {
     screenLoadStartTime.current = Date.now();
     
     if (__DEV__) {
-      console.log(`Screen ${screenName} load started`);
+      logger.debug(`Screen ${screenName} load started`);
     }
   }, []);
 
@@ -287,7 +288,7 @@ export const useNavigationPerformance = () => {
     }));
 
     if (__DEV__) {
-      console.log(`Screen ${screenName} loaded in ${screenLoadTime}ms`);
+      logger.debug(`Screen ${screenName} loaded in ${screenLoadTime}ms`);
     }
   }, []);
 
@@ -352,7 +353,7 @@ export const useApiPerformance = () => {
     }, responseTime);
 
     if (__DEV__) {
-      console.log(`API ${endpoint} ${isError ? 'failed' : 'completed'} in ${responseTime}ms`);
+      logger.debug(`API ${endpoint} ${isError ? 'failed' : 'completed'} in ${responseTime}ms`);
     }
   }, []);
 
@@ -398,7 +399,7 @@ export const useAppPerformance = () => {
       setAppMetrics(prev => ({ ...prev, crashCount: prev.crashCount + 1 }));
       
       if (__DEV__) {
-        console.error('App crash detected:', error);
+        logger.error('App crash detected:', error);
       }
       
       originalHandler(error, isFatal);

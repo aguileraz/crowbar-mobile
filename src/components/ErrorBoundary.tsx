@@ -4,6 +4,7 @@
  */
 
 import React, { Component, ReactNode } from 'react';
+import logger from '../services/loggerService';
 import {
   View,
   StyleSheet,
@@ -69,8 +70,8 @@ class ErrorBoundary extends Component<Props, State> {
 
     // Log to console in development
     if (config.IS_DEV) {
-      console.error('ErrorBoundary caught an error:', error);
-      console.error('Error info:', errorInfo);
+      logger.error('ErrorBoundary caught an error:', error);
+      logger.error('Error info:', errorInfo);
     }
   }
 
@@ -97,7 +98,7 @@ class ErrorBoundary extends Component<Props, State> {
         error_id: this.state.errorId,
       });
     } catch (monitoringError) {
-      console.error('Failed to log error to monitoring service:', monitoringError);
+      logger.error('Failed to log error to monitoring service:', monitoringError);
     }
   }
 
@@ -123,7 +124,7 @@ class ErrorBoundary extends Component<Props, State> {
       });
 
       // Show confirmation (you might want to show a toast or alert)
-      console.log('Error reported with ID:', errorId);
+      logger.debug('Error reported with ID:', errorId);
     }
   };
 

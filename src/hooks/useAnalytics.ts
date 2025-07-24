@@ -1,6 +1,7 @@
 import { useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../store';
+import logger from '../services/loggerService';
 import {
   initializeAnalytics,
   trackEvent,
@@ -48,7 +49,7 @@ export const useAnalytics = (options: UseAnalyticsOptions = {}) => {
     try {
       await dispatch(initializeAnalytics()).unwrap();
     } catch (error) {
-      console.error('Failed to initialize analytics:', error);
+      logger.error('Failed to initialize analytics:', error);
     }
   }, [dispatch]);
 
@@ -61,7 +62,7 @@ export const useAnalytics = (options: UseAnalyticsOptions = {}) => {
     try {
       await dispatch(trackEvent({ name: eventName, parameters })).unwrap();
     } catch (error) {
-      console.error('Failed to track event:', error);
+      logger.error('Failed to track event:', error);
     }
   }, [dispatch, isEnabled]);
 
@@ -79,7 +80,7 @@ export const useAnalytics = (options: UseAnalyticsOptions = {}) => {
       const loadTime = Date.now() - startTime;
       dispatch(recordScreenLoadTime({ screen: screenName, loadTime }));
     } catch (error) {
-      console.error('Failed to track screen view:', error);
+      logger.error('Failed to track screen view:', error);
     }
   }, [dispatch, isEnabled, trackScreenViews]);
 
@@ -92,7 +93,7 @@ export const useAnalytics = (options: UseAnalyticsOptions = {}) => {
     try {
       await dispatch(setUserProperties(properties)).unwrap();
     } catch (error) {
-      console.error('Failed to set user properties:', error);
+      logger.error('Failed to set user properties:', error);
     }
   }, [dispatch, isEnabled]);
 
@@ -104,7 +105,7 @@ export const useAnalytics = (options: UseAnalyticsOptions = {}) => {
       dispatch(setUserId(id));
       await analyticsService.setUserId(id);
     } catch (error) {
-      console.error('Failed to set user ID:', error);
+      logger.error('Failed to set user ID:', error);
     }
   }, [dispatch]);
 
@@ -122,7 +123,7 @@ export const useAnalytics = (options: UseAnalyticsOptions = {}) => {
       dispatch(recordConversion({ event, value, currency }));
       await track('conversion', { event, value, currency });
     } catch (error) {
-      console.error('Failed to track conversion:', error);
+      logger.error('Failed to track conversion:', error);
     }
   }, [dispatch, isEnabled, track]);
 
@@ -148,7 +149,7 @@ export const useAnalytics = (options: UseAnalyticsOptions = {}) => {
     try {
       await analyticsService.trackEngagement(action, target, value);
     } catch (error) {
-      console.error('Failed to track engagement:', error);
+      logger.error('Failed to track engagement:', error);
     }
   }, [isEnabled]);
 
@@ -254,7 +255,7 @@ export const useEcommerceTracking = () => {
       await analyticsService.trackPurchase(transactionId, value, currency, items);
       await trackConversion('purchase', value, currency);
     } catch (error) {
-      console.error('Failed to track purchase:', error);
+      logger.error('Failed to track purchase:', error);
     }
   }, [isEnabled, trackConversion]);
 
@@ -310,7 +311,7 @@ export const useEcommerceTracking = () => {
     try {
       await analyticsService.trackBoxOpening(boxId, boxName, cost, itemsReceived);
     } catch (error) {
-      console.error('Failed to track box opening:', error);
+      logger.error('Failed to track box opening:', error);
     }
   }, [isEnabled]);
 

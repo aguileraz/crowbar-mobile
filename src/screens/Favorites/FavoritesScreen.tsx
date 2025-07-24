@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import logger from '../../services/loggerService';
 import {
   View,
   StyleSheet,
@@ -91,7 +92,7 @@ const FavoritesScreen: React.FC<FavoritesScreenProps> = ({ navigation }) => {
     try {
       await dispatch(fetchFavorites(1)).unwrap();
     } catch (err) {
-      console.error('Error loading favorites:', err);
+      logger.error('Error loading favorites:', err);
     }
   };
 
@@ -113,7 +114,7 @@ const FavoritesScreen: React.FC<FavoritesScreenProps> = ({ navigation }) => {
       try {
         await dispatch(fetchFavorites(pagination.currentPage + 1)).unwrap();
       } catch (err) {
-        console.error('Error loading more favorites:', err);
+        logger.error('Error loading more favorites:', err);
       } finally {
         setLoadingMore(false);
       }
@@ -170,7 +171,7 @@ const FavoritesScreen: React.FC<FavoritesScreenProps> = ({ navigation }) => {
     try {
       await dispatch(removeFromFavorites(boxId)).unwrap();
     } catch (err) {
-      console.error('Error removing favorite:', err);
+      logger.error('Error removing favorite:', err);
     }
   };
 

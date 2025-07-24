@@ -1,6 +1,7 @@
 import { io, Socket } from 'socket.io-client';
 import { env } from '../config/env';
 import { WebSocketEvent, BoxOpenedEvent } from '../types/api';
+import logger from './loggerService';
 
 /**
  * Serviço WebSocket para comunicação em tempo real
@@ -19,13 +20,13 @@ export class WebSocketService {
    */
   connect(authToken?: string): void {
     if (this.socket?.connected) {
-      console.log('🔌 WebSocket already connected');
+      logger.debug('🔌 WebSocket already connected');
       return;
     }
 
     this.authToken = authToken || this.authToken;
 
-    console.log('🔌 Connecting to WebSocket server...');
+    logger.debug('🔌 Connecting to WebSocket server...');
 
     this.socket = io(env.SOCKET_URL, {
       transports: ['websocket', 'polling'],
@@ -42,7 +43,7 @@ export class WebSocketService {
    */
   disconnect(): void {
     if (this.socket) {
-      console.log('🔌 Disconnecting from WebSocket server...');
+      logger.debug('🔌 Disconnecting from WebSocket server...');
       this.socket.disconnect();
       this.socket = null;
       this.isConnected = false;
@@ -58,7 +59,7 @@ export class WebSocketService {
 
     // Evento de conexão
     this.socket.on('connect', () => {
-      console.log('✅ WebSocket connected');
+      logger.debug('✅ WebSocket connected');
       this.isConnected = true;
       this.reconnectAttempts = 0;
       this.emitToListeners('connected', { connected: true });
@@ -66,7 +67,7 @@ export class WebSocketService {
 
     // Evento de desconexão
     this.socket.on('disconnect', (reason) => {
-      console.log('❌ WebSocket disconnected:', reason);
+      logger.debug('❌ WebSocket disconnected:', reason);
       this.isConnected = false;
       this.emitToListeners('disconnected', { connected: false, reason });
 
@@ -81,39 +82,39 @@ export class WebSocketService {
 
     // Evento de erro
     this.socket.on('connect_error', (error) => {
-      console.error('❌ WebSocket connection error:', error);
+      logger.error('❌ WebSocket connection error:', error);
       this.emitToListeners('error', { error: error.message });
       this.attemptReconnect();
     });
 
     // Eventos específicos da aplicação
     this.socket.on('box_opened', (data: BoxOpenedEvent['data']) => {
-      console.log('📦 Box opened event received:', data);
+      logger.debug('📦 Box opened event received:', data);
       this.emitToListeners('box_opened', data);
     });
 
     this.socket.on('stock_update', (data: { box_id: string; stock: number }) => {
-      console.log('📊 Stock update received:', data);
+      logger.debug('📊 Stock update received:', data);
       this.emitToListeners('stock_update', data);
     });
 
     this.socket.on('new_notification', (data: any) => {
-      console.log('🔔 New notification received:', data);
+      logger.debug('🔔 New notification received:', data);
       this.emitToListeners('new_notification', data);
     });
 
     this.socket.on('order_update', (data: { order_id: string; status: string }) => {
-      console.log('📋 Order update received:', data);
+      logger.debug('📋 Order update received:', data);
       this.emitToListeners('order_update', data);
     });
 
     this.socket.on('promotion_started', (data: any) => {
-      console.log('🎉 Promotion started:', data);
+      logger.debug('🎉 Promotion started:', data);
       this.emitToListeners('promotion_started', data);
     });
 
     this.socket.on('user_activity', (data: any) => {
-      console.log('👤 User activity:', data);
+      logger.debug('👤 User activity:', data);
       this.emitToListeners('user_activity', data);
     });
   }
@@ -123,7 +124,7 @@ export class WebSocketService {
    */
   private attemptReconnect(): void {
     if (this.reconnectAttempts >= this.maxReconnectAttempts) {
-      console.log('❌ Max reconnection attempts reached');
+      logger.debug('❌ Max reconnection attempts reached');
       this.emitToListeners('max_reconnect_attempts', {});
       return;
     }
@@ -131,7 +132,7 @@ export class WebSocketService {
     this.reconnectAttempts++;
     const delay = this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1);
 
-    console.log(`🔄 Attempting to reconnect (${this.reconnectAttempts}/${this.maxReconnectAttempts}) in ${delay}ms...`);
+    logger.debug(`🔄 Attempting to reconnect (${this.reconnectAttempts}/${this.maxReconnectAttempts}) in ${delay}ms...`);
 
     setTimeout(() => {
       if (!this.isConnected && this.socket) {
@@ -150,7 +151,7 @@ export class WebSocketService {
         try {
           listener(data);
         } catch (error) {
-          console.error(`Error in WebSocket listener for event ${event}:`, error);
+          logger.error(`Error in WebSocket listener for event ${event}:`, error);
         }
       });
     }
@@ -186,7 +187,7 @@ export class WebSocketService {
     if (this.socket?.connected) {
       this.socket.emit(event, data);
     } else {
-      console.warn('⚠️ Cannot emit event: WebSocket not connected');
+      logger.warn('⚠️ Cannot emit event: WebSocket not connected');
     }
   }
 

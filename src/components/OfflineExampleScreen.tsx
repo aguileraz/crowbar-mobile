@@ -1,5 +1,6 @@
 import React from 'react';
 import { ScrollView, StyleSheet, View, Image } from 'react-native';
+import logger from '../services/loggerService';
 import { 
   Card, 
   Title, 
@@ -63,13 +64,13 @@ export const OfflineExampleScreen: React.FC = () => {
     {
       priority: SyncPriority.CRITICAL,
       optimisticUpdate: (data) => {
-        console.log('Otimista: Adicionando ao carrinho', data);
+        logger.debug('Otimista: Adicionando ao carrinho', data);
       },
       onSuccess: (result) => {
-        console.log('Sucesso:', result);
+        logger.debug('Sucesso:', result);
       },
       onError: (error) => {
-        console.error('Erro:', error);
+        logger.error('Erro:', error);
       },
     }
   );
@@ -155,7 +156,7 @@ export const OfflineExampleScreen: React.FC = () => {
           <SyncButton 
             variant="contained" 
             onSyncComplete={() => {
-              console.log('Sincronização concluída!');
+              logger.debug('Sincronização concluída!');
             }}
           />
         </Card.Content>

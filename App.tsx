@@ -49,11 +49,15 @@ const App: React.FC = () => {
     // Validar variáveis de ambiente na inicialização
     try {
       validateEnvironment();
-      console.log('✅ Environment validation passed');
-      console.log(`🚀 App starting in ${env.NODE_ENV} mode`);
-      console.log(`📡 API Base URL: ${env.API_BASE_URL}`);
+      if (__DEV__) {
+        console.log('✅ Environment validation passed');
+        console.log(`🚀 App starting in ${env.NODE_ENV} mode`);
+        console.log(`📡 API Base URL: ${env.API_BASE_URL}`);
+      }
     } catch (error) {
-      console.error('❌ Environment validation failed:', error);
+      if (__DEV__) {
+        console.error('❌ Environment validation failed:', error);
+      }
     }
   }, []);
 

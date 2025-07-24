@@ -1,4 +1,5 @@
 import { store } from '../store';
+import logger from './loggerService';
 import {
   setConnectionStatus,
   setConnectionError,
@@ -51,7 +52,7 @@ class RealtimeService {
         this.ws = new WebSocket(wsUrl);
 
         this.ws.onopen = () => {
-          console.log('WebSocket connected');
+          logger.debug('WebSocket connected');
           store.dispatch(setConnectionStatus('connected'));
           this.reconnectAttempts = 0;
           this.startHeartbeat();
@@ -63,7 +64,7 @@ class RealtimeService {
         };
 
         this.ws.onclose = (event) => {
-          console.log('WebSocket closed:', event.code, event.reason);
+          logger.debug('WebSocket closed:', event.code, event.reason);
           store.dispatch(setConnectionStatus('disconnected'));
           this.stopHeartbeat();
           
@@ -74,7 +75,7 @@ class RealtimeService {
         };
 
         this.ws.onerror = (error) => {
-          console.error('WebSocket error:', error);
+          logger.error('WebSocket error:', error);
           store.dispatch(setConnectionError('Erro de conexão WebSocket'));
           reject(new Error('WebSocket connection failed'));
         };
@@ -115,11 +116,11 @@ class RealtimeService {
     this.reconnectAttempts++;
     const delay = this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1); // Exponential backoff
     
-    console.log(`Attempting reconnect ${this.reconnectAttempts}/${this.maxReconnectAttempts} in ${delay}ms`);
+    logger.debug(`Attempting reconnect ${this.reconnectAttempts}/${this.maxReconnectAttempts} in ${delay}ms`);
     
     setTimeout(() => {
       this.connect().catch(error => {
-        console.error('Reconnection failed:', error);
+        logger.error('Reconnection failed:', error);
       });
     }, delay);
   }
@@ -257,10 +258,10 @@ class RealtimeService {
           break;
           
         default:
-          console.log('Unknown message type:', message.type);
+          logger.debug('Unknown message type:', message.type);
       }
     } catch (error) {
-      console.error('Error handling WebSocket message:', error);
+      logger.error('Error handling WebSocket message:', error);
     }
   }
 

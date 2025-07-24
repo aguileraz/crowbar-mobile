@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import logger from '../services/loggerService';
 import {
   View,
   ScrollView,
@@ -65,7 +66,7 @@ const NotificationSettingsScreen: React.FC<NotificationSettingsScreenProps> = ({
       
       trackEngagement('notification_setting_changed', key, value ? 1 : 0);
     } catch (error) {
-      console.error('Error updating setting:', error);
+      logger.error('Error updating setting:', error);
       Alert.alert('Erro', 'Não foi possível atualizar a configuração');
     } finally {
       setIsUpdating(false);
@@ -91,7 +92,7 @@ const NotificationSettingsScreen: React.FC<NotificationSettingsScreenProps> = ({
       await dispatch(updateSettings(updates)).unwrap();
       trackEngagement('quiet_hours_changed', field);
     } catch (error) {
-      console.error('Error updating quiet hours:', error);
+      logger.error('Error updating quiet hours:', error);
       Alert.alert('Erro', 'Não foi possível atualizar o horário silencioso');
     } finally {
       setIsUpdating(false);
@@ -118,7 +119,7 @@ const NotificationSettingsScreen: React.FC<NotificationSettingsScreenProps> = ({
         );
       }
     } catch (error) {
-      console.error('Error requesting permission:', error);
+      logger.error('Error requesting permission:', error);
       Alert.alert('Erro', 'Não foi possível solicitar permissão');
     }
   }, [dispatch, trackButtonClick]);

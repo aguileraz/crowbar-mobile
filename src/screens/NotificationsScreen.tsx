@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import logger from '../services/loggerService';
 import {
   View,
   FlatList,
@@ -79,7 +80,7 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ navigation })
         reset 
       })).unwrap();
     } catch (err) {
-      console.error('Error loading notifications:', err);
+      logger.error('Error loading notifications:', err);
     }
   }, [dispatch, pagination.page]);
 
@@ -105,7 +106,7 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ navigation })
       await dispatch(markAsRead(notificationId)).unwrap();
       trackEngagement('mark_as_read', 'notification');
     } catch (err) {
-      console.error('Error marking as read:', err);
+      logger.error('Error marking as read:', err);
     }
   }, [dispatch, trackEngagement]);
 
@@ -117,7 +118,7 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ navigation })
       await dispatch(markAllAsRead()).unwrap();
       trackButtonClick('mark_all_as_read', 'notifications');
     } catch (err) {
-      console.error('Error marking all as read:', err);
+      logger.error('Error marking all as read:', err);
     }
   }, [dispatch, trackButtonClick]);
 
@@ -138,7 +139,7 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ navigation })
               await dispatch(deleteNotification(notificationId)).unwrap();
               trackEngagement('delete_notification', 'notification');
             } catch (err) {
-              console.error('Error deleting notification:', err);
+              logger.error('Error deleting notification:', err);
             }
           },
         },

@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import analytics from '@react-native-firebase/analytics';
 import { store } from '../store';
+import logger from './loggerService';
 import { 
   recordApiResponseTime, 
   recordError, 
@@ -59,7 +60,7 @@ class AnalyticsService {
       
       return { sessionId: this.sessionId };
     } catch (error) {
-      console.error('Error initializing analytics:', error);
+      logger.error('Error initializing analytics:', error);
       throw error;
     }
   }
@@ -79,9 +80,9 @@ class AnalyticsService {
         last_login: new Date().toISOString(),
       });
       
-      console.log('Firebase Analytics inicializado com sucesso');
+      logger.debug('Firebase Analytics inicializado com sucesso');
     } catch (error) {
-      console.error('Erro ao inicializar Firebase Analytics:', error);
+      logger.error('Erro ao inicializar Firebase Analytics:', error);
       throw error;
     }
   }
@@ -104,7 +105,7 @@ class AnalyticsService {
       await analytics().logEvent(name, sanitizedParams);
       
       if (__DEV__) {
-        console.log('Analytics Event:', name, sanitizedParams);
+        logger.debug('Analytics Event:', name, sanitizedParams);
       }
       
       // Store locally for debugging
@@ -112,7 +113,7 @@ class AnalyticsService {
         await this.storeEventLocally(name, sanitizedParams);
       }
     } catch (error) {
-      console.error('Error logging event:', error);
+      logger.error('Error logging event:', error);
       // Store as pending event for retry
       store.dispatch(addPendingEvent({ name, parameters }));
     }
@@ -129,7 +130,7 @@ class AnalyticsService {
       await analytics().setUserProperties(sanitizedProps);
       
       if (__DEV__) {
-        console.log('Analytics User Properties:', sanitizedProps);
+        logger.debug('Analytics User Properties:', sanitizedProps);
       }
       
       // Store locally
@@ -138,7 +139,7 @@ class AnalyticsService {
         JSON.stringify(sanitizedProps)
       );
     } catch (error) {
-      console.error('Error setting user properties:', error);
+      logger.error('Error setting user properties:', error);
       throw error;
     }
   }
@@ -157,13 +158,13 @@ class AnalyticsService {
         await analytics().setUserId(userId);
         
         if (__DEV__) {
-          console.log('Analytics User ID definido:', userId);
+          logger.debug('Analytics User ID definido:', userId);
         }
       } else {
         await AsyncStorage.removeItem(this.STORAGE_KEYS.USER_ID);
       }
     } catch (error) {
-      console.error('Error setting user ID:', error);
+      logger.error('Error setting user ID:', error);
       throw error;
     }
   }
@@ -179,7 +180,7 @@ class AnalyticsService {
         session_id: this.sessionId,
       });
     } catch (error) {
-      console.error('Error logging screen view:', error);
+      logger.error('Error logging screen view:', error);
     }
   }
 
@@ -213,7 +214,7 @@ class AnalyticsService {
         currency,
       }));
     } catch (error) {
-      console.error('Error tracking purchase:', error);
+      logger.error('Error tracking purchase:', error);
     }
   }
 
@@ -244,7 +245,7 @@ class AnalyticsService {
         rare_items: itemsReceived.filter(item => item.rarity === 'rare').length,
       });
     } catch (error) {
-      console.error('Error tracking box opening:', error);
+      logger.error('Error tracking box opening:', error);
     }
   }
 
@@ -291,7 +292,7 @@ class AnalyticsService {
         session_id: this.sessionId,
       });
     } catch (error) {
-      console.error('Error tracking engagement:', error);
+      logger.error('Error tracking engagement:', error);
     }
   }
 
@@ -313,7 +314,7 @@ class AnalyticsService {
         currency: item.currency || 'BRL',
       });
     } catch (error) {
-      console.error('Erro ao rastrear view_item:', error);
+      logger.error('Erro ao rastrear view_item:', error);
     }
   }
 
@@ -333,7 +334,7 @@ class AnalyticsService {
         value: item.price * item.quantity,
       });
     } catch (error) {
-      console.error('Erro ao rastrear add_to_cart:', error);
+      logger.error('Erro ao rastrear add_to_cart:', error);
     }
   }
 
@@ -353,7 +354,7 @@ class AnalyticsService {
         value: item.price * item.quantity,
       });
     } catch (error) {
-      console.error('Erro ao rastrear remove_from_cart:', error);
+      logger.error('Erro ao rastrear remove_from_cart:', error);
     }
   }
 
@@ -367,7 +368,7 @@ class AnalyticsService {
         item_count: items.length,
       });
     } catch (error) {
-      console.error('Erro ao rastrear begin_checkout:', error);
+      logger.error('Erro ao rastrear begin_checkout:', error);
     }
   }
 
@@ -389,7 +390,7 @@ class AnalyticsService {
         view_time: Date.now(),
       });
     } catch (error) {
-      console.error('Erro ao rastrear box_viewed:', error);
+      logger.error('Erro ao rastrear box_viewed:', error);
     }
   }
 
@@ -406,7 +407,7 @@ class AnalyticsService {
         share_time: Date.now(),
       });
     } catch (error) {
-      console.error('Erro ao rastrear box_shared:', error);
+      logger.error('Erro ao rastrear box_shared:', error);
     }
   }
 
@@ -422,7 +423,7 @@ class AnalyticsService {
         is_favorited: box.action === 'add',
       });
     } catch (error) {
-      console.error('Erro ao rastrear box_favorited:', error);
+      logger.error('Erro ao rastrear box_favorited:', error);
     }
   }
 
@@ -443,7 +444,7 @@ class AnalyticsService {
         submit_time: Date.now(),
       });
     } catch (error) {
-      console.error('Erro ao rastrear review_submitted:', error);
+      logger.error('Erro ao rastrear review_submitted:', error);
     }
   }
 
@@ -459,7 +460,7 @@ class AnalyticsService {
         share_time: Date.now(),
       });
     } catch (error) {
-      console.error('Erro ao rastrear social_share:', error);
+      logger.error('Erro ao rastrear social_share:', error);
     }
   }
 
@@ -481,7 +482,7 @@ class AnalyticsService {
       // Também armazenar no Redux para dashboard
       store.dispatch(recordApiResponseTime({ endpoint, responseTime }));
     } catch (error) {
-      console.error('Erro ao rastrear api_latency:', error);
+      logger.error('Erro ao rastrear api_latency:', error);
     }
   }
 
@@ -494,7 +495,7 @@ class AnalyticsService {
         is_slow: loadTime > 3000,
       });
     } catch (error) {
-      console.error('Erro ao rastrear screen_load_time:', error);
+      logger.error('Erro ao rastrear screen_load_time:', error);
     }
   }
 
@@ -511,7 +512,7 @@ class AnalyticsService {
         timestamp: Date.now(),
       });
     } catch (error) {
-      console.error('Erro ao rastrear app_performance:', error);
+      logger.error('Erro ao rastrear app_performance:', error);
     }
   }
 
@@ -527,7 +528,7 @@ class AnalyticsService {
         segment_updated_at: new Date().toISOString(),
       });
     } catch (error) {
-      console.error('Erro ao definir segmento do usuário:', error);
+      logger.error('Erro ao definir segmento do usuário:', error);
     }
   }
 
@@ -545,7 +546,7 @@ class AnalyticsService {
         engagement_level: this.calculateEngagementLevel(properties),
       });
     } catch (error) {
-      console.error('Erro ao definir propriedades de engajamento:', error);
+      logger.error('Erro ao definir propriedades de engajamento:', error);
     }
   }
 
@@ -584,7 +585,7 @@ class AnalyticsService {
         }));
       }
     } catch (error) {
-      console.error('Erro ao rastrear conversão de marketing:', error);
+      logger.error('Erro ao rastrear conversão de marketing:', error);
     }
   }
 
@@ -603,7 +604,7 @@ class AnalyticsService {
         update_time: Date.now(),
       });
     } catch (error) {
-      console.error('Erro ao definir consentimento:', error);
+      logger.error('Erro ao definir consentimento:', error);
     }
   }
 
@@ -613,7 +614,7 @@ class AnalyticsService {
       const consent = await AsyncStorage.getItem('analytics_consent');
       return consent === 'true';
     } catch (error) {
-      console.error('Erro ao verificar consentimento:', error);
+      logger.error('Erro ao verificar consentimento:', error);
       return false;
     }
   }
@@ -640,7 +641,7 @@ class AnalyticsService {
         deletion_time: Date.now(),
       });
     } catch (error) {
-      console.error('Erro ao deletar dados do usuário:', error);
+      logger.error('Erro ao deletar dados do usuário:', error);
     }
   }
 
@@ -658,7 +659,7 @@ class AnalyticsService {
       
       return sessionId;
     } catch (error) {
-      console.error('Error getting session ID:', error);
+      logger.error('Error getting session ID:', error);
       return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     }
   }
@@ -677,7 +678,7 @@ class AnalyticsService {
           try {
             await this.logEvent(event.name, event.parameters);
           } catch (error) {
-            console.error('Error processing pending event:', error);
+            logger.error('Error processing pending event:', error);
           }
         }
         
@@ -685,7 +686,7 @@ class AnalyticsService {
         await AsyncStorage.removeItem(this.STORAGE_KEYS.PENDING_EVENTS);
       }
     } catch (error) {
-      console.error('Error processing pending events:', error);
+      logger.error('Error processing pending events:', error);
     }
   }
 
@@ -743,7 +744,7 @@ class AnalyticsService {
       
       await AsyncStorage.setItem('debug_analytics_events', JSON.stringify(events));
     } catch (error) {
-      console.error('Error storing event locally:', error);
+      logger.error('Error storing event locally:', error);
     }
   }
 
@@ -755,7 +756,7 @@ class AnalyticsService {
       const eventsJson = await AsyncStorage.getItem('debug_analytics_events');
       return eventsJson ? JSON.parse(eventsJson) : [];
     } catch (error) {
-      console.error('Error getting debug events:', error);
+      logger.error('Error getting debug events:', error);
       return [];
     }
   }
@@ -767,7 +768,7 @@ class AnalyticsService {
     try {
       await AsyncStorage.removeItem('debug_analytics_events');
     } catch (error) {
-      console.error('Error clearing debug events:', error);
+      logger.error('Error clearing debug events:', error);
     }
   }
 

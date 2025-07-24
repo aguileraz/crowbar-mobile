@@ -5,6 +5,7 @@
 
 import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import logger from '../services/loggerService';
 
 // Types
 interface BundleAnalysis {
@@ -86,7 +87,7 @@ class BundleAnalyzer {
 
       return analysis;
     } catch (error) {
-      console.error('Failed to analyze bundle:', error);
+      logger.error('Failed to analyze bundle:', error);
       return analysis;
     }
   }
@@ -330,7 +331,7 @@ class PerformanceMonitor {
       
       // Log warning if memory usage is high
       if (memoryUsage > 100 * 1024 * 1024) { // 100MB
-        console.warn(`High memory usage detected: ${(memoryUsage / 1024 / 1024).toFixed(2)}MB`);
+        logger.warn(`High memory usage detected: ${(memoryUsage / 1024 / 1024).toFixed(2)}MB`);
       }
     }, 10000); // Check every 10 seconds
   }
@@ -389,7 +390,7 @@ class CacheManager {
         JSON.stringify(cacheItem)
       );
     } catch (error) {
-      console.error('Failed to set cache item:', error);
+      logger.error('Failed to set cache item:', error);
     }
   }
 
@@ -420,7 +421,7 @@ class CacheManager {
 
       return cacheItem.data;
     } catch (error) {
-      console.error('Failed to get cache item:', error);
+      logger.error('Failed to get cache item:', error);
       return null;
     }
   }
@@ -432,7 +433,7 @@ class CacheManager {
     try {
       await AsyncStorage.removeItem(`${this.CACHE_KEY_PREFIX}${key}`);
     } catch (error) {
-      console.error('Failed to remove cache item:', error);
+      logger.error('Failed to remove cache item:', error);
     }
   }
 
@@ -445,7 +446,7 @@ class CacheManager {
       const cacheKeys = keys.filter(key => key.startsWith(this.CACHE_KEY_PREFIX));
       await AsyncStorage.multiRemove(cacheKeys);
     } catch (error) {
-      console.error('Failed to clear cache:', error);
+      logger.error('Failed to clear cache:', error);
     }
   }
 
@@ -467,7 +468,7 @@ class CacheManager {
 
       return totalSize;
     } catch (error) {
-      console.error('Failed to get cache size:', error);
+      logger.error('Failed to get cache size:', error);
       return 0;
     }
   }
@@ -508,7 +509,7 @@ class CacheManager {
         await this.trimCache();
       }
     } catch (error) {
-      console.error('Failed to cleanup cache:', error);
+      logger.error('Failed to cleanup cache:', error);
     }
   }
 
@@ -549,7 +550,7 @@ class CacheManager {
         index++;
       }
     } catch (error) {
-      console.error('Failed to trim cache:', error);
+      logger.error('Failed to trim cache:', error);
     }
   }
 }

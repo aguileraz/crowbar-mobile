@@ -1,6 +1,7 @@
 import { useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../store';
+import logger from '../services/loggerService';
 import {
   initializeNotifications,
   fetchNotifications,
@@ -55,7 +56,7 @@ export const useNotifications = (options: UseNotificationsOptions = {}) => {
     try {
       await dispatch(initializeNotifications()).unwrap();
     } catch (err) {
-      console.error('Failed to initialize notifications:', err);
+      logger.error('Failed to initialize notifications:', err);
     }
   }, [dispatch]);
 
@@ -66,7 +67,7 @@ export const useNotifications = (options: UseNotificationsOptions = {}) => {
     try {
       await dispatch(fetchNotifications({ page, reset })).unwrap();
     } catch (err) {
-      console.error('Failed to load notifications:', err);
+      logger.error('Failed to load notifications:', err);
     }
   }, [dispatch]);
 
@@ -77,7 +78,7 @@ export const useNotifications = (options: UseNotificationsOptions = {}) => {
     try {
       await dispatch(markAsRead(notificationId)).unwrap();
     } catch (err) {
-      console.error('Failed to mark notification as read:', err);
+      logger.error('Failed to mark notification as read:', err);
     }
   }, [dispatch]);
 
@@ -88,7 +89,7 @@ export const useNotifications = (options: UseNotificationsOptions = {}) => {
     try {
       await dispatch(markAllAsRead()).unwrap();
     } catch (err) {
-      console.error('Failed to mark all notifications as read:', err);
+      logger.error('Failed to mark all notifications as read:', err);
     }
   }, [dispatch]);
 
@@ -99,7 +100,7 @@ export const useNotifications = (options: UseNotificationsOptions = {}) => {
     try {
       await dispatch(deleteNotification(notificationId)).unwrap();
     } catch (err) {
-      console.error('Failed to delete notification:', err);
+      logger.error('Failed to delete notification:', err);
     }
   }, [dispatch]);
 
@@ -110,7 +111,7 @@ export const useNotifications = (options: UseNotificationsOptions = {}) => {
     try {
       await dispatch(updateSettings(newSettings)).unwrap();
     } catch (err) {
-      console.error('Failed to update notification settings:', err);
+      logger.error('Failed to update notification settings:', err);
     }
   }, [dispatch]);
 
@@ -122,7 +123,7 @@ export const useNotifications = (options: UseNotificationsOptions = {}) => {
       const result = await dispatch(requestPermission()).unwrap();
       return result;
     } catch (err) {
-      console.error('Failed to request notification permission:', err);
+      logger.error('Failed to request notification permission:', err);
       return { granted: false };
     }
   }, [dispatch]);
@@ -145,7 +146,7 @@ export const useNotifications = (options: UseNotificationsOptions = {}) => {
       try {
         // Foreground message listener
         const unsubscribeForeground = notificationService.onMessage((message) => {
-          console.log('Foreground message received:', message);
+          logger.debug('Foreground message received:', message);
           
           // Add to notifications list
           const notification = {
@@ -165,13 +166,13 @@ export const useNotifications = (options: UseNotificationsOptions = {}) => {
 
         // Background message listener
         const unsubscribeBackground = notificationService.onBackgroundMessage((message) => {
-          console.log('Background message received:', message);
+          logger.debug('Background message received:', message);
           // Handle background message
         });
 
         // Token refresh listener
         const unsubscribeTokenRefresh = notificationService.onTokenRefresh((token) => {
-          console.log('FCM token refreshed:', token);
+          logger.debug('FCM token refreshed:', token);
           // Update token in backend
         });
 
@@ -181,7 +182,7 @@ export const useNotifications = (options: UseNotificationsOptions = {}) => {
           unsubscribeTokenRefresh();
         };
       } catch (err) {
-        console.error('Error setting up notification listeners:', err);
+        logger.error('Error setting up notification listeners:', err);
       }
     };
 
@@ -294,7 +295,7 @@ export const useNotificationPermissions = () => {
       const status = await notificationService.checkPermission();
       return status;
     } catch (error) {
-      console.error('Error checking permission:', error);
+      logger.error('Error checking permission:', error);
       return 'denied';
     }
   }, []);
@@ -303,7 +304,7 @@ export const useNotificationPermissions = () => {
     try {
       await notificationService.openSettings();
     } catch (error) {
-      console.error('Error opening settings:', error);
+      logger.error('Error opening settings:', error);
     }
   }, []);
   

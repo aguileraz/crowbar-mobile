@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import logger from '../services/loggerService';
 import {
   View,
   ScrollView,
@@ -70,7 +71,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ style }) => {
       const events = await analyticsService.getDebugEvents();
       setDebugEvents(events.slice(-20)); // Last 20 events
     } catch (error) {
-      console.error('Error loading debug events:', error);
+      logger.error('Error loading debug events:', error);
     } finally {
       setRefreshing(false);
     }
@@ -84,7 +85,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ style }) => {
       await analyticsService.clearDebugEvents();
       setDebugEvents([]);
     } catch (error) {
-      console.error('Error clearing debug events:', error);
+      logger.error('Error clearing debug events:', error);
     }
   };
 

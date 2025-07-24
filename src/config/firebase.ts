@@ -3,6 +3,7 @@ import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firest
 import messaging, { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
 import analytics from '@react-native-firebase/analytics';
 import { env } from './env';
+import logger from '../services/loggerService';
 
 /**
  * Firebase configuration and initialization
@@ -20,10 +21,10 @@ export const initializeFirebase = (): boolean => {
   try {
     // Firebase is auto-initialized from google-services.json and GoogleService-Info.plist
     // We just need to verify the services are available
-    console.log('Firebase auto-initialized successfully');
+    logger.debug('Firebase auto-initialized successfully');
     return true;
   } catch (error) {
-    console.error('Firebase initialization failed:', error);
+    logger.error('Firebase initialization failed:', error);
     return false;
   }
 };
@@ -66,7 +67,7 @@ export const testFirebaseConnection = async (): Promise<boolean> => {
     
     // Test Auth connection
     const currentUser = firebaseAuth().currentUser;
-    console.log('Firebase Auth initialized:', currentUser !== undefined);
+    logger.debug('Firebase Auth initialized:', currentUser !== undefined);
     
     // Test Analytics (if enabled)
     if (env.ANALYTICS_ENABLED) {
@@ -75,10 +76,10 @@ export const testFirebaseConnection = async (): Promise<boolean> => {
       });
     }
     
-    console.log('✅ Firebase connection test successful');
+    logger.debug('✅ Firebase connection test successful');
     return true;
   } catch (error) {
-    console.error('❌ Firebase connection test failed:', error);
+    logger.error('❌ Firebase connection test failed:', error);
     return false;
   }
 };
@@ -97,21 +98,21 @@ export const configurePushNotifications = async (): Promise<string | null> => {
     if (enabled) {
       // Get FCM token
       const fcmToken = await firebaseMessaging().getToken();
-      console.log('FCM Token:', fcmToken);
+      logger.debug('FCM Token:', fcmToken);
       
       // Listen to token refresh
       firebaseMessaging().onTokenRefresh(token => {
-        console.log('FCM Token refreshed:', token);
+        logger.debug('FCM Token refreshed:', token);
         // TODO: Send token to backend
       });
       
       return fcmToken;
     } else {
-      console.log('Push notification permission denied');
+      logger.debug('Push notification permission denied');
       return null;
     }
   } catch (error) {
-    console.error('Error configuring push notifications:', error);
+    logger.error('Error configuring push notifications:', error);
     return null;
   }
 };
@@ -130,9 +131,9 @@ export const initializeFirebaseServices = async (): Promise<void> => {
     // Configure push notifications
     await configurePushNotifications();
     
-    console.log('✅ Firebase services initialized successfully');
+    logger.debug('✅ Firebase services initialized successfully');
   } catch (error) {
-    console.error('❌ Error initializing Firebase services:', error);
+    logger.error('❌ Error initializing Firebase services:', error);
     throw error;
   }
 };

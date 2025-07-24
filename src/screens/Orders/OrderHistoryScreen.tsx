@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import logger from '../../services/loggerService';
 import {
   View,
   StyleSheet,
@@ -90,7 +91,7 @@ const OrderHistoryScreen: React.FC<OrderHistoryScreenProps> = ({ navigation }) =
     try {
       await dispatch(fetchOrders({ page: 1, filters })).unwrap();
     } catch (err) {
-      console.error('Error loading orders:', err);
+      logger.error('Error loading orders:', err);
     }
   };
 
@@ -136,7 +137,7 @@ const OrderHistoryScreen: React.FC<OrderHistoryScreenProps> = ({ navigation }) =
           filters 
         })).unwrap();
       } catch (err) {
-        console.error('Error loading more orders:', err);
+        logger.error('Error loading more orders:', err);
       } finally {
         setLoadingMore(false);
       }

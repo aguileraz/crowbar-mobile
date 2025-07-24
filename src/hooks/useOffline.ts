@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { AppDispatch } from '../store';
+import logger from '../services/loggerService';
 import {
   selectIsOnline,
   selectNetworkInfo,
@@ -33,7 +34,7 @@ export const useOffline = () => {
         const result = await dispatch(syncOfflineData(force)).unwrap();
         return result;
       } catch (error) {
-        console.error('Erro ao sincronizar:', error);
+        logger.error('Erro ao sincronizar:', error);
         throw error;
       }
     },
@@ -51,7 +52,7 @@ export const useOffline = () => {
           await sync();
         }
       } catch (error) {
-        console.error('Erro ao adicionar ação offline:', error);
+        logger.error('Erro ao adicionar ação offline:', error);
         throw error;
       }
     },
@@ -68,7 +69,7 @@ export const useOffline = () => {
     try {
       await offlineService.clearCache(cacheType);
     } catch (error) {
-      console.error('Erro ao limpar cache:', error);
+      logger.error('Erro ao limpar cache:', error);
       throw error;
     }
   }, []);
@@ -379,7 +380,7 @@ export const useOfflineCart = () => {
     {
       priority: SyncPriority.CRITICAL,
       optimisticUpdate: (data) => {
-        console.log('Adicionando ao carrinho (otimista):', data);
+        logger.debug('Adicionando ao carrinho (otimista):', data);
       },
     }
   );
@@ -394,7 +395,7 @@ export const useOfflineCart = () => {
     {
       priority: SyncPriority.CRITICAL,
       optimisticUpdate: (data) => {
-        console.log('Removendo do carrinho (otimista):', data);
+        logger.debug('Removendo do carrinho (otimista):', data);
       },
     }
   );
@@ -434,7 +435,7 @@ export const useOfflineProfile = () => {
     {
       priority: SyncPriority.HIGH,
       optimisticUpdate: (profileData) => {
-        console.log('Atualizando perfil (otimista):', profileData);
+        logger.debug('Atualizando perfil (otimista):', profileData);
       },
     }
   );

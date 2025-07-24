@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import logger from '../../services/loggerService';
 import {
   View,
   ScrollView,
@@ -66,7 +67,7 @@ const PrivacyControlsScreen: React.FC = () => {
       setDataSharing(false);
       
     } catch (error) {
-      console.error('Erro ao carregar configurações de privacidade:', error);
+      logger.error('Erro ao carregar configurações de privacidade:', error);
     } finally {
       setIsLoading(false);
     }
@@ -87,7 +88,7 @@ const PrivacyControlsScreen: React.FC = () => {
           : 'Coleta de dados analíticos desativada'
       );
     } catch (error) {
-      console.error('Erro ao atualizar consentimento:', error);
+      logger.error('Erro ao atualizar consentimento:', error);
       setAnalyticsConsent(!value); // Reverter em caso de erro
       Alert.alert('Erro', 'Não foi possível atualizar a configuração');
     }
@@ -119,7 +120,7 @@ const PrivacyControlsScreen: React.FC = () => {
         ]
       );
     } catch (error) {
-      console.error('Erro ao deletar dados:', error);
+      logger.error('Erro ao deletar dados:', error);
       Alert.alert('Erro', 'Não foi possível excluir seus dados');
     } finally {
       setIsDeleting(false);

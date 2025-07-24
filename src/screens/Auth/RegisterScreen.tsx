@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import logger from '../../services/loggerService';
 import {
   View,
   StyleSheet,
@@ -132,7 +133,7 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
       // Navegação será tratada pelo AuthNavigator
     } catch (error) {
       // Erro já tratado pelo slice
-      console.error('Registration failed:', error);
+      logger.error('Registration failed:', error);
     }
   }
 

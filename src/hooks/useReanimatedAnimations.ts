@@ -3,6 +3,7 @@
  */
 
 import { useEffect, useCallback, useMemo } from 'react';
+import logger from '../services/loggerService';
 import {
   useSharedValue,
   useAnimatedStyle,
@@ -220,7 +221,7 @@ export const useListAnimation = (
     animationType?: 'fade' | 'scale' | 'slide';
   } = {}
 ) => {
-  console.warn('useListAnimation has been disabled due to React Hooks violations. Use individual animation hooks instead.');
+  logger.warn('useListAnimation has been disabled due to React Hooks violations. Use individual animation hooks instead.');
   
   return {
     animatedValues: [],

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import logger from '../services/loggerService';
 import {
   View,
   Text,
@@ -231,7 +232,7 @@ const HomeScreen: React.FC = () => {
               <LiveNewReleases
                 maxItems={2}
                 onBoxPress={(boxId) => {
-                  console.log('Navigate to box:', boxId);
+                  logger.debug('Navigate to box:', boxId);
                   // navigation.navigate('BoxDetails', { boxId });
                 }}
               />

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import logger from '../../services/loggerService';
 import {
   View,
   StyleSheet,
@@ -104,7 +105,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
       // Navegação será tratada pelo AuthNavigator
     } catch (error) {
       // Erro já tratado pelo slice
-      console.error('Login failed:', error);
+      logger.error('Login failed:', error);
     }
   };
 
@@ -131,7 +132,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
       );
     } catch (error) {
       // Erro já tratado pelo slice
-      console.error('Password reset failed:', error);
+      logger.error('Password reset failed:', error);
     }
   };
 

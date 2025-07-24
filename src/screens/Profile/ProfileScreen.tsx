@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import logger from '../../services/loggerService';
 import {
   View,
   StyleSheet,
@@ -82,7 +83,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation }) => {
         dispatch(fetchUserStatistics()).unwrap(),
       ]);
     } catch (err) {
-      console.error('Error loading profile data:', err);
+      logger.error('Error loading profile data:', err);
     }
   };
 

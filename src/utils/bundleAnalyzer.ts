@@ -1,3 +1,5 @@
+import logger from '../services/loggerService';
+
 /**
  * Utilitários para análise de bundle size e performance
  */
@@ -64,7 +66,7 @@ class BundleAnalyzer {
   endMeasurement(name: string): number {
     const startTime = this.performanceMarks.get(name);
     if (!startTime) {
-      console.warn(`No start time found for measurement: ${name}`);
+      logger.warn(`No start time found for measurement: ${name}`);
       return 0;
     }
 
@@ -100,7 +102,7 @@ class BundleAnalyzer {
           resolve(moduleInfo);
         })
         .catch((error) => {
-          console.error(`Error analyzing module ${moduleName}:`, error);
+          logger.error(`Error analyzing module ${moduleName}:`, error);
           resolve({
             name: moduleName,
             size: 0,
@@ -348,11 +350,11 @@ export function measurePerformance(target: any, propertyName: string, descriptor
     if (result instanceof Promise) {
       return result.finally(() => {
         const duration = bundleAnalyzer.endMeasurement(measurementName);
-        console.log(`${measurementName} took ${duration}ms`);
+        logger.debug(`${measurementName} took ${duration}ms`);
       });
     } else {
       const duration = bundleAnalyzer.endMeasurement(measurementName);
-      console.log(`${measurementName} took ${duration}ms`);
+      logger.debug(`${measurementName} took ${duration}ms`);
       return result;
     }
   };
@@ -376,7 +378,7 @@ export const usePerformanceMonitor = (componentName: string) => {
       setRenderTime(duration);
       
       if (__DEV__) {
-        console.log(`${componentName} render #${renderCount + 1} took ${duration}ms`);
+        logger.debug(`${componentName} render #${renderCount + 1} took ${duration}ms`);
       }
     };
   });

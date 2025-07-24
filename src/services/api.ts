@@ -1,6 +1,7 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { env } from '../config/env';
 import { ApiResponse } from '../types/api';
+import logger from './loggerService';
 
 /**
  * Cliente HTTP para comunicação com o Crowbar Backend
@@ -39,7 +40,7 @@ class ApiClient {
 
         // Log da requisição em desenvolvimento
         if (__DEV__) {
-          console.log('🌐 API Request:', {
+          logger.debug('🌐 API Request:', {
             method: config.method?.toUpperCase(),
             url: config.url,
             data: config.data,
@@ -50,7 +51,7 @@ class ApiClient {
         return config;
       },
       (error) => {
-        console.error('❌ Request Error:', error);
+        logger.error('❌ Request Error:', error);
         return Promise.reject(error);
       }
     );
@@ -60,7 +61,7 @@ class ApiClient {
       (response: AxiosResponse<ApiResponse>) => {
         // Log da resposta em desenvolvimento
         if (__DEV__) {
-          console.log('✅ API Response:', {
+          logger.debug('✅ API Response:', {
             status: response.status,
             url: response.config.url,
             data: response.data,
@@ -71,7 +72,7 @@ class ApiClient {
       },
       (error) => {
         // Log do erro
-        console.error('❌ API Error:', {
+        logger.error('❌ API Error:', {
           status: error.response?.status,
           url: error.config?.url,
           message: error.message,
@@ -190,7 +191,7 @@ class ApiClient {
    */
   cancelPendingRequests(): void {
     // TODO: Implementar cancelamento de requisições
-    console.log('🚫 Cancelling pending requests...');
+    logger.debug('🚫 Cancelling pending requests...');
   }
 
   /**

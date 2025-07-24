@@ -3,6 +3,7 @@ import { Platform as _Platform } from 'react-native';
 import { useDispatch } from 'react-redux';
 import messaging from '@react-native-firebase/messaging';
 import notifee from '@notifee/react-native';
+import logger from '../services/loggerService';
 
 // Redux
 import { AppDispatch } from '../store';
@@ -33,7 +34,7 @@ const NotificationInitializer = () => {
 
         // Configurar handler de mensagem em background
         messaging().setBackgroundMessageHandler(async remoteMessage => {
-          console.log('Background message received:', remoteMessage);
+          logger.debug('Background message received:', remoteMessage);
           
           // Exibir notificação local quando app está em background
           if (remoteMessage.notification) {
@@ -55,16 +56,16 @@ const NotificationInitializer = () => {
         // Verificar se app foi aberto por notificação
         const initialNotification = await notificationService.getInitialNotification();
         if (initialNotification) {
-          console.log('App opened by notification:', initialNotification);
+          logger.debug('App opened by notification:', initialNotification);
           // Aguardar navegação estar pronta
           setTimeout(() => {
             notificationService.handleNotificationOpen(initialNotification);
           }, 1000);
         }
 
-        console.log('✅ Notifications initialized successfully');
+        logger.debug('✅ Notifications initialized successfully');
       } catch (error) {
-        console.error('❌ Failed to initialize notifications:', error);
+        logger.error('❌ Failed to initialize notifications:', error);
       }
     };
 

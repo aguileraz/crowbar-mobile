@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { analyticsService } from '../../services/analyticsService';
+import logger from '../../services/loggerService';
 
 /**
  * Redux Slice para gerenciamento de analytics
@@ -171,7 +172,7 @@ export const trackScreen = createAsyncThunk(
       await analyticsService.logScreenView(screenName, screenClass);
       return { screenName, timestamp: Date.now() };
     } catch (error: any) {
-      console.error('Error tracking screen:', error);
+      logger.error('Error tracking screen:', error);
       return { screenName, timestamp: Date.now() };
     }
   }

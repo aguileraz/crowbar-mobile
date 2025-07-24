@@ -1,6 +1,7 @@
 import { useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../store';
+import logger from '../services/loggerService';
 import {
   connectRealtime,
   disconnectRealtime,
@@ -61,7 +62,7 @@ export const useRealtime = (options: UseRealtimeOptions = {}) => {
         realtimeService.subscribeToLiveStats();
       }
     } catch (err) {
-      console.error('Failed to connect to realtime:', err);
+      logger.error('Failed to connect to realtime:', err);
     }
   }, [dispatch, subscribeToGlobal, subscribeToStats]);
 
@@ -72,7 +73,7 @@ export const useRealtime = (options: UseRealtimeOptions = {}) => {
     try {
       await dispatch(disconnectRealtime()).unwrap();
     } catch (err) {
-      console.error('Failed to disconnect from realtime:', err);
+      logger.error('Failed to disconnect from realtime:', err);
     }
   }, [dispatch]);
 
@@ -83,7 +84,7 @@ export const useRealtime = (options: UseRealtimeOptions = {}) => {
     try {
       await dispatch(subscribeToBox(boxId)).unwrap();
     } catch (err) {
-      console.error('Failed to subscribe to box:', err);
+      logger.error('Failed to subscribe to box:', err);
     }
   }, [dispatch]);
 
@@ -94,7 +95,7 @@ export const useRealtime = (options: UseRealtimeOptions = {}) => {
     try {
       await dispatch(subscribeToOrder(orderId)).unwrap();
     } catch (err) {
-      console.error('Failed to subscribe to order:', err);
+      logger.error('Failed to subscribe to order:', err);
     }
   }, [dispatch]);
 

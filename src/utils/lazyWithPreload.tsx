@@ -4,6 +4,7 @@
  */
 
 import React, { ComponentType, lazy, LazyExoticComponent } from 'react';
+import logger from '../services/loggerService';
 
 export interface LazyComponentWithPreload<T extends ComponentType<any>>
   extends LazyExoticComponent<T> {
@@ -62,7 +63,7 @@ export function usePreloadComponents(
     // Pré-carrega todos os componentes em paralelo
     Promise.all(components.map((component) => component.preload())).catch(
       (error) => {
-        console.warn('Erro ao pré-carregar componentes:', error);
+        logger.warn('Erro ao pré-carregar componentes:', error);
       }
     );
   }, [components]);

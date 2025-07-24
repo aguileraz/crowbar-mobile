@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import logger from '../../services/loggerService';
 import {
   View,
   StyleSheet,
@@ -97,7 +98,7 @@ const CartScreen: React.FC<CartScreenProps> = ({ navigation }) => {
     try {
       await dispatch(fetchCart()).unwrap();
     } catch (err) {
-      console.error('Error loading cart:', err);
+      logger.error('Error loading cart:', err);
     }
   };
 

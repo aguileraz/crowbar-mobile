@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import logger from '../../services/loggerService';
 import {
   View,
   StyleSheet,
@@ -92,7 +93,7 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ navigation })
     try {
       await dispatch(fetchNotifications({ page: 1, filters })).unwrap();
     } catch (err) {
-      console.error('Error loading notifications:', err);
+      logger.error('Error loading notifications:', err);
     }
   };
 
@@ -135,7 +136,7 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ navigation })
           filters 
         })).unwrap();
       } catch (err) {
-        console.error('Error loading more notifications:', err);
+        logger.error('Error loading more notifications:', err);
       } finally {
         setLoadingMore(false);
       }
@@ -149,7 +150,7 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ navigation })
     try {
       await dispatch(markAllAsRead()).unwrap();
     } catch (err) {
-      console.error('Error marking all as read:', err);
+      logger.error('Error marking all as read:', err);
     }
   };
 

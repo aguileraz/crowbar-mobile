@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import logger from '../../services/loggerService';
 import {
   View,
   StyleSheet,
@@ -122,7 +123,7 @@ const CategoryScreen: React.FC<CategoryScreenProps> = ({ navigation, route }) =>
       // Load boxes
       await loadBoxes();
     } catch (err) {
-      console.error('Error loading category data:', err);
+      logger.error('Error loading category data:', err);
     }
   };
 
@@ -142,7 +143,7 @@ const CategoryScreen: React.FC<CategoryScreenProps> = ({ navigation, route }) =>
 
       await dispatch(fetchBoxes(filters)).unwrap();
     } catch (err) {
-      console.error('Error loading boxes:', err);
+      logger.error('Error loading boxes:', err);
     }
   };
 

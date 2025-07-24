@@ -1,6 +1,7 @@
 import { useEffect, useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../store';
+import logger from '../services/loggerService';
 import {
   selectLiveEvents,
   selectIsConnected,
@@ -225,7 +226,7 @@ export const useLiveNotifications = (options: LiveNotificationOptions = {}) => {
     
     // In a real app, you would play a sound file here
     // For now, we'll just log it
-    console.log(`Playing notification sound for: ${notification.title}`);
+    logger.debug(`Playing notification sound for: ${notification.title}`);
   }, [enableSounds, settings?.sound]);
 
   /**
@@ -236,7 +237,7 @@ export const useLiveNotifications = (options: LiveNotificationOptions = {}) => {
     
     // In a real app, you would update the app badge here
     // For React Native, you might use a library like react-native-badge
-    console.log(`Updating app badge count to: ${count}`);
+    logger.debug(`Updating app badge count to: ${count}`);
   }, [enableBadgeUpdates]);
 
   /**
@@ -247,23 +248,23 @@ export const useLiveNotifications = (options: LiveNotificationOptions = {}) => {
     switch (notification.type) {
       case 'order':
         // Navigate to order details
-        console.log('Navigate to order:', notification.data?.orderId);
+        logger.debug('Navigate to order:', notification.data?.orderId);
         break;
       case 'box':
         // Navigate to box details
-        console.log('Navigate to box:', notification.data?.boxId);
+        logger.debug('Navigate to box:', notification.data?.boxId);
         break;
       case 'promotion':
         // Navigate to promotion
-        console.log('Navigate to promotion:', notification.data?.promotionId);
+        logger.debug('Navigate to promotion:', notification.data?.promotionId);
         break;
       case 'social':
         // Navigate to social feed
-        console.log('Navigate to social feed');
+        logger.debug('Navigate to social feed');
         break;
       case 'system':
         // Show system message
-        console.log('Show system message:', notification.body);
+        logger.debug('Show system message:', notification.body);
         break;
     }
   }, []);

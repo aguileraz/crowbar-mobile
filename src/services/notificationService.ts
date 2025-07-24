@@ -4,6 +4,7 @@ import { httpClient } from './httpClient';
 import { Notification, NotificationSettings, PaginatedResponse } from '../types/api';
 import notifee, { AndroidImportance } from '@notifee/react-native';
 import { navigationService } from './navigationService';
+import logger from './loggerService';
 
 /**
  * Serviço para gerenciamento de notificações push
@@ -39,7 +40,7 @@ class NotificationService {
       
       return { token: null, permissionStatus };
     } catch (error) {
-      console.error('Error initializing notifications:', error);
+      logger.error('Error initializing notifications:', error);
       return { token: null, permissionStatus: 'denied' };
     }
   }
@@ -72,7 +73,7 @@ class NotificationService {
         return this.getPermissionStatus(authStatus);
       }
     } catch (error) {
-      console.error('Error requesting permissions:', error);
+      logger.error('Error requesting permissions:', error);
       return 'denied';
     }
   }
@@ -100,7 +101,7 @@ class NotificationService {
       const token = await messaging().getToken();
       return token;
     } catch (error) {
-      console.error('Error getting FCM token:', error);
+      logger.error('Error getting FCM token:', error);
       return null;
     }
   }
@@ -111,13 +112,13 @@ class NotificationService {
   private setupMessageListeners(): void {
     // Mensagem recebida quando app está em foreground
     messaging().onMessage(async remoteMessage => {
-      console.log('Foreground message:', remoteMessage);
+      logger.debug('Foreground message:', remoteMessage);
       this.handleForegroundMessage(remoteMessage);
     });
 
     // Mensagem que abriu o app (background/quit state)
     messaging().onNotificationOpenedApp(remoteMessage => {
-      console.log('Notification opened app:', remoteMessage);
+      logger.debug('Notification opened app:', remoteMessage);
       this.handleNotificationOpen(remoteMessage);
     });
 
@@ -126,14 +127,14 @@ class NotificationService {
       .getInitialNotification()
       .then(remoteMessage => {
         if (remoteMessage) {
-          console.log('App opened by notification:', remoteMessage);
+          logger.debug('App opened by notification:', remoteMessage);
           this.handleNotificationOpen(remoteMessage);
         }
       });
 
     // Token refresh
     messaging().onTokenRefresh(token => {
-      console.log('FCM token refreshed:', token);
+      logger.debug('FCM token refreshed:', token);
       this.fcmToken = token;
       this.registerToken(token);
     });
@@ -172,7 +173,7 @@ class NotificationService {
         platform: Platform.OS,
       });
     } catch (error) {
-      console.error('Error registering FCM token:', error);
+      logger.error('Error registering FCM token:', error);
       throw error;
     }
   }
@@ -277,7 +278,7 @@ class NotificationService {
     try {
       await httpClient.patch(`${this.baseURL}/clear-badge`);
     } catch (error) {
-      console.error('Error clearing badge count:', error);
+      logger.error('Error clearing badge count:', error);
     }
   }
 
@@ -289,7 +290,7 @@ class NotificationService {
       const authStatus = await messaging().hasPermission();
       return this.getPermissionStatus(authStatus);
     } catch (error) {
-      console.error('Error checking permission:', error);
+      logger.error('Error checking permission:', error);
       return 'denied';
     }
   }
@@ -305,7 +306,7 @@ class NotificationService {
         Linking.openSettings();
       }
     } catch (error) {
-      console.error('Error opening settings:', error);
+      logger.error('Error opening settings:', error);
       Alert.alert(
         'Erro',
         'Não foi possível abrir as configurações. Acesse manualmente pelas configurações do dispositivo.'
@@ -369,7 +370,7 @@ class NotificationService {
         ios: notification.ios,
       });
     } catch (error) {
-      console.error('Error displaying local notification:', error);
+      logger.error('Error displaying local notification:', error);
     }
   }
 
@@ -408,10 +409,10 @@ class NotificationService {
     notifee.onForegroundEvent(({ type, detail }) => {
       switch (type) {
         case 1: // EventType.DISMISSED
-          console.log('Notificação dispensada');
+          logger.debug('Notificação dispensada');
           break;
         case 7: // EventType.PRESS
-          console.log('Notificação pressionada', detail.notification);
+          logger.debug('Notificação pressionada', detail.notification);
           // Navegar baseado nos dados da notificação
           if (detail.notification?.data) {
             this.handleNotificationNavigation(detail.notification.data);
@@ -423,7 +424,7 @@ class NotificationService {
     // Background event handler
     notifee.onBackgroundEvent(async ({ type, detail }) => {
       if (type === 7) { // EventType.PRESS
-        console.log('Background notification pressed', detail.notification);
+        logger.debug('Background notification pressed', detail.notification);
       }
     });
   }

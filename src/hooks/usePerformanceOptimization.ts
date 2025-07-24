@@ -6,6 +6,7 @@
 import { useEffect, useCallback, useRef, useState } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
 import { useNetInfo } from '@react-native-community/netinfo';
+import logger from '../services/loggerService';
 import { 
   bundleAnalyzer, 
   performanceMonitor, 
@@ -127,7 +128,7 @@ export const usePerformanceOptimization = (
         memory_optimization: enableMemoryOptimization,
       });
     } catch (error) {
-      console.error('Failed to initialize performance optimization:', error);
+      logger.error('Failed to initialize performance optimization:', error);
     }
   };
 
@@ -152,7 +153,7 @@ export const usePerformanceOptimization = (
 
       setState(prev => ({ ...prev, ...updates }));
     } catch (error) {
-      console.error('Failed to update performance state:', error);
+      logger.error('Failed to update performance state:', error);
     }
   };
 
@@ -207,7 +208,7 @@ export const usePerformanceOptimization = (
       });
 
     } catch (error) {
-      console.error('Performance optimization failed:', error);
+      logger.error('Performance optimization failed:', error);
       setState(prev => ({ ...prev, isOptimizing: false }));
     }
   }, [state.isOptimizing, state.cacheSize, enableCacheOptimization, enableMemoryOptimization]);
@@ -237,7 +238,7 @@ export const usePerformanceOptimization = (
         value: 1,
       });
     } catch (error) {
-      console.error('Memory optimization failed:', error);
+      logger.error('Memory optimization failed:', error);
     }
   };
 
@@ -262,7 +263,7 @@ export const usePerformanceOptimization = (
         time_since_last_optimization: timeSinceLastOptimization,
       });
     } catch (error) {
-      console.error('Failed to handle app foreground:', error);
+      logger.error('Failed to handle app foreground:', error);
     }
   };
 
@@ -280,7 +281,7 @@ export const usePerformanceOptimization = (
         cache_size: state.cacheSize,
       });
     } catch (error) {
-      console.error('Failed to handle app background:', error);
+      logger.error('Failed to handle app background:', error);
     }
   };
 
@@ -336,7 +337,7 @@ export const usePerformanceOptimization = (
       
       trackEvent('cache_cleared_manually');
     } catch (error) {
-      console.error('Failed to clear caches:', error);
+      logger.error('Failed to clear caches:', error);
     }
   }, []);
 
@@ -348,7 +349,7 @@ export const usePerformanceOptimization = (
       const report = await bundleAnalyzer.exportReport();
       return report;
     } catch (error) {
-      console.error('Failed to generate performance report:', error);
+      logger.error('Failed to generate performance report:', error);
       return null;
     }
   }, []);

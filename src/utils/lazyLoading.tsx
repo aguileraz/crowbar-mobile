@@ -3,6 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import { ActivityIndicator } from 'react-native-paper';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import { theme, getSpacing } from '../theme';
+import logger from '../services/loggerService';
 
 /**
  * Utilitários para lazy loading de componentes
@@ -82,7 +83,7 @@ class LazyErrorBoundary extends React.Component<
   }
 
   componentDidCatch(error: Error, errorInfo: any) {
-    console.error('Lazy loading error:', error, errorInfo);
+    logger.error('Lazy loading error:', error, errorInfo);
   }
 
   render() {
@@ -256,9 +257,9 @@ export const preloadCriticalComponents = async () => {
     ];
 
     await Promise.all(criticalImports);
-    console.log('Critical components preloaded');
+    logger.debug('Critical components preloaded');
   } catch (error) {
-    console.error('Error preloading critical components:', error);
+    logger.error('Error preloading critical components:', error);
   }
 };
 
@@ -283,7 +284,7 @@ export const preloadByRoute = async (routeName: string) => {
         break;
     }
   } catch (error) {
-    console.error(`Error preloading components for route ${routeName}:`, error);
+    logger.error(`Error preloading components for route ${routeName}:`, error);
   }
 };
 
@@ -305,7 +306,7 @@ export const useSmartPreload = () => {
       
       await Promise.all(preloadPromises);
     } catch (error) {
-      console.error('Error in smart preload:', error);
+      logger.error('Error in smart preload:', error);
     }
   }, []);
 

@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import logger from '../../services/loggerService';
 import {
   View,
   StyleSheet,
@@ -106,7 +107,7 @@ const BoxDetailsScreen: React.FC<BoxDetailsScreenProps> = ({ navigation, route }
         loadRelatedBoxes(),
       ]);
     } catch (err) {
-      console.error('Error loading box details:', err);
+      logger.error('Error loading box details:', err);
     }
   };
 
@@ -118,7 +119,7 @@ const BoxDetailsScreen: React.FC<BoxDetailsScreenProps> = ({ navigation, route }
       const favorite = await userService.isFavorite(boxId);
       setIsFavorite(favorite);
     } catch (err) {
-      console.error('Error loading favorite status:', err);
+      logger.error('Error loading favorite status:', err);
     }
   };
 
@@ -130,7 +131,7 @@ const BoxDetailsScreen: React.FC<BoxDetailsScreenProps> = ({ navigation, route }
       const response = await boxService.getBoxReviews(boxId, 1, 5);
       setReviews(response.data);
     } catch (err) {
-      console.error('Error loading reviews:', err);
+      logger.error('Error loading reviews:', err);
     }
   };
 
@@ -142,7 +143,7 @@ const BoxDetailsScreen: React.FC<BoxDetailsScreenProps> = ({ navigation, route }
       const related = await boxService.getRelatedBoxes(boxId, 4);
       setRelatedBoxes(related);
     } catch (err) {
-      console.error('Error loading related boxes:', err);
+      logger.error('Error loading related boxes:', err);
     }
   };
 
@@ -214,7 +215,7 @@ const BoxDetailsScreen: React.FC<BoxDetailsScreenProps> = ({ navigation, route }
         title: box.name,
       });
     } catch (err) {
-      console.error('Error sharing:', err);
+      logger.error('Error sharing:', err);
     }
   };
 

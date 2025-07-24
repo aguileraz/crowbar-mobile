@@ -207,15 +207,19 @@ const initializeConfig = () => {
     validateProductionConfig();
     const config = getConfig();
     
-    console.log(`🚀 Crowbar Mobile initialized for ${config.ENVIRONMENT} environment`);
-    
-    if (config.IS_DEV) {
-      console.log('📱 Development mode enabled');
-      console.log('🔧 Debug features available');
+    // Only log in development environment
+    if (process.env.NODE_ENV === 'development' || config.IS_DEV) {
+      console.log(`🚀 Crowbar Mobile initialized for ${config.ENVIRONMENT} environment`);
+      
+      if (config.IS_DEV) {
+        console.log('📱 Development mode enabled');
+        console.log('🔧 Debug features available');
+      }
     }
     
     return config;
   } catch (error) {
+    // Always log configuration errors as they're critical
     console.error('❌ Configuration error:', error.message);
     throw error;
   }

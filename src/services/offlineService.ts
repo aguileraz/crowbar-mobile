@@ -7,6 +7,7 @@ import { setNetworkStatus, updateCacheStatus } from '../store/slices/offlineSlic
 import { boxService } from './boxService';
 import { userService } from './userService';
 import { cartService } from './cartService';
+import logger from './loggerService';
 
 /**
  * Serviço avançado para gerenciamento de funcionalidades offline
@@ -107,7 +108,7 @@ class OfflineService {
         networkState: await NetInfo.fetch(),
       };
     } catch (error) {
-      console.error('Erro ao inicializar serviço offline:', error);
+      logger.error('Erro ao inicializar serviço offline:', error);
       throw error;
     }
   }
@@ -148,7 +149,7 @@ class OfflineService {
         await ReactNativeBlobUtil.fs.mkdir(this.IMAGE_CACHE_DIR);
       }
     } catch (error) {
-      console.error('Erro ao criar diretório de cache de imagens:', error);
+      logger.error('Erro ao criar diretório de cache de imagens:', error);
     }
   }
 
@@ -173,7 +174,7 @@ class OfflineService {
       const jsonString = JSON.stringify(data);
       return LZString.compressToUTF16(jsonString);
     } catch (error) {
-      console.error('Erro ao comprimir dados:', error);
+      logger.error('Erro ao comprimir dados:', error);
       return JSON.stringify(data);
     }
   }
@@ -186,7 +187,7 @@ class OfflineService {
       const decompressed = LZString.decompressFromUTF16(compressed);
       return decompressed ? JSON.parse(decompressed) : null;
     } catch (error) {
-      console.error('Erro ao descomprimir dados:', error);
+      logger.error('Erro ao descomprimir dados:', error);
       return null;
     }
   }
@@ -243,7 +244,7 @@ class OfflineService {
         },
       }));
     } catch (error) {
-      console.error('Erro ao cachear dados:', error);
+      logger.error('Erro ao cachear dados:', error);
       throw error;
     }
   }
@@ -327,7 +328,7 @@ class OfflineService {
       
       return decompressed;
     } catch (error) {
-      console.error('Erro ao recuperar dados do cache:', error);
+      logger.error('Erro ao recuperar dados do cache:', error);
       return null;
     }
   }
@@ -340,7 +341,7 @@ class OfflineService {
       const freshData = await fetcher();
       await this.cacheData(key, freshData);
     } catch (error) {
-      console.error('Erro ao atualizar cache em background:', error);
+      logger.error('Erro ao atualizar cache em background:', error);
     }
   }
 
@@ -394,7 +395,7 @@ class OfflineService {
       
       return `file://${filepath}`;
     } catch (error) {
-      console.error('Erro ao cachear imagem:', error);
+      logger.error('Erro ao cachear imagem:', error);
       return url; // Retornar URL original em caso de erro
     }
   }
@@ -415,7 +416,7 @@ class OfflineService {
       
       await AsyncStorage.setItem(this.CACHE_KEYS.IMAGE_CACHE, JSON.stringify(index));
     } catch (error) {
-      console.error('Erro ao atualizar índice de cache de imagens:', error);
+      logger.error('Erro ao atualizar índice de cache de imagens:', error);
     }
   }
 
@@ -441,7 +442,7 @@ class OfflineService {
           try {
             await ReactNativeBlobUtil.fs.unlink(filepath);
           } catch (error) {
-            console.warn('Erro ao remover imagem do cache:', error);
+            logger.warn('Erro ao remover imagem do cache:', error);
           }
         } else {
           updatedIndex[url] = data;
@@ -450,7 +451,7 @@ class OfflineService {
       
       await AsyncStorage.setItem(this.CACHE_KEYS.IMAGE_CACHE, JSON.stringify(updatedIndex));
     } catch (error) {
-      console.error('Erro ao limpar cache de imagens:', error);
+      logger.error('Erro ao limpar cache de imagens:', error);
     }
   }
 
@@ -509,7 +510,7 @@ class OfflineService {
       
       return changes;
     } catch (error) {
-      console.error('Erro na sincronização diferencial:', error);
+      logger.error('Erro na sincronização diferencial:', error);
       throw error;
     }
   }
@@ -545,7 +546,7 @@ class OfflineService {
         this.processPendingActionsInBackground();
       }
     } catch (error) {
-      console.error('Erro ao adicionar ação pendente:', error);
+      logger.error('Erro ao adicionar ação pendente:', error);
       throw error;
     }
   }
@@ -582,7 +583,7 @@ class OfflineService {
           processedActions.push(action);
           this.syncQueue.delete(action.id);
         } catch (error) {
-          console.error('Erro ao processar ação:', action, error);
+          logger.error('Erro ao processar ação:', action, error);
           
           // Incrementar contador de tentativas
           action.retryCount = (action.retryCount || 0) + 1;
@@ -592,7 +593,7 @@ class OfflineService {
           if (action.retryCount < maxRetries) {
             remainingActions.push(action);
           } else {
-            console.warn('Máximo de tentativas atingido para ação:', action);
+            logger.warn('Máximo de tentativas atingido para ação:', action);
           }
         }
       }
@@ -602,7 +603,7 @@ class OfflineService {
       
       return { processedActions, remainingActions };
     } catch (error) {
-      console.error('Erro ao processar ações pendentes:', error);
+      logger.error('Erro ao processar ações pendentes:', error);
       throw error;
     }
   }
@@ -637,7 +638,7 @@ class OfflineService {
         // await reviewService.addReview(action.data);
         break;
       default:
-        console.warn('Tipo de ação desconhecido:', action.type);
+        logger.warn('Tipo de ação desconhecido:', action.type);
     }
   }
 
@@ -695,7 +696,7 @@ class OfflineService {
         timestamp: Date.now(),
       };
     } catch (error) {
-      console.error('Erro ao sincronizar dados:', error);
+      logger.error('Erro ao sincronizar dados:', error);
       throw error;
     }
   }
@@ -718,7 +719,7 @@ class OfflineService {
         await this.cacheData(this.CACHE_KEYS.BOXES, boxes, SyncPriority.NORMAL);
       }
     } catch (error) {
-      console.error('Erro ao sincronizar boxes:', error);
+      logger.error('Erro ao sincronizar boxes:', error);
       throw error;
     }
   }
@@ -738,7 +739,7 @@ class OfflineService {
         await this.cacheData(this.CACHE_KEYS.CATEGORIES, categories, SyncPriority.NORMAL);
       }
     } catch (error) {
-      console.error('Erro ao sincronizar categorias:', error);
+      logger.error('Erro ao sincronizar categorias:', error);
       throw error;
     }
   }
@@ -758,7 +759,7 @@ class OfflineService {
         await this.cacheData(this.CACHE_KEYS.USER_PROFILE, profile, SyncPriority.HIGH);
       }
     } catch (error) {
-      console.error('Erro ao sincronizar perfil:', error);
+      logger.error('Erro ao sincronizar perfil:', error);
       throw error;
     }
   }
@@ -778,7 +779,7 @@ class OfflineService {
         await this.cacheData(this.CACHE_KEYS.CART, cart, SyncPriority.CRITICAL);
       }
     } catch (error) {
-      console.error('Erro ao sincronizar carrinho:', error);
+      logger.error('Erro ao sincronizar carrinho:', error);
       throw error;
     }
   }
@@ -792,7 +793,7 @@ class OfflineService {
       await this.cleanupOldCache();
       await this.cleanupImageCache();
     } catch (error) {
-      console.error('Erro na sincronização em background:', error);
+      logger.error('Erro na sincronização em background:', error);
     }
   }
 
@@ -804,7 +805,7 @@ class OfflineService {
       const cached = await AsyncStorage.getItem(this.CACHE_KEYS.PENDING_ACTIONS);
       return cached ? JSON.parse(cached) : [];
     } catch (error) {
-      console.error('Erro ao obter ações pendentes:', error);
+      logger.error('Erro ao obter ações pendentes:', error);
       return [];
     }
   }
@@ -832,11 +833,11 @@ class OfflineService {
           await ReactNativeBlobUtil.fs.unlink(this.IMAGE_CACHE_DIR);
           await this.setupImageCache();
         } catch (error) {
-          console.warn('Erro ao limpar cache de imagens:', error);
+          logger.warn('Erro ao limpar cache de imagens:', error);
         }
       }
     } catch (error) {
-      console.error('Erro ao limpar cache:', error);
+      logger.error('Erro ao limpar cache:', error);
       throw error;
     }
   }
@@ -880,7 +881,7 @@ class OfflineService {
             }
           }
         } catch (error) {
-          console.warn(`Erro ao verificar cache para ${type}:`, error);
+          logger.warn(`Erro ao verificar cache para ${type}:`, error);
         }
       }
       
@@ -893,12 +894,12 @@ class OfflineService {
         }
         cacheStatus.totalSize += cacheStatus.imageCache.size;
       } catch (error) {
-        console.warn('Erro ao calcular tamanho do cache de imagens:', error);
+        logger.warn('Erro ao calcular tamanho do cache de imagens:', error);
       }
       
       return cacheStatus;
     } catch (error) {
-      console.error('Erro ao obter status do cache:', error);
+      logger.error('Erro ao obter status do cache:', error);
       throw error;
     }
   }
@@ -950,11 +951,11 @@ class OfflineService {
             }
           }
         } catch (error) {
-          console.warn(`Erro ao limpar cache para ${key}:`, error);
+          logger.warn(`Erro ao limpar cache para ${key}:`, error);
         }
       }
     } catch (error) {
-      console.error('Erro ao limpar cache antigo:', error);
+      logger.error('Erro ao limpar cache antigo:', error);
     }
   }
 

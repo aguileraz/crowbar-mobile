@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import logger from '../../services/loggerService';
 import {
   View,
   StyleSheet,
@@ -132,7 +133,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
       // TODO: Load from AsyncStorage
       setSearchHistory(['caixa gamer', 'eletrônicos', 'roupas']);
     } catch (err) {
-      console.error('Error loading search history:', err);
+      logger.error('Error loading search history:', err);
     }
   };
 
@@ -145,7 +146,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
       setSearchHistory(newHistory);
       // TODO: Save to AsyncStorage
     } catch (err) {
-      console.error('Error saving search history:', err);
+      logger.error('Error saving search history:', err);
     }
   };
 
@@ -158,7 +159,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
       await dispatch(searchBoxes({ query, filters: activeFilters })).unwrap();
       saveToHistory(query);
     } catch (err) {
-      console.error('Search error:', err);
+      logger.error('Search error:', err);
     } finally {
       setIsSearching(false);
     }
