@@ -72,7 +72,13 @@
     "validate:backend": "curl -f https://crowbar-backend.azurewebsites.net/health",
     "submit:stores": "node scripts/submit-to-stores.js",
     "submit:appstore": "xcrun altool --upload-app --type ios --file ./ios/build/CrowbarMobile.ipa",
-    "submit:googleplay": "echo 'Manual submission required to Google Play Console'"
+    "submit:googleplay": "echo 'Manual submission required to Google Play Console'",
+    "security:review": "node scripts/security-review.js",
+    "security:fix": "node scripts/security-fixes.js",
+    "build:smoke-test": "node scripts/smoke-test-builds.js",
+    "build:validate": "node scripts/final-build-validation.js",
+    "release:prepare": "npm run build:validate",
+    "release:validate": "npm run build:smoke-test"
   },
   "dependencies": {
     "@notifee/react-native": "^7.8.0",
