@@ -81,3 +81,15 @@ bundle-analysis/
 *.cpuprofile
 *.heapsnapshot
 *.heapprofile
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Security reports
+security-report.json
+performance-report.json
+
+# Claude AI files
+.claude/

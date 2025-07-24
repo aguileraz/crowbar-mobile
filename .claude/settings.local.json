@@ -41,7 +41,8 @@
       "Bash(react-native --version)",
       "Bash(source ~/.bashrc)",
       "Bash(adb:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(git push:*)"
     ],
     "deny": []
   }

@@ -31,6 +31,9 @@ import { env, validateEnvironment } from './src/config/env';
 // Performance monitoring
 import { performanceProfiler } from './src/utils/performanceProfiler';
 
+// Security migration
+import { checkAndMigrate } from './src/utils/migrateSecureStorage';
+
 // Componentes
 import LoadingScreen from './src/components/LoadingScreen';
 import NotificationInitializer from './src/components/NotificationInitializer';
@@ -62,6 +65,13 @@ const App: React.FC = () => {
         console.error('❌ Environment validation failed:', error);
       }
     }
+
+    // Execute secure storage migration
+    checkAndMigrate().catch(error => {
+      if (__DEV__) {
+        console.error('❌ Secure storage migration failed:', error);
+      }
+    });
 
     // Mark cold start complete when app is ready
     const markAppReady = () => {

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Configuração padrão - apenas HTTPS -->
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+    
+    <!-- Configuração específica para domínio de produção (opcional - para certificate pinning) -->
+    <domain-config>
+        <domain includeSubdomains="true">crowbar-backend.azurewebsites.net</domain>
+        <trust-anchors>
+            <certificates src="system" />
+            <!-- Adicione pins de certificado aqui quando disponível -->
+        </trust-anchors>
+    </domain-config>
+    
+    <!-- Apenas para desenvolvimento local -->
+    <debug-overrides>
+        <base-config cleartextTrafficPermitted="true">
+            <trust-anchors>
+                <certificates src="system" />
+                <certificates src="user" />
+            </trust-anchors>
+        </base-config>
+    </debug-overrides>
+</network-security-config>
