@@ -28,6 +28,9 @@ import AppNavigator from './src/navigation/AppNavigator';
 import { theme } from './src/theme';
 import { env, validateEnvironment } from './src/config/env';
 
+// Performance monitoring
+import { performanceProfiler } from './src/utils/performanceProfiler';
+
 // Componentes
 import LoadingScreen from './src/components/LoadingScreen';
 import NotificationInitializer from './src/components/NotificationInitializer';
@@ -59,6 +62,21 @@ const App: React.FC = () => {
         console.error('❌ Environment validation failed:', error);
       }
     }
+
+    // Mark cold start complete when app is ready
+    const markAppReady = () => {
+      performanceProfiler.markColdStartComplete();
+    };
+
+    // Wait for JS thread to be idle before marking ready
+    setTimeout(markAppReady, 100);
+
+    // Cleanup on unmount
+    return () => {
+      if (__DEV__) {
+        performanceProfiler.cleanup();
+      }
+    };
   }, []);
 
   return (
