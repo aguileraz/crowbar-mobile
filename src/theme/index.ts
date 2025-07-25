@@ -1,4 +1,4 @@
-import { MD3LightTheme, configureFonts } from 'react-native-paper';
+import { MD3LightTheme } from 'react-native-paper';
 import type { MD3Theme } from 'react-native-paper';
 
 /**
@@ -70,11 +70,11 @@ const colors = {
 };
 
 // Configuração de fontes simplificada (usando padrões do React Native Paper)
-const fontConfig = {
-  default: {
-    fontFamily: 'System',
-  },
-};
+// const _fontConfig = {
+//   default: {
+//     fontFamily: 'System',
+//   },
+// };
 
 // Tema principal
 export const theme: MD3Theme = {

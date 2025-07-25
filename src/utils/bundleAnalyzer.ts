@@ -84,7 +84,7 @@ class BundleAnalyzer {
       
       // Simular análise de módulo
       import(moduleName)
-        .then((module) => {
+        .then((_module) => {
           const loadTime = Date.now() - startTime;
           
           // Estimar tamanho baseado no tempo de carregamento
@@ -381,7 +381,7 @@ export const usePerformanceMonitor = (componentName: string) => {
         logger.debug(`${componentName} render #${renderCount + 1} took ${duration}ms`);
       }
     };
-  });
+  }, [componentName, renderCount]);
 
   return { renderCount, renderTime };
 };

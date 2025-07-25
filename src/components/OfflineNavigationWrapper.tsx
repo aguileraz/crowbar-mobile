@@ -42,7 +42,9 @@ export const OfflineNavigationWrapper: React.FC<OfflineNavigationWrapperProps> =
         
         // Sincronizar ações pendentes
         if (hasPendingActions) {
-          sync().catch(console.error);
+          sync().catch((error) => {
+            // TODO: Handle sync error properly
+          });
         }
       } else {
         // Ficou offline

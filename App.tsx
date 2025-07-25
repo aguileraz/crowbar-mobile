@@ -9,7 +9,6 @@
  *
  * @format
  */
-
 import React, { useEffect } from 'react';
 import { StatusBar, LogBox } from 'react-native';
 import { Provider as ReduxProvider } from 'react-redux';
@@ -17,27 +16,20 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { Provider as PaperProvider } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-
 // Store e persistência
 import { store, persistor } from './src/store';
-
 // Navegação
 import AppNavigator from './src/navigation/AppNavigator';
-
 // Tema e configurações
 import { theme } from './src/theme';
 import { env, validateEnvironment } from './src/config/env';
-
 // Performance monitoring
 import { performanceProfiler } from './src/utils/performanceProfiler';
-
 // Security migration
 import { checkAndMigrate } from './src/utils/migrateSecureStorage';
-
 // Componentes
 import LoadingScreen from './src/components/LoadingScreen';
 import NotificationInitializer from './src/components/NotificationInitializer';
-
 // Configurações de desenvolvimento
 if (__DEV__) {
   // Ignorar warnings específicos do React Native
@@ -46,7 +38,6 @@ if (__DEV__) {
     'VirtualizedLists should never be nested',
   ]);
 }
-
 /**
  * Componente principal da aplicação
  */
@@ -56,31 +47,22 @@ const App: React.FC = () => {
     try {
       validateEnvironment();
       if (__DEV__) {
-        console.log('✅ Environment validation passed');
-        console.log(`🚀 App starting in ${env.NODE_ENV} mode`);
-        console.log(`📡 API Base URL: ${env.API_BASE_URL}`);
       }
     } catch (error) {
       if (__DEV__) {
-        console.error('❌ Environment validation failed:', error);
       }
     }
-
     // Execute secure storage migration
     checkAndMigrate().catch(error => {
       if (__DEV__) {
-        console.error('❌ Secure storage migration failed:', error);
       }
     });
-
     // Mark cold start complete when app is ready
     const markAppReady = () => {
       performanceProfiler.markColdStartComplete();
     };
-
     // Wait for JS thread to be idle before marking ready
     setTimeout(markAppReady, 100);
-
     // Cleanup on unmount
     return () => {
       if (__DEV__) {
@@ -88,7 +70,6 @@ const App: React.FC = () => {
       }
     };
   }, []);
-
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
@@ -109,5 +90,4 @@ const App: React.FC = () => {
     </GestureHandlerRootView>
   );
 };
-
 export default App;

@@ -18,7 +18,6 @@ import {
 } from 'react-native-paper';
 import { performanceProfiler } from '../../utils/performanceProfiler';
 import { theme } from '../../theme';
-
 /**
  * Tela de monitoramento de performance (apenas em desenvolvimento)
  */
@@ -28,29 +27,24 @@ export const PerformanceScreen: React.FC = () => {
   const [report, setReport] = useState(performanceProfiler.getPerformanceReport());
   const [refreshing, setRefreshing] = useState(false);
   const [autoRefresh, setAutoRefresh] = useState(true);
-
   useEffect(() => {
     if (!__DEV__) {
       return;
     }
-
     const interval = autoRefresh ? setInterval(() => {
       setMetrics(performanceProfiler.getMetrics());
       setReport(performanceProfiler.getPerformanceReport());
     }, 1000) : null;
-
     return () => {
       if (interval) clearInterval(interval);
     };
   }, [autoRefresh]);
-
   const handleRefresh = () => {
     setRefreshing(true);
     setMetrics(performanceProfiler.getMetrics());
     setReport(performanceProfiler.getPerformanceReport());
     setTimeout(() => setRefreshing(false), 500);
   };
-
   const getStatusColor = (value: number, threshold: number, inverse = false) => {
     const ratio = value / threshold;
     if (inverse) {
@@ -62,20 +56,16 @@ export const PerformanceScreen: React.FC = () => {
            ratio <= 1.2 ? paperTheme.colors.warning : 
            paperTheme.colors.error;
   };
-
   const formatTime = (ms?: number) => {
     if (!ms) return 'N/A';
     return ms < 1000 ? `${ms}ms` : `${(ms / 1000).toFixed(2)}s`;
   };
-
   const formatMemory = (mb: number) => {
     return `${mb.toFixed(1)} MB`;
   };
-
   if (!__DEV__) {
     return null;
   }
-
   return (
     <ScrollView
       style={styles.container}
@@ -95,11 +85,9 @@ export const PerformanceScreen: React.FC = () => {
               {autoRefresh ? 'Auto' : 'Manual'}
             </Button>
           </View>
-
           {/* Startup Metrics */}
           <List.Section>
             <List.Subheader>Startup Performance</List.Subheader>
-            
             <View style={styles.metric}>
               <Text>Cold Start Time</Text>
               <Chip
@@ -112,7 +100,6 @@ export const PerformanceScreen: React.FC = () => {
                 {formatTime(report.summary.coldStartTime)}
               </Chip>
             </View>
-
             <View style={styles.metric}>
               <Text>Warm Start Time</Text>
               <Chip
@@ -126,13 +113,10 @@ export const PerformanceScreen: React.FC = () => {
               </Chip>
             </View>
           </List.Section>
-
           <Divider />
-
           {/* Runtime Metrics */}
           <List.Section>
             <List.Subheader>Runtime Performance</List.Subheader>
-
             <View style={styles.metric}>
               <Text>FPS</Text>
               <View style={styles.metricValue}>
@@ -144,7 +128,6 @@ export const PerformanceScreen: React.FC = () => {
                 />
               </View>
             </View>
-
             <View style={styles.metric}>
               <Text>Memory Usage</Text>
               <View style={styles.metricValue}>
@@ -156,7 +139,6 @@ export const PerformanceScreen: React.FC = () => {
                 />
               </View>
             </View>
-
             <View style={styles.metric}>
               <Text>JS Thread</Text>
               <Chip
@@ -170,9 +152,7 @@ export const PerformanceScreen: React.FC = () => {
               </Chip>
             </View>
           </List.Section>
-
           <Divider />
-
           {/* Screen Transitions */}
           {Object.keys(metrics.screenTransitions).length > 0 && (
             <>
@@ -194,7 +174,6 @@ export const PerformanceScreen: React.FC = () => {
               <Divider />
             </>
           )}
-
           {/* Slow Operations */}
           {report.summary.slowScreens.length > 0 && (
             <List.Section>
@@ -210,7 +189,6 @@ export const PerformanceScreen: React.FC = () => {
               ))}
             </List.Section>
           )}
-
           {report.summary.slowAPIs.length > 0 && (
             <List.Section>
               <List.Subheader style={{ color: paperTheme.colors.error }}>
@@ -227,7 +205,6 @@ export const PerformanceScreen: React.FC = () => {
           )}
         </Card.Content>
       </Card>
-
       {/* Export Button */}
       <Card style={styles.card}>
         <Card.Content>
@@ -236,7 +213,6 @@ export const PerformanceScreen: React.FC = () => {
             onPress={() => {
               const data = performanceProfiler.exportPerformanceData();
               // In a real app, you'd save this to a file or send to a server
-              console.log('Performance Report:', data);
             }}
           >
             Export Performance Report
@@ -246,7 +222,6 @@ export const PerformanceScreen: React.FC = () => {
     </ScrollView>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -277,5 +252,4 @@ const styles = StyleSheet.create({
     marginTop: theme.spacing.xs,
   },
 });
-
 export default PerformanceScreen;

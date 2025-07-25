@@ -107,7 +107,7 @@ export function withLazyLoading<P extends object>(
   options: LazyComponentProps = {}
 ) {
   const LazyComponent = lazy(importFunc);
-  const { fallback: Fallback = DefaultFallback, errorBoundary: ErrorBoundary } = options;
+  const { fallback: Fallback = DefaultFallback, errorBoundary: _ErrorBoundary } = options;
 
   return React.forwardRef<any, P>((props, ref) => (
     <LazyErrorBoundary>
@@ -126,7 +126,7 @@ export function withLazyScreen<P extends object>(
   options: LazyScreenProps = {}
 ) {
   const LazyComponent = lazy(importFunc);
-  const { skeletonType = 'default', errorBoundary: ErrorBoundary } = options;
+  const { skeletonType = 'default', errorBoundary: _ErrorBoundary } = options;
 
   const SkeletonComponent = () => <SkeletonFallback type={skeletonType} />;
 
