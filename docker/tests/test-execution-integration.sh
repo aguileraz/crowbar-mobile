@@ -47,14 +47,14 @@ else
 fi
 
 # Make all scripts executable
-chmod +x docker/android/scripts/*.sh 2>/dev/null || true
+chmod +x ../android/scripts/*.sh 2>/dev/null || true
 
 # Test 1: Script executable permissions
 test_start "Testing script permissions"
 
 all_executable=true
 for script in run-tests.sh parse-jest-results.sh run-detox-tests.sh retry-handler.sh aggregate-results.sh; do
-    if [ -x "docker/android/scripts/$script" ]; then
+    if [ -x "../android/scripts/$script" ]; then
         test_pass "$script is executable"
     else
         test_fail "$script is not executable"
@@ -65,7 +65,7 @@ done
 # Test 2: Test runner help/usage
 test_start "Testing main test runner"
 
-if docker/android/scripts/run-tests.sh --help 2>&1 | grep -q "Usage:"; then
+if ../android/scripts/run-tests.sh --help 2>&1 | grep -q "Usage:"; then
     test_pass "Test runner shows help"
 else
     test_fail "Test runner help not working"
@@ -87,7 +87,7 @@ cat > "$mock_jest_result" <<EOF
 }
 EOF
 
-if docker/android/scripts/parse-jest-results.sh "$mock_jest_result" "unit" 2>&1 | grep -q "8"; then
+if ../android/scripts/parse-jest-results.sh "$mock_jest_result" "unit" 2>&1 | grep -q "8"; then
     test_pass "Jest parser correctly parses results"
 else
     test_fail "Jest parser failed to parse mock results"
@@ -98,7 +98,7 @@ rm -f "$mock_jest_result"
 # Test 4: Retry handler functionality
 test_start "Testing retry handler"
 
-if docker/android/scripts/retry-handler.sh retry "echo 'test'" "echo_test" 1 &> /dev/null; then
+if ../android/scripts/retry-handler.sh retry "echo 'test'" "echo_test" 1 &> /dev/null; then
     test_pass "Retry handler executes simple command"
 else
     test_fail "Retry handler failed on simple command"
@@ -125,7 +125,7 @@ cat > "$mock_output_dir/unit/results.json" <<EOF
 EOF
 
 # Run aggregator (will exit 0 with no failures)
-docker/android/scripts/aggregate-results.sh "$mock_output_dir" &> /dev/null
+../android/scripts/aggregate-results.sh "$mock_output_dir" &> /dev/null
 
 if [ -f "$mock_output_dir/aggregated-report.json" ] && [ -f "$mock_output_dir/test-summary.txt" ] && [ -f "$mock_output_dir/dashboard.html" ]; then
     test_pass "Aggregator generates all reports"
@@ -138,7 +138,7 @@ rm -rf "$mock_output_dir"
 # Test 6: Parallel execution support
 test_start "Testing parallel execution configuration"
 
-if grep -q "run_parallel_tests\|PARALLEL_EXECUTION" docker/android/scripts/run-tests.sh; then
+if grep -q "run_parallel_tests\|PARALLEL_EXECUTION" ../android/scripts/run-tests.sh; then
     test_pass "Parallel execution support present"
 else
     test_fail "Parallel execution support missing"
@@ -148,7 +148,7 @@ fi
 test_start "Testing error handling across scripts"
 
 error_handling_ok=true
-for script in docker/android/scripts/*.sh; do
+for script in ../android/scripts/*.sh; do
     if [ -f "$script" ]; then
         # Check for any form of error handling (set -e, set +e, trap, or explicit error handling)
         if ! grep -q "set -e\|set +e\|trap\|handle_error\|exit 1" "$script"; then
@@ -166,7 +166,7 @@ fi
 test_start "Testing output directory creation"
 
 test_output_dir=$(mktemp -d)
-if docker/android/scripts/run-tests.sh --output "$test_output_dir" --types none &> /dev/null; then
+if ../android/scripts/run-tests.sh --output "$test_output_dir" --types none &> /dev/null; then
     if [ -d "$test_output_dir/unit" ] && [ -d "$test_output_dir/integration" ] && [ -d "$test_output_dir/e2e" ]; then
         test_pass "Output directories created correctly"
     else
@@ -191,7 +191,7 @@ echo '{"success": true, "numTotalTests": 5, "numPassedTests": 5, "numFailedTests
 flow_success=true
 
 # 1. Parse results
-if docker/android/scripts/parse-jest-results.sh "$integration_test_dir/results.json" "test" &> /dev/null; then
+if ../android/scripts/parse-jest-results.sh "$integration_test_dir/results.json" "test" &> /dev/null; then
     echo "  Jest parser executed successfully"
 else
     flow_success=false
@@ -199,7 +199,7 @@ else
 fi
 
 # 2. Retry handler
-if docker/android/scripts/retry-handler.sh retry "true" "test_command" 1 &> /dev/null; then
+if ../android/scripts/retry-handler.sh retry "true" "test_command" 1 &> /dev/null; then
     echo "  Retry handler executed successfully"
 else
     flow_success=false
@@ -219,7 +219,7 @@ test_start "Testing configuration support"
 
 config_vars_found=0
 for var in MAX_RETRIES PARALLEL_EXECUTION OUTPUT_DIR TEST_TYPES RETRY_FAILED; do
-    if grep -q "$var" docker/android/scripts/run-tests.sh; then
+    if grep -q "$var" ../android/scripts/run-tests.sh; then
         ((config_vars_found++))
     fi
 done

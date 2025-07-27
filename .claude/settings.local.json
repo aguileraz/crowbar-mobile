@@ -62,7 +62,15 @@
       "Bash(./docker/tests/test-apk-integration.sh:*)",
       "Bash(./docker/tests/test-executor.sh:*)",
       "Bash(./docker/tests/test-execution-integration.sh:*)",
-      "Bash(# Create mock output directory\nmock_output_dir=$(mktemp -d)\nmkdir -p \"\"$mock_output_dir/unit\"\"\nmkdir -p \"\"$mock_output_dir/integration\"\"\nmkdir -p \"\"$mock_output_dir/e2e\"\"\n\n# Create mock results\ncat > \"\"$mock_output_dir/unit/results.json\"\" <<EOF\n{\n  \"\"success\"\": true,\n  \"\"numTotalTests\"\": 50,\n  \"\"numPassedTests\"\": 48,\n  \"\"numFailedTests\"\": 2,\n  \"\"numPendingTests\"\": 0\n}\nEOF\n\n# Run aggregator and show output\ndocker/android/scripts/aggregate-results.sh \"\"$mock_output_dir\"\" 2>&1\n\n# Check results\nls -la \"\"$mock_output_dir/\"\"\n\n# Cleanup\nrm -rf \"\"$mock_output_dir\"\")"
+      "Bash(# Create mock output directory\nmock_output_dir=$(mktemp -d)\nmkdir -p \"\"$mock_output_dir/unit\"\"\nmkdir -p \"\"$mock_output_dir/integration\"\"\nmkdir -p \"\"$mock_output_dir/e2e\"\"\n\n# Create mock results\ncat > \"\"$mock_output_dir/unit/results.json\"\" <<EOF\n{\n  \"\"success\"\": true,\n  \"\"numTotalTests\"\": 50,\n  \"\"numPassedTests\"\": 48,\n  \"\"numFailedTests\"\": 2,\n  \"\"numPendingTests\"\": 0\n}\nEOF\n\n# Run aggregator and show output\ndocker/android/scripts/aggregate-results.sh \"\"$mock_output_dir\"\" 2>&1\n\n# Check results\nls -la \"\"$mock_output_dir/\"\"\n\n# Cleanup\nrm -rf \"\"$mock_output_dir\"\")",
+      "Bash(./docker/tests/test-results-collector.sh:*)",
+      "Bash(./docker/tests/test-results-integration.sh:*)",
+      "Bash(timeout:*)",
+      "Bash(./test-results-collector.sh:*)",
+      "Bash(./test-execution.sh:*)",
+      "Bash(./test-results-integration.sh:*)",
+      "Bash(./test-executor.sh:*)",
+      "Bash(./test-execution-integration.sh:*)"
     ],
     "deny": []
   }
