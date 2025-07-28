@@ -98,7 +98,7 @@ export class HomePage extends BasePage {
    */
   async getCartItemCount(): Promise<number> {
     const badge = await TestUtils.getElementText(this.cartBadge)
-    return parseInt(badge) || 0
+    return parseInt(badge, 10) || 0
   }
 
   /**

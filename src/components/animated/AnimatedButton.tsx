@@ -15,8 +15,6 @@ import {
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
-  interpolate,
-  Extrapolate,
 } from 'react-native-reanimated';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { buttonPress } from '../../animations/microInteractions';

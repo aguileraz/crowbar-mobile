@@ -130,7 +130,7 @@ const BoxOpeningScreen: React.FC<BoxOpeningScreenProps> = ({
       dispatch(startOpeningAnimation());
       
       // Open box on server
-      const result = await dispatch(openMysteryBox(currentBox.id)).unwrap();
+      const _result = await dispatch(openMysteryBox(currentBox.id)).unwrap();
       
       // Rastrear abertura da caixa
       if (result && result.items_received) {

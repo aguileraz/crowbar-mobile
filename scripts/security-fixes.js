@@ -6,7 +6,7 @@
 
 const fs = require('fs');
 const _path = require('path');
-const { execSync } = require('child_process');
+const { execSync: _execSync } = require('child_process');
 
 // Cores para output
 const colors = {

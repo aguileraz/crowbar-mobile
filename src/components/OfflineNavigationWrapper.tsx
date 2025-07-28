@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Alert } from 'react-native';
 import { Portal, Snackbar, useTheme } from 'react-native-paper';
 import { useSelector } from 'react-redux';
@@ -42,7 +42,7 @@ export const OfflineNavigationWrapper: React.FC<OfflineNavigationWrapperProps> =
         
         // Sincronizar ações pendentes
         if (hasPendingActions) {
-          sync().catch((error) => {
+          sync().catch((_error) => {
             // TODO: Handle sync error properly
           });
         }

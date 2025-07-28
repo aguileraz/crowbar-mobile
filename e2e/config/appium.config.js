@@ -3,7 +3,7 @@ module.exports = {
   // Server configuration
   server: {
     host: process.env.APPIUM_HOST || 'localhost',
-    port: parseInt(process.env.APPIUM_PORT || '4723'),
+    port: parseInt(process.env.APPIUM_PORT || '4723', 10),
     path: '/wd/hub',
     logLevel: process.env.LOG_LEVEL || 'info'
   },

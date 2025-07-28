@@ -1,3 +1,4 @@
+/* global browser */
 const appiumConfig = require('./appium.config')
 
 exports.config = {
@@ -13,7 +14,7 @@ exports.config = {
   exclude: [],
   
   // Capabilities
-  maxInstances: parseInt(process.env.MAX_INSTANCES || '1'),
+  maxInstances: parseInt(process.env.MAX_INSTANCES || '1', 10),
   capabilities: [{
     ...appiumConfig.android,
     'appium:options': {
@@ -69,7 +70,7 @@ exports.config = {
   ],
   
   // Hooks
-  before: function (capabilities, specs) {
+  before: function (_capabilities, _specs) {
     // Set up TypeScript
     require('ts-node').register({
       transpileOnly: true,
@@ -77,13 +78,13 @@ exports.config = {
     })
   },
   
-  beforeSession: function (config, capabilities, specs) {
+  beforeSession: function (_config, capabilities, _specs) {
     console.log('🚀 Starting test session...')
     console.log(`📱 Device: ${capabilities['appium:deviceName']}`)
     console.log(`🤖 Android: ${capabilities['appium:platformVersion']}`)
   },
   
-  afterTest: async function(test, context, { error, result, duration, passed, retries }) {
+  afterTest: async function(test, _context, { _error, _result, _duration, passed, _retries }) {
     if (!passed && appiumConfig.test.screenshotOnFailure) {
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
       const filepath = `${process.env.SCREENSHOT_DIR || './screenshots'}/${test.title}-${timestamp}.png`
@@ -92,11 +93,11 @@ exports.config = {
     }
   },
   
-  after: function (result, capabilities, specs) {
+  after: function (_result, _capabilities, _specs) {
     console.log('✅ Test session completed')
   },
   
-  onComplete: function(exitCode, config, capabilities, results) {
+  onComplete: function(exitCode, _config, _capabilities, _results) {
     console.log('🏁 All tests completed')
     console.log(`Exit code: ${exitCode}`)
   }
