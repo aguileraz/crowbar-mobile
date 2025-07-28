@@ -1,0 +1,47 @@
+{
+  "timestamp": "2025-07-28T16:44:26.310Z",
+  "environment": "production",
+  "summary": {
+    "total": 6,
+    "passed": 3,
+    "warnings": 1,
+    "failed": 2
+  },
+  "tests": [
+    {
+      "name": "Environment Configuration",
+      "status": "PASSED",
+      "message": "All production settings valid"
+    },
+    {
+      "name": "Bundle Creation",
+      "status": "FAILED",
+      "message": "Command failed: npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output /tmp/test-bundle.js --assets-dest /tmp/test-assets\n=================================================================================================\nFrom React Native 0.73, your project's Metro config should extend '@react-native/metro-config'\nor it will fail to build. Please copy the template at:\nhttps://github.com/react-native-community/template/blob/main/template/metro.config.js\nThis warning will be removed in future (https://github.com/facebook/metro/issues/1018).\n=================================================================================================\nerror Unable to resolve module @react-native-vector-icons/material-design-icons from /mnt/overpower/apps/dev/agl/crowbar/crowbar-mobile/node_modules/react-native-paper/lib/commonjs/components/MaterialCommunityIcon.js: @react-native-vector-icons/material-design-icons could not be found within the project or in these directories:\n  node_modules/react-native-paper/node_modules\n  node_modules\n\u001b[0m \u001b[90m 23 |\u001b[39m \u001b[36mconst\u001b[39m loadIconModule \u001b[33m=\u001b[39m () \u001b[33m=>\u001b[39m {\n \u001b[90m 24 |\u001b[39m   \u001b[36mtry\u001b[39m {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 25 |\u001b[39m     \u001b[36mreturn\u001b[39m require(\u001b[32m'@react-native-vector-icons/material-design-icons'\u001b[39m)\u001b[33m.\u001b[39m\u001b[36mdefault\u001b[39m\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                     \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 26 |\u001b[39m   } \u001b[36mcatch\u001b[39m (e) {\n \u001b[90m 27 |\u001b[39m     \u001b[36mtry\u001b[39m {\n \u001b[90m 28 |\u001b[39m       \u001b[36mreturn\u001b[39m require(\u001b[32m'@expo/vector-icons/MaterialCommunityIcons'\u001b[39m)\u001b[33m.\u001b[39m\u001b[36mdefault\u001b[39m\u001b[33m;\u001b[39m\u001b[0m.\n"
+    },
+    {
+      "name": "TypeScript Compilation",
+      "status": "FAILED",
+      "message": "1574 TypeScript errors found"
+    },
+    {
+      "name": "Firebase Configuration",
+      "status": "WARNING",
+      "message": "Using development Firebase project"
+    },
+    {
+      "name": "Critical Dependencies",
+      "status": "PASSED",
+      "message": "All critical dependencies present"
+    },
+    {
+      "name": "Android Configuration",
+      "status": "PASSED",
+      "message": "Android build configuration valid"
+    }
+  ],
+  "production_readiness": "NOT_READY",
+  "recommendations": [
+    "Fix all failed tests before production deployment",
+    "Review and address warning issues for optimal production performance"
+  ]
+}

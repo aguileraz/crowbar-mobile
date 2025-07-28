@@ -1,0 +1,32 @@
+{
+  "timestamp": "2025-07-28T16:45:26.307Z",
+  "environment": "production",
+  "connectivity_results": [
+    {
+      "name": "API Base Connectivity",
+      "status": false,
+      "message": "API endpoint not accessible"
+    },
+    {
+      "name": "WebSocket Connectivity",
+      "status": true,
+      "message": "WebSocket endpoint accessible"
+    },
+    {
+      "name": "Firebase Connectivity",
+      "status": false,
+      "message": "Firebase services not accessible"
+    },
+    {
+      "name": "External Services",
+      "status": true,
+      "message": "External services accessible"
+    }
+  ],
+  "overall_status": "ISSUES_DETECTED",
+  "recommendations": [
+    "Fix connectivity issues before production deployment",
+    "Address API Base Connectivity: API endpoint not accessible",
+    "Address Firebase Connectivity: Firebase services not accessible"
+  ]
+}
