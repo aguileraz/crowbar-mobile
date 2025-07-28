@@ -129,7 +129,8 @@ const ItemRevealCard: React.FC<ItemRevealCardProps> = ({
     if (item.image) {
       return { uri: item.image };
     }
-    return require('../assets/images/default-item.png'); // Fallback image
+    // Use a placeholder URI instead of local asset for build compatibility
+    return { uri: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjBmMGYwIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzY2NiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkl0ZW0gPC90ZXh0Pjwvc3ZnPg==' };
   };
 
   /**
