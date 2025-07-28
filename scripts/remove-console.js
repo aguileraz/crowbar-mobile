@@ -39,17 +39,17 @@ const ALLOWED_FILES = [
   'scripts/**',
 ];
 
-function shouldProcessFile(filePath) {
+function shouldProcessFile(_filePath) {
   // Check if file is in allowed list
   for (const allowed of ALLOWED_FILES) {
-    if (filePath.includes(allowed)) {
+    if (_filePath.includes(allowed)) {
       return false;
     }
   }
   
   // Check exclude patterns
   for (const pattern of EXCLUDE_PATTERNS) {
-    if (filePath.includes(pattern.replace('**/', '').replace('/**', ''))) {
+    if (_filePath.includes(pattern.replace('**/', '').replace('/**', ''))) {
       return false;
     }
   }
@@ -57,7 +57,7 @@ function shouldProcessFile(filePath) {
   return true;
 }
 
-function removeConsoleStatements(content, filePath) {
+function removeConsoleStatements(content, _filePath) {
   let modified = content;
   let count = 0;
   

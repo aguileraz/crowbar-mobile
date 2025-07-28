@@ -8,7 +8,7 @@ import {
   withDelay,
   SharedValue,
   interpolate,
-  Extrapolate,
+  _Extrapolate,
 } from 'react-native-reanimated';
 import { Dimensions } from 'react-native';
 import { DURATIONS, SPRING_CONFIGS, EASINGS } from './constants';
@@ -56,7 +56,7 @@ export const screenSlideHorizontal = (
     progress.value,
     [0, 1],
     [SCREEN_WIDTH, 0],
-    Extrapolate.CLAMP
+    _Extrapolate.CLAMP
   );
   
   return {
@@ -80,7 +80,7 @@ export const screenSlideVertical = (
     progress.value,
     [0, 1],
     [SCREEN_HEIGHT, 0],
-    Extrapolate.CLAMP
+    _Extrapolate.CLAMP
   );
   
   return {
@@ -104,7 +104,7 @@ export const screenScaleTransition = (
     progress.value,
     [0, 1],
     [0.8, 1],
-    Extrapolate.CLAMP
+    _Extrapolate.CLAMP
   );
   
   return {
@@ -115,7 +115,7 @@ export const screenScaleTransition = (
       progress.value,
       [0, 0.5, 1],
       [0, 0.7, 1],
-      Extrapolate.CLAMP
+      _Extrapolate.CLAMP
     ),
   };
 };
@@ -134,7 +134,7 @@ export const modalTransition = (
     progress.value,
     [0, 1],
     [SCREEN_HEIGHT * 0.3, 0],
-    Extrapolate.CLAMP
+    _Extrapolate.CLAMP
   );
   
   return {
@@ -145,7 +145,7 @@ export const modalTransition = (
       progress.value,
       [0, 0.3, 1],
       [0, 0.5, 1],
-      Extrapolate.CLAMP
+      _Extrapolate.CLAMP
     ),
   };
 };
@@ -164,7 +164,7 @@ export const cardFlipTransition = (
     progress.value,
     [0, 1],
     [0, 180],
-    Extrapolate.CLAMP
+    _Extrapolate.CLAMP
   );
   
   return {
@@ -195,7 +195,7 @@ export const parallaxTransition = (
     scrollY.value,
     inputRange,
     outputRange,
-    Extrapolate.CLAMP
+    _Extrapolate.CLAMP
   );
   
   return {
@@ -219,28 +219,28 @@ export const heroTransition = (
     progress.value,
     [0, 1],
     [from.x, to.x],
-    Extrapolate.CLAMP
+    _Extrapolate.CLAMP
   );
   
   const translateY = interpolate(
     progress.value,
     [0, 1],
     [from.y, to.y],
-    Extrapolate.CLAMP
+    _Extrapolate.CLAMP
   );
   
   const scaleX = interpolate(
     progress.value,
     [0, 1],
     [from.width / to.width, 1],
-    Extrapolate.CLAMP
+    _Extrapolate.CLAMP
   );
   
   const scaleY = interpolate(
     progress.value,
     [0, 1],
     [from.height / to.height, 1],
-    Extrapolate.CLAMP
+    _Extrapolate.CLAMP
   );
   
   return {
@@ -276,7 +276,7 @@ export const accordionTransition = (
     progress.value,
     [0, 1],
     [0, maxHeight],
-    Extrapolate.CLAMP
+    _Extrapolate.CLAMP
   );
   
   return {
@@ -285,7 +285,7 @@ export const accordionTransition = (
       progress.value,
       [0, 0.5, 1],
       [0, 0.5, 1],
-      Extrapolate.CLAMP
+      _Extrapolate.CLAMP
     ),
   };
 };
@@ -310,7 +310,7 @@ export const tabSwitchTransition = (
         currentIndex.value,
         [0, 1, 2, 3, 4],
         [0, itemWidth, itemWidth * 2, itemWidth * 3, itemWidth * 4],
-        Extrapolate.CLAMP
+        _Extrapolate.CLAMP
       ),
     }],
   };

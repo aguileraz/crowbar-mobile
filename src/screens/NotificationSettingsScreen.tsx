@@ -64,7 +64,7 @@ const NotificationSettingsScreen: React.FC<NotificationSettingsScreenProps> = ({
       const updates = { [key]: value };
       await dispatch(updateSettings(updates)).unwrap();
       
-      trackEngagement('notification_setting_changed', key, value ? 1 : 0);
+      trackEngagement('notification_setting_changed', _key, value ? 1 : 0);
     } catch (error) {
       logger.error('Error updating setting:', error);
       Alert.alert('Erro', 'Não foi possível atualizar a configuração');

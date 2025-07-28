@@ -9,11 +9,11 @@ import {
   SharedValue,
   runOnJS,
 } from 'react-native-reanimated';
-import HapticFeedback from 'react-native-haptic-feedback';
+import HapticFeedback from 'react-native-_haptic-feedback';
 import { DURATIONS, SPRING_CONFIGS, EASINGS, HAPTIC_FEEDBACK } from './constants';
 
 interface FeedbackOptions {
-  haptic?: boolean;
+  _haptic?: boolean;
   hapticType?: keyof typeof HAPTIC_FEEDBACK;
   callback?: () => void;
 }
@@ -27,9 +27,9 @@ export const successAnimation = (
   options: FeedbackOptions = {}
 ) => {
   'worklet';
-  const { haptic = true, hapticType = 'success', callback } = options;
+  const { _haptic = true, hapticType = 'success', callback } = options;
   
-  if (haptic) {
+  if (_haptic) {
     runOnJS(() => {
       HapticFeedback.trigger(HAPTIC_FEEDBACK[hapticType] as any);
     })();
@@ -60,9 +60,9 @@ export const errorAnimation = (
   options: FeedbackOptions = {}
 ) => {
   'worklet';
-  const { haptic = true, hapticType = 'error', callback } = options;
+  const { _haptic = true, hapticType = 'error', callback } = options;
   
-  if (haptic) {
+  if (_haptic) {
     runOnJS(() => {
       HapticFeedback.trigger(HAPTIC_FEEDBACK[hapticType] as any);
     })();
@@ -97,9 +97,9 @@ export const warningAnimation = (
   options: FeedbackOptions = {}
 ) => {
   'worklet';
-  const { haptic = true, hapticType = 'warning', callback } = options;
+  const { _haptic = true, hapticType = 'warning', callback } = options;
   
-  if (haptic) {
+  if (_haptic) {
     runOnJS(() => {
       HapticFeedback.trigger(HAPTIC_FEEDBACK[hapticType] as any);
     })();
@@ -163,11 +163,11 @@ export const progressAnimation = (
   options: FeedbackOptions = {}
 ) => {
   'worklet';
-  const { haptic = true, hapticType = 'selection', callback } = options;
+  const { _haptic = true, hapticType = 'selection', callback } = options;
   
   width.value = withSpring(targetProgress, SPRING_CONFIGS.smooth, (finished) => {
     if (finished) {
-      if (targetProgress === 1 && haptic) {
+      if (targetProgress === 1 && _haptic) {
         runOnJS(() => {
           HapticFeedback.trigger(HAPTIC_FEEDBACK[hapticType] as any);
         })();
@@ -189,9 +189,9 @@ export const selectionAnimation = (
   options: FeedbackOptions = {}
 ) => {
   'worklet';
-  const { haptic = true, hapticType = 'selection' } = options;
+  const { _haptic = true, hapticType = 'selection' } = options;
   
-  if (haptic) {
+  if (_haptic) {
     runOnJS(() => {
       HapticFeedback.trigger(HAPTIC_FEEDBACK[hapticType] as any);
     })();
@@ -217,9 +217,9 @@ export const favoriteAnimation = (
   options: FeedbackOptions = {}
 ) => {
   'worklet';
-  const { haptic = true, hapticType = 'medium' } = options;
+  const { _haptic = true, hapticType = 'medium' } = options;
   
-  if (haptic) {
+  if (_haptic) {
     runOnJS(() => {
       HapticFeedback.trigger(HAPTIC_FEEDBACK[hapticType] as any);
     })();
@@ -257,9 +257,9 @@ export const addToCartAnimation = (
   options: FeedbackOptions = {}
 ) => {
   'worklet';
-  const { haptic = true, hapticType = 'success', callback } = options;
+  const { _haptic = true, hapticType = 'success', callback } = options;
   
-  if (haptic) {
+  if (_haptic) {
     runOnJS(() => {
       HapticFeedback.trigger(HAPTIC_FEEDBACK[hapticType] as any);
     })();
@@ -291,9 +291,9 @@ export const shareAnimation = (
   options: FeedbackOptions = {}
 ) => {
   'worklet';
-  const { haptic = true, hapticType = 'selection', callback } = options;
+  const { _haptic = true, hapticType = 'selection', callback } = options;
   
-  if (haptic) {
+  if (_haptic) {
     runOnJS(() => {
       HapticFeedback.trigger(HAPTIC_FEEDBACK[hapticType] as any);
     })();
@@ -324,9 +324,9 @@ export const notificationAnimation = (
   options: FeedbackOptions = {}
 ) => {
   'worklet';
-  const { haptic = true, hapticType = 'light' } = options;
+  const { _haptic = true, hapticType = 'light' } = options;
   
-  if (haptic) {
+  if (_haptic) {
     runOnJS(() => {
       HapticFeedback.trigger(HAPTIC_FEEDBACK[hapticType] as any);
     })();

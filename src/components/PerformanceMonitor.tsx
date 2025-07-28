@@ -39,8 +39,8 @@ const PerformanceMonitor: React.FC = () => {
   const [fps, setFps] = useState<PerformanceMetric[]>([]);
   const [memoryUsage, setMemoryUsage] = useState<PerformanceMetric[]>([]);
   const [networkLatency, setNetworkLatency] = useState<PerformanceMetric[]>([]);
-  const [batteryLevel, setBatteryLevel] = useState<number | null>(null);
-  const [networkType, setNetworkType] = useState<string>('Unknown');
+  const [batteryLevel, _setBatteryLevel] = useState<number | null>(null);
+  const [networkType, _setNetworkType] = useState<string>('Unknown');
   
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   

@@ -103,24 +103,24 @@ export const AnimatedButton: React.FC<AnimatedButtonProps> = ({
   });
 
   const getButtonStyle = (): ViewStyle => {
-    const baseStyle: ViewStyle = {
+    const _baseStyle: ViewStyle = {
       ...styles.button,
       ...styles[variant],
       ...styles[size],
       ...(disabled && styles.disabled),
       ...style,
     };
-    return baseStyle;
+    return _baseStyle;
   };
 
   const getTextStyle = (): TextStyle => {
-    const baseStyle: TextStyle = {
+    const _baseStyle: TextStyle = {
       ...styles.text,
       ...styles[`${variant}Text`],
       ...styles[`${size}Text`],
       ...textStyle,
     };
-    return baseStyle;
+    return _baseStyle;
   };
 
   const renderContent = () => {

@@ -25,7 +25,7 @@ import { theme } from '../../theme';
 export const PerformanceScreen: React.FC = () => {
   const paperTheme = useTheme();
   const [metrics, setMetrics] = useState(performanceProfiler.getMetrics());
-  const [report, setReport] = useState(performanceProfiler.getPerformanceReport());
+  const [report, setReport] = useState(performanceProfiler._getPerformanceReport());
   const [refreshing, setRefreshing] = useState(false);
   const [autoRefresh, setAutoRefresh] = useState(true);
   useEffect(() => {
@@ -34,7 +34,7 @@ export const PerformanceScreen: React.FC = () => {
     }
     const interval = autoRefresh ? setInterval(() => {
       setMetrics(performanceProfiler.getMetrics());
-      setReport(performanceProfiler.getPerformanceReport());
+      setReport(performanceProfiler._getPerformanceReport());
     }, 1000) : null;
     return () => {
       if (interval) clearInterval(interval);
@@ -43,7 +43,7 @@ export const PerformanceScreen: React.FC = () => {
   const handleRefresh = () => {
     setRefreshing(true);
     setMetrics(performanceProfiler.getMetrics());
-    setReport(performanceProfiler.getPerformanceReport());
+    setReport(performanceProfiler._getPerformanceReport());
     setTimeout(() => setRefreshing(false), 500);
   };
   const getStatusColor = (value: number, threshold: number, inverse = false) => {

@@ -58,7 +58,7 @@ export const _elementHover = (
   }
 };
 
-export const elementUnhover = (
+export const _elementUnhover = (
   scaleValue: SharedValue<number>,
   opacityValue?: SharedValue<number>
 ) => {

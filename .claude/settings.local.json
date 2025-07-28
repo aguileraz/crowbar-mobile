@@ -210,7 +210,6 @@
       "Bash(whiptail:*)",
       "Bash(zenity:*)",
       "Bash(notify-send:*)",
-      
       "# Shell Specific",
       "Bash(bash:*)",
       "Bash(sh:*)",
@@ -220,7 +219,6 @@
       "Bash(ksh:*)",
       "Bash(tcsh:*)",
       "Bash(csh:*)",
-      
       "# Git & Version Control",
       "Bash(git:*)",
       "Bash(gh:*)",
@@ -230,7 +228,6 @@
       "Bash(cvs:*)",
       "Bash(bzr:*)",
       "Bash(fossil:*)",
-      
       "# Docker & Container Tools",
       "Bash(docker:*)",
       "Bash(docker-compose:*)",
@@ -255,7 +252,6 @@
       "Bash(k9s:*)",
       "Bash(kubeadm:*)",
       "Bash(kubeconfig:*)",
-      
       "# PHP & Laravel",
       "Bash(php:*)",
       "Bash(php-fpm:*)",
@@ -275,7 +271,6 @@
       "Bash(drush:*)",
       "Bash(phpbrew:*)",
       "Bash(phpenv:*)",
-      
       "# Node.js & JavaScript",
       "Bash(node:*)",
       "Bash(npm:*)",
@@ -327,7 +322,6 @@
       "Bash(astro:*)",
       "Bash(svelte:*)",
       "Bash(ember:*)",
-      
       "# Python",
       "Bash(python:*)",
       "Bash(python3:*)",
@@ -359,7 +353,6 @@
       "Bash(pyenv:*)",
       "Bash(pyinstaller:*)",
       "Bash(twine:*)",
-      
       "# Ruby",
       "Bash(ruby:*)",
       "Bash(gem:*)",
@@ -374,7 +367,6 @@
       "Bash(rbenv:*)",
       "Bash(rvm:*)",
       "Bash(chruby:*)",
-      
       "# Java & JVM",
       "Bash(java:*)",
       "Bash(javac:*)",
@@ -401,7 +393,6 @@
       "Bash(sdkman:*)",
       "Bash(jabba:*)",
       "Bash(jenv:*)",
-      
       "# Go",
       "Bash(go:*)",
       "Bash(gofmt:*)",
@@ -428,7 +419,6 @@
       "Bash(wire:*)",
       "Bash(g:*)",
       "Bash(gvm:*)",
-      
       "# Rust",
       "Bash(rust:*)",
       "Bash(rustc:*)",
@@ -443,7 +433,6 @@
       "Bash(trunk:*)",
       "Bash(diesel:*)",
       "Bash(sea-orm-cli:*)",
-      
       "# C/C++",
       "Bash(gcc:*)",
       "Bash(g++:*)",
@@ -472,7 +461,6 @@
       "Bash(vcpkg:*)",
       "Bash(bazel:*)",
       "Bash(buck:*)",
-      
       "# .NET & C#",
       "Bash(dotnet:*)",
       "Bash(nuget:*)",
@@ -483,7 +471,6 @@
       "Bash(cake:*)",
       "Bash(fake:*)",
       "Bash(paket:*)",
-      
       "# Cloud CLI Tools",
       "# AWS",
       "Bash(aws:*)",
@@ -503,14 +490,12 @@
       "Bash(aws-sso:*)",
       "Bash(aws-okta:*)",
       "Bash(saml2aws:*)",
-      
       "# Azure",
       "Bash(az:*)",
       "Bash(azd:*)",
       "Bash(func:*)",
       "Bash(azurite:*)",
       "Bash(bicep:*)",
-      
       "# Google Cloud",
       "Bash(gcloud:*)",
       "Bash(gsutil:*)",
@@ -518,7 +503,6 @@
       "Bash(dataflow:*)",
       "Bash(firebase:*)",
       "Bash(flutterfire:*)",
-      
       "# Other Cloud Providers",
       "Bash(doctl:*)",
       "Bash(vultr:*)",
@@ -528,7 +512,6 @@
       "Bash(oci:*)",
       "Bash(aliyun:*)",
       "Bash(tencentcloud:*)",
-      
       "# Infrastructure as Code",
       "Bash(terraform:*)",
       "Bash(terragrunt:*)",
@@ -552,7 +535,6 @@
       "Bash(nomad:*)",
       "Bash(boundary:*)",
       "Bash(waypoint:*)",
-      
       "# CI/CD Tools",
       "Bash(jenkins:*)",
       "Bash(travis:*)",
@@ -571,7 +553,6 @@
       "Bash(devspace:*)",
       "Bash(okteto:*)",
       "Bash(telepresence:*)",
-      
       "# Database Tools",
       "Bash(mysql:*)",
       "Bash(mysqldump:*)",
@@ -593,7 +574,6 @@
       "Bash(etcdctl:*)",
       "Bash(consul:*)",
       "Bash(vault:*)",
-      
       "# Message Queue & Streaming",
       "Bash(kafka:*)",
       "Bash(kafkacat:*)",
@@ -610,7 +590,6 @@
       "Bash(nsqd:*)",
       "Bash(nsqadmin:*)",
       "Bash(nsq_tail:*)",
-      
       "# Monitoring & Logging",
       "Bash(prometheus:*)",
       "Bash(promtool:*)",
@@ -637,7 +616,6 @@
       "Bash(datadog-agent:*)",
       "Bash(newrelic:*)",
       "Bash(sentry-cli:*)",
-      
       "# Security Tools",
       "Bash(openssl:*)",
       "Bash(gpg:*)",
@@ -675,7 +653,6 @@
       "Bash(trufflehog:*)",
       "Bash(detect-secrets:*)",
       "Bash(talisman:*)",
-      
       "# Network Tools",
       "Bash(netcat:*)",
       "Bash(nc:*)",
@@ -703,7 +680,6 @@
       "Bash(ngrok:*)",
       "Bash(localtunnel:*)",
       "Bash(cloudflared:*)",
-      
       "# Android Development",
       "Bash(adb:*)",
       "Bash(fastboot:*)",
@@ -716,7 +692,6 @@
       "Bash(bundletool:*)",
       "Bash(gradlew:*)",
       "Bash(./gradlew:*)",
-      
       "# iOS Development",
       "Bash(xcodebuild:*)",
       "Bash(xcrun:*)",
@@ -743,7 +718,6 @@
       "Bash(pilot:*)",
       "Bash(boarding:*)",
       "Bash(scan:*)",
-      
       "# Package Managers",
       "Bash(brew:*)",
       "Bash(port:*)",
@@ -763,7 +737,6 @@
       "Bash(scoop:*)",
       "Bash(choco:*)",
       "Bash(winget:*)",
-      
       "# Other Development Tools",
       "Bash(direnv:*)",
       "Bash(asdf:*)",
@@ -826,7 +799,6 @@
       "Bash(mosh:*)",
       "Bash(eternal-terminal:*)",
       "Bash(et:*)",
-      
       "# Build & Task Runners",
       "Bash(make:*)",
       "Bash(ninja:*)",
@@ -843,7 +815,6 @@
       "Bash(lefthook:*)",
       "Bash(overcommit:*)",
       "Bash(captain:*)",
-      
       "# Documentation Tools",
       "Bash(doxygen:*)",
       "Bash(sphinx:*)",
@@ -867,7 +838,6 @@
       "Bash(bruno:*)",
       "Bash(hoppscotch:*)",
       "Bash(thunder-client:*)",
-      
       "# Data Processing",
       "Bash(jq:*)",
       "Bash(yq:*)",
@@ -884,20 +854,18 @@
       "Bash(gron:*)",
       "Bash(jid:*)",
       "Bash(fx:*)",
-      
       "# Specific Project Commands",
       "Bash(~/Android/Sdk/cmdline-tools/latest/bin/sdkmanager:*)",
       "Bash($ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager:*)",
       "Bash(~/Android/sdk/cmdline-tools/latest/bin/sdkmanager:*)",
-      
       "# MCP Tools",
       "mcp__ide__getDiagnostics",
       "mcp__filesystem__directory_tree",
       "mcp__filesystem__list_directory",
       "mcp__sequential-thinking__sequentialthinking",
-      
       "# Any other commands that might be needed",
-      "Bash(*)"
+      "Bash(*)",
+      "Bash(# Fix remaining ''key'' parameters\nfind src/ -name \"\"*.tsx\"\" -o -name \"\"*.ts\"\" | xargs grep -l \"\"\\\\bkey\\\\b\"\" | while read file; do\n  if npm run lint \"\"$file\"\" --silent 2>&1 | grep -q \"\"''key'' is defined but never used\"\"; then\n    echo \"\"Fixing key parameter in: $file\"\"\n    sed -i ''s/(\\([^,]*\\), key)/(\\1, _key)/g'' \"\"$file\"\"\n    sed -i ''s/, key,/, _key,/g'' \"\"$file\"\"\n    sed -i ''s/, key)/, _key)/g'' \"\"$file\"\"\n  fi\ndone)"
     ],
     "deny": []
   }

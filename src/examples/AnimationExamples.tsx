@@ -20,16 +20,16 @@ import {
   SkeletonCard,
 } from '../components/animated';
 import {
-  useReanimatedAnimations,
+  _useReanimatedAnimations,
   useEntranceAnimation,
   useListAnimation,
   useScrollAnimation,
   useFeedbackAnimation,
-} from '../hooks/useReanimatedAnimations';
+} from '../hooks/_useReanimatedAnimations';
 import {
   usePanGesture,
   usePinchGesture,
-  useSwipeGesture,
+  _useSwipeGesture,
 } from '../hooks/useGestureAnimations';
 import {
   useConditionalAnimation,

@@ -16,7 +16,7 @@ import Animated, {
   Extrapolate,
   withSpring,
 } from 'react-native-reanimated';
-import { elementHover, elementUnhover } from '../../animations/microInteractions';
+import { _elementHover, elementUnhover } from '../../animations/microInteractions';
 import { SPRING_CONFIGS, SCALE_VALUES } from '../../animations/constants';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);

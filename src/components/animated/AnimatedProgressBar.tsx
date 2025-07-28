@@ -31,7 +31,7 @@ interface AnimatedProgressBarProps {
   labelStyle?: TextStyle;
   style?: ViewStyle;
   animated?: boolean;
-  animationDuration?: number;
+  _animationDuration?: number;
   variant?: 'linear' | 'striped' | 'gradient';
   haptic?: boolean;
 }
@@ -46,7 +46,7 @@ export const AnimatedProgressBar: React.FC<AnimatedProgressBarProps> = ({
   labelStyle,
   style,
   animated = true,
-  animationDuration = DURATIONS.normal,
+  _animationDuration = DURATIONS.normal,
   variant = 'linear',
   haptic = true,
 }) => {

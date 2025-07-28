@@ -187,7 +187,7 @@ export function OptimizedSectionList<T>({
   );
 
   // Header padrão da seção
-  const defaultRenderSectionHeader = useCallback(
+  const _defaultRenderSectionHeader = useCallback(
     (title: string) => (
       <View style={styles.sectionHeader}>
         <Text
