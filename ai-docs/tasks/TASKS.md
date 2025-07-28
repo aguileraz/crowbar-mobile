@@ -830,6 +830,12 @@ Este documento contém todas as tarefas do projeto Crowbar Mobile organizadas se
 - **Status**: [x] Concluído
 - **Data de Criação**: 2025-01-12
 - **Data de Conclusão**: 2025-07-28
+- **Progresso Adicional (2025-07-28)**:
+  - ✅ Assets ausentes resolvidos (BoxOpeningAnimation, ItemRevealCard)
+  - ✅ Dependência react-native-image-picker instalada
+  - ✅ TypeScript errors reduzidos: 1574 → 1571 (-3 erros)
+  - ⚠️ Vector icons compatibility ainda pendente (blocker crítico)
+  - ⚠️ Bundle creation falha devido à dependências de icons
 - **Critérios de Aceitação**:
   - [x] Build de produção Android executado (identificou issues com dependencies)
   - [ ] Build de produção iOS executado (não aplicável em ambiente atual)

@@ -12,7 +12,8 @@ import {
   navigateToProfile,
   addToFavorites,
   removeFromFavorites,
-  expectVisible
+  expectVisible,
+  filterByCategory
 } from '../../helpers/actions';
 
 describe('Favorites Management', () => {
