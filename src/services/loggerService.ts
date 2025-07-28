@@ -1,5 +1,4 @@
 /**
-import logger from "../services/loggerService";
  * Logger Service para Crowbar Mobile
  * Centraliza todos os logs da aplicação com níveis e controle de ambiente
  */
@@ -24,7 +23,7 @@ class LoggerService {
    */
   debug(message: string, context?: string, extra?: any) {
     if (this.isDev) {
-      // logger.debug(`[DEBUG] ${context ? `[${context}]` : ''} ${message}`, extra || '');
+      console.log(`[DEBUG] ${context ? `[${context}]` : ''} ${message}`, extra || '');
     }
     this.addLog('debug', message, context, extra);
   }
@@ -34,7 +33,7 @@ class LoggerService {
    */
   info(message: string, context?: string, extra?: any) {
     if (this.isDev) {
-      // logger.info(`[INFO] ${context ? `[${context}]` : ''} ${message}`, extra || '');
+      console.info(`[INFO] ${context ? `[${context}]` : ''} ${message}`, extra || '');
     }
     this.addLog('info', message, context, extra);
   }
@@ -44,7 +43,7 @@ class LoggerService {
    */
   warn(message: string, context?: string, extra?: any) {
     if (this.isDev) {
-      // logger.warn(`[WARN] ${context ? `[${context}]` : ''} ${message}`, extra || '');
+      console.warn(`[WARN] ${context ? `[${context}]` : ''} ${message}`, extra || '');
     }
     this.addLog('warn', message, context, extra);
   }
@@ -53,7 +52,7 @@ class LoggerService {
    * Log de erro - sempre mostrado
    */
   error(message: string, context?: string, error?: any) {
-    // logger.error(`[ERROR] ${context ? `[${context}]` : ''} ${message}`, error || '');
+    console.error(`[ERROR] ${context ? `[${context}]` : ''} ${message}`, error || '');
     this.addLog('error', message, context, error);
     
     // Em produção, enviar erros para serviço de monitoramento
@@ -67,7 +66,7 @@ class LoggerService {
    */
   performance(operation: string, duration: number) {
     if (this.isDev && duration > 100) {
-      // logger.warn(`[PERF] ${operation} took ${duration}ms`);
+      console.warn(`[PERF] ${operation} took ${duration}ms`);
     }
     this.addLog('info', `Performance: ${operation}`, 'PERF', { duration });
   }
@@ -78,7 +77,7 @@ class LoggerService {
   api(method: string, url: string, status?: number, duration?: number) {
     if (this.isDev) {
       const statusEmoji = status ? (status < 400 ? '✅' : '❌') : '🔄';
-      // logger.debug(`[API] ${statusEmoji} ${method} ${url} ${status || ''} ${duration ? `(${duration}ms)` : ''}`);
+      console.log(`[API] ${statusEmoji} ${method} ${url} ${status || ''} ${duration ? `(${duration}ms)` : ''}`);
     }
     this.addLog('info', `${method} ${url}`, 'API', { status, duration });
   }
@@ -88,7 +87,7 @@ class LoggerService {
    */
   navigation(from: string, to: string) {
     if (this.isDev) {
-      // logger.debug(`[NAV] ${from} → ${to}`);
+      console.log(`[NAV] ${from} → ${to}`);
     }
     this.addLog('info', `Navigation: ${from} → ${to}`, 'NAV');
   }

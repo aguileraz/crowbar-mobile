@@ -3,6 +3,11 @@
  * Gerencia diferentes ambientes: development, staging, production
  */
 
+// Import logger service for structured logging
+// Set __DEV__ for Node.js environment before importing logger
+global.__DEV__ = process.env.NODE_ENV === 'development';
+const logger = require('../src/services/loggerService').default;
+
 const environments = {
   development: {
     // API Configuration
@@ -209,18 +214,18 @@ const initializeConfig = () => {
     
     // Only log in development environment
     if (process.env.NODE_ENV === 'development' || config.IS_DEV) {
-      console.log(`🚀 Crowbar Mobile initialized for ${config.ENVIRONMENT} environment`);
+      logger.info(`🚀 Crowbar Mobile initialized for ${config.ENVIRONMENT} environment`, 'CONFIG');
       
       if (config.IS_DEV) {
-        console.log('📱 Development mode enabled');
-        console.log('🔧 Debug features available');
+        logger.debug('📱 Development mode enabled', 'CONFIG');
+        logger.debug('🔧 Debug features available', 'CONFIG');
       }
     }
     
     return config;
   } catch (error) {
     // Always log configuration errors as they're critical
-    console.error('❌ Configuration error:', error.message);
+    logger.error('❌ Configuration error:', 'CONFIG', error);
     throw error;
   }
 };
