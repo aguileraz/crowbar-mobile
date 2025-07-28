@@ -1,0 +1,291 @@
+name: Android Tests
+
+on:
+  push:
+    branches: [main, develop, 'feature/**', 'android-docker-testing']
+  pull_request:
+    branches: [main, develop]
+    types: [opened, synchronize, reopened]
+
+env:
+  DOCKER_BUILDKIT: 1
+  COMPOSE_DOCKER_CLI_BUILD: 1
+
+jobs:
+  build:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    outputs:
+      image-tag: ${{ steps.meta.outputs.tags }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}/android-test
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,prefix={{branch}}-
+            
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./docker/android/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          
+  test:
+    name: Run Tests
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    
+    services:
+      android-emulator:
+        image: ${{ needs.build.outputs.image-tag }}
+        options: >-
+          --privileged
+          --device /dev/kvm
+        env:
+          ANDROID_AVD_NAME: test_avd
+          ENABLE_VNC: true
+          START_EMULATOR: true
+          WAIT_FOR_EMULATOR: true
+          EMULATOR_EXTRA_ARGS: -no-snapshot-save -wipe-data
+        ports:
+          - 5554:5554
+          - 5555:5555
+          
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+          
+      - name: Wait for emulator
+        run: |
+          timeout 300 bash -c 'until docker exec ${{ job.services.android-emulator.id }} adb shell getprop sys.boot_completed | grep -q 1; do sleep 5; done'
+          echo "Emulator is ready!"
+          
+      - name: Run unit tests
+        id: unit-tests
+        run: |
+          docker exec ${{ job.services.android-emulator.id }} \
+            bash -c "cd /app && ./docker/android/scripts/run-tests.sh --types unit"
+        continue-on-error: true
+        
+      - name: Run integration tests
+        id: integration-tests
+        run: |
+          docker exec ${{ job.services.android-emulator.id }} \
+            bash -c "cd /app && ./docker/android/scripts/run-tests.sh --types integration"
+        continue-on-error: true
+        
+      - name: Run E2E tests
+        id: e2e-tests
+        run: |
+          docker exec ${{ job.services.android-emulator.id }} \
+            bash -c "cd /app && ./docker/android/scripts/run-tests.sh --types e2e"
+        continue-on-error: true
+        
+      - name: Collect test results
+        if: always()
+        run: |
+          docker exec ${{ job.services.android-emulator.id }} \
+            bash -c "cd /app && ./docker/android/scripts/collect-results.sh collect"
+          
+          # Copy results from container
+          docker cp ${{ job.services.android-emulator.id }}:/app/test-results ./test-results
+          
+      - name: Generate test summary
+        if: always()
+        id: test-summary
+        run: |
+          if [ -f ./test-results/test_results_summary.json ]; then
+            # Extract summary data
+            TOTAL_TESTS=$(jq '.summary.total_tests' ./test-results/test_results_summary.json)
+            PASSED=$(jq '.summary.passed' ./test-results/test_results_summary.json)
+            FAILED=$(jq '.summary.failed' ./test-results/test_results_summary.json)
+            PASS_RATE=$(jq '.summary.pass_rate' ./test-results/test_results_summary.json)
+            
+            # Set outputs
+            echo "total_tests=$TOTAL_TESTS" >> $GITHUB_OUTPUT
+            echo "passed=$PASSED" >> $GITHUB_OUTPUT
+            echo "failed=$FAILED" >> $GITHUB_OUTPUT
+            echo "pass_rate=$PASS_RATE" >> $GITHUB_OUTPUT
+            
+            # Generate summary for GitHub
+            echo "## Test Results Summary 📊" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "- **Total Tests**: $TOTAL_TESTS" >> $GITHUB_STEP_SUMMARY
+            echo "- **Passed**: ✅ $PASSED" >> $GITHUB_STEP_SUMMARY
+            echo "- **Failed**: ❌ $FAILED" >> $GITHUB_STEP_SUMMARY
+            echo "- **Pass Rate**: $PASS_RATE%" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            
+            # Fail the job if tests failed
+            if [ "$FAILED" -gt 0 ]; then
+              exit 1
+            fi
+          else
+            echo "No test results found!" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+          
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ github.sha }}
+          path: |
+            test-results/
+          retention-days: 7
+          
+      - name: Upload screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-screenshots-${{ github.sha }}
+          path: |
+            test-results/screenshots/
+          retention-days: 7
+          
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-logs-${{ github.sha }}
+          path: |
+            test-results/logs/
+          retention-days: 3
+          
+  comment-pr:
+    name: Comment on PR
+    needs: [build, test]
+    if: github.event_name == 'pull_request' && always()
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Download test results
+        uses: actions/download-artifact@v4
+        with:
+          name: test-results-${{ github.sha }}
+          path: test-results
+          
+      - name: Post PR comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            // Read test results
+            const summaryPath = path.join('test-results', 'test_results_summary.json');
+            let testSummary = null;
+            
+            try {
+              if (fs.existsSync(summaryPath)) {
+                testSummary = JSON.parse(fs.readFileSync(summaryPath, 'utf8'));
+              }
+            } catch (error) {
+              console.error('Failed to read test summary:', error);
+            }
+            
+            // Generate comment body
+            let comment = '## 🤖 Android Test Results\n\n';
+            
+            if (testSummary) {
+              const { summary } = testSummary;
+              const status = summary.failed === 0 ? '✅ All tests passed!' : '❌ Some tests failed';
+              
+              comment += `### ${status}\n\n`;
+              comment += '| Metric | Value |\n';
+              comment += '|--------|-------|\n';
+              comment += `| Total Tests | ${summary.total_tests} |\n`;
+              comment += `| Passed | ✅ ${summary.passed} |\n`;
+              comment += `| Failed | ❌ ${summary.failed} |\n`;
+              comment += `| Skipped | ⏭️ ${summary.skipped || 0} |\n`;
+              comment += `| Pass Rate | ${summary.pass_rate}% |\n`;
+              comment += `| Duration | ${summary.duration || 'N/A'}s |\n`;
+              
+              // Add test type breakdown if available
+              if (testSummary.test_types) {
+                comment += '\n### Test Breakdown by Type\n\n';
+                comment += '| Type | Total | Passed | Failed | Pass Rate |\n';
+                comment += '|------|-------|--------|--------|----------|\n';
+                
+                for (const [type, data] of Object.entries(testSummary.test_types)) {
+                  comment += `| ${type} | ${data.total} | ${data.passed} | ${data.failed} | ${data.pass_rate}% |\n`;
+                }
+              }
+              
+              // Add links to artifacts
+              comment += '\n### 📎 Artifacts\n\n';
+              comment += `- [📊 Full Test Report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})\n`;
+              comment += `- [📸 Screenshots](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}#artifacts) (if any failures)\n`;
+              comment += `- [📝 Logs](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}#artifacts)\n`;
+            } else {
+              comment += '❌ **Test execution failed or no results found**\n\n';
+              comment += 'Please check the [workflow logs](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.\n';
+            }
+            
+            comment += '\n---\n';
+            comment += `*Generated by Android Tests workflow run [#${{ github.run_number }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*`;
+            
+            // Find existing comment
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            
+            const botComment = comments.find(comment => 
+              comment.user.type === 'Bot' && 
+              comment.body.includes('🤖 Android Test Results')
+            );
+            
+            // Update or create comment
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: comment
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: comment
+              });
+            }

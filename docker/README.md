@@ -142,7 +142,71 @@ docker-compose exec android-test emulator @test_avd -verbose
 
 ## CI/CD Integration
 
-See `.github/workflows/android-tests.yml` for GitHub Actions integration example.
+### GitHub Actions
+
+The project includes automated testing via GitHub Actions:
+
+```yaml
+# .github/workflows/android-tests.yml
+- Builds Docker image with caching
+- Runs Android emulator in container
+- Executes all test suites
+- Posts results to PR comments
+- Uploads artifacts (reports, screenshots, logs)
+```
+
+### Running in CI
+
+The workflow automatically runs on:
+- Push to main, develop, and feature branches
+- Pull requests to main and develop
+
+### Local CI Testing
+
+Test the CI pipeline locally using [act](https://github.com/nektos/act):
+
+```bash
+# Install act
+brew install act  # macOS
+curl https://raw.githubusercontent.com/nektos/act/master/install.sh | sudo bash  # Linux
+
+# Run workflow
+act push  # Simulate push event
+act pull_request  # Simulate PR event
+
+# Run specific job
+act -j test
+
+# With custom image (recommended for KVM support)
+act -P ubuntu-latest=ghcr.io/catthehacker/ubuntu:full-latest
+```
+
+### Status Checks
+
+Configure branch protection rules in GitHub:
+1. Go to Settings → Branches
+2. Add rule for `main` branch
+3. Enable "Require status checks":
+   - `build` - Docker build must succeed
+   - `test` - All tests must pass
+
+### PR Comments
+
+Test results are automatically posted as PR comments including:
+- Test summary (passed/failed/skipped)
+- Pass rate percentage
+- Test breakdown by type
+- Links to artifacts
+- Failed test details (expandable)
+
+### Artifacts
+
+Each workflow run uploads:
+- **test-results**: Full HTML report and JSON summary
+- **test-screenshots**: Screenshots from failed tests
+- **test-logs**: Complete execution logs
+
+See [CI Configuration Guide](CI_CONFIG.md) for detailed setup instructions.
 
 ## Performance Tips
 

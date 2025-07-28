@@ -70,7 +70,8 @@
       "Bash(./test-execution.sh:*)",
       "Bash(./test-results-integration.sh:*)",
       "Bash(./test-executor.sh:*)",
-      "Bash(./test-execution-integration.sh:*)"
+      "Bash(./test-execution-integration.sh:*)",
+      "Bash(./test-ci-integration.sh:*)"
     ],
     "deny": []
   }
