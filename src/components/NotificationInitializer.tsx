@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import {} from 'react';
 import { Platform as _Platform } from 'react-native';
 import { useDispatch } from 'react-redux';
 import messaging from '@react-native-firebase/messaging';

@@ -5,7 +5,6 @@ import {
   Category,
   SearchFilters,
   SearchResult,
-  PaginatedResponse,
 } from '../../types/api';
 
 /**
@@ -114,7 +113,7 @@ export const fetchBoxes = createAsyncThunk(
   'boxes/fetchBoxes',
   async (filters: SearchFilters = {}, { rejectWithValue }) => {
     try {
-      const response = await boxService.getBoxes(filters);
+      const _response = await boxService.getBoxes(filters);
       return response;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Erro ao buscar caixas');

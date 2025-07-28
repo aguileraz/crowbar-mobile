@@ -3,7 +3,7 @@
  * Development dashboard for performance monitoring and optimization
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import logger from '../../services/loggerService';
 import {
   View,
@@ -20,8 +20,9 @@ import {
   DataTable,
   ProgressBar,
   List,
-  Divider,
+
   IconButton,
+  Divider,
 } from 'react-native-paper';
 import { usePerformanceOptimization } from '../../hooks/usePerformanceOptimization';
 import config from '../../../config/environments';

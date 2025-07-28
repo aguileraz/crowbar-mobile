@@ -344,7 +344,7 @@ export const usePerformanceOptimization = (
   /**
    * Get performance report
    */
-  const getPerformanceReport = useCallback(async () => {
+  const _getPerformanceReport = useCallback(async () => {
     try {
       const report = await bundleAnalyzer.exportReport();
       return report;

@@ -5,7 +5,7 @@
  */
 
 const fs = require('fs');
-const path = require('path');
+const _path = require('path');
 const glob = require('glob');
 
 // Files where we should completely remove console
@@ -60,7 +60,7 @@ function commentOutConsole(content) {
   });
   
   // Replace .catch(console.error) with proper error handling
-  modified = modified.replace(patterns[1], (match) => {
+  modified = modified.replace(patterns[1], (_match) => {
     count++;
     return '.catch((error) => { /* TODO: Handle error properly */ })';
   });

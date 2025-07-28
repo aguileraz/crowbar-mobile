@@ -2,7 +2,7 @@
  * Hook personalizado para animações com React Native Reanimated
  */
 
-import { useEffect, useCallback, useMemo } from 'react';
+import { useEffect, useCallback } from 'react';
 import logger from '../services/loggerService';
 import {
   useSharedValue,

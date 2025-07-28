@@ -1,6 +1,6 @@
 import { io, Socket } from 'socket.io-client';
 import { env } from '../config/env';
-import { WebSocketEvent, BoxOpenedEvent } from '../types/api';
+import { BoxOpenedEvent } from '../types/api';
 import logger from './loggerService';
 
 /**
@@ -263,7 +263,7 @@ export class WebSocketService {
 
       const startTime = Date.now();
       
-      this.socket.emit('ping', startTime, (response: number) => {
+      this.socket.emit('ping', startTime, (_response: number) => {
         const latency = Date.now() - startTime;
         resolve(latency);
       });

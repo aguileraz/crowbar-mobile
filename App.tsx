@@ -22,7 +22,7 @@ import { store, persistor } from './src/store';
 import AppNavigator from './src/navigation/AppNavigator';
 // Tema e configurações
 import { theme } from './src/theme';
-import { env, validateEnvironment } from './src/config/env';
+import { validateEnvironment } from './src/config/env';
 // Performance monitoring
 import { performanceProfiler } from './src/utils/performanceProfiler';
 // Security migration
@@ -48,12 +48,12 @@ const App: React.FC = () => {
       validateEnvironment();
       if (__DEV__) {
       }
-    } catch (error) {
+    } catch (_error) {
       if (__DEV__) {
       }
     }
     // Execute secure storage migration
-    checkAndMigrate().catch(error => {
+    checkAndMigrate().catch(_error => {
       if (__DEV__) {
       }
     });

@@ -32,14 +32,14 @@ describe('Authentication E2E Tests', () => {
         token: 'test-token-12345',
       });
 
-      const { getByTestId, queryByTestId } = renderWithProviders(<AuthNavigator />);
+      const { getByTestId, _queryByTestId } = renderWithProviders(<AuthNavigator />);
 
       // Navigate to registration
       await testUtils.pressButton(getByTestId, 'register-tab');
 
       // Complete registration flow
       await act(async () => {
-        await scenarios.userRegistration(getByTestId, queryByTestId);
+        await scenarios.userRegistration(getByTestId, _queryByTestId);
       });
 
       // Verify registration was successful
@@ -68,7 +68,7 @@ describe('Authentication E2E Tests', () => {
         },
       });
 
-      const { getByTestId, queryByTestId } = renderWithProviders(<AuthNavigator />);
+      const { getByTestId, _queryByTestId } = renderWithProviders(<AuthNavigator />);
 
       // Navigate to registration
       await testUtils.pressButton(getByTestId, 'register-tab');
@@ -94,12 +94,12 @@ describe('Authentication E2E Tests', () => {
       // Mock network error
       mockedAuthService.register.mockRejectedValue(new Error('Network Error'));
 
-      const { getByTestId, queryByTestId } = renderWithProviders(<AuthNavigator />);
+      const { getByTestId, _queryByTestId } = renderWithProviders(<AuthNavigator />);
 
       await testUtils.pressButton(getByTestId, 'register-tab');
 
       await act(async () => {
-        await scenarios.userRegistration(getByTestId, queryByTestId);
+        await scenarios.userRegistration(getByTestId, _queryByTestId);
       });
 
       // Should show error message
@@ -121,11 +121,11 @@ describe('Authentication E2E Tests', () => {
         token: 'test-token-12345',
       });
 
-      const { getByTestId, queryByTestId } = renderWithProviders(<AuthNavigator />);
+      const { getByTestId, _queryByTestId } = renderWithProviders(<AuthNavigator />);
 
       // Complete login flow
       await act(async () => {
-        await scenarios.userLogin(getByTestId, queryByTestId);
+        await scenarios.userLogin(getByTestId, _queryByTestId);
       });
 
       // Verify login was called
@@ -150,7 +150,7 @@ describe('Authentication E2E Tests', () => {
         },
       });
 
-      const { getByTestId, queryByTestId } = renderWithProviders(<AuthNavigator />);
+      const { getByTestId, _queryByTestId } = renderWithProviders(<AuthNavigator />);
 
       await act(async () => {
         await testUtils.fillField(getByTestId, 'login-email-input', 'wrong@email.com');
@@ -177,13 +177,13 @@ describe('Authentication E2E Tests', () => {
         token: 'test-token-12345',
       });
 
-      const { getByTestId, queryByTestId } = renderWithProviders(<AuthNavigator />);
+      const { getByTestId, _queryByTestId } = renderWithProviders(<AuthNavigator />);
 
       // Enable remember me
       await testUtils.pressButton(getByTestId, 'remember-me-checkbox');
 
       await act(async () => {
-        await scenarios.userLogin(getByTestId, queryByTestId);
+        await scenarios.userLogin(getByTestId, _queryByTestId);
       });
 
       // Verify remember me was included in login call

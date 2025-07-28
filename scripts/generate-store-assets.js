@@ -6,7 +6,7 @@
  */
 
 const fs = require('fs');
-const path = require('path');
+const _path = require('path');
 const { execSync } = require('child_process');
 
 // Configuration
@@ -139,14 +139,14 @@ function generateAppIcons() {
 
   // Generate iOS icons
   log.info('Generating iOS icons...');
-  const iosIconDir = path.join(CONFIG.outputDir, 'ios', 'icons');
+  const iosIconDir = _path.join(CONFIG.outputDir, 'ios', 'icons');
   ensureDir(iosIconDir);
 
   CONFIG.iconSizes.ios.forEach(iconConfig => {
     iconConfig.scale.forEach(scale => {
       const size = Math.round(iconConfig.size * scale);
       const filename = scale === 1 ? iconConfig.name : iconConfig.name.replace('.png', `@${scale}x.png`);
-      const outputPath = path.join(iosIconDir, filename);
+      const outputPath = _path.join(iosIconDir, filename);
 
       try {
         execSync(`${magickCmd} "${CONFIG.sourceIcon}" -resize ${size}x${size} "${outputPath}"`, { stdio: 'pipe' });
@@ -160,10 +160,10 @@ function generateAppIcons() {
   // Generate Android icons
   log.info('Generating Android icons...');
   CONFIG.iconSizes.android.forEach(iconConfig => {
-    const androidIconDir = path.join(CONFIG.outputDir, 'android', `mipmap-${iconConfig.density}`);
+    const androidIconDir = _path.join(CONFIG.outputDir, 'android', `mipmap-${iconConfig.density}`);
     ensureDir(androidIconDir);
     
-    const outputPath = path.join(androidIconDir, iconConfig.name);
+    const outputPath = _path.join(androidIconDir, iconConfig.name);
 
     try {
       execSync(`${magickCmd} "${CONFIG.sourceIcon}" -resize ${iconConfig.size}x${iconConfig.size} "${outputPath}"`, { stdio: 'pipe' });
@@ -183,7 +183,7 @@ function generateAppIcons() {
 function generateFeatureGraphics() {
   log.info('Generating feature graphics...');
   
-  const featureGraphicDir = path.join(CONFIG.outputDir, 'feature-graphics');
+  const featureGraphicDir = _path.join(CONFIG.outputDir, 'feature-graphics');
   ensureDir(featureGraphicDir);
 
   // This would typically use a design template
@@ -202,7 +202,7 @@ function generateFeatureGraphics() {
   let generatedCount = 0;
 
   graphics.forEach(graphic => {
-    const outputPath = path.join(featureGraphicDir, graphic.name);
+    const outputPath = _path.join(featureGraphicDir, graphic.name);
     
     try {
       // Create a placeholder graphic with gradient background
@@ -234,7 +234,7 @@ function processScreenshots() {
     return false;
   }
 
-  const screenshotOutputDir = path.join(CONFIG.outputDir, 'screenshots');
+  const screenshotOutputDir = _path.join(CONFIG.outputDir, 'screenshots');
   ensureDir(screenshotOutputDir);
 
   // Copy and organize screenshots
@@ -242,16 +242,16 @@ function processScreenshots() {
   let processedCount = 0;
 
   platforms.forEach(platform => {
-    const platformDir = path.join(CONFIG.sourceScreenshots, platform);
+    const platformDir = _path.join(CONFIG.sourceScreenshots, platform);
     if (fs.existsSync(platformDir)) {
-      const outputPlatformDir = path.join(screenshotOutputDir, platform);
+      const outputPlatformDir = _path.join(screenshotOutputDir, platform);
       ensureDir(outputPlatformDir);
 
       const files = fs.readdirSync(platformDir);
       files.forEach(file => {
         if (file.match(/\.(png|jpg|jpeg)$/i)) {
-          const sourcePath = path.join(platformDir, file);
-          const outputPath = path.join(outputPlatformDir, file);
+          const sourcePath = _path.join(platformDir, file);
+          const outputPath = _path.join(outputPlatformDir, file);
           
           try {
             fs.copyFileSync(sourcePath, outputPath);
@@ -274,7 +274,7 @@ function processScreenshots() {
 function generateStoreListings() {
   log.info('Generating store listing files...');
   
-  const metadataPath = path.join(CONFIG.outputDir, 'app-store-metadata.json');
+  const metadataPath = _path.join(CONFIG.outputDir, 'app-store-metadata.json');
   if (!fs.existsSync(metadataPath)) {
     log.error('Metadata file not found. Please create store-assets/app-store-metadata.json');
     return false;
@@ -283,7 +283,7 @@ function generateStoreListings() {
   const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
   
   // Generate App Store listing
-  const appStoreDir = path.join(CONFIG.outputDir, 'app-store');
+  const appStoreDir = _path.join(CONFIG.outputDir, 'app-store');
   ensureDir(appStoreDir);
   
   const appStoreListing = {
@@ -299,12 +299,12 @@ function generateStoreListings() {
   };
   
   fs.writeFileSync(
-    path.join(appStoreDir, 'listing.json'),
+    _path.join(appStoreDir, 'listing.json'),
     JSON.stringify(appStoreListing, null, 2)
   );
 
   // Generate Google Play listing
-  const googlePlayDir = path.join(CONFIG.outputDir, 'google-play');
+  const googlePlayDir = _path.join(CONFIG.outputDir, 'google-play');
   ensureDir(googlePlayDir);
   
   const googlePlayListing = {
@@ -319,7 +319,7 @@ function generateStoreListings() {
   };
   
   fs.writeFileSync(
-    path.join(googlePlayDir, 'listing.json'),
+    _path.join(googlePlayDir, 'listing.json'),
     JSON.stringify(googlePlayListing, null, 2)
   );
 
@@ -403,10 +403,10 @@ Para questões sobre privacidade:
 
 © 2025 Crowbar Mobile. Todos os direitos reservados.`;
 
-  const privacyDir = path.join(CONFIG.outputDir, 'legal');
+  const privacyDir = _path.join(CONFIG.outputDir, 'legal');
   ensureDir(privacyDir);
   
-  fs.writeFileSync(path.join(privacyDir, 'privacy-policy.md'), privacyPolicy);
+  fs.writeFileSync(_path.join(privacyDir, 'privacy-policy.md'), privacyPolicy);
   
   log.success('Generated privacy policy');
   return true;
@@ -506,10 +506,10 @@ Para questões sobre estes termos:
 
 © 2025 Crowbar Mobile. Todos os direitos reservados.`;
 
-  const legalDir = path.join(CONFIG.outputDir, 'legal');
+  const legalDir = _path.join(CONFIG.outputDir, 'legal');
   ensureDir(legalDir);
   
-  fs.writeFileSync(path.join(legalDir, 'terms-of-service.md'), termsOfService);
+  fs.writeFileSync(_path.join(legalDir, 'terms-of-service.md'), termsOfService);
   
   log.success('Generated terms of service');
   return true;
@@ -655,10 +655,10 @@ function generateSubmissionChecklist() {
 **Responsável:** [Nome]
 **Status:** [Em Progresso/Completo]`;
 
-  const checklistDir = path.join(CONFIG.outputDir, 'submission');
+  const checklistDir = _path.join(CONFIG.outputDir, 'submission');
   ensureDir(checklistDir);
   
-  fs.writeFileSync(path.join(checklistDir, 'checklist.md'), checklist);
+  fs.writeFileSync(_path.join(checklistDir, 'checklist.md'), checklist);
   
   log.success('Generated submission checklist');
   return true;

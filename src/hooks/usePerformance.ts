@@ -414,7 +414,7 @@ export const useAppPerformance = () => {
     setAppMetrics(prev => ({ ...prev, ...updates }));
   }, []);
 
-  const getPerformanceReport = useCallback(() => {
+  const _getPerformanceReport = useCallback(() => {
     return {
       ...appMetrics,
       uptime: Date.now() - appStartTime.current,

@@ -7,7 +7,7 @@
 
 const { execSync } = require('child_process');
 const fs = require('fs');
-const path = require('path');
+const _path = require('path');
 
 // Configurações de performance
 const PERFORMANCE_CRITERIA = {
@@ -52,7 +52,7 @@ const PERFORMANCE_CRITERIA = {
 };
 
 // Device profiles
-const DEVICE_PROFILES = {
+const _DEVICE_PROFILES = {
   android: {
     high: ['Pixel 6', 'Galaxy S21', 'OnePlus 9'],
     mid: ['Pixel 3a', 'Galaxy A52', 'Moto G Power'],
@@ -149,7 +149,7 @@ function measureBundleSize() {
   
   try {
     if (platform === 'android') {
-      bundlePath = path.join(__dirname, '..', 'android', 'app', 'build', 'outputs', 'apk', buildType, `app-${buildType}.apk`);
+      bundlePath = _path.join(__dirname, '..', 'android', 'app', 'build', 'outputs', 'apk', buildType, `app-${buildType}.apk`);
       
       if (!fs.existsSync(bundlePath)) {
         log.warning('APK não encontrado. Construindo...');
@@ -284,7 +284,7 @@ async function measureMemoryUsage() {
       // Extrair total PSS (Proportional Set Size)
       const pssMatch = memInfo.match(/TOTAL\s+(\d+)/);
       if (pssMatch) {
-        memoryUsage = Math.round(parseInt(pssMatch[1]) / 1024); // Converter para MB
+        memoryUsage = Math.round(parseInt(pssMatch[1], 10) / 1024); // Converter para MB
       }
     } else {
       // iOS memory measurement
@@ -406,7 +406,7 @@ function generateReport(results) {
   });
   
   // Salvar relatório
-  const reportPath = path.join(__dirname, '..', 'performance-report.json');
+  const reportPath = _path.join(__dirname, '..', 'performance-report.json');
   fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
   
   // Exibir resumo
@@ -462,7 +462,7 @@ async function runPerformanceTests() {
 }
 
 // Executar
-runPerformanceTests().catch(error => {
+runPerformanceTests().catch(_error => {
   log.error(`Erro fatal: ${error.message}`);
   process.exit(1);
 });

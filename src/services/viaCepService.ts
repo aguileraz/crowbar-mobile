@@ -35,7 +35,7 @@ class ViaCepService {
     }
 
     try {
-      const response = await axios.get<ViaCepResponse>(
+      const _response = await axios.get<ViaCepResponse>(
         `${this.baseURL}/${cleanCep}/json/`,
         {
           timeout: 10000, // 10 segundos
@@ -74,7 +74,7 @@ class ViaCepService {
     }
 
     try {
-      const response = await axios.get<ViaCepResponse[]>(
+      const _response = await axios.get<ViaCepResponse[]>(
         `${this.baseURL}/${uf}/${city}/${street}/json/`,
         {
           timeout: 10000,

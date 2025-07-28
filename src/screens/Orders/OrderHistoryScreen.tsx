@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import logger from '../../services/loggerService';
 import {
   View,
@@ -41,7 +41,7 @@ import ErrorMessage from '../../components/ErrorMessage';
 import { Order } from '../../types/api';
 
 // Theme
-import { theme, getSpacing, getBorderRadius } from '../../theme';
+import { theme, getSpacing } from '../../theme';
 
 /**
  * Tela de Histórico de Pedidos

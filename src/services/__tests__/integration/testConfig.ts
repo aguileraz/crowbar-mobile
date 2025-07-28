@@ -258,7 +258,7 @@ export const testInterceptors = {
     let requestCount = 0;
     
     client.interceptors.response.use(
-      (response) => {
+      (_response) => {
         requestCount++;
         (response as any).requestCount = requestCount;
         return response;

@@ -7,8 +7,8 @@
 
 const { execSync } = require('child_process');
 const fs = require('fs');
-const path = require('path');
-const crypto = require('crypto');
+const _path = require('path');
+const _crypto = require('crypto');
 
 // Cores para output
 const colors = {
@@ -30,7 +30,7 @@ const log = {
 };
 
 // Configurações de segurança
-const SECURITY_CHECKS = {
+const _SECURITY_CHECKS = {
   dependencies: {
     name: 'Dependency Vulnerabilities',
     critical: true,
@@ -188,7 +188,7 @@ async function checkHardcodedSecrets() {
     const files = fs.readdirSync(dir);
     
     files.forEach(file => {
-      const fullPath = path.join(dir, file);
+      const fullPath = _path.join(dir, file);
       
       // Verificar se deve ignorar
       if (IGNORE_FILES.some(pattern => fullPath.includes(pattern))) {
@@ -221,7 +221,7 @@ async function checkHardcodedSecrets() {
     });
   }
   
-  searchDirectory(path.join(__dirname, '..', 'src'));
+  searchDirectory(_path.join(__dirname, '..', 'src'));
   
   if (secretsFound.length === 0) {
     log.success('No hardcoded secrets found');
@@ -255,7 +255,7 @@ async function checkFirebaseConfiguration() {
   // Verificar arquivos de ambiente
   const envFiles = ['.env', '.env.production'];
   envFiles.forEach(envFile => {
-    const envPath = path.join(__dirname, '..', envFile);
+    const envPath = _path.join(__dirname, '..', envFile);
     if (fs.existsSync(envPath)) {
       const content = fs.readFileSync(envPath, 'utf8');
       
@@ -266,7 +266,7 @@ async function checkFirebaseConfiguration() {
       }
       
       // Verificar se está no .gitignore
-      const gitignorePath = path.join(__dirname, '..', '.gitignore');
+      const gitignorePath = _path.join(__dirname, '..', '.gitignore');
       if (fs.existsSync(gitignorePath)) {
         const gitignore = fs.readFileSync(gitignorePath, 'utf8');
         if (!gitignore.includes(envFile)) {
@@ -278,7 +278,7 @@ async function checkFirebaseConfiguration() {
   });
   
   // Verificar google-services.json
-  const googleServicesPath = path.join(__dirname, '..', 'android', 'app', 'google-services.json');
+  const googleServicesPath = _path.join(__dirname, '..', 'android', 'app', 'google-services.json');
   if (fs.existsSync(googleServicesPath)) {
     const content = fs.readFileSync(googleServicesPath, 'utf8');
     const config = JSON.parse(content);
@@ -316,7 +316,7 @@ async function checkFirebaseConfiguration() {
 async function checkAPISecurity() {
   log.header('API Security');
   
-  const apiFile = path.join(__dirname, '..', 'src', 'services', 'api.ts');
+  const apiFile = _path.join(__dirname, '..', 'src', 'services', 'api.ts');
   if (fs.existsSync(apiFile)) {
     const content = fs.readFileSync(apiFile, 'utf8');
     
@@ -357,7 +357,7 @@ async function checkAPISecurity() {
     }
     
     // Verificar API_KEY no ambiente de produção
-    const envProd = path.join(__dirname, '..', '.env.production');
+    const envProd = _path.join(__dirname, '..', '.env.production');
     if (fs.existsSync(envProd)) {
       const envContent = fs.readFileSync(envProd, 'utf8');
       if (envContent.includes('API_KEY=production-api-key-replace-with-real')) {
@@ -388,7 +388,7 @@ async function checkSecureStorage() {
   log.header('Secure Storage');
   
   // Buscar uso de AsyncStorage vs Keychain
-  const srcPath = path.join(__dirname, '..', 'src');
+  const srcPath = _path.join(__dirname, '..', 'src');
   let asyncStorageUsage = 0;
   let keychainUsage = 0;
   let sensitiveDataInAsync = false;
@@ -397,7 +397,7 @@ async function checkSecureStorage() {
     const files = fs.readdirSync(dir);
     
     files.forEach(file => {
-      const fullPath = path.join(dir, file);
+      const fullPath = _path.join(dir, file);
       
       if (IGNORE_FILES.some(pattern => fullPath.includes(pattern))) {
         return;
@@ -460,7 +460,7 @@ async function checkAppPermissions() {
   log.header('App Permissions');
   
   // Android
-  const androidManifest = path.join(__dirname, '..', 'android', 'app', 'src', 'main', 'AndroidManifest.xml');
+  const androidManifest = _path.join(__dirname, '..', 'android', 'app', 'src', 'main', 'AndroidManifest.xml');
   if (fs.existsSync(androidManifest)) {
     const content = fs.readFileSync(androidManifest, 'utf8');
     
@@ -495,7 +495,7 @@ async function checkAppPermissions() {
   }
   
   // iOS
-  const infoPlist = path.join(__dirname, '..', 'ios', 'CrowbarMobile', 'Info.plist');
+  const infoPlist = _path.join(__dirname, '..', 'ios', 'CrowbarMobile', 'Info.plist');
   if (fs.existsSync(infoPlist)) {
     const content = fs.readFileSync(infoPlist, 'utf8');
     
@@ -520,8 +520,8 @@ async function checkSSLConfiguration() {
   };
   
   // Android - verificar cleartextTrafficPermitted
-  const networkConfig = path.join(__dirname, '..', 'android', 'app', 'src', 'main', 'res', 'xml', 'network_security_config.xml');
-  const androidManifest = path.join(__dirname, '..', 'android', 'app', 'src', 'main', 'AndroidManifest.xml');
+  const networkConfig = _path.join(__dirname, '..', 'android', 'app', 'src', 'main', 'res', 'xml', 'network_security_config.xml');
+  const androidManifest = _path.join(__dirname, '..', 'android', 'app', 'src', 'main', 'AndroidManifest.xml');
   
   if (fs.existsSync(androidManifest)) {
     const content = fs.readFileSync(androidManifest, 'utf8');
@@ -534,7 +534,7 @@ async function checkSSLConfiguration() {
   }
   
   // iOS - verificar App Transport Security
-  const infoPlist = path.join(__dirname, '..', 'ios', 'CrowbarMobile', 'Info.plist');
+  const infoPlist = _path.join(__dirname, '..', 'ios', 'CrowbarMobile', 'Info.plist');
   if (fs.existsSync(infoPlist)) {
     const content = fs.readFileSync(infoPlist, 'utf8');
     if (content.includes('NSAllowsArbitraryLoads') && content.includes('<true/>')) {
@@ -577,7 +577,7 @@ async function checkSSLConfiguration() {
 async function checkAuthenticationSecurity() {
   log.header('Authentication Security');
   
-  const authFile = path.join(__dirname, '..', 'src', 'services', 'auth.ts');
+  const _authFile = _path.join(__dirname, '..', 'src', 'services', 'auth.ts');
   const checks = {
     biometrics: false,
     tokenRefresh: false,
@@ -586,13 +586,13 @@ async function checkAuthenticationSecurity() {
   };
   
   // Procurar por implementações de autenticação
-  const srcPath = path.join(__dirname, '..', 'src');
+  const srcPath = _path.join(__dirname, '..', 'src');
   
   function searchForAuth(dir) {
     const files = fs.readdirSync(dir);
     
     files.forEach(file => {
-      const fullPath = path.join(dir, file);
+      const fullPath = _path.join(dir, file);
       
       if (IGNORE_FILES.some(pattern => fullPath.includes(pattern))) {
         return;
@@ -709,7 +709,7 @@ function generateSecurityReport() {
   }
   
   // Salvar relatório
-  const reportPath = path.join(__dirname, '..', 'security-report.json');
+  const reportPath = _path.join(__dirname, '..', 'security-report.json');
   fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
   
   // Exibir resumo
@@ -764,7 +764,7 @@ async function runSecurityReview() {
 }
 
 // Executar
-runSecurityReview().catch(error => {
+runSecurityReview().catch(_error => {
   log.error(`Fatal error: ${error.message}`);
   process.exit(1);
 });

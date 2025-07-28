@@ -2,8 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { cartService } from '../../services/cartService';
 import {
   Cart,
-  CartItem,
-  Promotion,
+  _CartItem,
 } from '../../types/api';
 
 /**
@@ -154,7 +153,7 @@ export const calculateShipping = createAsyncThunk(
   'cart/calculateShipping',
   async (addressId: string, { rejectWithValue }) => {
     try {
-      const response = await cartService.calculateShipping(addressId);
+      const _response = await cartService.calculateShipping(addressId);
       return response.options;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Erro ao calcular frete');
@@ -169,7 +168,7 @@ export const calculateShippingByZip = createAsyncThunk(
   'cart/calculateShippingByZip',
   async (zipCode: string, { rejectWithValue }) => {
     try {
-      const response = await cartService.calculateShippingByZip(zipCode);
+      const _response = await cartService.calculateShippingByZip(zipCode);
       return response.options;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Erro ao calcular frete');

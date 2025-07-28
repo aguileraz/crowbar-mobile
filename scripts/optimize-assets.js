@@ -6,7 +6,7 @@
  */
 
 const fs = require('fs');
-const path = require('path');
+const _path = require('path');
 const { execSync: _execSync } = require('child_process');
 
 // Configuration
@@ -131,7 +131,7 @@ function getFiles(dir, extensions) {
     const items = fs.readdirSync(currentDir);
     
     items.forEach(item => {
-      const fullPath = path.join(currentDir, item);
+      const fullPath = _path.join(currentDir, item);
       const stat = fs.statSync(fullPath);
       
       if (stat.isDirectory()) {
@@ -174,9 +174,9 @@ async function optimizeImages() {
       const originalStats = fs.statSync(imagePath);
       totalOriginalSize += originalStats.size;
       
-      const relativePath = path.relative(sourceDir, imagePath);
-      const outputPath = path.join(outputDir, relativePath);
-      const outputDirPath = path.dirname(outputPath);
+      const relativePath = _path.relative(sourceDir, imagePath);
+      const outputPath = _path.join(outputDir, relativePath);
+      const outputDirPath = _path.dirname(outputPath);
       
       ensureDir(outputDirPath);
       
@@ -246,7 +246,7 @@ async function generateAppIcons() {
   log.info('Generating app icons...');
   
   const sharp = require('sharp');
-  const iconSource = path.join(CONFIG.directories.source, 'icon.png');
+  const iconSource = _path.join(CONFIG.directories.source, 'icon.png');
   
   if (!fs.existsSync(iconSource)) {
     log.warning('Icon source not found at assets/icon.png');
@@ -279,10 +279,10 @@ async function generateAppIcons() {
   
   // Generate Android icons
   for (const { size, density } of androidSizes) {
-    const outputDir = path.join(CONFIG.directories.android, `mipmap-${density}`);
+    const outputDir = _path.join(CONFIG.directories.android, `mipmap-${density}`);
     ensureDir(outputDir);
     
-    const outputPath = path.join(outputDir, 'ic_launcher.png');
+    const outputPath = _path.join(outputDir, 'ic_launcher.png');
     
     await sharp(iconSource)
       .resize(size, size)
@@ -293,11 +293,11 @@ async function generateAppIcons() {
   }
   
   // Generate iOS icons
-  const iosIconDir = path.join(CONFIG.directories.ios, 'AppIcon.appiconset');
+  const iosIconDir = _path.join(CONFIG.directories.ios, 'AppIcon.appiconset');
   ensureDir(iosIconDir);
   
   for (const { size, name } of iosSizes) {
-    const outputPath = path.join(iosIconDir, name);
+    const outputPath = _path.join(iosIconDir, name);
     
     await sharp(iconSource)
       .resize(size, size)
@@ -326,7 +326,7 @@ function optimizeFonts() {
   
   fontFiles.forEach(fontPath => {
     const stats = fs.statSync(fontPath);
-    const relativePath = path.relative(CONFIG.directories.source, fontPath);
+    const relativePath = _path.relative(CONFIG.directories.source, fontPath);
     
     if (stats.size > CONFIG.limits.font) {
       log.warning(`${relativePath} exceeds font size limit (${formatFileSize(CONFIG.limits.font)})`);

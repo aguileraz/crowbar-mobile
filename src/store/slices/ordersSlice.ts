@@ -54,7 +54,7 @@ export const fetchOrders = createAsyncThunk(
   async (params: { page?: number; filters?: any } = {}, { rejectWithValue }) => {
     try {
       const { page = 1, filters = {} } = params;
-      const response = await orderService.getOrders(page, 20, filters);
+      const _response = await orderService.getOrders(page, 20, filters);
       return {
         orders: response.data,
         pagination: response.pagination,

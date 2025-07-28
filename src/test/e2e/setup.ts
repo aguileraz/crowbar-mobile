@@ -112,8 +112,8 @@ export const testUtils = {
   /**
    * Wait for element to disappear
    */
-  waitForElementToDisappear: async (queryByTestId: any, testId: string, timeout = 5000) => {
-    return waitFor(() => expect(queryByTestId(testId)).toBeNull(), { timeout });
+  waitForElementToDisappear: async (_queryByTestId: any, testId: string, timeout = 5000) => {
+    return waitFor(() => expect(_queryByTestId(testId)).toBeNull(), { timeout });
   },
 
   /**
@@ -155,8 +155,8 @@ export const testUtils = {
   /**
    * Wait for loading to complete
    */
-  waitForLoadingToComplete: async (queryByTestId: any, loadingTestId = 'loading-indicator') => {
-    return testUtils.waitForElementToDisappear(queryByTestId, loadingTestId);
+  waitForLoadingToComplete: async (_queryByTestId: any, loadingTestId = 'loading-indicator') => {
+    return testUtils.waitForElementToDisappear(_queryByTestId, loadingTestId);
   },
 
   /**
@@ -222,7 +222,7 @@ export const scenarios = {
   /**
    * Complete user registration flow
    */
-  userRegistration: async (getByTestId: any, queryByTestId: any) => {
+  userRegistration: async (getByTestId: any, _queryByTestId: any) => {
     // Fill registration form
     await testUtils.fillField(getByTestId, 'register-name-input', TEST_USER.name);
     await testUtils.fillField(getByTestId, 'register-email-input', TEST_USER.email);
@@ -233,13 +233,13 @@ export const scenarios = {
     await testUtils.pressButton(getByTestId, 'register-submit-button');
     
     // Wait for success
-    await testUtils.waitForLoadingToComplete(queryByTestId);
+    await testUtils.waitForLoadingToComplete(_queryByTestId);
   },
 
   /**
    * Complete user login flow
    */
-  userLogin: async (getByTestId: any, queryByTestId: any) => {
+  userLogin: async (getByTestId: any, _queryByTestId: any) => {
     // Fill login form
     await testUtils.fillField(getByTestId, 'login-email-input', TEST_USER.email);
     await testUtils.fillField(getByTestId, 'login-password-input', TEST_USER.password);
@@ -248,13 +248,13 @@ export const scenarios = {
     await testUtils.pressButton(getByTestId, 'login-submit-button');
     
     // Wait for success
-    await testUtils.waitForLoadingToComplete(queryByTestId);
+    await testUtils.waitForLoadingToComplete(_queryByTestId);
   },
 
   /**
    * Browse and search boxes
    */
-  browseBoxes: async (getByTestId: any, queryByTestId: any) => {
+  browseBoxes: async (getByTestId: any, _queryByTestId: any) => {
     // Wait for boxes to load
     await testUtils.waitForElement(getByTestId, 'boxes-list');
     
@@ -263,13 +263,13 @@ export const scenarios = {
     await testUtils.pressButton(getByTestId, 'search-button');
     
     // Wait for search results
-    await testUtils.waitForLoadingToComplete(queryByTestId);
+    await testUtils.waitForLoadingToComplete(_queryByTestId);
   },
 
   /**
    * Add box to cart
    */
-  addToCart: async (getByTestId: any, queryByTestId: any) => {
+  addToCart: async (getByTestId: any, _queryByTestId: any) => {
     // Select first box
     await testUtils.pressButton(getByTestId, 'box-card-0');
     
@@ -280,13 +280,13 @@ export const scenarios = {
     await testUtils.pressButton(getByTestId, 'add-to-cart-button');
     
     // Wait for success
-    await testUtils.waitForLoadingToComplete(queryByTestId);
+    await testUtils.waitForLoadingToComplete(_queryByTestId);
   },
 
   /**
    * Complete checkout process
    */
-  checkout: async (getByTestId: any, queryByTestId: any) => {
+  checkout: async (getByTestId: any, _queryByTestId: any) => {
     // Go to cart
     await testUtils.pressButton(getByTestId, 'cart-tab');
     
@@ -311,13 +311,13 @@ export const scenarios = {
     await testUtils.pressButton(getByTestId, 'complete-order-button');
     
     // Wait for success
-    await testUtils.waitForLoadingToComplete(queryByTestId);
+    await testUtils.waitForLoadingToComplete(_queryByTestId);
   },
 
   /**
    * Open a box
    */
-  openBox: async (getByTestId: any, queryByTestId: any) => {
+  openBox: async (getByTestId: any, _queryByTestId: any) => {
     // Go to inventory or boxes
     await testUtils.pressButton(getByTestId, 'profile-tab');
     await testUtils.pressButton(getByTestId, 'my-boxes-button');

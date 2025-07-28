@@ -2,7 +2,7 @@
  * Radio button animado com micro-interações
  */
 
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import {
   Pressable,
   View,

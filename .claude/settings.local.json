@@ -71,7 +71,24 @@
       "Bash(./test-results-integration.sh:*)",
       "Bash(./test-executor.sh:*)",
       "Bash(./test-execution-integration.sh:*)",
-      "Bash(./test-ci-integration.sh:*)"
+      "Bash(./test-ci-integration.sh:*)",
+      "Bash(./fix-unused-vars.sh:*)",
+      "Bash(/dev/null)",
+      "Bash(./fix-specific-errors.sh:*)",
+      "Bash(./fix-remaining-errors.sh:*)",
+      "Bash(./simple-console-cleanup.sh:*)",
+      "Bash(time npm run lint --silent)",
+      "mcp__sequential-thinking__sequentialthinking",
+      "Bash(./fix-final-eslint.sh:*)",
+      "Bash(./fix-divider-imports.sh:*)",
+      "Bash(./fix-remaining-eslint.sh:*)",
+      "Bash(./fix-final-eslint-targeted.sh:*)",
+      "Bash(./fix-script-errors.sh:*)",
+      "Bash(./fix-final-119-errors.sh:*)",
+      "Bash(./fix-final-111-errors.sh:*)",
+      "Bash(./fix-parsing-errors.sh:*)",
+      "Bash(./fix-commented-styles.sh:*)",
+      "Bash(./fix-final-133-errors.sh:*)"
     ],
     "deny": []
   }

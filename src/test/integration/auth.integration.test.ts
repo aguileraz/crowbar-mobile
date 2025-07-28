@@ -11,7 +11,7 @@ import {
   TEST_CREDENTIALS,
   skipIfAPIUnavailable,
   createTestUser,
-  loginTestUser,
+  _loginTestUser,
   logoutTestUser,
 } from './setup';
 
@@ -241,7 +241,7 @@ describe('Authentication Integration Tests', () => {
 
     it('should handle network errors gracefully', async () => {
       // Temporarily break the API URL to simulate network error
-      const originalBaseURL = store.getState().auth.apiBaseURL;
+      const _originalBaseURL = store.getState().auth.apiBaseURL;
       
       const invalidCredentials = {
         email: 'test@invalid-domain-that-does-not-exist.com',

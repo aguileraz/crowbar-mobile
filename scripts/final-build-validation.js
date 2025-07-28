@@ -7,7 +7,7 @@
 
 const { execSync } = require('child_process');
 const fs = require('fs');
-const path = require('path');
+const _path = require('path');
 
 // Colors for console output
 const colors = {
@@ -125,7 +125,7 @@ function runQualityChecks() {
       const errorMatch = lintResult.output.match(/(\d+) errors?/);
       const warningMatch = lintResult.output.match(/(\d+) warnings?/);
       
-      if (errorMatch && parseInt(errorMatch[1]) > 0) {
+      if (errorMatch && parseInt(errorMatch[1], 10) > 0) {
         log.error(`ESLint: ${errorMatch[0]}`);
         steps.quality.status = 'failed';
         return false;
@@ -179,7 +179,7 @@ function runSecurityReview() {
   
   try {
     log.info('Running security review...');
-    const securityResult = runCommand('node scripts/security-review.js', { silent: false });
+    const _securityResult = runCommand('node scripts/security-review.js', { silent: false });
     
     // Check security report
     if (fs.existsSync('security-report.json')) {
@@ -229,7 +229,7 @@ function runPerformanceTests() {
     
     // Run performance tests
     log.info('Running performance tests...');
-    const perfResult = runCommand('npm run perf:test', { silent: false });
+    const _perfResult = runCommand('npm run perf:test', { silent: false });
     
     // Check performance report
     if (fs.existsSync('performance-report.json')) {
@@ -266,7 +266,7 @@ function buildProduction() {
   
   try {
     log.info('Starting production build...');
-    const buildResult = runCommand('node scripts/build-production.js', { silent: false });
+    const _buildResult = runCommand('node scripts/build-production.js', { silent: false });
     
     // Check build report
     if (fs.existsSync('docs/BUILD_REPORT.md')) {
@@ -295,7 +295,7 @@ function runSmokeTests() {
   
   try {
     log.info('Running smoke tests on builds...');
-    const smokeResult = runCommand('node scripts/smoke-test-builds.js', { silent: false });
+    const _smokeResult = runCommand('node scripts/smoke-test-builds.js', { silent: false });
     
     // Check smoke test report
     if (fs.existsSync('smoke-test-report.json')) {
@@ -445,7 +445,7 @@ async function runFinalValidation() {
 
 // Run if called directly
 if (require.main === module) {
-  runFinalValidation().catch(error => {
+  runFinalValidation().catch(_error => {
     log.error(`Fatal error: ${error.message}`);
     process.exit(1);
   });

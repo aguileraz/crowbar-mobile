@@ -145,14 +145,14 @@ export const useOfflineCache = <T>(
   const updateCache = useCallback(
     async (newData: T) => {
       try {
-        await offlineService.cacheData(key, newData, priority, strategy);
+        await offlineService.cacheData(_key, newData, priority, strategy);
         setData(newData);
       } catch (err) {
         setError(err as Error);
         throw err;
       }
     },
-    [key, priority, strategy]
+    [priority, strategy]
   );
 
   // Auto fetch on mount
@@ -346,7 +346,7 @@ export const useOfflineBoxes = () => {
     'offline_boxes',
     async () => {
       // Simular chamada para API
-      // const response = await boxService.getBoxes();
+      // const _response = await boxService.getBoxes();
       // return response.data;
       return [];
     },

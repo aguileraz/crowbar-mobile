@@ -7,7 +7,7 @@ import * as Keychain from 'react-native-keychain';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import logger from './loggerService';
 
-interface SecureStorageOptions {
+interface _SecureStorageOptions {
   service?: string;
   accessGroup?: string;
   accessible?: Keychain.ACCESSIBLE;

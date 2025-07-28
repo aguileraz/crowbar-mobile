@@ -6,7 +6,6 @@ import React, { useCallback } from 'react';
 import {
   Pressable,
   StyleSheet,
-  View,
   ViewStyle,
   PressableProps,
 } from 'react-native';
@@ -130,8 +129,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     padding: 16,
   },
-  
-  // Variants
   elevated: {
     shadowColor: '#000',
     shadowOffset: {
@@ -147,5 +144,3 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5F5F5',
   },
 });
-
-export default AnimatedCard;

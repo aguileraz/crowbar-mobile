@@ -6,7 +6,7 @@
  */
 
 const fs = require('fs');
-const path = require('path');
+const _path = require('path');
 const { execSync: _execSync } = require('child_process');
 
 // Configuration
@@ -97,7 +97,7 @@ function analyzeAndroidBundle() {
       const findApks = (dir) => {
         const files = fs.readdirSync(dir, { withFileTypes: true });
         files.forEach(file => {
-          const fullPath = path.join(dir, file.name);
+          const fullPath = _path.join(dir, file.name);
           if (file.isDirectory()) {
             findApks(fullPath);
           } else if (file.name.endsWith('.apk')) {
@@ -121,7 +121,7 @@ function analyzeAndroidBundle() {
       const findAabs = (dir) => {
         const files = fs.readdirSync(dir, { withFileTypes: true });
         files.forEach(file => {
-          const fullPath = path.join(dir, file.name);
+          const fullPath = _path.join(dir, file.name);
           if (file.isDirectory()) {
             findAabs(fullPath);
           } else if (file.name.endsWith('.aab')) {
@@ -145,8 +145,8 @@ function analyzeAndroidBundle() {
       const analyzeAssets = (dir, basePath = '') => {
         const files = fs.readdirSync(dir, { withFileTypes: true });
         files.forEach(file => {
-          const fullPath = path.join(dir, file.name);
-          const relativePath = path.join(basePath, file.name);
+          const fullPath = _path.join(dir, file.name);
+          const relativePath = _path.join(basePath, file.name);
           
           if (file.isDirectory()) {
             analyzeAssets(fullPath, relativePath);
@@ -156,7 +156,7 @@ function analyzeAndroidBundle() {
               name: file.name,
               path: relativePath,
               size,
-              type: path.extname(file.name).slice(1) || 'unknown',
+              type: _path.extname(file.name).slice(1) || 'unknown',
             });
           }
         });
@@ -202,7 +202,7 @@ function analyzeIosBundle() {
       const findIpas = (dir) => {
         const files = fs.readdirSync(dir, { withFileTypes: true });
         files.forEach(file => {
-          const fullPath = path.join(dir, file.name);
+          const fullPath = _path.join(dir, file.name);
           if (file.isDirectory()) {
             findIpas(fullPath);
           } else if (file.name.endsWith('.ipa')) {
@@ -226,7 +226,7 @@ function analyzeIosBundle() {
       const findApps = (dir) => {
         const files = fs.readdirSync(dir, { withFileTypes: true });
         files.forEach(file => {
-          const fullPath = path.join(dir, file.name);
+          const fullPath = _path.join(dir, file.name);
           if (file.isDirectory() && file.name.endsWith('.app')) {
             const size = getFolderSize(fullPath);
             analysis.bundles.push({
@@ -250,8 +250,8 @@ function analyzeIosBundle() {
       const analyzeAssets = (dir, basePath = '') => {
         const files = fs.readdirSync(dir, { withFileTypes: true });
         files.forEach(file => {
-          const fullPath = path.join(dir, file.name);
-          const relativePath = path.join(basePath, file.name);
+          const fullPath = _path.join(dir, file.name);
+          const relativePath = _path.join(basePath, file.name);
           
           if (file.isDirectory()) {
             analyzeAssets(fullPath, relativePath);
@@ -261,7 +261,7 @@ function analyzeIosBundle() {
               name: file.name,
               path: relativePath,
               size,
-              type: path.extname(file.name).slice(1) || 'unknown',
+              type: _path.extname(file.name).slice(1) || 'unknown',
             });
           }
         });
@@ -296,7 +296,7 @@ function getFolderSize(folderPath) {
     const files = fs.readdirSync(folderPath, { withFileTypes: true });
     
     files.forEach(file => {
-      const fullPath = path.join(folderPath, file.name);
+      const fullPath = _path.join(folderPath, file.name);
       
       if (file.isDirectory()) {
         totalSize += getFolderSize(fullPath);
@@ -333,8 +333,8 @@ function analyzeJavaScriptBundle() {
         const files = fs.readdirSync(dir, { withFileTypes: true });
         
         files.forEach(file => {
-          const fullPath = path.join(dir, file.name);
-          const relativePath = path.join(basePath, file.name);
+          const fullPath = _path.join(dir, file.name);
+          const relativePath = _path.join(basePath, file.name);
           
           if (file.isDirectory() && !file.name.startsWith('.')) {
             analyzeSourceFiles(fullPath, relativePath);
@@ -360,8 +360,8 @@ function analyzeJavaScriptBundle() {
       
       packages.forEach(pkg => {
         if (pkg.isDirectory() && !pkg.name.startsWith('.')) {
-          const pkgPath = path.join(nodeModulesDir, pkg.name);
-          const packageJsonPath = path.join(pkgPath, 'package.json');
+          const pkgPath = _path.join(nodeModulesDir, pkg.name);
+          const packageJsonPath = _path.join(pkgPath, 'package.json');
           
           if (fs.existsSync(packageJsonPath)) {
             try {
@@ -579,13 +579,13 @@ async function main() {
     };
 
     // Save JSON report
-    const reportPath = path.join(CONFIG.outputDir, CONFIG.reportFile);
+    const reportPath = _path.join(CONFIG.outputDir, CONFIG.reportFile);
     fs.writeFileSync(reportPath, JSON.stringify(analysis, null, 2));
     log.success(`JSON report saved to ${reportPath}`);
 
     // Generate and save HTML report
     const htmlReport = generateHtmlReport(analysis);
-    const htmlReportPath = path.join(CONFIG.outputDir, CONFIG.htmlReportFile);
+    const htmlReportPath = _path.join(CONFIG.outputDir, CONFIG.htmlReportFile);
     fs.writeFileSync(htmlReportPath, htmlReport);
     log.success(`HTML report saved to ${htmlReportPath}`);
 

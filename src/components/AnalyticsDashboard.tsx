@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import logger from '../services/loggerService';
 import {
   View,
@@ -16,10 +16,11 @@ import {
   Chip,
   DataTable,
   Switch,
-  Divider,
+
   ProgressBar,
   Surface,
   useTheme,
+  Divider,
 } from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useSelector } from 'react-redux';

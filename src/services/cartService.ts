@@ -4,7 +4,7 @@ import {
   CartItem,
   Order,
   Promotion,
-  Address,
+
 } from '../types/api';
 
 /**
@@ -15,7 +15,7 @@ export class CartService {
    * Obter carrinho atual
    */
   async getCart(): Promise<Cart> {
-    const response = await apiClient.get<Cart>('/cart');
+    const _response = await apiClient.get<Cart>('/cart');
     return response.data;
   }
 
@@ -23,7 +23,7 @@ export class CartService {
    * Adicionar item ao carrinho
    */
   async addToCart(boxId: string, quantity: number = 1): Promise<Cart> {
-    const response = await apiClient.post<Cart>('/cart/items', {
+    const _response = await apiClient.post<Cart>('/cart/items', {
       mystery_box_id: boxId,
       quantity,
     });
@@ -34,7 +34,7 @@ export class CartService {
    * Atualizar quantidade de item no carrinho
    */
   async updateCartItem(itemId: string, quantity: number): Promise<Cart> {
-    const response = await apiClient.put<Cart>(`/cart/items/${itemId}`, { quantity });
+    const _response = await apiClient.put<Cart>(`/cart/items/${itemId}`, { quantity });
     return response.data;
   }
 
@@ -42,7 +42,7 @@ export class CartService {
    * Remover item do carrinho
    */
   async removeFromCart(itemId: string): Promise<Cart> {
-    const response = await apiClient.delete<Cart>(`/cart/items/${itemId}`);
+    const _response = await apiClient.delete<Cart>(`/cart/items/${itemId}`);
     return response.data;
   }
 
@@ -57,7 +57,7 @@ export class CartService {
    * Aplicar cupom de desconto
    */
   async applyCoupon(code: string): Promise<Cart> {
-    const response = await apiClient.post<Cart>('/cart/coupon', { code });
+    const _response = await apiClient.post<Cart>('/cart/coupon', { code });
     return response.data;
   }
 
@@ -65,7 +65,7 @@ export class CartService {
    * Remover cupom de desconto
    */
   async removeCoupon(): Promise<Cart> {
-    const response = await apiClient.delete<Cart>('/cart/coupon');
+    const _response = await apiClient.delete<Cart>('/cart/coupon');
     return response.data;
   }
 
@@ -78,7 +78,7 @@ export class CartService {
     discount_amount?: number;
     message?: string;
   }> {
-    const response = await apiClient.post(`/cart/validate-coupon`, { code });
+    const _response = await apiClient.post(`/cart/validate-coupon`, { code });
     return response.data;
   }
 
@@ -94,7 +94,7 @@ export class CartService {
       description?: string;
     }>;
   }> {
-    const response = await apiClient.post('/cart/shipping', { address_id: addressId });
+    const _response = await apiClient.post('/cart/shipping', { address_id: addressId });
     return response.data;
   }
 
@@ -110,7 +110,7 @@ export class CartService {
       description?: string;
     }>;
   }> {
-    const response = await apiClient.post('/cart/shipping/zip', { zip_code: zipCode });
+    const _response = await apiClient.post('/cart/shipping/zip', { zip_code: zipCode });
     return response.data;
   }
 
@@ -124,7 +124,7 @@ export class CartService {
     payment_data?: any;
     notes?: string;
   }): Promise<Order> {
-    const response = await apiClient.post<Order>('/orders', data);
+    const _response = await apiClient.post<Order>('/orders', data);
     return response.data;
   }
 
@@ -148,7 +148,7 @@ export class CartService {
     boleto_url?: string;
     message?: string;
   }> {
-    const response = await apiClient.post(`/orders/${orderId}/payment`, paymentData);
+    const _response = await apiClient.post(`/orders/${orderId}/payment`, paymentData);
     return response.data;
   }
 
@@ -160,7 +160,7 @@ export class CartService {
     payment_id: string;
     updated_at: string;
   }> {
-    const response = await apiClient.get(`/orders/${orderId}/payment/status`);
+    const _response = await apiClient.get(`/orders/${orderId}/payment/status`);
     return response.data;
   }
 
@@ -183,7 +183,7 @@ export class CartService {
       discount_percentage?: number;
     };
   }> {
-    const response = await apiClient.get('/payment/methods');
+    const _response = await apiClient.get('/payment/methods');
     return response.data;
   }
 
@@ -196,7 +196,7 @@ export class CartService {
     total_amount: number;
     interest_rate: number;
   }>> {
-    const response = await apiClient.get(`/payment/installments?amount=${amount}`);
+    const _response = await apiClient.get(`/payment/installments?amount=${amount}`);
     return response.data;
   }
 
@@ -204,7 +204,7 @@ export class CartService {
    * Salvar carrinho para mais tarde
    */
   async saveForLater(): Promise<{ saved_at: string }> {
-    const response = await apiClient.post('/cart/save');
+    const _response = await apiClient.post('/cart/save');
     return response.data;
   }
 
@@ -212,7 +212,7 @@ export class CartService {
    * Restaurar carrinho salvo
    */
   async restoreSavedCart(): Promise<Cart> {
-    const response = await apiClient.post<Cart>('/cart/restore');
+    const _response = await apiClient.post<Cart>('/cart/restore');
     return response.data;
   }
 
@@ -220,7 +220,7 @@ export class CartService {
    * Verificar se há carrinho salvo
    */
   async hasSavedCart(): Promise<{ has_saved_cart: boolean; saved_at?: string }> {
-    const response = await apiClient.get('/cart/saved');
+    const _response = await apiClient.get('/cart/saved');
     return response.data;
   }
 
@@ -228,7 +228,7 @@ export class CartService {
    * Compartilhar carrinho
    */
   async shareCart(): Promise<{ share_url: string; expires_at: string }> {
-    const response = await apiClient.post('/cart/share');
+    const _response = await apiClient.post('/cart/share');
     return response.data;
   }
 
@@ -236,7 +236,7 @@ export class CartService {
    * Importar carrinho compartilhado
    */
   async importSharedCart(shareToken: string): Promise<Cart> {
-    const response = await apiClient.post<Cart>('/cart/import', { share_token: shareToken });
+    const _response = await apiClient.post<Cart>('/cart/import', { share_token: shareToken });
     return response.data;
   }
 
@@ -248,7 +248,7 @@ export class CartService {
     max_days: number;
     estimated_date: string;
   }> {
-    const response = await apiClient.get(`/cart/delivery-estimate?address_id=${addressId}`);
+    const _response = await apiClient.get(`/cart/delivery-estimate?address_id=${addressId}`);
     return response.data;
   }
 
@@ -264,7 +264,7 @@ export class CartService {
       available_quantity: number;
     }>;
   }> {
-    const response = await apiClient.get('/cart/availability');
+    const _response = await apiClient.get('/cart/availability');
     return response.data;
   }
 
@@ -284,7 +284,7 @@ export class CartService {
     total: number;
     estimated_delivery: string;
   }> {
-    const response = await apiClient.post('/cart/summary', data);
+    const _response = await apiClient.post('/cart/summary', data);
     return response.data;
   }
 }

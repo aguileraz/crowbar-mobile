@@ -9,7 +9,7 @@
  */
 
 const fs = require('fs');
-const path = require('path');
+const _path = require('path');
 const glob = require('glob');
 
 // Patterns for files to process

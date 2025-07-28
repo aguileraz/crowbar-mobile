@@ -6,10 +6,11 @@ import {
   Title, 
   Paragraph, 
   Button, 
-  Divider, 
+  Divider,
   Chip,
   useTheme,
   Text,
+  Divider,
 } from 'react-native-paper';
 import { useOffline, useOfflineCache, useOfflineImage, useOfflineAction } from '../hooks/useOffline';
 import { CacheStrategy, SyncPriority } from '../services/offlineService';
@@ -56,7 +57,7 @@ export const OfflineExampleScreen: React.FC = () => {
   // Exemplo de ação com suporte offline
   const addToCart = useOfflineAction(
     'ADD_TO_CART',
-    async (data: { boxId: string; quantity: number }) => {
+    async (_data: { boxId: string; quantity: number }) => {
       // Simular adição ao carrinho
       await new Promise(resolve => setTimeout(resolve, 500));
       return { success: true, message: 'Adicionado ao carrinho' };

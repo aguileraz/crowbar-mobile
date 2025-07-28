@@ -1,217 +1,229 @@
-# Android Docker Testing Environment
+# Docker-based Android Testing for Crowbar Mobile
 
-This Docker environment provides a complete Android testing setup for Crowbar Mobile, including an Android emulator, testing tools, and VNC access for debugging.
+This directory contains the Docker infrastructure for running automated tests on Android emulators.
 
-## Features
+## 🚀 Quick Start
 
-- Android SDK with API levels 30 and 34
-- Pre-configured Android emulator (Pixel 4)
-- VNC server for remote debugging
-- Node.js and npm for React Native
-- Automated test execution support
-- Hardware acceleration support (KVM)
+```bash
+# Build and run tests on all Android versions
+make -f Makefile.docker test
 
-## Prerequisites
+# Run tests in parallel (faster)
+make -f Makefile.docker test-parallel
+
+# Test on specific Android version
+make -f Makefile.docker test-api31
+```
+
+## 📋 Prerequisites
 
 - Docker and Docker Compose installed
-- For hardware acceleration (Linux only):
-  - KVM enabled in BIOS
-  - User added to `kvm` group: `sudo usermod -aG kvm $USER`
+- KVM support (recommended for performance)
+- Built APK file (`npm run build:android`)
 
-## Quick Start
+## 🏗️ Architecture
 
-### Using Docker Compose (Recommended)
+```
+docker/
+├── android/                 # Android emulator containers
+│   ├── Dockerfile          # Main emulator (API 31)
+│   ├── Dockerfile.api21    # Android 5.0 (Lollipop)
+│   ├── Dockerfile.api26    # Android 8.0 (Oreo)
+│   └── docker-entrypoint.sh
+├── tests/                   # Test runner container
+│   ├── Dockerfile.runner
+│   └── scripts/            # Test execution scripts
+└── README.md
+```
+
+## 🎯 Test Targets
+
+| Android Version | API Level | Device Profile | Container Name |
+|----------------|-----------|----------------|----------------|
+| Android 12     | 31        | Pixel 4        | android-31     |
+| Android 8.0    | 26        | Pixel 2        | android-26     |
+| Android 5.0    | 21        | Nexus 5        | android-21     |
+
+## 🧪 Running Tests
+
+### Using Make Commands
 
 ```bash
-# Build and start the environment
-cd docker
+# Build Docker images
+make -f Makefile.docker build
+
+# Run all tests sequentially
+make -f Makefile.docker test
+
+# Run tests in parallel
+make -f Makefile.docker test-parallel
+
+# Test specific API level
+make -f Makefile.docker test-api21
+make -f Makefile.docker test-api26
+make -f Makefile.docker test-api31
+
+# View test report
+make -f Makefile.docker report
+
+# Clean up
+make -f Makefile.docker clean
+```
+
+### Using Scripts Directly
+
+```bash
+# Run with default settings (all targets, sequential)
+./scripts/test-docker.sh
+
+# Run in parallel mode
+./scripts/test-docker.sh parallel
+
+# Run on single target
+./scripts/test-docker.sh single 31
+```
+
+### Using Docker Compose
+
+```bash
+# Start all emulators
 docker-compose up -d
 
-# View logs
-docker-compose logs -f android-test
-
 # Run tests
-docker-compose exec android-test npm test
-
-# Connect via VNC
-# Browser: http://localhost:6080
-# VNC Client: localhost:5900
-```
-
-### Using Docker Directly
-
-```bash
-# Build the image
-docker build -t crowbar-android-test -f docker/android/Dockerfile .
-
-# Run with KVM acceleration (Linux)
-docker run -it --rm \
-  --privileged \
-  --device /dev/kvm \
-  -p 5900:5900 \
-  -p 8081:8081 \
-  -v $(pwd):/app \
-  crowbar-android-test
-
-# Run without KVM (slower)
-docker run -it --rm \
-  -p 5900:5900 \
-  -p 8081:8081 \
-  -v $(pwd):/app \
-  crowbar-android-test
-```
-
-## Running Tests
-
-### Unit Tests
-```bash
-docker-compose exec android-test npm test
-```
-
-### E2E Tests
-```bash
-docker-compose exec android-test npm run test:e2e:android
-```
-
-### Install and Test APK
-```bash
-# Copy APK to container
-docker cp app-debug.apk crowbar-android-test:/tmp/
-
-# Install APK
-docker-compose exec android-test adb install /tmp/app-debug.apk
-
-# Run app
-docker-compose exec android-test adb shell monkey -p com.crowbarmobile -c android.intent.category.LAUNCHER 1
-```
-
-## Debugging
-
-### VNC Access
-
-1. **Web Browser (noVNC)**:
-   - Navigate to http://localhost:6080
-   - No VNC client required
-
-2. **VNC Client**:
-   - Connect to `localhost:5900`
-   - No password required
-
-### ADB Access
-
-```bash
-# List devices
-docker-compose exec android-test adb devices
-
-# Shell into emulator
-docker-compose exec android-test adb shell
+docker-compose run test-runner
 
 # View logs
-docker-compose exec android-test adb logcat
+docker-compose logs -f
+
+# Stop and clean
+docker-compose down
 ```
 
-### Troubleshooting
+## 📊 Test Reports
 
-**Emulator not starting:**
+After running tests, reports are available at:
+- **Summary**: `test-reports-docker/summary.json`
+- **Allure Report**: `test-reports-docker/allure-report/index.html`
+- **Screenshots**: `test-results-docker/screenshots/`
+- **Logs**: `test-results-docker/logs/`
+
+## 🔧 Configuration
+
+### Environment Variables
+
 ```bash
-# Check emulator logs
-docker-compose exec android-test cat /tmp/emulator.log
+# Test runner configuration
+PARALLEL_TESTS=true          # Run tests in parallel
+TEST_TARGETS=android-31      # Comma-separated targets
+SCREENSHOT_ON_FAILURE=true   # Capture screenshots
+GENERATE_REPORT=true         # Generate Allure report
 
-# Restart with verbose logging
-docker-compose exec android-test emulator @test_avd -verbose
+# Emulator configuration
+EMULATOR_ARGS=-no-window -no-audio -gpu swiftshader_indirect
+DEVICE_NAME=Pixel 4
+ANDROID_API_LEVEL=31
 ```
 
-**Performance issues:**
-- Ensure KVM is enabled: `ls -la /dev/kvm`
-- Allocate more memory in docker-compose.yml
-- Use a smaller screen resolution
+### Docker Compose Override
 
-**Connection refused:**
-- Wait for emulator to fully boot (check health status)
-- Ensure ports are not already in use
-
-## Environment Variables
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `ANDROID_AVD_NAME` | `test_avd` | AVD name to use |
-| `ENABLE_VNC` | `true` | Enable VNC server |
-| `START_EMULATOR` | `true` | Auto-start emulator |
-| `WAIT_FOR_EMULATOR` | `true` | Wait for emulator ready |
-| `EMULATOR_EXTRA_ARGS` | | Additional emulator arguments |
-
-## CI/CD Integration
-
-### GitHub Actions
-
-The project includes automated testing via GitHub Actions:
+Create `docker-compose.override.yml` for local customization:
 
 ```yaml
-# .github/workflows/android-tests.yml
-- Builds Docker image with caching
-- Runs Android emulator in container
-- Executes all test suites
-- Posts results to PR comments
-- Uploads artifacts (reports, screenshots, logs)
+version: '3.8'
+
+services:
+  android-31:
+    environment:
+      - EMULATOR_ARGS=-no-window -no-audio -gpu host
+    devices:
+      - /dev/dri:/dev/dri  # For GPU acceleration
 ```
 
-### Running in CI
+## 🐛 Debugging
 
-The workflow automatically runs on:
-- Push to main, develop, and feature branches
-- Pull requests to main and develop
-
-### Local CI Testing
-
-Test the CI pipeline locally using [act](https://github.com/nektos/act):
+### Access Emulator Shell
 
 ```bash
-# Install act
-brew install act  # macOS
-curl https://raw.githubusercontent.com/nektos/act/master/install.sh | sudo bash  # Linux
+# Connect to running emulator
+make -f Makefile.docker shell-android
 
-# Run workflow
-act push  # Simulate push event
-act pull_request  # Simulate PR event
-
-# Run specific job
-act -j test
-
-# With custom image (recommended for KVM support)
-act -P ubuntu-latest=ghcr.io/catthehacker/ubuntu:full-latest
+# Or directly with docker
+docker exec -it crowbar-android-31 /bin/bash
 ```
 
-### Status Checks
+### View Emulator Screen
 
-Configure branch protection rules in GitHub:
-1. Go to Settings → Branches
-2. Add rule for `main` branch
-3. Enable "Require status checks":
-   - `build` - Docker build must succeed
-   - `test` - All tests must pass
+```bash
+# Start emulator with window
+docker-compose run --rm \
+  -e EMULATOR_ARGS="-gpu swiftshader_indirect" \
+  android-31
+```
 
-### PR Comments
+### Debug Test Execution
 
-Test results are automatically posted as PR comments including:
-- Test summary (passed/failed/skipped)
-- Pass rate percentage
-- Test breakdown by type
-- Links to artifacts
-- Failed test details (expandable)
+```bash
+# Run with debug logging
+make -f Makefile.docker test-debug
 
-### Artifacts
+# View detailed logs
+docker-compose logs -f test-runner
+```
 
-Each workflow run uploads:
-- **test-results**: Full HTML report and JSON summary
-- **test-screenshots**: Screenshots from failed tests
-- **test-logs**: Complete execution logs
+## ⚡ Performance Tips
 
-See [CI Configuration Guide](CI_CONFIG.md) for detailed setup instructions.
+1. **Enable KVM**: Ensure `/dev/kvm` is available for hardware acceleration
+2. **Allocate Resources**: Give Docker enough CPU and memory
+3. **Use SSD**: Store Docker images on SSD for faster I/O
+4. **Parallel Testing**: Use `test-parallel` for faster execution
 
-## Performance Tips
+## 🔍 Troubleshooting
 
-1. **Use KVM acceleration** (Linux only) for 5-10x performance improvement
-2. **Cache Docker layers** in CI/CD
-3. **Use emulator snapshots** for faster startup (remove `-wipe-data`)
-4. **Disable animations** (automatically done by wait-for-emulator.sh)
-5. **Allocate sufficient memory** (2GB minimum recommended)
+### Emulator Won't Start
+```bash
+# Check if KVM is available
+ls -la /dev/kvm
+
+# Check Docker resources
+docker system df
+docker system prune
+```
+
+### Tests Fail to Connect
+```bash
+# Check emulator status
+docker-compose exec android-31 adb devices
+
+# Check Appium status
+curl http://localhost:4723/status
+```
+
+### Out of Space
+```bash
+# Clean Docker resources
+docker system prune -a
+docker volume prune
+```
+
+## 🚀 CI/CD Integration
+
+### GitHub Actions Example
+
+```yaml
+- name: Run Android Tests
+  run: |
+    make -f Makefile.docker ci-test
+    
+- name: Upload Test Reports
+  uses: actions/upload-artifact@v3
+  with:
+    name: test-reports
+    path: test-reports-docker/
+```
+
+## 📚 Resources
+
+- [Docker Android](https://github.com/budtmo/docker-android)
+- [Appium Documentation](https://appium.io/docs/en/2.0/)
+- [WebDriverIO](https://webdriver.io/)
+- [Allure Report](https://docs.qameta.io/allure/)

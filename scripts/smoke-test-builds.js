@@ -6,9 +6,9 @@
  */
 
 const fs = require('fs');
-const path = require('path');
+const _path = require('path');
 const { execSync } = require('child_process');
-const crypto = require('crypto');
+const _crypto = require('crypto');
 
 // Colors for console output
 const colors = {
@@ -42,7 +42,7 @@ const results = {
  */
 function runTest(name, testFn) {
   try {
-    const result = testFn();
+    const _result = testFn();
     if (result === true) {
       log.success(name);
       results.passed++;
@@ -220,7 +220,7 @@ function checkSigning() {
       // Check if jarsigner is available
       execSync('jarsigner -help', { stdio: 'ignore' });
       
-      const result = execSync(`jarsigner -verify ${apkPath}`, { encoding: 'utf8' });
+      const _result = execSync(`jarsigner -verify ${apkPath}`, { encoding: 'utf8' });
       
       if (result.includes('jar verified') || result.includes('verified')) {
         log.info('  APK signature verified');
@@ -231,7 +231,7 @@ function checkSigning() {
     } catch (error) {
       // If jarsigner is not available, check with apksigner
       try {
-        const result = execSync(`apksigner verify ${apkPath}`, { encoding: 'utf8' });
+        const _result = execSync(`apksigner verify ${apkPath}`, { encoding: 'utf8' });
         return true;
       } catch (apkError) {
         log.warning('  Unable to verify signature (tools not available)');
@@ -411,19 +411,19 @@ function runQualityChecks() {
   
   runTest('ESLint passes', () => {
     try {
-      const result = execSync('npm run lint', { encoding: 'utf8', stdio: 'pipe' });
+      const _result = execSync('npm run lint', { encoding: 'utf8', stdio: 'pipe' });
       return true;
     } catch (error) {
       const output = error.stdout || error.stderr || '';
       const errorMatch = output.match(/(\d+) errors?/);
       const warningMatch = output.match(/(\d+) warnings?/);
       
-      if (errorMatch && parseInt(errorMatch[1]) > 0) {
+      if (errorMatch && parseInt(errorMatch[1], 10) > 0) {
         log.error(`  ${errorMatch[0]}`);
         return false;
       }
       
-      if (warningMatch && parseInt(warningMatch[1]) > 0) {
+      if (warningMatch && parseInt(warningMatch[1], 10) > 0) {
         log.warning(`  ${warningMatch[0]}`);
         return 'warning';
       }

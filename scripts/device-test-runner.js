@@ -7,7 +7,7 @@
 
 const { execSync } = require('child_process');
 const fs = require('fs');
-const path = require('path');
+const _path = require('path');
 
 // Colors for console output
 const colors = {
@@ -224,9 +224,9 @@ function runPerformanceTests(devices) {
   if (devices.android.length > 0 || devices.ios.length > 0 || devices.emulators.length > 0) {
     log.info('Running performance tests on connected devices...');
     
-    const perfResult = runCommand('npm run perf:test', { silent: false });
+    const _perfResult = runCommand('npm run perf:test', { silent: false });
     
-    if (perfResult.success) {
+    if (_perfResult.success) {
       log.success('Performance tests completed');
       
       // Check for performance report
@@ -248,7 +248,7 @@ function runPerformanceTests(devices) {
       log.error('Performance tests failed');
       testResults.performance = {
         status: 'failed',
-        details: { error: perfResult.error }
+        details: { error: _perfResult.error }
       };
     }
   } else {
@@ -414,7 +414,7 @@ function checkAndroidMinSDK() {
   
   const content = fs.readFileSync(buildGradle, 'utf8');
   const minSdkMatch = content.match(/minSdkVersion\\s+(\\d+)/);
-  return minSdkMatch && parseInt(minSdkMatch[1]) >= 21;
+  return minSdkMatch && parseInt(minSdkMatch[1], 10) >= 21;
 }
 
 function checkiOSMinVersion() {

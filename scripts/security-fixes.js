@@ -5,7 +5,7 @@
  */
 
 const fs = require('fs');
-const path = require('path');
+const _path = require('path');
 const { execSync } = require('child_process');
 
 // Cores para output
@@ -33,8 +33,8 @@ log.info('🔒 Applying security fixes to Crowbar Mobile\n');
 function createAndroidNetworkSecurityConfig() {
   log.info('Creating Android network security configuration...');
   
-  const xmlDir = path.join(__dirname, '..', 'android', 'app', 'src', 'main', 'res', 'xml');
-  const configPath = path.join(xmlDir, 'network_security_config.xml');
+  const xmlDir = _path.join(__dirname, '..', 'android', 'app', 'src', 'main', 'res', 'xml');
+  const configPath = _path.join(xmlDir, 'network_security_config.xml');
   
   // Criar diretório se não existir
   if (!fs.existsSync(xmlDir)) {
@@ -74,7 +74,7 @@ function createAndroidNetworkSecurityConfig() {
   log.success('Created network_security_config.xml');
   
   // Atualizar AndroidManifest.xml para referenciar o arquivo
-  const manifestPath = path.join(__dirname, '..', 'android', 'app', 'src', 'main', 'AndroidManifest.xml');
+  const manifestPath = _path.join(__dirname, '..', 'android', 'app', 'src', 'main', 'AndroidManifest.xml');
   let manifest = fs.readFileSync(manifestPath, 'utf8');
   
   if (!manifest.includes('android:networkSecurityConfig')) {
@@ -93,7 +93,7 @@ function createAndroidNetworkSecurityConfig() {
 function updateIOSInfoPlist() {
   log.info('\nUpdating iOS Info.plist for App Transport Security...');
   
-  const plistPath = path.join(__dirname, '..', 'ios', 'CrowbarMobile', 'Info.plist');
+  const plistPath = _path.join(__dirname, '..', 'ios', 'CrowbarMobile', 'Info.plist');
   
   if (fs.existsSync(plistPath)) {
     let plist = fs.readFileSync(plistPath, 'utf8');
@@ -141,7 +141,7 @@ function updateIOSInfoPlist() {
 function createSecureProductionEnv() {
   log.info('\nCreating secure production environment example...');
   
-  const envSecurePath = path.join(__dirname, '..', '.env.production.secure.example');
+  const envSecurePath = _path.join(__dirname, '..', '.env.production.secure.example');
   
   const secureEnv = `# ===========================================
 # CROWBAR MOBILE - SECURE PRODUCTION EXAMPLE
@@ -211,7 +211,7 @@ REMOTE_LOGGING_ENABLED=true`;
 function updateAuthService() {
   log.info('\nUpdating auth service with secure storage...');
   
-  const authServicePath = path.join(__dirname, '..', 'src', 'services', 'auth.ts');
+  const authServicePath = _path.join(__dirname, '..', 'src', 'services', 'auth.ts');
   
   if (fs.existsSync(authServicePath)) {
     let authService = fs.readFileSync(authServicePath, 'utf8');
@@ -254,7 +254,7 @@ function updateAuthService() {
 function createMigrationScript() {
   log.info('\nCreating token migration script...');
   
-  const migrationPath = path.join(__dirname, '..', 'src', 'utils', 'migrateSecureStorage.ts');
+  const migrationPath = _path.join(__dirname, '..', 'src', 'utils', 'migrateSecureStorage.ts');
   
   const migrationScript = `/**
  * Script de migração para mover tokens do AsyncStorage para armazenamento seguro

@@ -1,5 +1,5 @@
 import { TestApiClient, testEnvironment, testData, testUtils } from './testConfig';
-import { apiClient, ApiError, ApiErrorUtils } from '../../api';
+import { ApiError, ApiErrorUtils } from '../../api';
 import { boxService } from '../../boxService';
 import { cartService } from '../../cartService';
 import { userService } from '../../userService';

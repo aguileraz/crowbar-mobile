@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import logger from '../../services/loggerService';
 import {
   View,
@@ -18,7 +18,7 @@ import {
   Chip,
   IconButton,
   ActivityIndicator,
-  Divider,
+
   ProgressBar,
   Badge,
 } from 'react-native-paper';
@@ -67,7 +67,7 @@ interface BoxDetailsScreenProps {
   route: BoxDetailsScreenRouteProp;
 }
 
-const { width } = Dimensions.get('window');
+const { _width } = Dimensions.get('window');
 
 const BoxDetailsScreen: React.FC<BoxDetailsScreenProps> = ({ navigation, route }) => {
   const { boxId } = route.params;
@@ -128,7 +128,7 @@ const BoxDetailsScreen: React.FC<BoxDetailsScreenProps> = ({ navigation, route }
    */
   const loadReviews = async () => {
     try {
-      const response = await boxService.getBoxReviews(boxId, 1, 5);
+      const _response = await boxService.getBoxReviews(boxId, 1, 5);
       setReviews(response.data);
     } catch (err) {
       logger.error('Error loading reviews:', err);

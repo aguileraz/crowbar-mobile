@@ -6,7 +6,7 @@
  */
 
 const fs = require('fs');
-const path = require('path');
+const _path = require('path');
 const { execSync } = require('child_process');
 
 // Configuration
@@ -284,7 +284,7 @@ async function runAccessibilityTests() {
         function walkDir(dir) {
           const files = fs.readdirSync(dir);
           files.forEach(file => {
-            const fullPath = path.join(dir, file);
+            const fullPath = _path.join(dir, file);
             const stat = fs.statSync(fullPath);
             if (stat.isDirectory()) {
               walkDir(fullPath);
@@ -335,7 +335,7 @@ async function runCompatibilityTests() {
       command: 'node --version',
       validator: (output) => {
         const version = output.trim().replace('v', '');
-        const major = parseInt(version.split('.')[0], 10);
+        const major = parseInt(version.split('.', 10)[0], 10);
         return major >= 16; // Minimum Node 16
       }
     },
@@ -398,7 +398,7 @@ function generateTestReport(results) {
   
   // JSON report
   fs.writeFileSync(
-    path.join(CONFIG.reportDir, 'acceptance-test-report.json'),
+    _path.join(CONFIG.reportDir, 'acceptance-test-report.json'),
     JSON.stringify(report, null, 2)
   );
   
@@ -461,7 +461,7 @@ function generateTestReport(results) {
 </html>`;
   
   fs.writeFileSync(
-    path.join(CONFIG.reportDir, 'acceptance-test-report.html'),
+    _path.join(CONFIG.reportDir, 'acceptance-test-report.html'),
     htmlReport
   );
   
@@ -547,7 +547,7 @@ async function main() {
 
 // Run if called directly
 if (require.main === module) {
-  main().catch(error => {
+  main().catch(_error => {
     log.error(`Acceptance tests failed: ${error.message}`);
     process.exit(1);
   });

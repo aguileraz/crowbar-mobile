@@ -130,7 +130,7 @@ export const waitFor = async (
  */
 export const createTestUser = async () => {
   try {
-    const response = await httpClient.post('/auth/register', {
+    const _response = await httpClient.post('/auth/register', {
       name: 'Test User',
       email: TEST_CREDENTIALS.email,
       password: TEST_CREDENTIALS.password,
@@ -150,8 +150,8 @@ export const createTestUser = async () => {
 /**
  * Login test user
  */
-export const loginTestUser = async () => {
-  const response = await httpClient.post('/auth/login', TEST_CREDENTIALS);
+export const _loginTestUser = async () => {
+  const _response = await httpClient.post('/auth/login', TEST_CREDENTIALS);
   
   // Set auth token for subsequent requests
   const token = response.data.token;
@@ -215,9 +215,9 @@ export const skipIfAPIUnavailable = async () => {
 export const testUtils = {
   setupIntegrationTest,
   cleanupIntegrationTest,
-  waitFor,
+  _waitFor,
   createTestUser,
-  loginTestUser,
+  _loginTestUser,
   logoutTestUser,
   cleanupTestData,
   checkAPIAvailability,

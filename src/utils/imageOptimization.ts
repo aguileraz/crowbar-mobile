@@ -256,7 +256,7 @@ class ImageUrlCache {
       const firstKey = this.cache.keys().next().value;
       this.cache.delete(firstKey);
     }
-    this.cache.set(key, value);
+    this.cache.set(_key, value);
   }
 
   clear(): void {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import logger from '../../services/loggerService';
 import {
   View,
@@ -15,8 +15,9 @@ import {
   IconButton,
   ActivityIndicator,
   TextInput,
-  Divider,
+
   Chip,
+  Divider,
 } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';
@@ -51,11 +52,9 @@ import CouponInput from '../../components/CouponInput';
 import ErrorMessage from '../../components/ErrorMessage';
 
 // Types
-import { CartItem } from '../../types/api';
 
 // Theme
 import { theme, getSpacing, getBorderRadius } from '../../theme';
-import { analyticsService } from '../../services/analyticsService';
 
 /**
  * Tela do Carrinho

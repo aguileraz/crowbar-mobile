@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   StyleSheet,
@@ -11,7 +11,7 @@ import {
   Title,
   Button,
   RadioButton,
-  Divider,
+
   ActivityIndicator,
   IconButton,
 } from 'react-native-paper';
@@ -39,7 +39,7 @@ import OrderSummary from '../../components/OrderSummary';
 import ErrorMessage from '../../components/ErrorMessage';
 
 // Types
-import { Address, PaymentMethod, Order } from '../../types/api';
+import { PaymentMethod } from '../../types/api';
 
 // Theme
 import { theme, getSpacing, getBorderRadius } from '../../theme';
@@ -56,7 +56,7 @@ interface CheckoutScreenProps {
 }
 
 const CheckoutScreen: React.FC<CheckoutScreenProps> = ({ navigation }) => {
-  const dispatch = useDispatch<AppDispatch>();
+  const _dispatch = useDispatch<AppDispatch>();
   
   // Redux state
   const cart = useSelector(selectCart);

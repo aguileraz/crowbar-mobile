@@ -6,7 +6,7 @@
  */
 
 const { execSync } = require('child_process');
-const path = require('path');
+const _path = require('path');
 
 // Colors for console output
 const colors = {
@@ -82,7 +82,7 @@ function runTests(pattern = '') {
   try {
     execSync(testCommand, {
       stdio: 'inherit',
-      cwd: path.resolve(__dirname, '..'),
+      cwd: _path.resolve(__dirname, '..'),
       env: {
         ...process.env,
         NODE_ENV: 'test',
@@ -104,7 +104,7 @@ function runCoverageReport() {
   try {
     execSync('npx jest --config jest.config.js --testPathPattern=integration --coverage --coverageDirectory=coverage/integration', {
       stdio: 'inherit',
-      cwd: path.resolve(__dirname, '..'),
+      cwd: _path.resolve(__dirname, '..'),
     });
     
     logSuccess('Coverage report generated in coverage/integration/');
@@ -214,7 +214,7 @@ if (process.argv.includes('--help') || process.argv.includes('-h')) {
 }
 
 // Run the main function
-main().catch(error => {
+main().catch(_error => {
   logError(`Fatal error: ${error.message}`);
   process.exit(1);
 });

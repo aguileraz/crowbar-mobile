@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import logger from '../../services/loggerService';
 import {
   View,
@@ -15,6 +15,7 @@ import {
   Chip,
   ActivityIndicator,
   IconButton,
+
   Divider,
 } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';

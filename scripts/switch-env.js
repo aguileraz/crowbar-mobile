@@ -6,7 +6,7 @@
  */
 
 const fs = require('fs');
-const path = require('path');
+const _path = require('path');
 
 const environments = ['development', 'staging', 'production'];
 const targetEnv = process.argv[2];
@@ -23,8 +23,8 @@ if (!environments.includes(targetEnv)) {
   process.exit(1);
 }
 
-const sourceFile = path.join(__dirname, '..', `.env.${targetEnv}`);
-const targetFile = path.join(__dirname, '..', '.env');
+const sourceFile = _path.join(__dirname, '..', `.env.${targetEnv}`);
+const targetFile = _path.join(__dirname, '..', '.env');
 
 try {
   if (!fs.existsSync(sourceFile)) {

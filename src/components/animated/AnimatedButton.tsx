@@ -20,7 +20,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { buttonPress } from '../../animations/microInteractions';
-import { SCALE_VALUES } from '../../animations/constants';
+import { _SCALE_VALUES } from '../../animations/constants';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -34,7 +34,7 @@ interface AnimatedButtonProps extends Omit<PressableProps, 'style'> {
   style?: ViewStyle;
   textStyle?: TextStyle;
   loading?: boolean;
-  haptic?: boolean;
+  _haptic?: boolean;
   ripple?: boolean;
   onPress?: () => void;
 }
@@ -49,7 +49,7 @@ export const AnimatedButton: React.FC<AnimatedButtonProps> = ({
   style,
   textStyle,
   loading = false,
-  haptic = true,
+  _haptic = true,
   ripple = true,
   onPress,
   disabled,
@@ -61,8 +61,8 @@ export const AnimatedButton: React.FC<AnimatedButtonProps> = ({
 
   const handlePressIn = useCallback(() => {
     'worklet';
-    buttonPress(scale, { haptic, hapticType: 'light' });
-  }, [haptic]);
+    buttonPress(scale, { _haptic, _hapticType: 'light' });
+  }, [_haptic]);
 
   const handlePressOut = useCallback(() => {
     'worklet';

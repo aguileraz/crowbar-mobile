@@ -72,7 +72,7 @@ export const fetchNotifications = createAsyncThunk(
   async (params: { page?: number; filters?: any } = {}, { rejectWithValue }) => {
     try {
       const { page = 1, filters = {} } = params;
-      const response = await notificationService.getNotifications(page, 20, filters);
+      const _response = await notificationService.getNotifications(page, 20, filters);
       return {
         notifications: response.data,
         pagination: response.pagination,

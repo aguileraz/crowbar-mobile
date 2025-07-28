@@ -267,8 +267,8 @@ function buildIOS() {
     
     const buildCommand = `cd ios && xcodebuild -workspace CrowbarMobile.xcworkspace -scheme ${ios.scheme} -configuration ${ios.configuration} -destination generic/platform=iOS -archivePath build/CrowbarMobile.xcarchive archive`;
     
-    const buildResult = runCommand(buildCommand);
-    if (!buildResult.success) {
+    const _buildResult = runCommand(buildCommand);
+    if (!_buildResult.success) {
       log.error('iOS build failed');
       return false;
     }

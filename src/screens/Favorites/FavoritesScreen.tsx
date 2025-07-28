@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import logger from '../../services/loggerService';
 import {
   View,
@@ -14,7 +14,7 @@ import {
   ActivityIndicator,
   SegmentedButtons,
   Menu,
-  Divider,
+
 } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';
@@ -60,7 +60,7 @@ const FavoritesScreen: React.FC<FavoritesScreenProps> = ({ navigation }) => {
   // Redux state
   const favorites = useSelector(selectFavorites);
   const isLoading = useSelector(selectFavoritesLoading);
-  const isUpdating = useSelector(selectFavoritesUpdating);
+  const _isUpdating = useSelector(selectFavoritesUpdating);
   const error = useSelector(selectFavoritesError);
   const pagination = useSelector(selectFavoritesPagination);
   

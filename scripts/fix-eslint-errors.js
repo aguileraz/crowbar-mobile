@@ -11,7 +11,7 @@ console.log('Running ESLint auto-fix...');
 try {
   execSync('npm run lint -- --fix', { stdio: 'inherit' });
   console.log('✅ ESLint auto-fix completed\n');
-} catch (error) {
+} catch (e) {
   console.log('⚠️  ESLint auto-fix completed with some remaining issues\n');
 }
 
@@ -25,7 +25,7 @@ const eslintOutput = execSync('npm run lint -- --format json || true', {
 let results;
 try {
   results = JSON.parse(eslintOutput);
-} catch (error) {
+} catch (e) {
   console.error('Failed to parse ESLint output');
   process.exit(1);
 }

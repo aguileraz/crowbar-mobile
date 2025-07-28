@@ -2,7 +2,7 @@
  * Barra de progresso animada
  */
 
-import React, { useEffect } from 'react';
+import React, {} from 'react';
 import {
   View,
   Text,
@@ -237,7 +237,7 @@ export const AnimatedCircularProgress: React.FC<CircularProgressProps> = ({
     }
   }, [progress, animated, progressValue]);
 
-  const animatedStyle = useAnimatedStyle(() => {
+  const _animatedStyle = useAnimatedStyle(() => {
     const strokeDashoffset = interpolate(
       progressValue.value,
       [0, 1],

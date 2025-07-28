@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   ScrollView,
@@ -10,11 +10,12 @@ import {
   Title,
   Text,
   ProgressBar,
-  Divider,
+
   List,
   Chip,
   Button,
   useTheme,
+  Divider,
 } from 'react-native-paper';
 import { performanceProfiler } from '../../utils/performanceProfiler';
 import { theme } from '../../theme';
@@ -211,7 +212,7 @@ export const PerformanceScreen: React.FC = () => {
           <Button
             mode="contained"
             onPress={() => {
-              const data = performanceProfiler.exportPerformanceData();
+              const _data = performanceProfiler.exportPerformanceData();
               // In a real app, you'd save this to a file or send to a server
             }}
           >

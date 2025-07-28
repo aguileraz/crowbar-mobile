@@ -48,10 +48,10 @@ describe('Shopping Flow E2E Tests', () => {
         pagination: { currentPage: 1, totalPages: 1, totalItems: 2, hasNextPage: false },
       });
 
-      const { getByTestId, queryByTestId } = renderWithProviders(<MockMainApp />);
+      const { getByTestId, _queryByTestId } = renderWithProviders(<MockMainApp />);
 
       await act(async () => {
-        await scenarios.browseBoxes(getByTestId, queryByTestId);
+        await scenarios.browseBoxes(getByTestId, _queryByTestId);
       });
 
       // Verify boxes were fetched
@@ -153,10 +153,10 @@ describe('Shopping Flow E2E Tests', () => {
 
       mockedCartService.addToCart.mockResolvedValue(mockCartItem);
 
-      const { getByTestId, queryByTestId } = renderWithProviders(<MockMainApp />);
+      const { getByTestId, _queryByTestId } = renderWithProviders(<MockMainApp />);
 
       await act(async () => {
-        await scenarios.addToCart(getByTestId, queryByTestId);
+        await scenarios.addToCart(getByTestId, _queryByTestId);
       });
 
       // Verify item was added to cart
@@ -280,10 +280,10 @@ describe('Shopping Flow E2E Tests', () => {
 
       mockedOrderService.createOrder.mockResolvedValue(mockOrder);
 
-      const { getByTestId, queryByTestId } = renderWithProviders(<MockMainApp />);
+      const { getByTestId, _queryByTestId } = renderWithProviders(<MockMainApp />);
 
       await act(async () => {
-        await scenarios.checkout(getByTestId, queryByTestId);
+        await scenarios.checkout(getByTestId, _queryByTestId);
       });
 
       // Verify order was created
@@ -392,10 +392,10 @@ describe('Shopping Flow E2E Tests', () => {
 
       mockedBoxService.openBox.mockResolvedValue(mockOpeningResult);
 
-      const { getByTestId, queryByTestId } = renderWithProviders(<MockMainApp />);
+      const { getByTestId, _queryByTestId } = renderWithProviders(<MockMainApp />);
 
       await act(async () => {
-        await scenarios.openBox(getByTestId, queryByTestId);
+        await scenarios.openBox(getByTestId, _queryByTestId);
       });
 
       // Verify box was opened

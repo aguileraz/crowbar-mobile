@@ -6,16 +6,16 @@
  */
 
 const fs = require('fs');
-const path = require('path');
+const _path = require('path');
 
 console.log('🔥 Firebase Configuration Test\n');
 
 // Test 1: Check if configuration files exist
 console.log('📁 Checking configuration files...');
 
-const androidConfigPath = path.join(__dirname, '..', 'android', 'app', 'google-services.json');
-const iosConfigPath = path.join(__dirname, '..', 'ios', 'GoogleService-Info.plist');
-const envPath = path.join(__dirname, '..', '.env');
+const androidConfigPath = _path.join(__dirname, '..', 'android', 'app', 'google-services.json');
+const iosConfigPath = _path.join(__dirname, '..', 'ios', 'GoogleService-Info.plist');
+const envPath = _path.join(__dirname, '..', '.env');
 
 const androidConfigExists = fs.existsSync(androidConfigPath);
 const iosConfigExists = fs.existsSync(iosConfigPath);

@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { reviewService } from '../../services/reviewService';
-import { Review, PaginatedResponse } from '../../types/api';
+import { Review } from '../../types/api';
 
 /**
  * Redux Slice para gerenciamento de reviews e avaliações
@@ -68,7 +68,7 @@ export const fetchReviews = createAsyncThunk(
   async (params: { boxId: string; page?: number; filters?: any }, { rejectWithValue }) => {
     try {
       const { boxId, page = 1, filters = {} } = params;
-      const response = await reviewService.getReviews(boxId, page, 20, filters);
+      const _response = await reviewService.getReviews(boxId, page, 20, filters);
       return {
         reviews: response.data,
         pagination: response.pagination,

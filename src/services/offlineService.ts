@@ -227,7 +227,7 @@ class OfflineService {
       };
       
       // Armazenar dados comprimidos
-      await AsyncStorage.setItem(key, compressed);
+      await AsyncStorage.setItem(_key, compressed);
       
       // Armazenar metadados
       await AsyncStorage.setItem(
@@ -271,7 +271,7 @@ class OfflineService {
         // Se não tem cache e estratégia permite, buscar da rede
         if (fetcher && strategy !== CacheStrategy.CACHE_ONLY) {
           const freshData = await fetcher();
-          await this.cacheData(key, freshData);
+          await this.cacheData(_key, freshData);
           return freshData;
         }
         return null;
@@ -291,7 +291,7 @@ class OfflineService {
         if (decompressed) {
           // Atualizar em background se expirado
           if (isExpired) {
-            this.updateInBackground(key, fetcher);
+            this.updateInBackground(_key, fetcher);
           }
           return decompressed;
         }
@@ -301,7 +301,7 @@ class OfflineService {
       if (strategy === CacheStrategy.NETWORK_FIRST && fetcher) {
         try {
           const freshData = await fetcher();
-          await this.cacheData(key, freshData);
+          await this.cacheData(_key, freshData);
           return freshData;
         } catch (error) {
           // Em caso de erro, usar cache se disponível
@@ -318,7 +318,7 @@ class OfflineService {
       if (fetcher && strategy !== CacheStrategy.CACHE_ONLY) {
         try {
           const freshData = await fetcher();
-          await this.cacheData(key, freshData);
+          await this.cacheData(_key, freshData);
           return freshData;
         } catch (error) {
           // Em caso de erro, retornar cache expirado
@@ -339,7 +339,7 @@ class OfflineService {
   private async updateInBackground<T>(key: string, fetcher: () => Promise<T>): Promise<void> {
     try {
       const freshData = await fetcher();
-      await this.cacheData(key, freshData);
+      await this.cacheData(_key, freshData);
     } catch (error) {
       logger.error('Erro ao atualizar cache em background:', error);
     }
@@ -385,7 +385,7 @@ class OfflineService {
       }
       
       // Baixar imagem
-      const response = await ReactNativeBlobUtil.config({
+      const _response = await ReactNativeBlobUtil.config({
         fileCache: true,
         path: filepath,
       }).fetch('GET', url);
@@ -710,7 +710,7 @@ class OfflineService {
         this.CACHE_KEYS.BOXES,
         CacheStrategy.NETWORK_FIRST,
         async () => {
-          const response = await boxService.getBoxes();
+          const _response = await boxService.getBoxes();
           return response.data;
         }
       );

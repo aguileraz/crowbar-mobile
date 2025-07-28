@@ -1,7 +1,7 @@
 import { TestApiClient, testEnvironment, testData, testUtils } from './testConfig';
 import { apiClient } from '../../api';
 import { userService } from '../../userService';
-import { User, Address, UserPreferences, UserStats, Favorite, Notification } from '../../../types/api';
+import { Address, UserPreferences, UserStats, Favorite, Notification } from '../../../types/api';
 
 /**
  * Testes de integração para operações de usuário
@@ -176,7 +176,7 @@ describe('Testes de Integração - Operações de Usuário', () => {
       testClient.mockSuccess('get', '/user/profile', expectedResponse);
 
       // Act
-      const response = await userService.getProfile();
+      const _response = await userService.getProfile();
 
       // Assert
       expect(response).toMatchObject({
@@ -206,7 +206,7 @@ describe('Testes de Integração - Operações de Usuário', () => {
       testClient.mockSuccess('put', '/user/profile', expectedResponse);
 
       // Act
-      const response = await userService.updateProfile(updateData);
+      const _response = await userService.updateProfile(updateData);
 
       // Assert
       expect(response).toMatchObject({
@@ -230,7 +230,7 @@ describe('Testes de Integração - Operações de Usuário', () => {
       testClient.mockSuccess('post', '/user/avatar', expectedResponse);
 
       // Act
-      const response = await userService.updateAvatar(imageFile);
+      const _response = await userService.updateAvatar(imageFile);
 
       // Assert
       expect(response).toMatchObject({
@@ -276,7 +276,7 @@ describe('Testes de Integração - Operações de Usuário', () => {
       testClient.mockSuccess('get', '/user/addresses', expectedResponse);
 
       // Act
-      const response = await userService.getAddresses();
+      const _response = await userService.getAddresses();
 
       // Assert
       expect(response).toHaveLength(2);
@@ -313,7 +313,7 @@ describe('Testes de Integração - Operações de Usuário', () => {
       testClient.mockSuccess('post', '/user/addresses', expectedResponse);
 
       // Act
-      const response = await userService.addAddress(newAddress);
+      const _response = await userService.addAddress(newAddress);
 
       // Assert
       expect(response).toMatchObject({
@@ -342,7 +342,7 @@ describe('Testes de Integração - Operações de Usuário', () => {
       testClient.mockSuccess('put', `/user/addresses/${addressId}`, expectedResponse);
 
       // Act
-      const response = await userService.updateAddress(addressId, updateData);
+      const _response = await userService.updateAddress(addressId, updateData);
 
       // Assert
       expect(response).toMatchObject({
@@ -407,7 +407,7 @@ describe('Testes de Integração - Operações de Usuário', () => {
       testClient.mockSuccess('get', '/user/preferences', expectedResponse);
 
       // Act
-      const response = await userService.getPreferences();
+      const _response = await userService.getPreferences();
 
       // Assert
       expect(response).toMatchObject({
@@ -450,7 +450,7 @@ describe('Testes de Integração - Operações de Usuário', () => {
       testClient.mockSuccess('put', '/user/preferences', expectedResponse);
 
       // Act
-      const response = await userService.updatePreferences(updateData);
+      const _response = await userService.updatePreferences(updateData);
 
       // Assert
       expect(response).toMatchObject({
@@ -496,7 +496,7 @@ describe('Testes de Integração - Operações de Usuário', () => {
       testClient.mockSuccess('get', '/user/stats', expectedResponse);
 
       // Act
-      const response = await userService.getStats();
+      const _response = await userService.getStats();
 
       // Assert
       expect(response).toMatchObject({
@@ -540,7 +540,7 @@ describe('Testes de Integração - Operações de Usuário', () => {
       testClient.mockSuccess('get', '/user/activity', expectedResponse);
 
       // Act
-      const response = await userService.getActivityHistory();
+      const _response = await userService.getActivityHistory();
 
       // Assert
       expect(response.data).toHaveLength(2);
@@ -559,7 +559,7 @@ describe('Testes de Integração - Operações de Usuário', () => {
       testClient.mockSuccess('get', '/user/favorites', expectedResponse);
 
       // Act
-      const response = await userService.getFavorites();
+      const _response = await userService.getFavorites();
 
       // Assert
       expect(response.data).toHaveLength(2);
@@ -594,7 +594,7 @@ describe('Testes de Integração - Operações de Usuário', () => {
       testClient.mockSuccess('post', '/user/favorites', expectedResponse);
 
       // Act
-      const response = await userService.addToFavorites(boxId);
+      const _response = await userService.addToFavorites(boxId);
 
       // Assert
       expect(response).toMatchObject({
@@ -630,7 +630,7 @@ describe('Testes de Integração - Operações de Usuário', () => {
       testClient.mockSuccess('get', `/user/favorites/${boxId}/check`, expectedResponse);
 
       // Act
-      const response = await userService.isFavorite(boxId);
+      const _response = await userService.isFavorite(boxId);
 
       // Assert
       expect(response).toBe(true);
@@ -645,7 +645,7 @@ describe('Testes de Integração - Operações de Usuário', () => {
       testClient.mockSuccess('get', `/user/favorites/${boxId}/check`, expectedResponse);
 
       // Act
-      const response = await userService.isFavorite(boxId);
+      const _response = await userService.isFavorite(boxId);
 
       // Assert
       expect(response).toBe(false);
@@ -676,7 +676,7 @@ describe('Testes de Integração - Operações de Usuário', () => {
       testClient.mockSuccess('get', '/user/notifications', expectedResponse);
 
       // Act
-      const response = await userService.getNotifications();
+      const _response = await userService.getNotifications();
 
       // Assert
       expect(response.data).toHaveLength(2);
@@ -739,7 +739,7 @@ describe('Testes de Integração - Operações de Usuário', () => {
       testClient.mockSuccess('get', '/user/notifications/unread-count', expectedResponse);
 
       // Act
-      const response = await userService.getUnreadNotificationsCount();
+      const _response = await userService.getUnreadNotificationsCount();
 
       // Assert
       expect(response).toBe(5);
@@ -797,7 +797,7 @@ describe('Testes de Integração - Operações de Usuário', () => {
       testClient.mockSuccess('get', '/user/check-email', expectedResponse);
 
       // Act
-      const response = await userService.checkEmailAvailability(email);
+      const _response = await userService.checkEmailAvailability(email);
 
       // Assert
       expect(response).toMatchObject({
@@ -875,7 +875,7 @@ describe('Testes de Integração - Operações de Usuário', () => {
       testClient.mockSuccess('post', '/user/export-data', expectedResponse);
 
       // Act
-      const response = await userService.exportUserData();
+      const _response = await userService.exportUserData();
 
       // Assert
       expect(response).toMatchObject({
@@ -949,7 +949,7 @@ describe('Testes de Integração - Operações de Usuário', () => {
       });
 
       // Act
-      const response = await userService.isFavorite(boxId);
+      const _response = await userService.isFavorite(boxId);
 
       // Assert
       expect(response).toBe(false); // Deve retornar false em caso de erro

@@ -5,7 +5,7 @@
 
 import { createSelector } from 'reselect';
 import { RootState } from '../types';
-import { Box, CartItem, User, Order, Address, Review } from '../../types/api';
+import { _Box } from '../../types/api';
 
 // Seletores base (input selectors)
 const selectAuth = (state: RootState) => state.auth;

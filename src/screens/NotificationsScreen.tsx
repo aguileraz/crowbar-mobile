@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import logger from '../services/loggerService';
 import {
   View,
@@ -17,9 +17,10 @@ import {
   Chip,
   FAB,
   Menu,
-  Divider,
+
   Badge,
   Surface,
+  Divider,
 } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../store';
@@ -37,7 +38,7 @@ import {
   selectNotificationsError,
   selectNotificationPagination,
 } from '../store/slices/notificationsSlice';
-import { theme, getSpacing, getBorderRadius } from '../theme';
+import { theme, getSpacing } from '../theme';
 import { useScreenTracking, useEngagementTracking } from '../hooks/useAnalytics';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import ScreenTransition from '../components/ScreenTransition';
@@ -60,15 +61,15 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ navigation })
   // Redux state
   const notifications = useSelector(selectNotifications);
   const unreadCount = useSelector(selectUnreadCount);
-  const filters = useSelector(selectNotificationFilters);
+  const _filters = useSelector(selectNotificationFilters);
   const isLoading = useSelector(selectNotificationsLoading);
-  const error = useSelector(selectNotificationsError);
+  const _error = useSelector(selectNotificationsError);
   const pagination = useSelector(selectNotificationPagination);
 
   // Local state
   const [refreshing, setRefreshing] = useState(false);
   const [menuVisible, setMenuVisible] = useState(false);
-  const [selectedFilter, setSelectedFilter] = useState<string>('all');
+  const [_selectedFilter, setSelectedFilter] = useState<string>('all');
 
   /**
    * Load notifications

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import logger from '../services/loggerService';
 import {
   View,
@@ -15,6 +15,7 @@ import {
   Chip,
   DataTable,
   ProgressBar,
+
   Divider,
 } from 'react-native-paper';
 import { bundleAnalyzer } from '../utils/bundleAnalyzer';

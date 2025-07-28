@@ -82,9 +82,9 @@ function parseVersion(version) {
   }
   
   return {
-    major: parseInt(match[1], 10),
-    minor: parseInt(match[2], 10),
-    patch: parseInt(match[3], 10),
+    major: parseInt(match[1], 10, 10),
+    minor: parseInt(match[2], 10, 10),
+    patch: parseInt(match[3], 10, 10),
     prerelease: match[4] || null,
   };
 }
@@ -115,7 +115,7 @@ function incrementVersion(currentVersion, type) {
       if (version.prerelease) {
         const match = version.prerelease.match(/^(.+)\.(\d+)$/);
         if (match) {
-          version.prerelease = `${match[1]}.${parseInt(match[2], 10) + 1}`;
+          version.prerelease = `${match[1]}.${parseInt(match[2], 10, 10) + 1}`;
         } else {
           version.prerelease = `${version.prerelease}.1`;
         }

@@ -19,9 +19,9 @@ import {
   cleanupIntegrationTest,
   skipIfAPIUnavailable,
   createTestUser,
-  loginTestUser,
+  _loginTestUser,
   logoutTestUser,
-  waitFor,
+  _waitFor,
 } from './setup';
 
 describe('Cart Integration Tests', () => {
@@ -45,7 +45,7 @@ describe('Cart Integration Tests', () => {
 
     // Login test user
     await createTestUser();
-    await loginTestUser();
+    await _loginTestUser();
 
     // Clear cart before each test
     try {
@@ -360,7 +360,7 @@ describe('Cart Integration Tests', () => {
 
       // Simulate logout and login
       await logoutTestUser();
-      await loginTestUser();
+      await _loginTestUser();
 
       // Cart should still contain the item
       const cartResult = await store.dispatch(fetchCart());

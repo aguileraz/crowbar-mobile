@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import logger from '../../services/loggerService';
 import {
   View,
@@ -43,7 +43,7 @@ import ErrorMessage from '../../components/ErrorMessage';
 import { Notification } from '../../types/api';
 
 // Theme
-import { theme, getSpacing, getBorderRadius } from '../../theme';
+import { theme, getSpacing } from '../../theme';
 
 /**
  * Tela de Notificações
@@ -157,7 +157,7 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ navigation })
   /**
    * Clear all filters
    */
-  const clearAllFilters = () => {
+  const _clearAllFilters = () => {
     setTypeFilter('all');
     setReadFilter('all');
     dispatch(clearFilters());

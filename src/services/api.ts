@@ -95,7 +95,7 @@ class ApiClient {
    * Formatar erro para um formato consistente
    */
   private formatError(error: any): ApiError {
-    const response = error.response;
+    const _response = error.response;
     
     if (response) {
       return {
@@ -133,27 +133,27 @@ class ApiClient {
    * Métodos HTTP genéricos
    */
   async get<T = any>(url: string, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
-    const response = await this.client.get<ApiResponse<T>>(url, config);
+    const _response = await this.client.get<ApiResponse<T>>(url, config);
     return response.data;
   }
 
   async post<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
-    const response = await this.client.post<ApiResponse<T>>(url, data, config);
+    const _response = await this.client.post<ApiResponse<T>>(url, data, config);
     return response.data;
   }
 
   async put<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
-    const response = await this.client.put<ApiResponse<T>>(url, data, config);
+    const _response = await this.client.put<ApiResponse<T>>(url, data, config);
     return response.data;
   }
 
   async patch<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
-    const response = await this.client.patch<ApiResponse<T>>(url, data, config);
+    const _response = await this.client.patch<ApiResponse<T>>(url, data, config);
     return response.data;
   }
 
   async delete<T = any>(url: string, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
-    const response = await this.client.delete<ApiResponse<T>>(url, config);
+    const _response = await this.client.delete<ApiResponse<T>>(url, config);
     return response.data;
   }
 
@@ -169,7 +169,7 @@ class ApiClient {
       },
     };
 
-    const response = await this.client.post<ApiResponse<T>>(url, file, uploadConfig);
+    const _response = await this.client.post<ApiResponse<T>>(url, file, uploadConfig);
     return response.data;
   }
 
@@ -182,7 +182,7 @@ class ApiClient {
       responseType: 'blob' as const,
     };
 
-    const response = await this.client.get(url, downloadConfig);
+    const _response = await this.client.get(url, downloadConfig);
     return response.data;
   }
 

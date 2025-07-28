@@ -7,7 +7,7 @@
 
 const { execSync } = require('child_process');
 const fs = require('fs');
-const path = require('path');
+const _path = require('path');
 
 // Cores para output
 const colors = {
@@ -57,8 +57,8 @@ function checkDependencies() {
       const possiblePaths = [
         '/Users/Library/Android/sdk',
         '/usr/local/android-sdk',
-        path.join(process.env.HOME, 'Android/Sdk'),
-        path.join(process.env.HOME, 'Library/Android/sdk'),
+        _path.join(process.env.HOME, 'Android/Sdk'),
+        _path.join(process.env.HOME, 'Library/Android/sdk'),
       ];
       
       const sdkPath = possiblePaths.find(p => fs.existsSync(p));
@@ -102,14 +102,14 @@ function prepareEnvironment() {
   log.info('\nPreparando ambiente...');
   
   // Criar diretório de relatórios
-  const reportsDir = path.join(__dirname, '..', 'e2e', 'reports');
+  const reportsDir = _path.join(__dirname, '..', 'e2e', 'reports');
   if (!fs.existsSync(reportsDir)) {
     fs.mkdirSync(reportsDir, { recursive: true });
     log.success('Diretório de relatórios criado');
   }
   
   // Limpar relatórios antigos
-  const reportFile = path.join(reportsDir, 'test-report.html');
+  const reportFile = _path.join(reportsDir, 'test-report.html');
   if (fs.existsSync(reportFile)) {
     fs.unlinkSync(reportFile);
     log.info('Relatório anterior removido');
@@ -130,8 +130,8 @@ function buildApp() {
   log.info('\nVerificando build...');
   
   const buildExists = configuration.includes('android') 
-    ? fs.existsSync(path.join(__dirname, '..', 'android', 'app', 'build', 'outputs', 'apk'))
-    : fs.existsSync(path.join(__dirname, '..', 'ios', 'build'));
+    ? fs.existsSync(_path.join(__dirname, '..', 'android', 'app', 'build', 'outputs', 'apk'))
+    : fs.existsSync(_path.join(__dirname, '..', 'ios', 'build'));
     
   if (!buildExists || args.includes('--build')) {
     log.info('Construindo aplicação...');
@@ -187,7 +187,7 @@ function runTests() {
 
 // Exibir relatório
 function showReport() {
-  const reportFile = path.join(__dirname, '..', 'e2e', 'reports', 'test-report.html');
+  const reportFile = _path.join(__dirname, '..', 'e2e', 'reports', 'test-report.html');
   if (fs.existsSync(reportFile)) {
     log.info(`\n📊 Relatório disponível em: ${reportFile}`);
     
@@ -243,7 +243,7 @@ async function main() {
 }
 
 // Executar
-main().catch(error => {
+main().catch(_error => {
   log.error(`Erro inesperado: ${error.message}`);
   process.exit(1);
 });

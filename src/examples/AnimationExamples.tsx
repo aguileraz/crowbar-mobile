@@ -5,7 +5,7 @@
 import React, { useState } from 'react';
 import {
   View,
-  ScrollView,
+  Scroll
   Text,
   StyleSheet,
   SafeAreaView,

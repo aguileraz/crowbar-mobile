@@ -6,7 +6,7 @@
  */
 
 const { execSync } = require('child_process');
-const path = require('path');
+const _path = require('path');
 const fs = require('fs');
 
 // Colors for console output
@@ -59,7 +59,7 @@ function setupE2EEnvironment() {
     ];
     
     testDirs.forEach(dir => {
-      const fullPath = path.resolve(__dirname, '..', dir);
+      const fullPath = _path.resolve(__dirname, '..', dir);
       if (!fs.existsSync(fullPath)) {
         fs.mkdirSync(fullPath, { recursive: true });
       }
@@ -98,7 +98,7 @@ function runE2ETests(options = {}) {
   try {
     execSync(testCommand, {
       stdio: 'inherit',
-      cwd: path.resolve(__dirname, '..'),
+      cwd: _path.resolve(__dirname, '..'),
       env: {
         ...process.env,
         NODE_ENV: 'test',
@@ -121,12 +121,12 @@ function generateE2EReport() {
     // Generate HTML report
     execSync('npx jest --config jest.config.js --testPathPattern=e2e --coverage --coverageDirectory=coverage/e2e --coverageReporters=html,text,lcov', {
       stdio: 'pipe',
-      cwd: path.resolve(__dirname, '..'),
+      cwd: _path.resolve(__dirname, '..'),
     });
     
     // Generate test results summary
-    const reportPath = path.resolve(__dirname, '..', 'test-results', 'e2e', 'summary.json');
-    const reportDir = path.dirname(reportPath);
+    const reportPath = _path.resolve(__dirname, '..', 'test-results', 'e2e', 'summary.json');
+    const reportDir = _path.dirname(reportPath);
     
     if (!fs.existsSync(reportDir)) {
       fs.mkdirSync(reportDir, { recursive: true });
@@ -145,7 +145,7 @@ function generateE2EReport() {
     fs.writeFileSync(reportPath, JSON.stringify(summary, null, 2));
     
     logSuccess('E2E report generated');
-    log(`Coverage report: ${path.resolve(__dirname, '..', 'coverage/e2e/lcov-report/index.html')}`, colors.cyan);
+    log(`Coverage report: ${_path.resolve(__dirname, '..', 'coverage/e2e/lcov-report/index.html')}`, colors.cyan);
     return true;
   } catch (error) {
     logWarning('Failed to generate E2E report (tests may have passed)');
@@ -201,7 +201,7 @@ function cleanup() {
     ];
     
     tempDirs.forEach(dir => {
-      const fullPath = path.resolve(__dirname, '..', dir);
+      const fullPath = _path.resolve(__dirname, '..', dir);
       if (fs.existsSync(fullPath)) {
         fs.rmSync(fullPath, { recursive: true, force: true });
       }
@@ -328,7 +328,7 @@ if (process.argv.includes('--help') || process.argv.includes('-h')) {
 }
 
 // Run the main function
-main().catch(error => {
+main().catch(_error => {
   logError(`Fatal error: ${error.message}`);
   process.exit(1);
 });

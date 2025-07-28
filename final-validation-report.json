@@ -1,0 +1,46 @@
+{
+  "timestamp": "2025-07-28T13:04:13.715Z",
+  "version": "0.0.1",
+  "steps": {
+    "environment": {
+      "status": "warning",
+      "name": "Environment Setup"
+    },
+    "quality": {
+      "status": "failed",
+      "name": "Quality Checks"
+    },
+    "security": {
+      "status": "pending",
+      "name": "Security Review"
+    },
+    "performance": {
+      "status": "pending",
+      "name": "Performance Tests"
+    },
+    "build": {
+      "status": "pending",
+      "name": "Production Build"
+    },
+    "smoke": {
+      "status": "pending",
+      "name": "Smoke Tests"
+    }
+  },
+  "artifacts": {
+    "android": {
+      "apk": false,
+      "aab": false
+    },
+    "ios": {
+      "ipa": false
+    }
+  },
+  "reports": {
+    "security": true,
+    "performance": false,
+    "smokeTest": false,
+    "build": false
+  },
+  "readyForSubmission": false
+}

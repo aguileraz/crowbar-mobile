@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   StyleSheet,
@@ -68,7 +68,7 @@ interface BoxOpeningScreenProps {
   route: BoxOpeningScreenRouteProp;
 }
 
-const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+const { width: screenWidth, height: _screenHeight } = Dimensions.get('window');
 
 const BoxOpeningScreen: React.FC<BoxOpeningScreenProps> = ({
   navigation,

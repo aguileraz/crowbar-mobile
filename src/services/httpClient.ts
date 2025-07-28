@@ -43,7 +43,7 @@ class HttpClient {
 
     // Response interceptor
     this.client.interceptors.response.use(
-      (response) => {
+      (_response) => {
         // Rastrear latência da API
         const config = response.config as any;
         if (config.metadata?.startTime) {

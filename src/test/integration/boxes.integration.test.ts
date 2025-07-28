@@ -11,9 +11,9 @@ import {
   cleanupIntegrationTest,
   skipIfAPIUnavailable,
   createTestUser,
-  loginTestUser,
+  _loginTestUser,
   logoutTestUser,
-  waitFor,
+  _waitFor,
 } from './setup';
 
 describe('Boxes Integration Tests', () => {
@@ -35,7 +35,7 @@ describe('Boxes Integration Tests', () => {
 
     // Login test user for authenticated requests
     await createTestUser();
-    await loginTestUser();
+    await _loginTestUser();
   });
 
   afterEach(async () => {

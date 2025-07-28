@@ -14,9 +14,9 @@ import {
   Switch,
   Button,
   List,
-  Divider,
-  Surface,
+
   IconButton,
+  Divider,
 } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../store';

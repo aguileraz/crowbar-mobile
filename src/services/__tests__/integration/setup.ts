@@ -192,7 +192,7 @@ jest.setTimeout(30000);
 
 // Configuração para suprimir warnings específicos
 const originalWarn = console.warn;
-console.warn = (...args) => {
+// console.warn = (...args) => {
   // Suprimir warnings específicos conhecidos
   if (
     args[0]?.includes?.('componentWillReceiveProps') ||

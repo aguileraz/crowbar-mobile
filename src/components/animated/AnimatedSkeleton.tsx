@@ -2,7 +2,7 @@
  * Componente de skeleton loading animado
  */
 
-import React, { useEffect } from 'react';
+import React, {} from 'react';
 import {
   View,
   StyleSheet,

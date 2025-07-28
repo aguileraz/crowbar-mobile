@@ -22,7 +22,7 @@ class OrderService {
       ...filters,
     };
 
-    const response = await httpClient.get(this.baseURL, { params });
+    const _response = await httpClient.get(this.baseURL, { params });
     return response.data;
   }
 
@@ -30,7 +30,7 @@ class OrderService {
    * Buscar detalhes de um pedido
    */
   async getOrderById(orderId: string): Promise<Order> {
-    const response = await httpClient.get(`${this.baseURL}/${orderId}`);
+    const _response = await httpClient.get(`${this.baseURL}/${orderId}`);
     return response.data;
   }
 
@@ -38,7 +38,7 @@ class OrderService {
    * Cancelar pedido
    */
   async cancelOrder(orderId: string, reason?: string): Promise<Order> {
-    const response = await httpClient.post(`${this.baseURL}/${orderId}/cancel`, {
+    const _response = await httpClient.post(`${this.baseURL}/${orderId}/cancel`, {
       reason,
     });
     return response.data;
@@ -48,7 +48,7 @@ class OrderService {
    * Recomprar pedido (adicionar itens ao carrinho)
    */
   async reorderOrder(orderId: string): Promise<any> {
-    const response = await httpClient.post(`${this.baseURL}/${orderId}/reorder`);
+    const _response = await httpClient.post(`${this.baseURL}/${orderId}/reorder`);
     return response.data;
   }
 
@@ -56,7 +56,7 @@ class OrderService {
    * Rastrear pedido
    */
   async trackOrder(orderId: string): Promise<any> {
-    const response = await httpClient.get(`${this.baseURL}/${orderId}/tracking`);
+    const _response = await httpClient.get(`${this.baseURL}/${orderId}/tracking`);
     return response.data;
   }
 
@@ -64,7 +64,7 @@ class OrderService {
    * Avaliar pedido
    */
   async rateOrder(orderId: string, rating: number, review?: string): Promise<Order> {
-    const response = await httpClient.post(`${this.baseURL}/${orderId}/rate`, {
+    const _response = await httpClient.post(`${this.baseURL}/${orderId}/rate`, {
       rating,
       review,
     });
@@ -75,7 +75,7 @@ class OrderService {
    * Buscar estatísticas de pedidos
    */
   async getOrderStatistics(): Promise<any> {
-    const response = await httpClient.get(`${this.baseURL}/statistics`);
+    const _response = await httpClient.get(`${this.baseURL}/statistics`);
     return response.data;
   }
 
@@ -83,7 +83,7 @@ class OrderService {
    * Gerar nota fiscal
    */
   async generateInvoice(orderId: string): Promise<any> {
-    const response = await httpClient.post(`${this.baseURL}/${orderId}/invoice`);
+    const _response = await httpClient.post(`${this.baseURL}/${orderId}/invoice`);
     return response.data;
   }
 
@@ -91,7 +91,7 @@ class OrderService {
    * Baixar comprovante
    */
   async downloadReceipt(orderId: string): Promise<string> {
-    const response = await httpClient.get(`${this.baseURL}/${orderId}/receipt`, {
+    const _response = await httpClient.get(`${this.baseURL}/${orderId}/receipt`, {
       responseType: 'blob',
     });
     
@@ -108,7 +108,7 @@ class OrderService {
     description: string;
     images?: string[];
   }): Promise<any> {
-    const response = await httpClient.post(`${this.baseURL}/${orderId}/issues`, issue);
+    const _response = await httpClient.post(`${this.baseURL}/${orderId}/issues`, issue);
     return response.data;
   }
 
@@ -116,7 +116,7 @@ class OrderService {
    * Buscar status de entrega
    */
   async getDeliveryStatus(orderId: string): Promise<any> {
-    const response = await httpClient.get(`${this.baseURL}/${orderId}/delivery-status`);
+    const _response = await httpClient.get(`${this.baseURL}/${orderId}/delivery-status`);
     return response.data;
   }
 
@@ -124,7 +124,7 @@ class OrderService {
    * Confirmar recebimento
    */
   async confirmDelivery(orderId: string): Promise<Order> {
-    const response = await httpClient.post(`${this.baseURL}/${orderId}/confirm-delivery`);
+    const _response = await httpClient.post(`${this.baseURL}/${orderId}/confirm-delivery`);
     return response.data;
   }
 
@@ -140,7 +140,7 @@ class OrderService {
       reason: string;
     }>;
   }): Promise<any> {
-    const response = await httpClient.post(`${this.baseURL}/${orderId}/return`, returnData);
+    const _response = await httpClient.post(`${this.baseURL}/${orderId}/return`, returnData);
     return response.data;
   }
 
@@ -148,7 +148,7 @@ class OrderService {
    * Buscar histórico de status
    */
   async getStatusHistory(orderId: string): Promise<any[]> {
-    const response = await httpClient.get(`${this.baseURL}/${orderId}/status-history`);
+    const _response = await httpClient.get(`${this.baseURL}/${orderId}/status-history`);
     return response.data;
   }
 
@@ -156,7 +156,7 @@ class OrderService {
    * Atualizar endereço de entrega
    */
   async updateDeliveryAddress(orderId: string, addressId: string): Promise<Order> {
-    const response = await httpClient.patch(`${this.baseURL}/${orderId}/delivery-address`, {
+    const _response = await httpClient.patch(`${this.baseURL}/${orderId}/delivery-address`, {
       address_id: addressId,
     });
     return response.data;
@@ -166,7 +166,7 @@ class OrderService {
    * Reagendar entrega
    */
   async rescheduleDelivery(orderId: string, newDate: string): Promise<Order> {
-    const response = await httpClient.post(`${this.baseURL}/${orderId}/reschedule`, {
+    const _response = await httpClient.post(`${this.baseURL}/${orderId}/reschedule`, {
       delivery_date: newDate,
     });
     return response.data;

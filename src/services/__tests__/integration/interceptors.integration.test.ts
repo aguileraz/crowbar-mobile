@@ -240,7 +240,7 @@ describe('Testes de Integração - Interceptors', () => {
       testClient.mockSuccess('get', '/user/profile', expectedResponse);
 
       // Act
-      const response = await userService.getProfile();
+      const _response = await userService.getProfile();
 
       // Assert
       expect(response).toEqual(testData.user);
@@ -493,7 +493,7 @@ describe('Testes de Integração - Interceptors', () => {
         return config;
       });
 
-      axiosInstance.interceptors.response.use((response) => {
+      axiosInstance.interceptors.response.use((_response) => {
         if (response.config.method === 'get') {
           const cacheKey = `${response.config.method}:${response.config.url}`;
           cache.set(cacheKey, response.data);
@@ -537,7 +537,7 @@ describe('Testes de Integração - Interceptors', () => {
         return config;
       });
 
-      axiosInstance.interceptors.response.use((response) => {
+      axiosInstance.interceptors.response.use((_response) => {
         if (response.config.method === 'get') {
           const cacheKey = `${response.config.method}:${response.config.url}`;
           cache.set(cacheKey, response.data);
@@ -562,7 +562,7 @@ describe('Testes de Integração - Interceptors', () => {
       const axiosInstance = testClient.getAxiosInstance();
 
       // Interceptor de transformação de datas
-      axiosInstance.interceptors.response.use((response) => {
+      axiosInstance.interceptors.response.use((_response) => {
         if (response.data && typeof response.data === 'object') {
           const transformDates = (obj: any): any => {
             if (Array.isArray(obj)) {
@@ -611,10 +611,10 @@ describe('Testes de Integração - Interceptors', () => {
       const axiosInstance = testClient.getAxiosInstance();
 
       // Interceptor de validação
-      axiosInstance.interceptors.response.use((response) => {
+      axiosInstance.interceptors.response.use((_response) => {
         if (response.data && typeof response.data === 'object') {
           if (!response.data.hasOwnProperty('success') && !response.data.hasOwnProperty('data')) {
-            console.warn('⚠️ Response não segue padrão esperado:', response.data);
+            // console.warn('⚠️ Response não segue padrão esperado:', response.data);
           }
         }
         return response;
@@ -658,13 +658,13 @@ describe('Testes de Integração - Interceptors', () => {
       });
 
       // Interceptor 3
-      axiosInstance.interceptors.response.use((response) => {
+      axiosInstance.interceptors.response.use((_response) => {
         executionOrder.push('response-1');
         return response;
       });
 
       // Interceptor 4
-      axiosInstance.interceptors.response.use((response) => {
+      axiosInstance.interceptors.response.use((_response) => {
         executionOrder.push('response-2');
         return response;
       });

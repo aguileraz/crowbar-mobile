@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const fs = require('fs');
-const path = require('path');
+const _path = require('path');
 const glob = require('glob');
 
 // Padrões para substituir
@@ -41,9 +41,9 @@ const ignorePatterns = [
 ];
 
 function getImportStatement(filePath) {
-  const ext = path.extname(filePath);
+  const ext = _path.extname(filePath);
   const isTypeScript = ext === '.ts' || ext === '.tsx';
-  const relativePath = path.relative(path.dirname(filePath), 'src/services/loggerService').replace(/\\/g, '/');
+  const relativePath = _path.relative(_path.dirname(filePath), 'src/services/loggerService').replace(/\\/g, '/');
   
   // Ajustar caminho relativo
   let importPath = relativePath;

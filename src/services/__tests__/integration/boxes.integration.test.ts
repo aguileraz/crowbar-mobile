@@ -104,7 +104,7 @@ describe('Testes de Integração - Operações de Boxes', () => {
       testClient.mockSuccess('get', '/boxes', expectedResponse);
 
       // Act
-      const response = await boxService.getBoxes();
+      const _response = await boxService.getBoxes();
 
       // Assert
       expect(response.data).toHaveLength(2);
@@ -136,7 +136,7 @@ describe('Testes de Integração - Operações de Boxes', () => {
       testClient.mockSuccess('get', '/boxes', expectedResponse);
 
       // Act
-      const response = await boxService.getBoxes(filters);
+      const _response = await boxService.getBoxes(filters);
 
       // Assert
       expect(response.data).toHaveLength(1);
@@ -151,7 +151,7 @@ describe('Testes de Integração - Operações de Boxes', () => {
       testClient.mockSuccess('get', '/boxes/featured', expectedResponse);
 
       // Act
-      const response = await boxService.getFeaturedBoxes(10);
+      const _response = await boxService.getFeaturedBoxes(10);
 
       // Assert
       expect(response).toHaveLength(1);
@@ -166,7 +166,7 @@ describe('Testes de Integração - Operações de Boxes', () => {
       testClient.mockSuccess('get', '/boxes/popular', expectedResponse);
 
       // Act
-      const response = await boxService.getPopularBoxes(10);
+      const _response = await boxService.getPopularBoxes(10);
 
       // Assert
       expect(response).toHaveLength(2);
@@ -181,7 +181,7 @@ describe('Testes de Integração - Operações de Boxes', () => {
       testClient.mockSuccess('get', '/boxes/new', expectedResponse);
 
       // Act
-      const response = await boxService.getNewBoxes(10);
+      const _response = await boxService.getNewBoxes(10);
 
       // Assert
       expect(response).toHaveLength(1);
@@ -213,7 +213,7 @@ describe('Testes de Integração - Operações de Boxes', () => {
       testClient.mockSuccess('get', `/boxes/${boxId}`, expectedResponse);
 
       // Act
-      const response = await boxService.getBoxById(boxId);
+      const _response = await boxService.getBoxById(boxId);
 
       // Assert
       expect(response).toMatchObject({
@@ -262,7 +262,7 @@ describe('Testes de Integração - Operações de Boxes', () => {
       testClient.mockSuccess('get', `/boxes/${boxId}/stats`, expectedResponse);
 
       // Act
-      const response = await boxService.getBoxStats(boxId);
+      const _response = await boxService.getBoxStats(boxId);
 
       // Assert
       expect(response.total_sold).toBe(150);
@@ -284,7 +284,7 @@ describe('Testes de Integração - Operações de Boxes', () => {
       testClient.mockSuccess('get', `/boxes/${boxId}/stock`, expectedResponse);
 
       // Act
-      const response = await boxService.checkStock(boxId, quantity);
+      const _response = await boxService.checkStock(boxId, quantity);
 
       // Assert
       expect(response.available).toBe(true);
@@ -301,7 +301,7 @@ describe('Testes de Integração - Operações de Boxes', () => {
       testClient.mockSuccess('get', `/boxes/${boxId}/related`, expectedResponse);
 
       // Act
-      const response = await boxService.getRelatedBoxes(boxId, 6);
+      const _response = await boxService.getRelatedBoxes(boxId, 6);
 
       // Assert
       expect(response).toHaveLength(1);
@@ -329,7 +329,7 @@ describe('Testes de Integração - Operações de Boxes', () => {
       testClient.mockSuccess('post', '/boxes/search', expectedResponse);
 
       // Act
-      const response = await boxService.searchBoxes(query);
+      const _response = await boxService.searchBoxes(query);
 
       // Assert
       expect(response.query).toBe(query);
@@ -365,7 +365,7 @@ describe('Testes de Integração - Operações de Boxes', () => {
       testClient.mockSuccess('post', '/boxes/search', expectedResponse);
 
       // Act
-      const response = await boxService.searchBoxes(query, filters);
+      const _response = await boxService.searchBoxes(query, filters);
 
       // Assert
       expect(response.query).toBe(query);
@@ -382,7 +382,7 @@ describe('Testes de Integração - Operações de Boxes', () => {
       testClient.mockSuccess('get', '/boxes/search/suggestions', expectedResponse);
 
       // Act
-      const response = await boxService.getSearchSuggestions(query);
+      const _response = await boxService.getSearchSuggestions(query);
 
       // Assert
       expect(response).toHaveLength(3);
@@ -409,7 +409,7 @@ describe('Testes de Integração - Operações de Boxes', () => {
       testClient.mockSuccess('post', '/boxes/search', expectedResponse);
 
       // Act
-      const response = await boxService.searchBoxes(query);
+      const _response = await boxService.searchBoxes(query);
 
       // Assert
       expect(response.query).toBe(query);
@@ -426,7 +426,7 @@ describe('Testes de Integração - Operações de Boxes', () => {
       testClient.mockSuccess('get', '/categories', expectedResponse);
 
       // Act
-      const response = await boxService.getCategories();
+      const _response = await boxService.getCategories();
 
       // Assert
       expect(response).toHaveLength(3);
@@ -445,7 +445,7 @@ describe('Testes de Integração - Operações de Boxes', () => {
       testClient.mockSuccess('get', `/categories/${categoryId}`, expectedResponse);
 
       // Act
-      const response = await boxService.getCategoryById(categoryId);
+      const _response = await boxService.getCategoryById(categoryId);
 
       // Assert
       expect(response).toMatchObject({
@@ -464,7 +464,7 @@ describe('Testes de Integração - Operações de Boxes', () => {
       testClient.mockSuccess('get', '/boxes', expectedResponse);
 
       // Act
-      const response = await boxService.getBoxesByCategory(categoryId);
+      const _response = await boxService.getBoxesByCategory(categoryId);
 
       // Assert
       expect(response.data).toHaveLength(1);
@@ -481,7 +481,7 @@ describe('Testes de Integração - Operações de Boxes', () => {
       testClient.mockSuccess('get', `/boxes/${boxId}/reviews`, expectedResponse);
 
       // Act
-      const response = await boxService.getBoxReviews(boxId);
+      const _response = await boxService.getBoxReviews(boxId);
 
       // Assert
       expect(response.data).toHaveLength(1);
@@ -520,7 +520,7 @@ describe('Testes de Integração - Operações de Boxes', () => {
       testClient.mockSuccess('post', `/boxes/${boxId}/reviews`, expectedResponse);
 
       // Act
-      const response = await boxService.addBoxReview(boxId, reviewData);
+      const _response = await boxService.addBoxReview(boxId, reviewData);
 
       // Assert
       expect(response).toMatchObject({
@@ -561,7 +561,7 @@ describe('Testes de Integração - Operações de Boxes', () => {
       testClient.mockSuccess('get', '/tags/popular', expectedResponse);
 
       // Act
-      const response = await boxService.getPopularTags(20);
+      const _response = await boxService.getPopularTags(20);
 
       // Assert
       expect(response).toHaveLength(3);
@@ -584,7 +584,7 @@ describe('Testes de Integração - Operações de Boxes', () => {
       testClient.mockSuccess('get', '/boxes/filters', expectedResponse);
 
       // Act
-      const response = await boxService.getAvailableFilters();
+      const _response = await boxService.getAvailableFilters();
 
       // Assert
       expect(response.categories).toHaveLength(3);
@@ -606,7 +606,7 @@ describe('Testes de Integração - Operações de Boxes', () => {
       testClient.mockSuccess('get', `/boxes/${boxId}/price-history`, expectedResponse);
 
       // Act
-      const response = await boxService.getPriceHistory(boxId, 30);
+      const _response = await boxService.getPriceHistory(boxId, 30);
 
       // Assert
       expect(response).toHaveLength(3);

@@ -25,7 +25,7 @@ class ReviewService {
       ...filters,
     };
 
-    const response = await httpClient.get(this.baseURL, { params });
+    const _response = await httpClient.get(this.baseURL, { params });
     return response.data;
   }
 
@@ -33,7 +33,7 @@ class ReviewService {
    * Buscar estatísticas de reviews de uma caixa
    */
   async getReviewStatistics(boxId: string): Promise<any> {
-    const response = await httpClient.get(`${this.baseURL}/statistics`, {
+    const _response = await httpClient.get(`${this.baseURL}/statistics`, {
       params: { box_id: boxId },
     });
     return response.data;
@@ -44,7 +44,7 @@ class ReviewService {
    */
   async getUserReview(boxId: string): Promise<Review | null> {
     try {
-      const response = await httpClient.get(`${this.baseURL}/user`, {
+      const _response = await httpClient.get(`${this.baseURL}/user`, {
         params: { box_id: boxId },
       });
       return response.data;
@@ -65,7 +65,7 @@ class ReviewService {
     comment: string;
     photos?: string[];
   }): Promise<Review> {
-    const response = await httpClient.post(this.baseURL, {
+    const _response = await httpClient.post(this.baseURL, {
       box_id: reviewData.boxId,
       rating: reviewData.rating,
       comment: reviewData.comment,
@@ -82,7 +82,7 @@ class ReviewService {
     comment: string;
     photos?: string[];
   }): Promise<Review> {
-    const response = await httpClient.put(`${this.baseURL}/${reviewId}`, {
+    const _response = await httpClient.put(`${this.baseURL}/${reviewId}`, {
       rating: reviewData.rating,
       comment: reviewData.comment,
       photos: reviewData.photos || [],
@@ -101,7 +101,7 @@ class ReviewService {
    * Marcar review como útil ou não útil
    */
   async markReviewHelpful(reviewId: string, helpful: boolean): Promise<Review> {
-    const response = await httpClient.post(`${this.baseURL}/${reviewId}/helpful`, {
+    const _response = await httpClient.post(`${this.baseURL}/${reviewId}/helpful`, {
       helpful,
     });
     
@@ -138,7 +138,7 @@ class ReviewService {
       } as any);
     });
 
-    const response = await httpClient.post(`${this.baseURL}/upload-photos`, formData, {
+    const _response = await httpClient.post(`${this.baseURL}/upload-photos`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -154,7 +154,7 @@ class ReviewService {
     page: number = 1,
     perPage: number = 20
   ): Promise<PaginatedResponse<Review>> {
-    const response = await httpClient.get(`${this.baseURL}/user/all`, {
+    const _response = await httpClient.get(`${this.baseURL}/user/all`, {
       params: { page, per_page: perPage },
     });
     return response.data;
@@ -167,7 +167,7 @@ class ReviewService {
     boxId: string,
     limit: number = 5
   ): Promise<Review[]> {
-    const response = await httpClient.get(`${this.baseURL}/most-helpful`, {
+    const _response = await httpClient.get(`${this.baseURL}/most-helpful`, {
       params: { box_id: boxId, limit },
     });
     return response.data;
@@ -180,7 +180,7 @@ class ReviewService {
     boxId: string,
     limit: number = 5
   ): Promise<Review[]> {
-    const response = await httpClient.get(`${this.baseURL}/recent`, {
+    const _response = await httpClient.get(`${this.baseURL}/recent`, {
       params: { box_id: boxId, limit },
     });
     return response.data;
@@ -194,7 +194,7 @@ class ReviewService {
     page: number = 1,
     perPage: number = 20
   ): Promise<PaginatedResponse<Review>> {
-    const response = await httpClient.get(`${this.baseURL}/with-photos`, {
+    const _response = await httpClient.get(`${this.baseURL}/with-photos`, {
       params: { box_id: boxId, page, per_page: perPage },
     });
     return response.data;
@@ -209,7 +209,7 @@ class ReviewService {
     page: number = 1,
     perPage: number = 20
   ): Promise<PaginatedResponse<Review>> {
-    const response = await httpClient.get(`${this.baseURL}/by-rating`, {
+    const _response = await httpClient.get(`${this.baseURL}/by-rating`, {
       params: { box_id: boxId, rating, page, per_page: perPage },
     });
     return response.data;
@@ -220,7 +220,7 @@ class ReviewService {
    */
   async canUserReview(boxId: string): Promise<boolean> {
     try {
-      const response = await httpClient.get(`${this.baseURL}/can-review`, {
+      const _response = await httpClient.get(`${this.baseURL}/can-review`, {
         params: { box_id: boxId },
       });
       return response.data.canReview;
@@ -233,7 +233,7 @@ class ReviewService {
    * Buscar resumo de reviews
    */
   async getReviewSummary(boxId: string): Promise<any> {
-    const response = await httpClient.get(`${this.baseURL}/summary`, {
+    const _response = await httpClient.get(`${this.baseURL}/summary`, {
       params: { box_id: boxId },
     });
     return response.data;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View, Alert } from 'react-native';
 import { Portal, Snackbar, useTheme } from 'react-native-paper';
 import { useSelector } from 'react-redux';
@@ -74,7 +74,7 @@ export const OfflineNavigationWrapper: React.FC<OfflineNavigationWrapperProps> =
   }, [pendingActions.length, isOnline, showPendingActionsAlert]);
 
   // Verificar se pode navegar para determinadas telas offline
-  const canNavigateOffline = (screenName: string): boolean => {
+  const _canNavigateOffline = (screenName: string): boolean => {
     const offlineAllowedScreens = [
       'Home',
       'Boxes',
@@ -88,7 +88,7 @@ export const OfflineNavigationWrapper: React.FC<OfflineNavigationWrapperProps> =
   };
 
   // Interceptar navegação para telas que requerem conexão
-  const handleNavigationStateChange = (state: any) => {
+  const _handleNavigationStateChange = (state: any) => {
     if (!isOnline && state?.routes) {
       const currentRoute = state.routes[state.index];
       

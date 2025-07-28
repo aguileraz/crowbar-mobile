@@ -1,0 +1,40 @@
+# Test runner container
+FROM node:18-slim
+
+# Install required tools
+RUN apt-get update && apt-get install -y \
+    wget \
+    curl \
+    git \
+    jq \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create app directory
+WORKDIR /app
+
+# Install global test tools
+RUN npm install -g \
+    @wdio/cli@8.0.0 \
+    allure-commandline@2.24.0 \
+    concurrently@7.6.0
+
+# Create directories
+RUN mkdir -p \
+    /app/test-results \
+    /app/screenshots \
+    /app/logs \
+    /app/reports
+
+# Environment variables
+ENV TEST_RESULTS_DIR=/app/test-results \
+    SCREENSHOT_DIR=/app/screenshots \
+    LOG_DIR=/app/logs \
+    REPORT_DIR=/app/reports
+
+# Copy scripts
+COPY docker/tests/scripts/ /app/scripts/
+RUN chmod +x /app/scripts/*.sh
+
+# Default command
+CMD ["/app/scripts/run-tests.sh"]
