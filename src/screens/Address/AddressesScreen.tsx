@@ -18,7 +18,7 @@ import {
   Menu,
 
 } from 'react-native-paper';
-import { useDispatch, useSelector } from 'react-redux';
+import { _useDispatch, useSelector } from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -42,7 +42,7 @@ import ErrorMessage from '../../components/ErrorMessage';
 import { Address } from '../../types/api';
 
 // Theme
-import { theme, getSpacing, getBorderRadius } from '../../theme';
+import { _theme, getSpacing, getBorderRadius } from '../../theme';
 
 /**
  * Tela de Gerenciamento de Endereços
@@ -82,7 +82,7 @@ const AddressesScreen: React.FC<AddressesScreenProps> = ({ navigation }) => {
     try {
       await dispatch(fetchUserAddresses()).unwrap();
     } catch (err) {
-      logger.error('Error loading addresses:', err);
+      logger.error('Error loading addresses:', _err);
     }
   };
 

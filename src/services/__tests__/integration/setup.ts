@@ -192,8 +192,8 @@ jest.setTimeout(30000);
 
 // Configuração para suprimir warnings específicos
 const originalWarn = console.warn;
-// console.warn = (...args) => {
-  // Suprimir warnings específicos conhecidos
+console.warn = (...args) => {
+  // Suprimir warnings especificos conhecidos
   if (
     args[0]?.includes?.('componentWillReceiveProps') ||
     args[0]?.includes?.('componentWillUpdate') ||
@@ -204,7 +204,7 @@ const originalWarn = console.warn;
   originalWarn(...args);
 };
 
-// Configuração para capturar erros não tratados
+// Configuracao para capturar erros nao tratados
 process.on('unhandledRejection', (reason, promise) => {
   logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
 });

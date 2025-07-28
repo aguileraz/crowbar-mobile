@@ -18,7 +18,7 @@ import {
 
   Divider,
 } from 'react-native-paper';
-import { useDispatch, useSelector } from 'react-redux';
+import { _useDispatch, useSelector } from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -44,10 +44,10 @@ import FilterModal from '../../components/FilterModal';
 import ErrorMessage from '../../components/ErrorMessage';
 
 // Types
-import { MysteryBox, SearchFilters } from '../../types/api';
+import { _MysteryBox, SearchFilters } from '../../types/api';
 
 // Theme
-import { theme, getSpacing, getBorderRadius } from '../../theme';
+import { _theme, getSpacing, getBorderRadius } from '../../theme';
 
 // Utils
 import { debounce } from '../../utils/debounce';
@@ -134,7 +134,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
       // TODO: Load from AsyncStorage
       setSearchHistory(['caixa gamer', 'eletrônicos', 'roupas']);
     } catch (err) {
-      logger.error('Error loading search history:', err);
+      logger.error('Error loading search history:', _err);
     }
   };
 
@@ -147,7 +147,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
       setSearchHistory(newHistory);
       // TODO: Save to AsyncStorage
     } catch (err) {
-      logger.error('Error saving search history:', err);
+      logger.error('Error saving search history:', _err);
     }
   };
 
@@ -160,7 +160,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
       await dispatch(searchBoxes({ query, filters: activeFilters })).unwrap();
       saveToHistory(query);
     } catch (err) {
-      logger.error('Search error:', err);
+      logger.error('Search error:', _err);
     } finally {
       setIsSearching(false);
     }
@@ -245,7 +245,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
           {suggestions.length > 0 && (
             <>
               <Text style={styles.suggestionHeader}>Sugestões</Text>
-              {suggestions.map((suggestion, index) => (
+              {suggestions.map((suggestion, _index) => (
                 <Button
                   key={index}
                   mode="text"
@@ -265,7 +265,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
           {searchHistory.length > 0 && (
             <>
               <Text style={styles.suggestionHeader}>Buscas recentes</Text>
-              {searchHistory.map((item, index) => (
+              {searchHistory.map((item, _index) => (
                 <Button
                   key={index}
                   mode="text"

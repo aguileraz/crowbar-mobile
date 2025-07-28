@@ -30,7 +30,7 @@ import { viaCepService } from '../../services/viaCepService';
 import { Address } from '../../types/api';
 
 // Theme
-import { theme, getSpacing, getBorderRadius } from '../../theme';
+import { _theme, getSpacing, getBorderRadius } from '../../theme';
 
 /**
  * Tela de Adicionar/Editar Endereço
@@ -98,7 +98,7 @@ const AddEditAddressScreen: React.FC<AddEditAddressScreenProps> = ({
     
     try {
       if (isEditing && address) {
-        await userService.updateAddress(address.id, values);
+        await userService.updateAddress(address.id, _values);
         Alert.alert('Sucesso', 'Endereço atualizado com sucesso!');
       } else {
         await userService.createAddress(values);
@@ -159,7 +159,7 @@ const AddEditAddressScreen: React.FC<AddEditAddressScreenProps> = ({
    */
   const handleCepChange = (text: string) => {
     const formatted = formatCep(text);
-    formik.setFieldValue('zip_code', formatted);
+    formik.setFieldValue('zip_code', _formatted);
     
     // Auto-lookup when CEP is complete
     if (formatted.length === 9) {
@@ -206,7 +206,7 @@ const AddEditAddressScreen: React.FC<AddEditAddressScreenProps> = ({
           <Text style={styles.sectionLabel}>Tipo de endereço</Text>
           <SegmentedButtons
             value={formik.values.type}
-            onValueChange={(value) => formik.setFieldValue('type', value)}
+            onValueChange={(value) => formik.setFieldValue('type', _value)}
             buttons={[
               { value: 'home', label: 'Casa', icon: 'home' },
               { value: 'work', label: 'Trabalho', icon: 'office-building' },
@@ -343,7 +343,7 @@ const AddEditAddressScreen: React.FC<AddEditAddressScreenProps> = ({
             <Text style={styles.switchLabel}>Definir como endereço padrão</Text>
             <Switch
               value={formik.values.is_default}
-              onValueChange={(value) => formik.setFieldValue('is_default', value)}
+              onValueChange={(value) => formik.setFieldValue('is_default', _value)}
             />
           </View>
         </View>

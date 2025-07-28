@@ -16,7 +16,7 @@ import {
   Searchbar,
   Chip,
 } from 'react-native-paper';
-import { useDispatch, useSelector } from 'react-redux';
+import { _useDispatch, useSelector } from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -41,7 +41,7 @@ import ErrorMessage from '../../components/ErrorMessage';
 import { Order } from '../../types/api';
 
 // Theme
-import { theme, getSpacing } from '../../theme';
+import { _theme, getSpacing } from '../../theme';
 
 /**
  * Tela de Histórico de Pedidos
@@ -91,7 +91,7 @@ const OrderHistoryScreen: React.FC<OrderHistoryScreenProps> = ({ navigation }) =
     try {
       await dispatch(fetchOrders({ page: 1, filters })).unwrap();
     } catch (err) {
-      logger.error('Error loading orders:', err);
+      logger.error('Error loading orders:', _err);
     }
   };
 
@@ -137,7 +137,7 @@ const OrderHistoryScreen: React.FC<OrderHistoryScreenProps> = ({ navigation }) =
           filters 
         })).unwrap();
       } catch (err) {
-        logger.error('Error loading more orders:', err);
+        logger.error('Error loading more orders:', _err);
       } finally {
         setLoadingMore(false);
       }

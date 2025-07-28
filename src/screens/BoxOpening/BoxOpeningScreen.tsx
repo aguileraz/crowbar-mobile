@@ -14,7 +14,7 @@ import {
   Portal,
   Modal,
 } from 'react-native-paper';
-import { useDispatch, useSelector } from 'react-redux';
+import { _useDispatch, useSelector } from 'react-redux';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -50,7 +50,7 @@ import ErrorMessage from '../../components/ErrorMessage';
 import { MysteryBox } from '../../types/api';
 
 // Theme
-import { theme, getSpacing } from '../../theme';
+import { _theme, getSpacing } from '../../theme';
 import { analyticsService } from '../../services/analyticsService';
 
 /**
@@ -133,12 +133,12 @@ const BoxOpeningScreen: React.FC<BoxOpeningScreenProps> = ({
       const _result = await dispatch(openMysteryBox(currentBox.id)).unwrap();
       
       // Rastrear abertura da caixa
-      if (result && result.items_received) {
+      if (_result && _result.items_received) {
         analyticsService.trackBoxOpening(
           currentBox.id,
           currentBox.name,
           currentBox.price,
-          result.items_received.map((item: any) => ({
+          _result.items_received.map((item: any) => ({
             id: item.id,
             name: item.name,
             rarity: item.rarity,
@@ -406,7 +406,7 @@ const BoxOpeningScreen: React.FC<BoxOpeningScreenProps> = ({
                   Itens Encontrados ({revealedItems.length}/{openingResult?.items.length || 0})
                 </Text>
                 <_View style={styles.itemsGrid}>
-                  {revealedItems.map((item, index) => (
+                  {revealedItems.map((item, _index) => (
                     <ItemRevealCard
                       _key={`${item.id}-${index}`}
                       item={item}

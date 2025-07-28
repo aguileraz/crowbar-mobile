@@ -22,7 +22,7 @@ import {
   Surface,
   Divider,
 } from 'react-native-paper';
-import { useDispatch, useSelector } from 'react-redux';
+import { _useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../store';
 import {
   fetchNotifications,
@@ -38,8 +38,8 @@ import {
   selectNotificationsError,
   selectNotificationPagination,
 } from '../store/slices/notificationsSlice';
-import { theme, getSpacing } from '../theme';
-import { useScreenTracking, useEngagementTracking } from '../hooks/useAnalytics';
+import { _theme, getSpacing } from '../theme';
+import { _useScreenTracking, useEngagementTracking } from '../hooks/useAnalytics';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import ScreenTransition from '../components/ScreenTransition';
 
@@ -81,7 +81,7 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ navigation })
         reset 
       })).unwrap();
     } catch (err) {
-      logger.error('Error loading notifications:', err);
+      logger.error('Error loading notifications:', _err);
     }
   }, [dispatch, pagination.page]);
 
@@ -107,7 +107,7 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ navigation })
       await dispatch(markAsRead(notificationId)).unwrap();
       trackEngagement('mark_as_read', 'notification');
     } catch (err) {
-      logger.error('Error marking as read:', err);
+      logger.error('Error marking as read:', _err);
     }
   }, [dispatch, trackEngagement]);
 
@@ -119,7 +119,7 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ navigation })
       await dispatch(markAllAsRead()).unwrap();
       trackButtonClick('mark_all_as_read', 'notifications');
     } catch (err) {
-      logger.error('Error marking all as read:', err);
+      logger.error('Error marking all as read:', _err);
     }
   }, [dispatch, trackButtonClick]);
 
@@ -140,7 +140,7 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ navigation })
               await dispatch(deleteNotification(notificationId)).unwrap();
               trackEngagement('delete_notification', 'notification');
             } catch (err) {
-              logger.error('Error deleting notification:', err);
+              logger.error('Error deleting notification:', _err);
             }
           },
         },
@@ -173,7 +173,7 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ navigation })
         break;
     }
     
-    trackEngagement('filter_notifications', filter);
+    trackEngagement('filter_notifications', _filter);
   }, [dispatch, trackEngagement]);
 
   /**
@@ -325,7 +325,7 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ navigation })
    */
   const renderLoadingState = () => (
     <View style={styles.loadingContainer}>
-      {Array.from({ length: 5 }).map((_, index) => (
+      {Array.from({ length: 5 }).map((_, _index) => (
         <LoadingSkeleton
           key={index}
           width="100%"
