@@ -1,4 +1,4 @@
-const { getDefaultConfig: _getDefaultConfig, mergeConfig: _mergeConfig } = require('@react-native/metro-config');
+const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
 
 /**
  * Metro configuration otimizada para performance
@@ -6,7 +6,7 @@ const { getDefaultConfig: _getDefaultConfig, mergeConfig: _mergeConfig } = requi
  *
  * @type {import('@react-native/metro-config').MetroConfig}
  */
-const _config = {
+const config = {
   transformer: {
     minifierConfig: {
       // Otimizações do minificador para produção
@@ -30,6 +30,39 @@ const _config = {
   resolver: {
     // Otimiza resolução de módulos
     nodeModulesPaths: [],
+    // Resolver para corrigir o problema dos vector icons
+    resolveRequest: (context, moduleName, platform) => {
+      // Redirecionar @react-native-vector-icons para react-native-vector-icons
+      if (moduleName.startsWith('@react-native-vector-icons/')) {
+        const iconSet = moduleName.replace('@react-native-vector-icons/', '');
+        // material-design-icons -> MaterialCommunityIcons
+        const mappedIconSet = iconSet === 'material-design-icons' ? 'MaterialCommunityIcons' : iconSet;
+        return {
+          filePath: require.resolve(`react-native-vector-icons/${mappedIconSet}`),
+          type: 'sourceFile',
+        };
+      }
+      
+      // Redirecionar @expo/vector-icons para react-native-vector-icons
+      if (moduleName.startsWith('@expo/vector-icons/')) {
+        const iconSet = moduleName.replace('@expo/vector-icons/', '');
+        return {
+          filePath: require.resolve(`react-native-vector-icons/${iconSet}`),
+          type: 'sourceFile',
+        };
+      }
+      
+      // Caso especial para MaterialCommunityIcons
+      if (moduleName === '@expo/vector-icons') {
+        return {
+          filePath: require.resolve('react-native-vector-icons/MaterialCommunityIcons'),
+          type: 'sourceFile',
+        };
+      }
+      
+      // Default resolver
+      return context.resolveRequest(context, moduleName, platform);
+    },
   },
   // Cache configuration para builds mais rápidos
   cacheStores: ({ FileStore }) => [
@@ -41,3 +74,5 @@ const _config = {
   maxWorkers: 4,
   resetCache: false,
 };
+
+module.exports = mergeConfig(getDefaultConfig(__dirname), config);

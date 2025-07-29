@@ -20,7 +20,7 @@ import Animated, {
   withTiming,
   withRepeat,
 } from 'react-native-reanimated';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { buttonPress } from '../../animations/microInteractions';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);

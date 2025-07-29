@@ -83,15 +83,15 @@ class BundleAnalyzer {
       const startTime = Date.now();
       
       // Simular análise de módulo
-      import(moduleName)
-        .then((_module) => {
-          const loadTime = Date.now() - startTime;
-          
-          // Estimar tamanho baseado no tempo de carregamento
-          const estimatedSize = this.estimateModuleSize(loadTime, moduleName);
-          
-          const moduleInfo: ModuleInfo = {
-            name: moduleName,
+      // Dynamic imports não são suportados no React Native
+      // Vamos retornar uma estimativa
+      const loadTime = Date.now() - startTime;
+      
+      // Estimar tamanho baseado no nome do módulo
+      const estimatedSize = this.estimateModuleSize(loadTime, moduleName);
+      
+      const moduleInfo: ModuleInfo = {
+        name: moduleName,
             size: estimatedSize,
             gzippedSize: Math.round(estimatedSize * 0.7), // Estimativa de compressão
             type: this.getModuleType(moduleName),
@@ -100,18 +100,6 @@ class BundleAnalyzer {
           };
           
           resolve(moduleInfo);
-        })
-        .catch((error) => {
-          logger.error(`Error analyzing module ${moduleName}:`, error);
-          resolve({
-            name: moduleName,
-            size: 0,
-            gzippedSize: 0,
-            type: 'other',
-            isVendor: false,
-            isAsync: false,
-          });
-        });
     });
   }
 
