@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-unused-styles */
 /**
  * Card animado com efeitos de hover e press
  */

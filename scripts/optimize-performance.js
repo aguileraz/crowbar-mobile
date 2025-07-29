@@ -173,7 +173,7 @@ async function optimizeAssets() {
     const assetsDir = path.join(__dirname, '..', 'src', 'assets');
     const androidAssetsDir = path.join(__dirname, '..', 'android', 'app', 'src', 'main', 'res');
     
-    let totalSaved = 0;
+    const totalSaved = 0;
     
     // Optimize images in src/assets
     if (fs.existsSync(assetsDir)) {

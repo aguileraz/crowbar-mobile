@@ -1,4 +1,4 @@
-import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
+import { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { firebaseAuth } from '../config/firebase';
 
 /**

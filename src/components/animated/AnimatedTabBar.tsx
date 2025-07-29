@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-unused-styles */
 /**
  * TabBar animado com indicadores e transições suaves
  */

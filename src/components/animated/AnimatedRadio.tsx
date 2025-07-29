@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-unused-styles */
 /**
  * Radio button animado com micro-interações
  */

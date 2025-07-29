@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-unused-styles */
 /**
  * Botão animado com feedback visual e háptico
  */

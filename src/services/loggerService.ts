@@ -130,7 +130,7 @@ class LoggerService {
   /**
    * Reportar erro para Crashlytics em produção
    */
-  private reportToCrashlytics(message: string, context?: string, error?: any) {
+  private reportToCrashlytics(_message: string, _context?: string, _error?: any) {
     // TODO: Implementar integração com Firebase Crashlytics
     // import crashlytics from '@react-native-firebase/crashlytics';
     // crashlytics().recordError(error, message);

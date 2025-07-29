@@ -237,7 +237,7 @@ async function testExternalServices() {
     { name: 'Google APIs', url: 'https://www.googleapis.com/' }
   ];
 
-  let allPassed = true;
+  const allPassed = true;
 
   for (const service of services) {
     try {

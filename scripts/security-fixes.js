@@ -123,7 +123,7 @@ async function enhanceSSLConfiguration() {
   // Check Android manifest for cleartext traffic
   const manifestPath = path.join(__dirname, '..', 'android', 'app', 'src', 'main', 'AndroidManifest.xml');
   if (fs.existsSync(manifestPath)) {
-    let manifestContent = fs.readFileSync(manifestPath, 'utf8');
+    const manifestContent = fs.readFileSync(manifestPath, 'utf8');
     
     if (!manifestContent.includes('android:usesCleartextTraffic="false"')) {
       log.info('Android manifest already configured for SSL enforcement');

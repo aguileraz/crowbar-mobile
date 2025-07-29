@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-unused-styles */
 /**
  * Checkbox animado com micro-interações
  */

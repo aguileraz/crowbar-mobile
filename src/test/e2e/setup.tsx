@@ -3,7 +3,7 @@
  * Configuration and utilities for end-to-end testing
  */
 
-import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
+import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { NavigationContainer } from '@react-navigation/native';
@@ -12,7 +12,7 @@ import { store } from '../../store';
 import { theme } from '../../theme';
 
 // Mock navigation for E2E tests
-const mockNavigation = {
+const _mockNavigation = {
   navigate: jest.fn(),
   goBack: jest.fn(),
   reset: jest.fn(),
@@ -25,7 +25,7 @@ const mockNavigation = {
 };
 
 // Mock route for E2E tests
-const mockRoute = {
+const _mockRoute = {
   key: 'test-route',
   name: 'TestScreen',
   params: {},
