@@ -32,7 +32,7 @@ import {
   _useSwipeGesture,
 } from '../hooks/useGestureAnimations';
 import {
-  useConditionalAnimation,
+  useConditionalAnimation as _useConditionalAnimation,
   useMountAnimation,
   useShakeAnimation,
   useFloatingAnimation,
@@ -49,7 +49,7 @@ export const AnimationExamples: React.FC = () => {
   const [triggerShake, setTriggerShake] = useState(false);
 
   // Hooks de animação
-  const entranceAnimation = useEntranceAnimation('combined', { autoStart: true });
+  const _entranceAnimation = useEntranceAnimation('combined', { autoStart: true });
   const listAnimation = useListAnimation(5, { staggerDelay: 100 });
   const { updateScroll, headerAnimatedStyle } = useScrollAnimation(100);
   const feedbackAnimation = useFeedbackAnimation();

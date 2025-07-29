@@ -9,7 +9,6 @@ import {
   Alert,
 } from 'react-native';
 import {
-  Text,
   TextInput,
   Button,
   Card,

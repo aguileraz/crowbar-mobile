@@ -3,7 +3,7 @@
  * Checkbox animado com micro-interações
  */
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import {
   Pressable,
   View,
@@ -17,6 +17,7 @@ import Animated, {
   useAnimatedStyle,
   interpolate,
   Extrapolate,
+  withSpring,
 } from 'react-native-reanimated';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { checkboxAnimation } from '../../animations/microInteractions';

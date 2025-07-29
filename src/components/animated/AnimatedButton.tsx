@@ -16,10 +16,12 @@ import {
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
+  withSpring,
+  withTiming,
+  withRepeat,
 } from 'react-native-reanimated';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { buttonPress } from '../../animations/microInteractions';
-import { _SCALE_VALUES } from '../../animations/constants';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 

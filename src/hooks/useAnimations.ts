@@ -22,7 +22,7 @@ interface UseAnimationsOptions {
 export const useAnimations = (options: UseAnimationsOptions = {}) => {
   const {
     autoStart = false,
-    loop = false,
+    loop: _loop = false,
     duration = ANIMATION_CONFIGS.NORMAL,
   } = options;
 

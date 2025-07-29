@@ -36,7 +36,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ style }) =>
   const [refreshing, setRefreshing] = useState(false);
 
   // Performance hooks
-  const { appMetrics, getPerformanceReport } = useAppPerformance();
+  const { appMetrics, getPerformanceReport: _getPerformanceReport } = useAppPerformance();
   const { apiMetrics, getAllApiStats } = useApiPerformance();
 
   /**

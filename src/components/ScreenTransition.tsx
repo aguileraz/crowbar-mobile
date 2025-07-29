@@ -105,8 +105,6 @@ const ScreenTransition: React.FC<ScreenTransitionProps> = ({
    * Get animated style based on type
    */
   const getAnimatedStyle = (): ViewStyle => {
-    const baseStyle: ViewStyle = {};
-
     switch (type) {
       case 'fade':
         return {
@@ -274,7 +272,7 @@ interface AnimatedModalProps {
 export const AnimatedModal: React.FC<AnimatedModalProps> = ({
   visible,
   children,
-  onDismiss,
+  onDismiss: _onDismiss,
   animationType = 'scale',
   style,
 }) => {

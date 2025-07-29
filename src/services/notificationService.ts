@@ -193,7 +193,7 @@ class NotificationService {
       ...filters,
     };
 
-    const _response = await httpClient.get(this.baseURL, { params });
+    const response = await httpClient.get(this.baseURL, { params });
     return response.data;
   }
 
@@ -222,7 +222,7 @@ class NotificationService {
    * Buscar configurações de notificação
    */
   async getSettings(): Promise<NotificationSettings> {
-    const _response = await httpClient.get(`${this.baseURL}/settings`);
+    const response = await httpClient.get(`${this.baseURL}/settings`);
     return response.data;
   }
 
@@ -230,7 +230,7 @@ class NotificationService {
    * Atualizar configurações de notificação
    */
   async updateSettings(settings: Partial<NotificationSettings>): Promise<NotificationSettings> {
-    const _response = await httpClient.patch(`${this.baseURL}/settings`, settings);
+    const response = await httpClient.patch(`${this.baseURL}/settings`, settings);
     return response.data;
   }
 
@@ -265,7 +265,7 @@ class NotificationService {
    */
   async getBadgeCount(): Promise<number> {
     try {
-      const _response = await httpClient.get(`${this.baseURL}/badge-count`);
+      const response = await httpClient.get(`${this.baseURL}/badge-count`);
       return response.data.count;
     } catch (error) {
       return 0;
