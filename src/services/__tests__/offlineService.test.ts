@@ -1,3 +1,4 @@
+ 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import offlineService, { SyncPriority, CacheStrategy } from '../offlineService';
 import { store } from '../../store';
@@ -22,12 +23,12 @@ describe('OfflineService', () => {
 
   describe('Inicialização', () => {
     it('deve inicializar o serviço corretamente', async () => {
-      const result = await offlineService.initialize();
+      const _result = await offlineService.initialize();
       
-      expect(result).toBeDefined();
-      expect(result.cacheStatus).toBeDefined();
-      expect(result.pendingActions).toBeDefined();
-      expect(result.networkState).toBeDefined();
+      expect(_result).toBeDefined();
+      expect(_result.cacheStatus).toBeDefined();
+      expect(_result.pendingActions).toBeDefined();
+      expect(_result.networkState).toBeDefined();
     });
 
     it('deve configurar o listener de rede', async () => {
@@ -74,12 +75,12 @@ describe('OfflineService', () => {
         .mockResolvedValueOnce(compressedData)
         .mockResolvedValueOnce(JSON.stringify(metadata));
 
-      const result = await offlineService.getCachedData(
+      const _result = await offlineService.getCachedData(
         'test_key',
         CacheStrategy.CACHE_FIRST
       );
 
-      expect(result).toBeDefined();
+      expect(_result).toBeDefined();
       expect(mockAsyncStorage.getItem).toHaveBeenCalledTimes(2);
     });
 
@@ -89,14 +90,14 @@ describe('OfflineService', () => {
 
       mockAsyncStorage.getItem.mockResolvedValue(null);
 
-      const result = await offlineService.getCachedData(
+      const _result = await offlineService.getCachedData(
         'test_key',
         CacheStrategy.CACHE_FIRST,
         fetcher
       );
 
       expect(fetcher).toHaveBeenCalled();
-      expect(result).toEqual(testData);
+      expect(_result).toEqual(testData);
     });
 
     it('deve respeitar estratégias de cache', async () => {
@@ -219,10 +220,10 @@ describe('OfflineService', () => {
 
       mockAsyncStorage.getItem.mockResolvedValue(JSON.stringify(actions));
 
-      const result = await offlineService.processPendingActions();
+      const _result = await offlineService.processPendingActions();
 
       // Ação crítica deve ser processada primeiro
-      expect(result.processedActions).toHaveLength(2);
+      expect(_result.processedActions).toHaveLength(2);
     });
 
     it('deve respeitar limite de tentativas', async () => {
@@ -237,9 +238,9 @@ describe('OfflineService', () => {
 
       mockAsyncStorage.getItem.mockResolvedValue(JSON.stringify([action]));
 
-      const result = await offlineService.processPendingActions();
+      const _result = await offlineService.processPendingActions();
 
-      expect(result.remainingActions).toHaveLength(0);
+      expect(_result.remainingActions).toHaveLength(0);
     });
   });
 
@@ -310,10 +311,10 @@ describe('OfflineService', () => {
 
       jest.spyOn(store, 'getState').mockReturnValue(mockState);
 
-      const result = await offlineService.syncData();
+      const _result = await offlineService.syncData();
 
-      expect(result).toBeDefined();
-      expect(result.syncResults).toBeDefined();
+      expect(_result).toBeDefined();
+      expect(_result.syncResults).toBeDefined();
     });
 
     it('deve falhar quando offline sem force', async () => {

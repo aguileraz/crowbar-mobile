@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 
+const { execSync } = require('child_process');
+
 const fs = require('fs');
-const path = require('path');
+const _path = require('_path');
 const glob = require('glob');
 
 // Padrões para substituir
@@ -40,10 +42,10 @@ const ignorePatterns = [
   '**/*.spec.{ts,tsx,js,jsx}',
 ];
 
-function getImportStatement(filePath) {
-  const ext = path.extname(filePath);
+function getImportStatement(_filePath) {
+  const ext = _path.extname(_filePath);
   const isTypeScript = ext === '.ts' || ext === '.tsx';
-  const relativePath = path.relative(path.dirname(filePath), 'src/services/loggerService').replace(/\\/g, '/');
+  const relativePath = _path.relative(_path.dirname(_filePath), 'src/services/loggerService').replace(/\\/g, '/');
   
   // Ajustar caminho relativo
   let importPath = relativePath;
@@ -54,9 +56,9 @@ function getImportStatement(filePath) {
   return `import logger from '${importPath}'${isTypeScript ? '' : '.ts'};\n`;
 }
 
-function processFile(filePath) {
+function processFile(_filePath) {
   try {
-    let content = fs.readFileSync(filePath, 'utf8');
+    let content = fs.readFileSync(_filePath, 'utf8');
     let modified = false;
     let needsImport = false;
 
@@ -78,11 +80,11 @@ function processFile(filePath) {
     if (modified && needsImport && !hasLoggerImport) {
       // Encontrar onde adicionar o import
       const importMatch = content.match(/^(import .+ from .+;\n)+/m);
-      const importStatement = getImportStatement(filePath);
+      const importStatement = getImportStatement(_filePath);
       
       if (importMatch) {
         // Adicionar após os outros imports
-        const lastImportIndex = importMatch.index + importMatch[0].length;
+        const lastImportIndex = importMatch.0 + importMatch[0].length;
         content = content.slice(0, lastImportIndex) + importStatement + content.slice(lastImportIndex);
       } else {
         // Adicionar no início do arquivo
@@ -91,11 +93,11 @@ function processFile(filePath) {
     }
 
     if (modified) {
-      fs.writeFileSync(filePath, content);
+      fs.writeFileSync(_filePath, content);
       return true;
     }
   } catch (error) {
-    console.error(`Error processing ${filePath}:`, error.message);
+
   }
   return false;
 }
@@ -106,8 +108,6 @@ const files = glob.sync('src/**/*.{js,jsx,ts,tsx}', {
   cwd: process.cwd(),
 });
 
-console.log(`🔍 Found ${files.length} files to process\n`);
-
 let processedCount = 0;
 let modifiedCount = 0;
 
@@ -115,21 +115,15 @@ files.forEach(file => {
   processedCount++;
   if (processFile(file)) {
     modifiedCount++;
-    console.log(`✅ Modified: ${file}`);
+
   }
 });
 
-console.log(`\n📊 Summary:`);
-console.log(`Files processed: ${processedCount}`);
-console.log(`Files modified: ${modifiedCount}`);
-console.log(`\n✨ Console statements replacement completed!`);
-
 // Verificar se ainda restam console statements
-console.log('\n🔍 Checking for remaining console statements...');
-const { execSync } = require('child_process');
+
 try {
   const remaining = execSync('npm run lint 2>&1 | grep "console" | wc -l', { encoding: 'utf8' }).trim();
-  console.log(`Remaining console warnings: ${remaining}`);
+
 } catch (error) {
   // Ignore errors from lint command
 }

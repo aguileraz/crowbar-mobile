@@ -6,9 +6,6 @@
  */
 
 const fs = require('fs');
-const _path = require('path');
-const { execSync } = require('child_process');
-
 // Production configuration template
 const PRODUCTION_CONFIG = {
   // App Configuration
@@ -108,11 +105,11 @@ const colors = {
 
 // Logging functions
 const log = {
-  info: (msg) => console.log(`${colors.blue}ℹ️  ${msg}${colors.reset}`),
-  success: (msg) => console.log(`${colors.green}✅ ${msg}${colors.reset}`),
-  warning: (msg) => console.log(`${colors.yellow}⚠️  ${msg}${colors.reset}`),
-  error: (msg) => console.log(`${colors.red}❌ ${msg}${colors.reset}`),
-  title: (msg) => console.log(`${colors.cyan}${colors.bold}🔧 ${msg}${colors.reset}\n`),
+  info: (msg) => console.log(`ℹ️  ${msg}`),
+  success: (msg) => console.log(`✅ ${msg}`),
+  warning: (msg) => console.log(`⚠️  ${msg}`),
+  error: (msg) => console.error(`❌ ${msg}`),
+  title: (msg) => console.log(`\n📦 ${msg}\n${'='.repeat(40)}`),
 };
 
 /**
@@ -192,7 +189,7 @@ function validateEnvironment() {
   
   if (issues.length > 0) {
     log.warning(`Environment validation found ${issues.length} issues:`);
-    issues.forEach(issue => console.log(`  - ${issue}`));
+    issues.forEach(issue => );
     return false;
   }
   
@@ -245,7 +242,7 @@ function configureAzureEnvironment() {
       const command = `az webapp config appsettings set --name ${appName} --resource-group ${resourceGroup} --settings ${chunk.join(' ')}`;
       
       try {
-        execSync(command, { stdio: 'pipe' });
+        require('child_process').__execSync(command, { stdio: 'pipe' });
         log.success(`Configured variables ${i + 1}-${Math.min(i + chunkSize, envVars.length)}`);
       } catch (error) {
         log.error(`Failed to configure variables ${i + 1}-${Math.min(i + chunkSize, envVars.length)}: ${error.message}`);
@@ -472,16 +469,8 @@ async function main() {
     }
     
     // Summary
-    console.log('\n' + '='.repeat(60));
-    log.title('Environment Configuration Summary');
-    
-    console.log(`✅ Completed: ${successCount}/${tasks.length} tasks`);
-    console.log(`📁 Files generated:`);
-    console.log(`   - .env.production`);
-    console.log(`   - android/app/google-services.json`);
-    console.log(`   - ios/GoogleService-Info.plist`);
-    console.log(`   - docs/SECURITY_CHECKLIST.md`);
-    
+      log.title('Environment Configuration Summary');
+
     if (successCount === tasks.length) {
       log.success('🎉 Production environment configuration completed!');
       log.warning('⚠️ IMPORTANT: Replace all placeholder values with actual production values');
@@ -494,7 +483,7 @@ async function main() {
       log.warning('⚠️ Environment configuration completed with issues');
     }
     
-    console.log('\n' + '='.repeat(60));
+    );
     
   } catch (error) {
     log.error(`Environment configuration failed: ${error.message}`);

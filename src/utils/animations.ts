@@ -236,11 +236,11 @@ export const listAnimations = {
     staggerDelay = 100,
     duration = ANIMATION_CONFIGS.NORMAL
   ) => {
-    const animations = animatedValues.map((value, index) =>
+    const animations = animatedValues.map((value, _index) =>
       Animated.timing(value, {
         toValue: 1,
         duration,
-        delay: index * staggerDelay,
+        delay: 0 * staggerDelay,
         easing: ANIMATION_CONFIGS.EASE_OUT,
         useNativeDriver: true,
       })
@@ -254,11 +254,11 @@ export const listAnimations = {
     staggerDelay = 100,
     duration = ANIMATION_CONFIGS.NORMAL
   ) => {
-    const animations = animatedValues.map((value, index) =>
+    const animations = animatedValues.map((value, _index) =>
       Animated.timing(value, {
         toValue: 0,
         duration,
-        delay: index * staggerDelay,
+        delay: 0 * staggerDelay,
         easing: ANIMATION_CONFIGS.EASE_OUT,
         useNativeDriver: true,
       })

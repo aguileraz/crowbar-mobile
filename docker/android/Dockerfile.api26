@@ -1,0 +1,46 @@
+# Android API 26 (Oreo) emulator
+FROM budtmo/docker-android:emulator-26
+
+# Install Node.js and npm
+RUN apt-get update && apt-get install -y \
+    curl \
+    wget \
+    unzip \
+    && curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+    && apt-get install -y nodejs \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Appium and drivers
+RUN npm install -g appium@2.0.0 \
+    && appium driver install uiautomator2
+
+# Create app directory
+WORKDIR /app
+
+# Create directories for test results
+RUN mkdir -p /app/test-results \
+    /app/screenshots \
+    /app/logs
+
+# Environment variables
+ENV ANDROID_HOME=/opt/android-sdk \
+    ANDROID_SDK_ROOT=/opt/android-sdk \
+    PATH=$PATH:/opt/android-sdk/platform-tools:/opt/android-sdk/emulator \
+    APPIUM_HOME=/app \
+    TEST_RESULTS_DIR=/app/test-results \
+    ANDROID_API_LEVEL=26 \
+    DEVICE_NAME="Pixel 2"
+
+# Expose ports
+EXPOSE 4723 5554 5555
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+    CMD adb devices | grep -q "emulator" || exit 1
+
+# Entry point script
+COPY docker/android/docker-entrypoint.sh /
+RUN chmod +x /docker-entrypoint.sh
+
+ENTRYPOINT ["/docker-entrypoint.sh"]

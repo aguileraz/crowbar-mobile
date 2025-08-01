@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import logger from '../../services/loggerService';
 import {
   View,
@@ -15,9 +15,10 @@ import {
   Card,
   Title,
   Paragraph,
-  Divider,
+
   HelperText,
   Checkbox,
+  Divider,
 } from 'react-native-paper';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';

@@ -1,3 +1,4 @@
+ 
 import { cartService } from '../cartService';
 import { httpClient } from '../httpClient';
 
@@ -38,10 +39,10 @@ describe('CartService', () => {
 
       mockedHttpClient.get.mockResolvedValue({ data: mockCart });
 
-      const result = await cartService.getCart();
+      const _result = await cartService.getCart();
 
       expect(mockedHttpClient.get).toHaveBeenCalledWith('/cart');
-      expect(result).toEqual(mockCart);
+      expect(_result).toEqual(mockCart);
     });
 
     it('should handle empty cart', async () => {
@@ -57,9 +58,9 @@ describe('CartService', () => {
 
       mockedHttpClient.get.mockResolvedValue({ data: mockEmptyCart });
 
-      const result = await cartService.getCart();
+      const _result = await cartService.getCart();
 
-      expect(result).toEqual(mockEmptyCart);
+      expect(_result).toEqual(mockEmptyCart);
     });
   });
 
@@ -81,13 +82,13 @@ describe('CartService', () => {
 
       mockedHttpClient.post.mockResolvedValue({ data: mockCartItem });
 
-      const result = await cartService.addToCart('box1', 1);
+      const _result = await cartService.addToCart('box1', 1);
 
       expect(mockedHttpClient.post).toHaveBeenCalledWith('/cart/items', {
         box_id: 'box1',
         quantity: 1,
       });
-      expect(result).toEqual(mockCartItem);
+      expect(_result).toEqual(mockCartItem);
     });
 
     it('should handle out of stock error', async () => {
@@ -127,12 +128,12 @@ describe('CartService', () => {
 
       mockedHttpClient.patch.mockResolvedValue({ data: mockUpdatedItem });
 
-      const result = await cartService.updateCartItem('1', 3);
+      const _result = await cartService.updateCartItem('1', 3);
 
       expect(mockedHttpClient.patch).toHaveBeenCalledWith('/cart/items/1', {
         quantity: 3,
       });
-      expect(result).toEqual(mockUpdatedItem);
+      expect(_result).toEqual(mockUpdatedItem);
     });
 
     it('should handle invalid quantity', async () => {
@@ -195,12 +196,12 @@ describe('CartService', () => {
 
       mockedHttpClient.post.mockResolvedValue({ data: mockCart });
 
-      const result = await cartService.applyCoupon('SAVE5');
+      const _result = await cartService.applyCoupon('SAVE5');
 
       expect(mockedHttpClient.post).toHaveBeenCalledWith('/cart/coupon', {
         code: 'SAVE5',
       });
-      expect(result).toEqual(mockCart);
+      expect(_result).toEqual(mockCart);
     });
 
     it('should handle invalid coupon', async () => {
@@ -232,10 +233,10 @@ describe('CartService', () => {
 
       mockedHttpClient.delete.mockResolvedValue({ data: mockCart });
 
-      const result = await cartService.removeCoupon();
+      const _result = await cartService.removeCoupon();
 
       expect(mockedHttpClient.delete).toHaveBeenCalledWith('/cart/coupon');
-      expect(result).toEqual(mockCart);
+      expect(_result).toEqual(mockCart);
     });
   });
 
@@ -260,12 +261,12 @@ describe('CartService', () => {
 
       mockedHttpClient.post.mockResolvedValue({ data: mockShipping });
 
-      const result = await cartService.calculateShipping('01234-567');
+      const _result = await cartService.calculateShipping('01234-567');
 
       expect(mockedHttpClient.post).toHaveBeenCalledWith('/cart/shipping', {
         zip_code: '01234-567',
       });
-      expect(result).toEqual(mockShipping);
+      expect(_result).toEqual(mockShipping);
     });
 
     it('should handle invalid zip code', async () => {
@@ -302,12 +303,12 @@ describe('CartService', () => {
 
       mockedHttpClient.patch.mockResolvedValue({ data: mockCart });
 
-      const result = await cartService.selectShipping('express');
+      const _result = await cartService.selectShipping('express');
 
       expect(mockedHttpClient.patch).toHaveBeenCalledWith('/cart/shipping', {
         shipping_option_id: 'express',
       });
-      expect(result).toEqual(mockCart);
+      expect(_result).toEqual(mockCart);
     });
   });
 
@@ -324,10 +325,10 @@ describe('CartService', () => {
 
       mockedHttpClient.get.mockResolvedValue({ data: mockSummary });
 
-      const result = await cartService.getCartSummary();
+      const _result = await cartService.getCartSummary();
 
       expect(mockedHttpClient.get).toHaveBeenCalledWith('/cart/summary');
-      expect(result).toEqual(mockSummary);
+      expect(_result).toEqual(mockSummary);
     });
   });
 });

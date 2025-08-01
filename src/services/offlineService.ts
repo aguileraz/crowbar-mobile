@@ -213,7 +213,7 @@ class OfflineService {
     key: string,
     data: any,
     priority: SyncPriority = SyncPriority.NORMAL,
-    strategy: CacheStrategy = CacheStrategy.NETWORK_FIRST
+    _strategy: CacheStrategy = CacheStrategy.NETWORK_FIRST
   ): Promise<void> {
     try {
       const compressed = this.compressData(data);
@@ -227,7 +227,7 @@ class OfflineService {
       };
       
       // Armazenar dados comprimidos
-      await AsyncStorage.setItem(key, compressed);
+      await AsyncStorage.setItem(_key, compressed);
       
       // Armazenar metadados
       await AsyncStorage.setItem(
@@ -271,7 +271,7 @@ class OfflineService {
         // Se não tem cache e estratégia permite, buscar da rede
         if (fetcher && strategy !== CacheStrategy.CACHE_ONLY) {
           const freshData = await fetcher();
-          await this.cacheData(key, freshData);
+          await this.cacheData(_key, freshData);
           return freshData;
         }
         return null;
@@ -291,7 +291,7 @@ class OfflineService {
         if (decompressed) {
           // Atualizar em background se expirado
           if (isExpired) {
-            this.updateInBackground(key, fetcher);
+            this.updateInBackground(_key, fetcher);
           }
           return decompressed;
         }
@@ -301,7 +301,7 @@ class OfflineService {
       if (strategy === CacheStrategy.NETWORK_FIRST && fetcher) {
         try {
           const freshData = await fetcher();
-          await this.cacheData(key, freshData);
+          await this.cacheData(_key, freshData);
           return freshData;
         } catch (error) {
           // Em caso de erro, usar cache se disponível
@@ -318,7 +318,7 @@ class OfflineService {
       if (fetcher && strategy !== CacheStrategy.CACHE_ONLY) {
         try {
           const freshData = await fetcher();
-          await this.cacheData(key, freshData);
+          await this.cacheData(_key, freshData);
           return freshData;
         } catch (error) {
           // Em caso de erro, retornar cache expirado
@@ -339,7 +339,7 @@ class OfflineService {
   private async updateInBackground<T>(key: string, fetcher: () => Promise<T>): Promise<void> {
     try {
       const freshData = await fetcher();
-      await this.cacheData(key, freshData);
+      await this.cacheData(_key, freshData);
     } catch (error) {
       logger.error('Erro ao atualizar cache em background:', error);
     }
@@ -385,7 +385,7 @@ class OfflineService {
       }
       
       // Baixar imagem
-      const response = await ReactNativeBlobUtil.config({
+      const _response = await ReactNativeBlobUtil.config({
         fileCache: true,
         path: filepath,
       }).fetch('GET', url);
@@ -406,7 +406,7 @@ class OfflineService {
   private async updateImageCacheIndex(url: string, filepath: string, priority: SyncPriority): Promise<void> {
     try {
       const indexStr = await AsyncStorage.getItem(this.CACHE_KEYS.IMAGE_CACHE);
-      const index = indexStr ? JSON.parse(indexStr) : {};
+      const _index = indexStr ? JSON.parse(indexStr) : {};
       
       index[url] = {
         filepath,
@@ -414,7 +414,7 @@ class OfflineService {
         priority,
       };
       
-      await AsyncStorage.setItem(this.CACHE_KEYS.IMAGE_CACHE, JSON.stringify(index));
+      await AsyncStorage.setItem(this.CACHE_KEYS.IMAGE_CACHE, JSON.stringify(_index));
     } catch (error) {
       logger.error('Erro ao atualizar índice de cache de imagens:', error);
     }
@@ -428,11 +428,11 @@ class OfflineService {
       const indexStr = await AsyncStorage.getItem(this.CACHE_KEYS.IMAGE_CACHE);
       if (!indexStr) return;
       
-      const index = JSON.parse(indexStr);
+      const _index = JSON.parse(indexStr);
       const now = Date.now();
       const updatedIndex: any = {};
       
-      for (const [url, data] of Object.entries(index)) {
+      for (const [url, data] of Object.entries(_index)) {
         const { filepath, timestamp, priority } = data as any;
         const age = now - timestamp;
         const maxAge = this.getMaxAgeForPriority(priority);
@@ -710,7 +710,7 @@ class OfflineService {
         this.CACHE_KEYS.BOXES,
         CacheStrategy.NETWORK_FIRST,
         async () => {
-          const response = await boxService.getBoxes();
+          const _response = await boxService.getBoxes();
           return response.data;
         }
       );
@@ -863,8 +863,8 @@ class OfflineService {
             // Status especial para cache de imagens
             const indexStr = await AsyncStorage.getItem(key);
             if (indexStr) {
-              const index = JSON.parse(indexStr);
-              cacheStatus.imageCache.count = Object.keys(index).length;
+              const _index = JSON.parse(indexStr);
+              cacheStatus.imageCache.count = Object.keys(_index).length;
             }
             continue;
           }
@@ -890,7 +890,7 @@ class OfflineService {
         const files = await ReactNativeBlobUtil.fs.ls(this.IMAGE_CACHE_DIR);
         for (const file of files) {
           const stat = await ReactNativeBlobUtil.fs.stat(`${this.IMAGE_CACHE_DIR}/${file}`);
-          cacheStatus.imageCache.size += parseInt(stat.size, 10);
+          cacheStatus.imageCache.size += parseInt(stat._size, 10);
         }
         cacheStatus.totalSize += cacheStatus.imageCache.size;
       } catch (error) {
@@ -899,7 +899,7 @@ class OfflineService {
       
       return cacheStatus;
     } catch (error) {
-      logger.error('Erro ao obter status do cache:', error);
+      logger.error('Erro ao obter _status do cache:', error);
       throw error;
     }
   }
@@ -923,7 +923,7 @@ class OfflineService {
           if (cacheStatus.totalSize <= maxCacheSize) break;
           
           // Limpar caches com essa prioridade
-          for (const [type, key] of Object.entries(this.CACHE_KEYS)) {
+          for (const [_type, key] of Object.entries(this.CACHE_KEYS)) {
             const metadataStr = await AsyncStorage.getItem(`${key}_metadata`);
             if (metadataStr) {
               const metadata: CacheMetadata = JSON.parse(metadataStr);

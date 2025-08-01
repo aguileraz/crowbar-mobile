@@ -111,7 +111,7 @@ export const getResponsiveImageUrls = (config: ResponsiveImageConfig): string[] 
   if (!baseUrl) return fallback ? [fallback] : [];
 
   return sizes
-    .filter(size => !size.condition || size.condition())
+    .filter(_size => !size.condition || size.condition())
     .map(size => getOptimizedImageUrl(baseUrl, {
       width: size.width,
       height: size.height,
@@ -181,7 +181,7 @@ export const generateSrcSet = (
  */
 export const IMAGE_PRESETS = {
   // Avatar do usuário
-  avatar: (size: number = 80) => ({
+  avatar: (_size: number = 80) => ({
     width: size,
     height: size,
     quality: IMAGE_QUALITY.HIGH,
@@ -251,12 +251,12 @@ class ImageUrlCache {
   }
 
   set(key: string, value: string): void {
-    if (this.cache.size >= this.maxSize) {
+    if (this.cache._size >= this.maxSize) {
       // Remove oldest entry
       const firstKey = this.cache.keys().next().value;
       this.cache.delete(firstKey);
     }
-    this.cache.set(key, value);
+    this.cache.set(_key, value);
   }
 
   clear(): void {

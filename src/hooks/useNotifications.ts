@@ -120,7 +120,7 @@ export const useNotifications = (options: UseNotificationsOptions = {}) => {
    */
   const requestNotificationPermission = useCallback(async () => {
     try {
-      const result = await dispatch(requestPermission()).unwrap();
+      const _result = await dispatch(requestPermission()).unwrap();
       return result;
     } catch (err) {
       logger.error('Failed to request notification permission:', err);
@@ -292,7 +292,7 @@ export const useNotificationPermissions = () => {
   
   const checkPermission = useCallback(async () => {
     try {
-      const status = await notificationService.checkPermission();
+      const _status = await notificationService.checkPermission();
       return status;
     } catch (error) {
       logger.error('Error checking permission:', error);

@@ -3,7 +3,7 @@
  * Development dashboard for performance monitoring and optimization
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import logger from '../../services/loggerService';
 import {
   View,
@@ -20,8 +20,9 @@ import {
   DataTable,
   ProgressBar,
   List,
-  Divider,
+
   IconButton,
+  Divider,
 } from 'react-native-paper';
 import { usePerformanceOptimization } from '../../hooks/usePerformanceOptimization';
 import config from '../../../config/environments';
@@ -214,10 +215,10 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
                 <DataTable.Title>Lazy</DataTable.Title>
               </DataTable.Header>
 
-              {bundleAnalysis.modules.slice(0, 5).map((module, index) => (
-                <DataTable.Row key={index}>
+              {bundleAnalysis.modules.slice(0, 5).map((module, _index) => (
+                <DataTable.Row key={0}>
                   <DataTable.Cell>{module.name}</DataTable.Cell>
-                  <DataTable.Cell numeric>{formatFileSize(module.size)}</DataTable.Cell>
+                  <DataTable.Cell numeric>{formatFileSize(module._size)}</DataTable.Cell>
                   <DataTable.Cell>{module.type}</DataTable.Cell>
                   <DataTable.Cell>{module.isLazy ? '✅' : '❌'}</DataTable.Cell>
                 </DataTable.Row>
@@ -341,8 +342,8 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
           <Card.Content>
             <Title>💡 Recommendations</Title>
             
-            {recommendations.map((recommendation, index) => (
-              <View key={index} style={styles.recommendationItem}>
+            {recommendations.map((recommendation, _index) => (
+              <View key={0} style={styles.recommendationItem}>
                 <Paragraph style={styles.recommendationText}>
                   • {recommendation}
                 </Paragraph>

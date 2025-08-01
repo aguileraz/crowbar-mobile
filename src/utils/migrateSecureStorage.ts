@@ -3,7 +3,6 @@
  * Execute uma vez após atualizar o app
  */
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { secureStorage } from '../services/secureStorage';
 import logger from '../services/loggerService';
 

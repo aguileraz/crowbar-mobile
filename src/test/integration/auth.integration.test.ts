@@ -1,3 +1,4 @@
+ 
 /**
  * Integration tests for authentication flow
  * Tests real API communication for auth endpoints
@@ -11,7 +12,7 @@ import {
   TEST_CREDENTIALS,
   skipIfAPIUnavailable,
   createTestUser,
-  loginTestUser,
+  _loginTestUser,
   logoutTestUser,
 } from './setup';
 
@@ -51,12 +52,12 @@ describe('Authentication Integration Tests', () => {
         password_confirmation: 'testpassword123',
       };
 
-      const result = await store.dispatch(register(registerData));
+      const _result = await store.dispatch(register(registerData));
 
-      expect(result.type).toBe('auth/register/fulfilled');
-      expect(result.payload).toHaveProperty('user');
-      expect(result.payload).toHaveProperty('token');
-      expect(result.payload.user.email).toBe(uniqueEmail);
+      expect(_result.type).toBe('auth/register/fulfilled');
+      expect(_result.payload).toHaveProperty('user');
+      expect(_result.payload).toHaveProperty('token');
+      expect(_result.payload.user.email).toBe(uniqueEmail);
 
       // Check store state
       const state = store.getState();
@@ -76,10 +77,10 @@ describe('Authentication Integration Tests', () => {
         password_confirmation: 'testpassword123',
       };
 
-      const result = await store.dispatch(register(registerData));
+      const _result = await store.dispatch(register(registerData));
 
-      expect(result.type).toBe('auth/register/rejected');
-      expect(result.payload).toContain('email');
+      expect(_result.type).toBe('auth/register/rejected');
+      expect(_result.payload).toContain('email');
 
       // Check store state
       const state = store.getState();
@@ -95,9 +96,9 @@ describe('Authentication Integration Tests', () => {
         password_confirmation: '456',
       };
 
-      const result = await store.dispatch(register(registerData));
+      const _result = await store.dispatch(register(registerData));
 
-      expect(result.type).toBe('auth/register/rejected');
+      expect(_result.type).toBe('auth/register/rejected');
 
       // Check store state
       const state = store.getState();
@@ -113,12 +114,12 @@ describe('Authentication Integration Tests', () => {
     });
 
     it('should login with valid credentials', async () => {
-      const result = await store.dispatch(login(TEST_CREDENTIALS));
+      const _result = await store.dispatch(login(TEST_CREDENTIALS));
 
-      expect(result.type).toBe('auth/login/fulfilled');
-      expect(result.payload).toHaveProperty('user');
-      expect(result.payload).toHaveProperty('token');
-      expect(result.payload.user.email).toBe(TEST_CREDENTIALS.email);
+      expect(_result.type).toBe('auth/login/fulfilled');
+      expect(_result.payload).toHaveProperty('user');
+      expect(_result.payload).toHaveProperty('token');
+      expect(_result.payload.user.email).toBe(TEST_CREDENTIALS.email);
 
       // Check store state
       const state = store.getState();
@@ -133,9 +134,9 @@ describe('Authentication Integration Tests', () => {
         password: 'wrongpassword',
       };
 
-      const result = await store.dispatch(login(invalidCredentials));
+      const _result = await store.dispatch(login(invalidCredentials));
 
-      expect(result.type).toBe('auth/login/rejected');
+      expect(_result.type).toBe('auth/login/rejected');
 
       // Check store state
       const state = store.getState();
@@ -149,9 +150,9 @@ describe('Authentication Integration Tests', () => {
         password: 'password123',
       };
 
-      const result = await store.dispatch(login(nonExistentCredentials));
+      const _result = await store.dispatch(login(nonExistentCredentials));
 
-      expect(result.type).toBe('auth/login/rejected');
+      expect(_result.type).toBe('auth/login/rejected');
 
       // Check store state
       const state = store.getState();
@@ -172,9 +173,9 @@ describe('Authentication Integration Tests', () => {
       let state = store.getState();
       expect(state.auth.isAuthenticated).toBe(true);
 
-      const result = await store.dispatch(logout());
+      const _result = await store.dispatch(logout());
 
-      expect(result.type).toBe('auth/logout/fulfilled');
+      expect(_result.type).toBe('auth/logout/fulfilled');
 
       // Check store state
       state = store.getState();
@@ -229,7 +230,7 @@ describe('Authentication Integration Tests', () => {
       // At least one should succeed
       const successfulLogins = results.filter(
         result => result.status === 'fulfilled' && 
-        (result.value as any).type === 'auth/login/fulfilled'
+        (_result.value as any).type === 'auth/login/fulfilled'
       );
 
       expect(successfulLogins.length).toBeGreaterThan(0);
@@ -241,16 +242,16 @@ describe('Authentication Integration Tests', () => {
 
     it('should handle network errors gracefully', async () => {
       // Temporarily break the API URL to simulate network error
-      const originalBaseURL = store.getState().auth.apiBaseURL;
+      const _originalBaseURL = store.getState().auth.apiBaseURL;
       
       const invalidCredentials = {
         email: 'test@invalid-domain-that-does-not-exist.com',
         password: 'password',
       };
 
-      const result = await store.dispatch(login(invalidCredentials));
+      const _result = await store.dispatch(login(invalidCredentials));
 
-      expect(result.type).toBe('auth/login/rejected');
+      expect(_result.type).toBe('auth/login/rejected');
 
       const state = store.getState();
       expect(state.auth.isAuthenticated).toBe(false);

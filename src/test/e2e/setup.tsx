@@ -1,9 +1,10 @@
+ 
 /**
  * E2E Test Setup
  * Configuration and utilities for end-to-end testing
  */
 
-import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
+import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { NavigationContainer } from '@react-navigation/native';
@@ -11,25 +12,25 @@ import { PaperProvider } from 'react-native-paper';
 import { store } from '../../store';
 import { theme } from '../../theme';
 
-// Mock navigation for E2E tests
-const mockNavigation = {
-  navigate: jest.fn(),
-  goBack: jest.fn(),
-  reset: jest.fn(),
-  setParams: jest.fn(),
-  dispatch: jest.fn(),
-  setOptions: jest.fn(),
-  isFocused: jest.fn(() => true),
-  addListener: jest.fn(() => jest.fn()),
-  removeListener: jest.fn(),
-};
+// Mock navigation for E2E tests (kept for potential future use)
+// const mockNavigation = {
+//   navigate: jest.fn(),
+//   goBack: jest.fn(),
+//   reset: jest.fn(),
+//   setParams: jest.fn(),
+//   dispatch: jest.fn(),
+//   setOptions: jest.fn(),
+//   isFocused: jest.fn(() => true),
+//   addListener: jest.fn(() => jest.fn()),
+//   removeListener: jest.fn(),
+// };
 
-// Mock route for E2E tests
-const mockRoute = {
-  key: 'test-route',
-  name: 'TestScreen',
-  params: {},
-};
+// Mock route for E2E tests (kept for potential future use)
+// const mockRoute = {
+//   key: 'test-route',
+//   name: 'TestScreen',
+//   params: {},
+// };
 
 /**
  * Test wrapper component that provides all necessary providers
@@ -176,7 +177,7 @@ export const testUtils = {
   /**
    * Mock API error
    */
-  mockApiError: (status = 400, message = 'API Error') => {
+  mockApiError: (_status = 400, message = 'API Error') => {
     const error = new Error(message);
     (error as any).response = { status, data: { message } };
     return Promise.reject(error);
@@ -317,7 +318,7 @@ export const scenarios = {
   /**
    * Open a box
    */
-  openBox: async (getByTestId: any, queryByTestId: any) => {
+  openBox: async (getByTestId: any, _queryByTestId: any) => {
     // Go to inventory or boxes
     await testUtils.pressButton(getByTestId, 'profile-tab');
     await testUtils.pressButton(getByTestId, 'my-boxes-button');

@@ -1,6 +1,6 @@
 import { io, Socket } from 'socket.io-client';
 import { env } from '../config/env';
-import { WebSocketEvent, BoxOpenedEvent } from '../types/api';
+import { BoxOpenedEvent } from '../types/api';
 import logger from './loggerService';
 
 /**
@@ -103,7 +103,7 @@ export class WebSocketService {
       this.emitToListeners('new_notification', data);
     });
 
-    this.socket.on('order_update', (data: { order_id: string; status: string }) => {
+    this.socket.on('order_update', (data: { order_id: string; _status: string }) => {
       logger.debug('📋 Order update received:', data);
       this.emitToListeners('order_update', data);
     });
@@ -174,7 +174,7 @@ export class WebSocketService {
     const listeners = this.eventListeners.get(event);
     if (listeners) {
       listeners.delete(listener);
-      if (listeners.size === 0) {
+      if (listeners._size === 0) {
         this.eventListeners.delete(event);
       }
     }
@@ -263,7 +263,7 @@ export class WebSocketService {
 
       const startTime = Date.now();
       
-      this.socket.emit('ping', startTime, (response: number) => {
+      this.socket.emit('ping', startTime, (_response: number) => {
         const latency = Date.now() - startTime;
         resolve(latency);
       });

@@ -6,8 +6,6 @@
  */
 
 const fs = require('fs');
-const _path = require('path');
-
 class E2EReporter {
   constructor() {
     this.results = {
@@ -50,10 +48,10 @@ class E2EReporter {
     suite.tests.push(testResult);
     this.results.totalTests++;
 
-    if (testResult.status === 'passed') {
+    if (testResult._status === 'passed') {
       suite.passed++;
       this.results.passedTests++;
-    } else if (testResult.status === 'failed') {
+    } else if (testResult._status === 'failed') {
       suite.failed++;
       this.results.failedTests++;
       this.results.failures.push({
@@ -62,7 +60,7 @@ class E2EReporter {
         error: testResult.error,
         screenshot: testResult.screenshot
       });
-    } else if (testResult.status === 'skipped') {
+    } else if (testResult._status === 'skipped') {
       suite.skipped++;
       this.results.skippedTests++;
     }
@@ -81,9 +79,9 @@ class E2EReporter {
   /**
    * Adiciona screenshot ao relatório
    */
-  addScreenshot(filePath, testName, description) {
+  addScreenshot(_filePath, testName, description) {
     this.results.screenshots.push({
-      path: filePath,
+      path: _filePath,
       test: testName,
       description: description,
       timestamp: new Date()
@@ -93,9 +91,9 @@ class E2EReporter {
   /**
    * Adiciona vídeo ao relatório
    */
-  addVideo(filePath, testName) {
+  addVideo(_filePath, testName) {
     this.results.videos.push({
-      path: filePath,
+      path: _filePath,
       test: testName,
       timestamp: new Date()
     });
@@ -417,7 +415,7 @@ class E2EReporter {
     `;
 
     fs.writeFileSync(outputPath, html);
-    console.log(`Relatório HTML gerado: ${outputPath}`);
+
   }
 
   /**
@@ -577,7 +575,7 @@ class E2EReporter {
    */
   generateJSONReport(outputPath) {
     fs.writeFileSync(outputPath, JSON.stringify(this.results, null, 2));
-    console.log(`Relatório JSON gerado: ${outputPath}`);
+
   }
 
   /**
@@ -603,7 +601,7 @@ ${test.status === 'skipped' ? '      <skipped/>' : ''}
 </testsuites>`;
 
     fs.writeFileSync(outputPath, xml);
-    console.log(`Relatório JUnit XML gerado: ${outputPath}`);
+
   }
 }
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -14,8 +14,9 @@ import {
   Chip,
   TextInput,
   Switch,
-  Divider,
+
   IconButton,
+  Divider,
 } from 'react-native-paper';
 import { useSelector, useDispatch } from 'react-redux';
 

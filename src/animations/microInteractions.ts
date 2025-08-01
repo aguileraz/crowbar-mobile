@@ -47,7 +47,7 @@ export const buttonPress = (
 /**
  * Animação de hover/focus
  */
-export const elementHover = (
+export const _elementHover = (
   scaleValue: SharedValue<number>,
   opacityValue?: SharedValue<number>
 ) => {
@@ -58,7 +58,7 @@ export const elementHover = (
   }
 };
 
-export const elementUnhover = (
+export const _elementUnhover = (
   scaleValue: SharedValue<number>,
   opacityValue?: SharedValue<number>
 ) => {

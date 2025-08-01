@@ -123,7 +123,7 @@ export const useRealtime = (options: UseRealtimeOptions = {}) => {
    * Reconnect on app focus (if needed)
    */
   useEffect(() => {
-    const handleAppStateChange = (nextAppState: string) => {
+    const _handleAppStateChange = (nextAppState: string) => {
       if (nextAppState === 'active' && !isConnected && autoConnect) {
         connect();
       }
@@ -170,7 +170,7 @@ export const useRealtime = (options: UseRealtimeOptions = {}) => {
  * Hook específico para atualizações de caixa
  */
 export const useBoxRealtime = (boxId: string) => {
-  const { subscribeBox, getBoxStock, isConnected } = useRealtime();
+  const { subscribeBox, getBoxStock: _getBoxStock, isConnected } = useRealtime();
   const boxStock = useSelector(selectBoxStock(boxId));
 
   useEffect(() => {
@@ -191,7 +191,7 @@ export const useBoxRealtime = (boxId: string) => {
  * Hook específico para atualizações de pedido
  */
 export const useOrderRealtime = (orderId: string) => {
-  const { subscribeOrder, getOrderStatus, isConnected } = useRealtime();
+  const { subscribeOrder, getOrderStatus: _getOrderStatus, isConnected } = useRealtime();
   const orderStatus = useSelector(selectOrderStatus(orderId));
 
   useEffect(() => {

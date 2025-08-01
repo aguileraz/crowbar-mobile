@@ -11,12 +11,11 @@ import {
   withDelay,
   interpolate,
   Extrapolate,
-  SharedValue,
 } from 'react-native-reanimated';
 import { Dimensions } from 'react-native';
 import { SPRING_CONFIGS, DURATIONS, EASINGS } from '../animations/constants';
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+const { width: _SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 // Hook para animações condicionais
 export const useConditionalAnimation = (
@@ -199,7 +198,7 @@ export const useCircularProgress = (
   } = options;
 
   const progressValue = useSharedValue(0);
-  const radius = (size - strokeWidth) / 2;
+  const radius = (_size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
 
   useEffect(() => {

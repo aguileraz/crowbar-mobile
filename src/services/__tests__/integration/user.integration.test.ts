@@ -1,7 +1,7 @@
+ 
 import { TestApiClient, testEnvironment, testData, testUtils } from './testConfig';
-import { apiClient } from '../../api';
 import { userService } from '../../userService';
-import { User, Address, UserPreferences, UserStats, Favorite, Notification } from '../../../types/api';
+import { Address, UserPreferences, UserStats, Favorite, Notification } from '../../../types/api';
 
 /**
  * Testes de integração para operações de usuário

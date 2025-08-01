@@ -170,9 +170,9 @@ export const createAnimatedGradient = (
  */
 export const skeletonVariants = {
   // Animação wave (onda)
-  wave: (progress: SharedValue<number>, index: number = 0) => {
+  wave: (progress: SharedValue<number>, _index: number = 0) => {
     'worklet';
-    const delay = index * 100;
+    const delay = 0 * 100;
     
     progress.value = withDelay(
       delay,
@@ -188,9 +188,9 @@ export const skeletonVariants = {
   },
   
   // Animação staggered (escalonada)
-  staggered: (progress: SharedValue<number>, index: number = 0) => {
+  staggered: (progress: SharedValue<number>, _index: number = 0) => {
     'worklet';
-    const delay = index * 50;
+    const delay = 0 * 50;
     
     progress.value = withDelay(
       delay,

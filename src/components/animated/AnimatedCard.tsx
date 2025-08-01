@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-unused-styles */
 /**
  * Card animado com efeitos de hover e press
  */
@@ -6,7 +7,6 @@ import React, { useCallback } from 'react';
 import {
   Pressable,
   StyleSheet,
-  View,
   ViewStyle,
   PressableProps,
 } from 'react-native';
@@ -17,7 +17,6 @@ import Animated, {
   Extrapolate,
   withSpring,
 } from 'react-native-reanimated';
-import { elementHover, elementUnhover } from '../../animations/microInteractions';
 import { SPRING_CONFIGS, SCALE_VALUES } from '../../animations/constants';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -39,7 +38,7 @@ export const AnimatedCard: React.FC<AnimatedCardProps> = ({
   elevation = 2,
   variant = 'elevated',
   pressable = true,
-  haptic = true,
+  _haptic = true,
   scaleOnPress = true,
   elevateOnHover = true,
   onPress,
@@ -130,8 +129,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     padding: 16,
   },
-  
-  // Variants
   elevated: {
     shadowColor: '#000',
     shadowOffset: {
@@ -147,5 +144,3 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5F5F5',
   },
 });
-
-export default AnimatedCard;

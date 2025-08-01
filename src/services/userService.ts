@@ -1,7 +1,7 @@
 import { apiClient } from './api';
 import {
   User,
-  Address,
+
   UserPreferences,
   UserStats,
   Favorite,
@@ -18,7 +18,7 @@ export class UserService {
    * Obter perfil do usuário atual
    */
   async getProfile(): Promise<User> {
-    const response = await apiClient.get<User>('/user/profile');
+    const _response = await apiClient.get<User>('/user/profile');
     return response.data;
   }
 
@@ -26,7 +26,7 @@ export class UserService {
    * Atualizar perfil do usuário
    */
   async updateProfile(data: Partial<Pick<User, 'name' | 'phone' | 'birth_date' | 'gender'>>): Promise<User> {
-    const response = await apiClient.put<User>('/user/profile', data);
+    const _response = await apiClient.put<User>('/user/profile', data);
     return response.data;
   }
 
@@ -34,7 +34,7 @@ export class UserService {
    * Atualizar avatar do usuário
    */
   async updateAvatar(imageFile: FormData): Promise<{ avatar_url: string }> {
-    const response = await apiClient.upload<{ avatar_url: string }>('/user/avatar', imageFile);
+    const _response = await apiClient.upload<{ avatar_url: string }>('/user/avatar', imageFile);
     return response.data;
   }
 
@@ -42,7 +42,7 @@ export class UserService {
    * Obter endereços do usuário
    */
   async getAddresses(): Promise<Address[]> {
-    const response = await apiClient.get<Address[]>('/user/addresses');
+    const _response = await apiClient.get<Address[]>('/user/addresses');
     return response.data;
   }
 
@@ -50,7 +50,7 @@ export class UserService {
    * Adicionar novo endereço
    */
   async addAddress(address: Omit<Address, 'id'>): Promise<Address> {
-    const response = await apiClient.post<Address>('/user/addresses', address);
+    const _response = await apiClient.post<Address>('/user/addresses', address);
     return response.data;
   }
 
@@ -58,7 +58,7 @@ export class UserService {
    * Atualizar endereço
    */
   async updateAddress(addressId: string, address: Partial<Address>): Promise<Address> {
-    const response = await apiClient.put<Address>(`/user/addresses/${addressId}`, address);
+    const _response = await apiClient.put<Address>(`/user/addresses/${addressId}`, address);
     return response.data;
   }
 
@@ -80,7 +80,7 @@ export class UserService {
    * Obter preferências do usuário
    */
   async getPreferences(): Promise<UserPreferences> {
-    const response = await apiClient.get<UserPreferences>('/user/preferences');
+    const _response = await apiClient.get<UserPreferences>('/user/preferences');
     return response.data;
   }
 
@@ -88,7 +88,7 @@ export class UserService {
    * Atualizar preferências do usuário
    */
   async updatePreferences(preferences: Partial<UserPreferences>): Promise<UserPreferences> {
-    const response = await apiClient.put<UserPreferences>('/user/preferences', preferences);
+    const _response = await apiClient.put<UserPreferences>('/user/preferences', preferences);
     return response.data;
   }
 
@@ -96,7 +96,7 @@ export class UserService {
    * Obter estatísticas do usuário
    */
   async getStats(): Promise<UserStats> {
-    const response = await apiClient.get<UserStats>('/user/stats');
+    const _response = await apiClient.get<UserStats>('/user/stats');
     return response.data;
   }
 
@@ -104,7 +104,7 @@ export class UserService {
    * Obter favoritos do usuário
    */
   async getFavorites(page: number = 1, perPage: number = 20): Promise<PaginatedResponse<Favorite>> {
-    const response = await apiClient.get<Favorite[]>(`/user/favorites?page=${page}&per_page=${perPage}`);
+    const _response = await apiClient.get<Favorite[]>(`/user/favorites?page=${page}&per_page=${perPage}`);
     return response;
   }
 
@@ -112,7 +112,7 @@ export class UserService {
    * Adicionar caixa aos favoritos
    */
   async addToFavorites(boxId: string): Promise<Favorite> {
-    const response = await apiClient.post<Favorite>('/user/favorites', { mystery_box_id: boxId });
+    const _response = await apiClient.post<Favorite>('/user/favorites', { mystery_box_id: boxId });
     return response.data;
   }
 
@@ -128,7 +128,7 @@ export class UserService {
    */
   async isFavorite(boxId: string): Promise<boolean> {
     try {
-      const response = await apiClient.get<{ is_favorite: boolean }>(`/user/favorites/${boxId}/check`);
+      const _response = await apiClient.get<{ is_favorite: boolean }>(`/user/favorites/${boxId}/check`);
       return response.data.is_favorite;
     } catch (error) {
       return false;
@@ -139,7 +139,7 @@ export class UserService {
    * Obter pedidos do usuário
    */
   async getOrders(page: number = 1, perPage: number = 10): Promise<PaginatedResponse<Order>> {
-    const response = await apiClient.get<Order[]>(`/user/orders?page=${page}&per_page=${perPage}`);
+    const _response = await apiClient.get<Order[]>(`/user/orders?page=${page}&per_page=${perPage}`);
     return response;
   }
 
@@ -147,7 +147,7 @@ export class UserService {
    * Obter detalhes de um pedido específico
    */
   async getOrderById(orderId: string): Promise<Order> {
-    const response = await apiClient.get<Order>(`/user/orders/${orderId}`);
+    const _response = await apiClient.get<Order>(`/user/orders/${orderId}`);
     return response.data;
   }
 
@@ -162,7 +162,7 @@ export class UserService {
    * Obter notificações do usuário
    */
   async getNotifications(page: number = 1, perPage: number = 20): Promise<PaginatedResponse<Notification>> {
-    const response = await apiClient.get<Notification[]>(`/user/notifications?page=${page}&per_page=${perPage}`);
+    const _response = await apiClient.get<Notification[]>(`/user/notifications?page=${page}&per_page=${perPage}`);
     return response;
   }
 
@@ -191,7 +191,7 @@ export class UserService {
    * Obter contagem de notificações não lidas
    */
   async getUnreadNotificationsCount(): Promise<number> {
-    const response = await apiClient.get<{ count: number }>('/user/notifications/unread-count');
+    const _response = await apiClient.get<{ count: number }>('/user/notifications/unread-count');
     return response.data.count;
   }
 
@@ -224,7 +224,7 @@ export class UserService {
    * Exportar dados do usuário (LGPD)
    */
   async exportUserData(): Promise<{ download_url: string; expires_at: string }> {
-    const response = await apiClient.post<{ download_url: string; expires_at: string }>('/user/export-data');
+    const _response = await apiClient.post<{ download_url: string; expires_at: string }>('/user/export-data');
     return response.data;
   }
 
@@ -250,7 +250,7 @@ export class UserService {
     data: any;
     created_at: string;
   }>> {
-    const response = await apiClient.get(`/user/activity?page=${page}&per_page=${perPage}`);
+    const _response = await apiClient.get(`/user/activity?page=${page}&per_page=${perPage}`);
     return response;
   }
 
@@ -258,7 +258,7 @@ export class UserService {
    * Verificar se email está disponível
    */
   async checkEmailAvailability(email: string): Promise<{ available: boolean }> {
-    const response = await apiClient.get<{ available: boolean }>(`/user/check-email?email=${encodeURIComponent(email)}`);
+    const _response = await apiClient.get<{ available: boolean }>(`/user/check-email?email=${encodeURIComponent(email)}`);
     return response.data;
   }
 

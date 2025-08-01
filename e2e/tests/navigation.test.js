@@ -1,3 +1,4 @@
+ 
 /**
  * Testes E2E para navegação entre telas
  * 
@@ -399,8 +400,7 @@ describe('Navegação entre Telas', () => {
       
       // Verificar se ainda está funcionando
       await shopPage.expectShopScreenVisible();
-      
-      console.log(`Navegação completada em ${duration}ms`);
+
     });
 
     it('deve manter performance após múltiplas navegações', async () => {

@@ -1,5 +1,5 @@
-import { TestApiClient, testEnvironment, testData, testUtils } from './testConfig';
-import { apiClient } from '../../api';
+ 
+import { TestApiClient, testEnvironment, testUtils } from './testConfig';
 import { boxService } from '../../boxService';
 import { MysteryBox, Category, SearchFilters, SearchResult, Review } from '../../../types/api';
 
@@ -173,7 +173,7 @@ describe('Testes de Integração - Operações de Boxes', () => {
       expect(response[0].reviews_count).toBeGreaterThanOrEqual(response[1].reviews_count);
     });
 
-    it('deve obter caixas recém-lançadas', async () => {
+    it('deve obter caixas _recém-lançadas', async () => {
       // Arrange
       const newBoxes = testBoxes.filter(box => box.is_new);
       const expectedResponse = testUtils.createApiResponse(newBoxes);
@@ -196,7 +196,6 @@ describe('Testes de Integração - Operações de Boxes', () => {
         errors: {},
       });
 
-      // Act & Assert
       await expect(boxService.getBoxes()).rejects.toMatchObject({
         status: 500,
         message: 'Erro interno do servidor',

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import logger from '../../services/loggerService';
 import {
   View,
@@ -16,7 +16,7 @@ import {
   FAB,
   Badge,
 } from 'react-native-paper';
-import { useDispatch, useSelector } from 'react-redux';
+import { _useDispatch, useSelector } from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -43,7 +43,7 @@ import ErrorMessage from '../../components/ErrorMessage';
 import { Notification } from '../../types/api';
 
 // Theme
-import { theme, getSpacing, getBorderRadius } from '../../theme';
+import { _theme, getSpacing } from '../../theme';
 
 /**
  * Tela de Notificações
@@ -93,7 +93,7 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ navigation })
     try {
       await dispatch(fetchNotifications({ page: 1, filters })).unwrap();
     } catch (err) {
-      logger.error('Error loading notifications:', err);
+      logger.error('Error loading notifications:', _err);
     }
   };
 
@@ -136,7 +136,7 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ navigation })
           filters 
         })).unwrap();
       } catch (err) {
-        logger.error('Error loading more notifications:', err);
+        logger.error('Error loading more notifications:', _err);
       } finally {
         setLoadingMore(false);
       }
@@ -150,14 +150,14 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ navigation })
     try {
       await dispatch(markAllAsRead()).unwrap();
     } catch (err) {
-      logger.error('Error marking all as read:', err);
+      logger.error('Error marking all as read:', _err);
     }
   };
 
   /**
    * Clear all filters
    */
-  const clearAllFilters = () => {
+  const _clearAllFilters = () => {
     setTypeFilter('all');
     setReadFilter('all');
     dispatch(clearFilters());

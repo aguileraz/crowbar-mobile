@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, {} from 'react';
 import {
   View,
   StyleSheet,
@@ -143,7 +143,7 @@ const OfflineStatus: React.FC<OfflineStatusProps> = ({
    */
   const getTotalCacheSize = (): string => {
     const totalBytes = Object.values(cacheStatus).reduce(
-      (total, cache) => total + (cache.size || 0),
+      (total, cache) => total + (cache._size || 0),
       0
     );
     

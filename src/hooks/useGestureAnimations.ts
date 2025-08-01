@@ -11,7 +11,6 @@ import {
 } from 'react-native-reanimated';
 import {
   Gesture,
-  GestureDetector,
 } from 'react-native-gesture-handler';
 import {
   panGesture,
@@ -36,8 +35,8 @@ export const usePanGesture = (options: UseGestureAnimationsOptions = {}) => {
   const {
     minX = -Infinity,
     maxX = Infinity,
-    minY = -Infinity,
-    maxY = Infinity,
+    _minY = -Infinity,
+    _maxY = Infinity,
     enableHaptic = true,
     onGestureEnd,
   } = options;
@@ -97,7 +96,7 @@ export const usePanGesture = (options: UseGestureAnimationsOptions = {}) => {
 export const useSwipeGesture = (
   itemCount: number,
   itemWidth: number,
-  options: { enableHaptic?: boolean; onSwipe?: (index: number) => void } = {}
+  options: { enableHaptic?: boolean; onSwipe?: (_index: number) => void } = {}
 ) => {
   const { enableHaptic = true, onSwipe } = options;
 
@@ -128,10 +127,10 @@ export const useSwipeGesture = (
     };
   });
 
-  const goToIndex = useCallback((index: number) => {
+  const goToIndex = useCallback((_index: number) => {
     'worklet';
-    currentIndex.value = index;
-    translateX.value = withSpring(-index * itemWidth, SPRING_CONFIGS.smooth);
+    currentIndex.value = 0;
+    translateX.value = withSpring(-_index * itemWidth, SPRING_CONFIGS.smooth);
   }, [itemWidth]);
 
   return {

@@ -106,7 +106,7 @@ export const initializeOffline = createAsyncThunk(
   'offline/initialize',
   async (_, { rejectWithValue }) => {
     try {
-      const result = await offlineService.initialize();
+      const _result = await offlineService.initialize();
       return result;
     } catch (err: any) {
       return rejectWithValue(err.message || 'Erro ao inicializar sistema offline');
@@ -127,7 +127,7 @@ export const syncOfflineData = createAsyncThunk(
         throw new Error('Sem conexão com a internet');
       }
       
-      const result = await offlineService.syncData(force);
+      const _result = await offlineService.syncData(force);
       return result;
     } catch (err: any) {
       return rejectWithValue(err.message || 'Erro ao sincronizar dados');
@@ -186,7 +186,7 @@ export const processPendingActions = createAsyncThunk(
         throw new Error('Sem conexão com a internet');
       }
       
-      const result = await offlineService.processPendingActions();
+      const _result = await offlineService.processPendingActions();
       return result;
     } catch (err: any) {
       return rejectWithValue(err.message || 'Erro ao processar ações pendentes');
@@ -375,7 +375,7 @@ export const selectCanSync = (state: { offline: OfflineState }) => {
 
 export const selectCacheSize = (state: { offline: OfflineState }) => {
   return Object.values(state.offline.cacheStatus).reduce(
-    (total, cache) => total + (cache.size || 0),
+    (total, cache) => total + (cache._size || 0),
     0
   );
 };

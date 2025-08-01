@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import logger from '../../services/loggerService';
 import {
   View,
@@ -25,7 +25,6 @@ import { RouteProp } from '@react-navigation/native';
 // Redux
 import { AppDispatch } from '../../store';
 import {
-  fetchBoxesByCategory,
   fetchBoxes,
   selectBoxes,
   selectCategories,

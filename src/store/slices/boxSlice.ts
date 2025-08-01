@@ -5,7 +5,6 @@ import {
   Category,
   SearchFilters,
   SearchResult,
-  PaginatedResponse,
 } from '../../types/api';
 
 /**
@@ -114,7 +113,7 @@ export const fetchBoxes = createAsyncThunk(
   'boxes/fetchBoxes',
   async (filters: SearchFilters = {}, { rejectWithValue }) => {
     try {
-      const response = await boxService.getBoxes(filters);
+      const _response = await boxService.getBoxes(filters);
       return response;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Erro ao buscar caixas');
@@ -204,7 +203,7 @@ export const searchBoxes = createAsyncThunk(
   'boxes/searchBoxes',
   async ({ query, filters }: { query: string; filters?: Omit<SearchFilters, 'query'> }, { rejectWithValue }) => {
     try {
-      const result = await boxService.searchBoxes(query, filters);
+      const _result = await boxService.searchBoxes(query, filters);
       return result;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Erro na busca');
@@ -426,7 +425,6 @@ const boxSlice = createSlice({
 
 // Actions
 export const {
-  clearError,
   setSearchQuery,
   clearSearchResults,
   setActiveFilters,
@@ -434,7 +432,7 @@ export const {
   setSelectedCategory,
   clearSelectedBox,
   updateBoxStock,
-  resetState,
+  resetState
 } = boxSlice.actions;
 
 // Selectors

@@ -329,7 +329,7 @@ export const useEcommerceTracking = () => {
 export const useEngagementTracking = () => {
   const { trackEngagement, isEnabled } = useAnalytics();
 
-  const trackButtonClick = useCallback((buttonName: string, context?: string) => {
+  const trackButtonClick = useCallback((buttonName: string, _context?: string) => {
     if (!isEnabled) return;
     
     trackEngagement('button_click', buttonName);

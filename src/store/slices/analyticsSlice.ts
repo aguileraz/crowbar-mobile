@@ -104,7 +104,7 @@ export const initializeAnalytics = createAsyncThunk(
   'analytics/initialize',
   async (_, { rejectWithValue }) => {
     try {
-      const result = await analyticsService.initialize();
+      const _result = await analyticsService.initialize();
       return result;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Erro ao inicializar analytics');

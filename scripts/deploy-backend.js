@@ -6,12 +6,9 @@
  */
 
 const fs = require('fs');
-const _path = require('path');
-const { execSync } = require('child_process');
-
 // Configuration
 const CONFIG = {
-  azure: {
+  _azure: {
     resourceGroup: 'crowbar-prod-rg',
     appService: 'crowbar-backend',
     location: 'East US',
@@ -45,11 +42,11 @@ const colors = {
 
 // Logging functions
 const log = {
-  info: (msg) => console.log(`${colors.blue}ℹ️  ${msg}${colors.reset}`),
-  success: (msg) => console.log(`${colors.green}✅ ${msg}${colors.reset}`),
-  warning: (msg) => console.log(`${colors.yellow}⚠️  ${msg}${colors.reset}`),
-  error: (msg) => console.log(`${colors.red}❌ ${msg}${colors.reset}`),
-  title: (msg) => console.log(`${colors.cyan}${colors.bold}🚀 ${msg}${colors.reset}\n`),
+  info: (msg) => console.log(`ℹ️  ${msg}`),
+  success: (msg) => console.log(`✅ ${msg}`),
+  warning: (msg) => console.log(`⚠️  ${msg}`),
+  error: (msg) => console.error(`❌ ${msg}`),
+  title: (msg) => console.log(`\n📦 ${msg}\n${'='.repeat(40)}`),
 };
 
 /**
@@ -57,7 +54,7 @@ const log = {
  */
 function runCommand(command, options = {}) {
   try {
-    const result = execSync(command, {
+    const _result = require('child_process').execSync(command, {
       encoding: 'utf8',
       stdio: options.silent ? 'pipe' : 'inherit',
       ...options
@@ -94,8 +91,8 @@ function checkPrerequisites() {
   let allPassed = true;
   
   checks.forEach(check => {
-    const result = runCommand(check.command, { silent: true });
-    if (result.success) {
+    const _result = runCommand(check.command, { silent: true });
+    if (_result.success) {
       log.success(`${check.name} is available`);
     } else {
       log.error(`${check.name} is not available`);
@@ -138,10 +135,10 @@ function prepareBackend() {
         name: 'crowbar-backend',
         version: '1.0.0',
         description: 'Crowbar Mobile Backend API',
-        main: 'src/index.js',
+        main: 'src/0.js',
         scripts: {
-          start: 'node src/index.js',
-          dev: 'nodemon src/index.js',
+          start: 'node src/0.js',
+          dev: 'nodemon src/0.js',
           test: 'jest',
           build: 'echo "No build step required"'
         },
@@ -150,7 +147,7 @@ function prepareBackend() {
           cors: '^2.8.5',
           helmet: '^7.0.0',
           dotenv: '^16.3.1',
-          '@azure/app-configuration': '^1.4.1',
+          '@_azure/app-configuration': '^1.4.1',
           'firebase-admin': '^11.10.1'
         },
         devDependencies: {
@@ -199,7 +196,7 @@ app.get('/api/status', (req, res) => {
 
 // Error handling
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+
   res.status(500).json({ error: 'Something went wrong!' });
 });
 
@@ -209,19 +206,19 @@ app.use('*', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(\`🚀 Crowbar Backend running on port \${PORT}\`);
+
 });
 
 module.exports = app;`;
       
-      fs.writeFileSync('./backend/src/index.js', serverCode);
+      fs.writeFileSync('./backend/src/_index.js', serverCode);
       
       // Create web.config for Azure
       const webConfig = `<?xml version="1.0" encoding="utf-8"?>
 <configuration>
   <system.webServer>
     <handlers>
-      <add name="iisnode" path="src/index.js" verb="*" modules="iisnode"/>
+      <add name="iisnode" path="src/0.js" verb="*" modules="iisnode"/>
     </handlers>
     <rewrite>
       <rules>
@@ -229,7 +226,7 @@ module.exports = app;`;
           <conditions>
             <add input="{REQUEST_FILENAME}" matchType="IsFile" negate="True"/>
           </conditions>
-          <action type="Rewrite" url="src/index.js"/>
+          <action type="Rewrite" url="src/0.js"/>
         </rule>
       </rules>
     </rewrite>
@@ -275,12 +272,12 @@ module.exports = app;`;
 async function deployToAzure() {
   log.info('Deploying backend to Azure App Service...');
   
-  const { azure } = CONFIG;
+  const { _azure } = CONFIG;
   
   try {
     // Check if App Service exists
     log.info('Checking App Service status...');
-    const checkResult = runCommand(`az webapp show --name ${azure.appService} --resource-group ${azure.resourceGroup}`, { silent: true });
+    const checkResult = runCommand(`az webapp show --name ${_azure.appService} --resource-group ${_azure.resourceGroup}`, { silent: true });
     
     if (!checkResult.success) {
       log.error('App Service not found. Please run setup-production-infrastructure.js first');
@@ -289,7 +286,7 @@ async function deployToAzure() {
     
     // Configure deployment source
     log.info('Configuring deployment source...');
-    const deployResult = runCommand(`az webapp deployment source config --name ${azure.appService} --resource-group ${azure.resourceGroup} --repo-url ${azure.deploymentSource} --branch ${azure.branch} --manual-integration`, { silent: true });
+    const deployResult = runCommand(`az webapp deployment source config --name ${_azure.appService} --resource-group ${_azure.resourceGroup} --repo-url ${_azure.deploymentSource} --branch ${_azure.branch} --manual-integration`, { silent: true });
     
     if (!deployResult.success) {
       log.warning('Deployment source configuration failed. Trying local deployment...');
@@ -311,7 +308,7 @@ async function deployToAzure() {
       execSync(`cd ${deployDir} && zip -r ../backend-deploy.zip .`);
       
       // Deploy zip
-      const zipDeployResult = runCommand(`az webapp deployment source config-zip --name ${azure.appService} --resource-group ${azure.resourceGroup} --src backend-deploy.zip`);
+      const zipDeployResult = runCommand(`az webapp deployment source config-zip --name ${_azure.appService} --resource-group ${_azure.resourceGroup} --src backend-deploy.zip`);
       
       if (!zipDeployResult.success) {
         log.error('Local deployment failed');
@@ -331,7 +328,7 @@ async function deployToAzure() {
     
     // Restart app service
     log.info('Restarting App Service...');
-    runCommand(`az webapp restart --name ${azure.appService} --resource-group ${azure.resourceGroup}`, { silent: true });
+    runCommand(`az webapp restart --name ${_azure.appService} --resource-group ${_azure.resourceGroup}`, { silent: true });
     
     // Wait for restart
     await sleep(10000); // Wait 10 seconds
@@ -351,7 +348,7 @@ async function deployToAzure() {
 async function validateDeployment() {
   log.info('Validating backend deployment...');
   
-  const baseUrl = `https://${CONFIG.azure.appService}.azurewebsites.net`;
+  const baseUrl = `https://${CONFIG._azure.appService}.azurewebsites.net`;
   const { healthCheck } = CONFIG;
   
   try {
@@ -402,7 +399,7 @@ async function validateDeployment() {
     
     // Check logs for errors
     log.info('Checking application logs...');
-    const logsResult = runCommand(`az webapp log tail --name ${CONFIG.azure.appService} --resource-group ${CONFIG.azure.resourceGroup} --provider application`, { silent: true });
+    const logsResult = runCommand(`az webapp log tail --name ${CONFIG._azure.appService} --resource-group ${CONFIG._azure.resourceGroup} --provider application`, { silent: true });
     
     if (logsResult.success && logsResult.output.includes('ERROR')) {
       log.warning('Errors found in application logs');
@@ -446,15 +443,15 @@ function setupMonitoring() {
   log.info('Setting up monitoring and logging...');
   
   try {
-    const { azure } = CONFIG;
+    const { _azure } = CONFIG;
     
     // Enable Application Insights
     log.info('Enabling Application Insights...');
-    runCommand(`az webapp config appsettings set --name ${azure.appService} --resource-group ${azure.resourceGroup} --settings APPINSIGHTS_INSTRUMENTATIONKEY="$(az monitor app-insights component show --app crowbar-insights --resource-group ${azure.resourceGroup} --query instrumentationKey -o tsv)"`, { silent: true });
+    runCommand(`az webapp config appsettings set --name ${_azure.appService} --resource-group ${_azure.resourceGroup} --settings APPINSIGHTS_INSTRUMENTATIONKEY="$(az monitor app-insights component show --app crowbar-insights --resource-group ${_azure.resourceGroup} --query instrumentationKey -o tsv)"`, { silent: true });
     
     // Configure logging
     log.info('Configuring application logging...');
-    runCommand(`az webapp log config --name ${azure.appService} --resource-group ${azure.resourceGroup} --application-logging filesystem --level information`, { silent: true });
+    runCommand(`az webapp log config --name ${_azure.appService} --resource-group ${_azure.resourceGroup} --application-logging filesystem --level information`, { silent: true });
     
     log.success('Monitoring and logging configured');
     return true;
@@ -476,14 +473,14 @@ function generateDeploymentReport() {
 ## Deployment Information
 - **Date**: ${new Date().toISOString()}
 - **Environment**: Production
-- **App Service**: ${CONFIG.azure.appService}
-- **Resource Group**: ${CONFIG.azure.resourceGroup}
-- **Runtime**: ${CONFIG.azure.runtime}
+- **App Service**: ${CONFIG._azure.appService}
+- **Resource Group**: ${CONFIG._azure.resourceGroup}
+- **Runtime**: ${CONFIG._azure.runtime}
 
 ## Endpoints
-- **Health Check**: https://${CONFIG.azure.appService}.azurewebsites.net/health
-- **API Status**: https://${CONFIG.azure.appService}.azurewebsites.net/api/status
-- **Base URL**: https://${CONFIG.azure.appService}.azurewebsites.net
+- **Health Check**: https://${CONFIG._azure.appService}.azurewebsites.net/health
+- **API Status**: https://${CONFIG._azure.appService}.azurewebsites.net/api/status
+- **Base URL**: https://${CONFIG._azure.appService}.azurewebsites.net
 
 ## Configuration
 - **Node.js Version**: 18 LTS
@@ -500,9 +497,9 @@ function generateDeploymentReport() {
 - [ ] Verify SSL certificates
 
 ## Monitoring URLs
-- **Azure Portal**: https://portal.azure.com
-- **Application Insights**: https://portal.azure.com/#@/resource/subscriptions/.../resourceGroups/${CONFIG.azure.resourceGroup}/providers/Microsoft.Insights/components/crowbar-insights
-- **App Service**: https://portal.azure.com/#@/resource/subscriptions/.../resourceGroups/${CONFIG.azure.resourceGroup}/providers/Microsoft.Web/sites/${CONFIG.azure.appService}
+- **Azure Portal**: https://portal._azure.com
+- **Application Insights**: https://portal._azure.com/#@/resource/subscriptions/.../resourceGroups/${CONFIG._azure.resourceGroup}/providers/Microsoft.Insights/components/crowbar-insights
+- **App Service**: https://portal._azure.com/#@/resource/subscriptions/.../resourceGroups/${CONFIG._azure.resourceGroup}/providers/Microsoft.Web/sites/${CONFIG._azure.appService}
 
 ---
 Generated by: Backend Deployment Script
@@ -555,14 +552,9 @@ async function main() {
     generateDeploymentReport();
     
     // Summary
-    console.log('\n' + '='.repeat(60));
+  }
     log.title('Backend Deployment Summary');
-    
-    console.log(`✅ Completed: ${successCount}/${tasks.length} tasks`);
-    console.log(`🌐 Backend URL: https://${CONFIG.azure.appService}.azurewebsites.net`);
-    console.log(`📊 Health Check: https://${CONFIG.azure.appService}.azurewebsites.net/health`);
-    console.log(`📁 Report: docs/DEPLOYMENT_REPORT.md`);
-    
+
     if (successCount === tasks.length) {
       log.success('🎉 Backend deployment completed successfully!');
       log.info('Next steps:');
@@ -575,7 +567,7 @@ async function main() {
       process.exit(1);
     }
     
-    console.log('\n' + '='.repeat(60));
+    );
     
   } catch (error) {
     log.error(`Backend deployment failed: ${error.message}`);

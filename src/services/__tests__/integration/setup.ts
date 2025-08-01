@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import logger from '../../loggerService';
 
 import 'react-native-testing-library/extend-expect';
@@ -193,7 +194,7 @@ jest.setTimeout(30000);
 // Configuração para suprimir warnings específicos
 const originalWarn = console.warn;
 console.warn = (...args) => {
-  // Suprimir warnings específicos conhecidos
+  // Suprimir warnings especificos conhecidos
   if (
     args[0]?.includes?.('componentWillReceiveProps') ||
     args[0]?.includes?.('componentWillUpdate') ||
@@ -204,7 +205,7 @@ console.warn = (...args) => {
   originalWarn(...args);
 };
 
-// Configuração para capturar erros não tratados
+// Configuracao para capturar erros nao tratados
 process.on('unhandledRejection', (reason, promise) => {
   logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
 });
@@ -325,8 +326,8 @@ jest.mock('react-native', () => ({
   PixelRatio: {
     get: jest.fn(() => 2),
     getFontScale: jest.fn(() => 1),
-    getPixelSizeForLayoutSize: jest.fn((size) => size * 2),
-    roundToNearestPixel: jest.fn((size) => size),
+    getPixelSizeForLayoutSize: jest.fn((_size) => size * 2),
+    roundToNearestPixel: jest.fn((_size) => size),
   },
 }));
 

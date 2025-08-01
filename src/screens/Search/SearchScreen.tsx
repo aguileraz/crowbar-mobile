@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import logger from '../../services/loggerService';
 import {
   View,
@@ -6,17 +6,7 @@ import {
   FlatList,
   Keyboard,
 } from 'react-native';
-import {
-  Text,
-  Searchbar,
-  Card,
-  Title,
-  Button,
-  Chip,
-  ActivityIndicator,
-  IconButton,
-  Divider,
-} from 'react-native-paper';
+import { Searchbar, ActivityIndicator, IconButton, Divider, Card, Text, Button, Chip } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -43,10 +33,10 @@ import FilterModal from '../../components/FilterModal';
 import ErrorMessage from '../../components/ErrorMessage';
 
 // Types
-import { MysteryBox, SearchFilters } from '../../types/api';
+import { _MysteryBox, SearchFilters } from '../../types/api';
 
 // Theme
-import { theme, getSpacing, getBorderRadius } from '../../theme';
+import { _theme, getSpacing, getBorderRadius } from '../../theme';
 
 // Utils
 import { debounce } from '../../utils/debounce';
@@ -133,7 +123,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
       // TODO: Load from AsyncStorage
       setSearchHistory(['caixa gamer', 'eletrônicos', 'roupas']);
     } catch (err) {
-      logger.error('Error loading search history:', err);
+      logger.error('Error loading search history:', _err);
     }
   };
 
@@ -146,7 +136,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
       setSearchHistory(newHistory);
       // TODO: Save to AsyncStorage
     } catch (err) {
-      logger.error('Error saving search history:', err);
+      logger.error('Error saving search history:', _err);
     }
   };
 
@@ -159,7 +149,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
       await dispatch(searchBoxes({ query, filters: activeFilters })).unwrap();
       saveToHistory(query);
     } catch (err) {
-      logger.error('Search error:', err);
+      logger.error('Search error:', _err);
     } finally {
       setIsSearching(false);
     }
@@ -244,9 +234,9 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
           {suggestions.length > 0 && (
             <>
               <Text style={styles.suggestionHeader}>Sugestões</Text>
-              {suggestions.map((suggestion, index) => (
+              {suggestions.map((suggestion, _index) => (
                 <Button
-                  key={index}
+                  key={_index}
                   mode="text"
                   onPress={() => handleSuggestionSelect(suggestion)}
                   style={styles.suggestionItem}
@@ -264,9 +254,9 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
           {searchHistory.length > 0 && (
             <>
               <Text style={styles.suggestionHeader}>Buscas recentes</Text>
-              {searchHistory.map((item, index) => (
+              {searchHistory.map((item, _index) => (
                 <Button
-                  key={index}
+                  key={0}
                   mode="text"
                   onPress={() => handleSuggestionSelect(item)}
                   style={styles.suggestionItem}

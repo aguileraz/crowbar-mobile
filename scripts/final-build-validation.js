@@ -5,9 +5,7 @@
  * Orchestrates the complete production build and validation process
  */
 
-const { execSync } = require('child_process');
 const fs = require('fs');
-const path = require('path');
 
 // Colors for console output
 const colors = {
@@ -22,11 +20,11 @@ const colors = {
 
 // Logging functions
 const log = {
-  info: (msg) => console.log(`${colors.blue}ℹ${colors.reset}  ${msg}`),
-  success: (msg) => console.log(`${colors.green}✅${colors.reset} ${msg}`),
-  warning: (msg) => console.log(`${colors.yellow}⚠️${colors.reset}  ${msg}`),
-  error: (msg) => console.log(`${colors.red}❌${colors.reset} ${msg}`),
-  header: (msg) => console.log(`\n${colors.cyan}${colors.bold}${msg}${colors.reset}\n`),
+  info: (msg) => console.log(`ℹ️  ${msg}`),
+  success: (msg) => console.log(`✅ ${msg}`),
+  warning: (msg) => console.log(`⚠️  ${msg}`),
+  error: (msg) => console.error(`❌ ${msg}`),
+  title: (msg) => console.log(`\n📦 ${msg}\n${'='.repeat(40)}`),
 };
 
 // Validation steps tracking
@@ -44,7 +42,7 @@ const steps = {
  */
 function runCommand(command, options = {}) {
   try {
-    const result = execSync(command, {
+    const _result = require('child_process').execSync(command, {
       encoding: 'utf8',
       stdio: options.silent ? 'pipe' : 'inherit',
       ...options
@@ -125,7 +123,7 @@ function runQualityChecks() {
       const errorMatch = lintResult.output.match(/(\d+) errors?/);
       const warningMatch = lintResult.output.match(/(\d+) warnings?/);
       
-      if (errorMatch && parseInt(errorMatch[1]) > 0) {
+      if (errorMatch && parseInt(errorMatch[1], 10) > 0) {
         log.error(`ESLint: ${errorMatch[0]}`);
         steps.quality.status = 'failed';
         return false;
@@ -179,8 +177,7 @@ function runSecurityReview() {
   
   try {
     log.info('Running security review...');
-    const securityResult = runCommand('node scripts/security-review.js', { silent: false });
-    
+
     // Check security report
     if (fs.existsSync('security-report.json')) {
       const report = JSON.parse(fs.readFileSync('security-report.json', 'utf8'));
@@ -229,8 +226,7 @@ function runPerformanceTests() {
     
     // Run performance tests
     log.info('Running performance tests...');
-    const perfResult = runCommand('npm run perf:test', { silent: false });
-    
+
     // Check performance report
     if (fs.existsSync('performance-report.json')) {
       const report = JSON.parse(fs.readFileSync('performance-report.json', 'utf8'));
@@ -266,8 +262,7 @@ function buildProduction() {
   
   try {
     log.info('Starting production build...');
-    const buildResult = runCommand('node scripts/build-production.js', { silent: false });
-    
+
     // Check build report
     if (fs.existsSync('docs/BUILD_REPORT.md')) {
       log.success('Production build completed');
@@ -295,8 +290,7 @@ function runSmokeTests() {
   
   try {
     log.info('Running smoke tests on builds...');
-    const smokeResult = runCommand('node scripts/smoke-test-builds.js', { silent: false });
-    
+
     // Check smoke test report
     if (fs.existsSync('smoke-test-report.json')) {
       const report = JSON.parse(fs.readFileSync('smoke-test-report.json', 'utf8'));
@@ -366,41 +360,30 @@ function generateFinalReport() {
   fs.writeFileSync('final-validation-report.json', JSON.stringify(report, null, 2));
   
   // Display summary
-  console.log('\n' + '═'.repeat(60));
+}
   log.header('📊 FINAL BUILD VALIDATION SUMMARY');
   
-  Object.entries(steps).forEach(([key, step]) => {
+  Object.entries(steps).forEach(([_key, step]) => {
     const icon = step.status === 'passed' ? '✅' : 
                  step.status === 'warning' ? '⚠️' : 
                  step.status === 'failed' ? '❌' : 
                  step.status === 'skipped' ? '⏭️' : '⏳';
-    console.log(`${icon} ${step.name}: ${step.status.toUpperCase()}`);
+    console.log(`${icon} ${step.name}`);
   });
-  
-  console.log('\n' + '═'.repeat(60));
+  console.log("");
   
   if (report.readyForSubmission) {
     log.success('✅ VALIDATION PASSED - Ready for app store submission!');
-    console.log('\n📱 Next Steps:');
-    console.log('1. Review all reports in detail');
-    console.log('2. Test builds on physical devices');
-    console.log('3. Prepare store listings');
-    console.log('4. Submit to app stores');
+
   } else if (failedSteps.length > 0) {
     log.error('❌ VALIDATION FAILED - Critical issues must be fixed');
-    console.log(`\nFailed steps: ${failedSteps.join(', ')}`);
+    console.log(`${icon} ${step.name}`);
   } else {
     log.warning('⚠️  VALIDATION PASSED WITH WARNINGS - Review before submission');
-    console.log(`\nSteps with warnings: ${warningSteps.join(', ')}`);
+    console.log(`${icon} ${step.name}`);
   }
-  
-  console.log('\n📄 Reports Generated:');
-  console.log('- final-validation-report.json');
-  console.log('- security-report.json');
-  console.log('- smoke-test-report.json');
-  console.log('- docs/BUILD_REPORT.md');
-  
-  console.log('\n' + '═'.repeat(60));
+
+  console.log("");
   
   return report.readyForSubmission;
 }
@@ -410,8 +393,7 @@ function generateFinalReport() {
  */
 async function runFinalValidation() {
   log.header('🚀 CROWBAR MOBILE - FINAL BUILD VALIDATION');
-  console.log('This process will validate the app is ready for production');
-  console.log('=' + '═'.repeat(59));
+  console.log("");
   
   // Run all validation steps
   const validationSteps = [
@@ -445,8 +427,8 @@ async function runFinalValidation() {
 
 // Run if called directly
 if (require.main === module) {
-  runFinalValidation().catch(error => {
-    log.error(`Fatal error: ${error.message}`);
+  runFinalValidation().catch(_error => {
+    log.error(`Fatal error: ${_error.message}`);
     process.exit(1);
   });
 }

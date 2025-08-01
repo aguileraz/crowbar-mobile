@@ -224,12 +224,5 @@ const styles = StyleSheet.create({
 });
 
 // Show edit overlay on press
-const _enhancedStyles = StyleSheet.create({
-  ...styles,
-  avatarContainer: {
-    ...styles.avatarContainer,
-    // Add hover effect for web or long press for mobile
-  },
-});
 
 export default AvatarUpload;

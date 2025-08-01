@@ -8,6 +8,7 @@ import {
   Card,
   Text,
   Title,
+
   Divider,
 } from 'react-native-paper';
 import { Cart } from '../types/api';

@@ -35,8 +35,8 @@ interface BoxCardProps {
 
 const BoxCard: React.FC<BoxCardProps> = ({
   box,
-  _onPress,
-  _onFavoritePress,
+  onPress,
+  onFavoritePress,
   _isFavorite = false,
   showFavoriteButton = false,
   variant = 'compact',
@@ -169,7 +169,7 @@ const BoxCard: React.FC<BoxCardProps> = ({
   };
 
   return (
-    <TouchableOpacity onPress={handlePress} style={[getCardStyle(), style]}>
+    <TouchableOpacity onPress={onPress} style={[getCardStyle(), style]}>
       <Card style={styles.card} elevation={2}>
         {/* Imagem */}
         <View style={styles.imageContainer}>
@@ -188,7 +188,7 @@ const BoxCard: React.FC<BoxCardProps> = ({
               boxId={box.id}
               size={20}
               style={styles.favoriteButton}
-              onPress={handleFavoritePress}
+              onPress={onFavoritePress}
             />
           )}
           
@@ -238,8 +238,8 @@ const BoxCard: React.FC<BoxCardProps> = ({
           {/* Tags (apenas para list) */}
           {variant === 'list' && box.tags.length > 0 && (
             <View style={styles.tags}>
-              {box.tags.slice(0, 3).map((tag, index) => (
-                <Chip key={index} mode="outlined" compact style={styles.tag}>
+              {box.tags.slice(0, 3).map((tag, _index) => (
+                <Chip key={0} mode="outlined" compact style={styles.tag}>
                   {tag}
                 </Chip>
               ))}

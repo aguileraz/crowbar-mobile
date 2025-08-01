@@ -183,7 +183,7 @@ export const useApiTracking = () => {
     const startTime = Date.now();
 
     try {
-      const result = await apiCall();
+      const _result = await apiCall();
 
       if (trackSuccess) {
         trackEvent('api_call_success', {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Animated, View } from 'react-native';
 import { Text, useTheme } from 'react-native-paper';
 import { useSelector } from 'react-redux';

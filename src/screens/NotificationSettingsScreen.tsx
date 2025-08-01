@@ -14,9 +14,9 @@ import {
   Switch,
   Button,
   List,
-  Divider,
-  Surface,
+
   IconButton,
+  Divider,
 } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../store';
@@ -39,7 +39,7 @@ interface NotificationSettingsScreenProps {
   navigation: any;
 }
 
-const NotificationSettingsScreen: React.FC<NotificationSettingsScreenProps> = ({ navigation }) => {
+const NotificationSettingsScreen: React.FC<NotificationSettingsScreenProps> = ({ _navigation }) => {
   const dispatch = useDispatch<AppDispatch>();
   
   // Analytics
@@ -64,7 +64,7 @@ const NotificationSettingsScreen: React.FC<NotificationSettingsScreenProps> = ({
       const updates = { [key]: value };
       await dispatch(updateSettings(updates)).unwrap();
       
-      trackEngagement('notification_setting_changed', key, value ? 1 : 0);
+      trackEngagement('notification_setting_changed', _key, value ? 1 : 0);
     } catch (error) {
       logger.error('Error updating setting:', error);
       Alert.alert('Erro', 'Não foi possível atualizar a configuração');
@@ -105,9 +105,9 @@ const NotificationSettingsScreen: React.FC<NotificationSettingsScreenProps> = ({
   const handlePermissionRequest = useCallback(async () => {
     try {
       trackButtonClick('request_notification_permission', 'settings');
-      const result = await dispatch(requestPermission()).unwrap();
+      const _result = await dispatch(requestPermission()).unwrap();
       
-      if (result.granted) {
+      if (_result.granted) {
         Alert.alert(
           'Permissão Concedida',
           'Agora você receberá notificações push!'

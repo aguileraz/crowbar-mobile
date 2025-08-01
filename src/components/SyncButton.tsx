@@ -33,13 +33,13 @@ export const SyncButton: React.FC<SyncButtonProps> = ({
 
   const handleSync = async () => {
     try {
-      const result = await dispatch(syncOfflineData(true)).unwrap();
+      const _result = await dispatch(syncOfflineData(true)).unwrap();
       
       // Mostrar resultado
-      const successCount = Object.values(result.syncResults).filter(
-        (status) => status === 'fulfilled'
+      const successCount = Object.values(_result.syncResults).filter(
+        (_status) => status === 'fulfilled'
       ).length;
-      const totalCount = Object.keys(result.syncResults).length;
+      const totalCount = Object.keys(_result.syncResults).length;
       
       setSnackbarMessage(
         `Sincronização concluída: ${successCount}/${totalCount} itens atualizados`
@@ -72,9 +72,9 @@ export const SyncButton: React.FC<SyncButtonProps> = ({
   const getButtonStyle = () => {
     const baseStyle = [styles.button];
     
-    if (size === 'small') {
+    if (_size === 'small') {
       baseStyle.push(styles.buttonSmall);
-    } else if (size === 'large') {
+    } else if (_size === 'large') {
       baseStyle.push(styles.buttonLarge);
     }
     

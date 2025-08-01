@@ -1,5 +1,6 @@
+/* eslint-disable no-console */
 import messaging from '@react-native-firebase/messaging';
-import { PermissionsAndroid, Platform, Alert, Linking } from 'react-native';
+import { Platform, Alert, Linking } from 'react-native';
 import notifee from '@notifee/react-native';
 import { notificationService } from '../notificationService';
 import { httpClient } from '../httpClient';
@@ -106,10 +107,10 @@ describe('NotificationService', () => {
       } as any);
 
       // Executar
-      const result = await notificationService.initialize();
+      const _result = await notificationService.initialize();
 
       // Verificar
-      expect(result).toEqual({
+      expect(_result).toEqual({
         token: mockToken,
         permissionStatus: 'granted',
       });
@@ -127,10 +128,10 @@ describe('NotificationService', () => {
       } as any);
 
       // Executar
-      const result = await notificationService.initialize();
+      const _result = await notificationService.initialize();
 
       // Verificar
-      expect(result).toEqual({
+      expect(_result).toEqual({
         token: null,
         permissionStatus: 'denied',
       });
@@ -145,10 +146,10 @@ describe('NotificationService', () => {
       });
 
       // Executar
-      const result = await notificationService.initialize();
+      const _result = await notificationService.initialize();
 
       // Verificar
-      expect(result).toEqual({
+      expect(_result).toEqual({
         token: null,
         permissionStatus: 'denied',
       });
@@ -168,10 +169,10 @@ describe('NotificationService', () => {
       } as any);
 
       // Executar
-      const result = await notificationService.requestPermissions();
+      const _result = await notificationService.requestPermissions();
 
       // Verificar
-      expect(result).toBe('granted');
+      expect(_result).toBe('granted');
       expect(PermissionsAndroid.request).toHaveBeenCalledWith(
         PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
       );
@@ -188,10 +189,10 @@ describe('NotificationService', () => {
       } as any);
 
       // Executar
-      const result = await notificationService.requestPermissions();
+      const _result = await notificationService.requestPermissions();
 
       // Verificar
-      expect(result).toBe('granted');
+      expect(_result).toBe('granted');
       expect(PermissionsAndroid.request).not.toHaveBeenCalled();
       expect(mockRequestPermission).toHaveBeenCalled();
     });
@@ -206,10 +207,10 @@ describe('NotificationService', () => {
       } as any);
 
       // Executar
-      const result = await notificationService.requestPermissions();
+      const _result = await notificationService.requestPermissions();
 
       // Verificar
-      expect(result).toBe('granted');
+      expect(_result).toBe('granted');
       expect(mockRequestPermission).toHaveBeenCalled();
       
       // Restaurar
@@ -222,8 +223,8 @@ describe('NotificationService', () => {
         requestPermission: mockRequestPermission,
       } as any);
 
-      const result = await notificationService.requestPermissions();
-      expect(result).toBe('denied');
+      const _result = await notificationService.requestPermissions();
+      expect(_result).toBe('denied');
     });
 
     it('deve tratar erros na solicitação de permissões', async () => {
@@ -233,8 +234,8 @@ describe('NotificationService', () => {
         requestPermission: mockRequestPermission,
       } as any);
 
-      const result = await notificationService.requestPermissions();
-      expect(result).toBe('denied');
+      const _result = await notificationService.requestPermissions();
+      expect(_result).toBe('denied');
       expect(console.error).toHaveBeenCalledWith('Error requesting permissions:', mockError);
     });
   });
@@ -395,9 +396,9 @@ describe('NotificationService', () => {
       const mockPut = jest.fn().mockResolvedValue({ data: newSettings });
       (httpClient.put as jest.Mock) = mockPut;
 
-      const result = await notificationService.updateNotificationSettings(newSettings);
+      const _result = await notificationService.updateNotificationSettings(newSettings);
 
-      expect(result).toEqual(newSettings);
+      expect(_result).toEqual(newSettings);
       expect(mockPut).toHaveBeenCalledWith('/notifications/settings', newSettings);
     });
   });
@@ -417,9 +418,9 @@ describe('NotificationService', () => {
       const mockGet = jest.fn().mockResolvedValue({ data: mockResponse });
       (httpClient.get as jest.Mock) = mockGet;
 
-      const result = await notificationService.getNotifications(1, 10);
+      const _result = await notificationService.getNotifications(1, 10);
 
-      expect(result).toEqual(mockResponse);
+      expect(_result).toEqual(mockResponse);
       expect(mockGet).toHaveBeenCalledWith('/notifications', {
         params: { page: 1, limit: 10 },
       });
@@ -485,7 +486,7 @@ describe('NotificationService', () => {
   });
 
   describe('Permission Check', () => {
-    it('deve verificar status de permissão atual', async () => {
+    it('deve verificar _status de permissão atual', async () => {
       const mockHasPermission = jest.fn().mockResolvedValue(messaging.AuthorizationStatus.AUTHORIZED);
       mockMessaging.mockReturnValue({
         hasPermission: mockHasPermission,

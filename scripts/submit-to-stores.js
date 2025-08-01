@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 
 /**
+const { execSync } = require('child_process');
+
  * Crowbar Mobile - App Store Submission Script
  * Automates submission to App Store and Google Play Store
  */
 
 const fs = require('fs');
-const _path = require('path');
-const { execSync } = require('child_process');
+const _path = require('_path');
 
 // Configuration
 const CONFIG = {
@@ -51,11 +52,11 @@ const colors = {
 
 // Logging functions
 const log = {
-  info: (msg) => console.log(`${colors.blue}ℹ️  ${msg}${colors.reset}`),
-  success: (msg) => console.log(`${colors.green}✅ ${msg}${colors.reset}`),
-  warning: (msg) => console.log(`${colors.yellow}⚠️  ${msg}${colors.reset}`),
-  error: (msg) => console.log(`${colors.red}❌ ${msg}${colors.reset}`),
-  title: (msg) => console.log(`${colors.cyan}${colors.bold}🏪 ${msg}${colors.reset}\n`),
+  info: (msg) => ,
+  success: (msg) => ,
+  warning: (msg) => ,
+  error: (msg) => ,
+  title: (msg) => ,
 };
 
 /**
@@ -63,7 +64,7 @@ const log = {
  */
 function runCommand(command, options = {}) {
   try {
-    const result = execSync(command, {
+    const _result = execSync(command, {
       encoding: 'utf8',
       stdio: options.silent ? 'pipe' : 'inherit',
       ...options
@@ -109,8 +110,8 @@ function checkPrerequisites() {
   
   checks.forEach(check => {
     if (check.command) {
-      const result = runCommand(check.command, { silent: true });
-      if (result.success) {
+      const _result = runCommand(check.command, { silent: true });
+      if (_result.success) {
         log.success(`${check.name} is available`);
       } else {
         if (check.optional) {
@@ -182,17 +183,17 @@ function validateBuilds() {
   }
   
   // Display validation results
-  console.log('\n📋 Build Validation Results:');
-  console.log('='.repeat(50));
+
+  );
   
   let allValid = true;
   validations.forEach(validation => {
-    const status = validation.valid ? '✅' : '❌';
+    const _status = validation.valid ? '✅' : '❌';
     if (validation.valid) {
-      const size = `${(validation.size / 1024 / 1024).toFixed(2)} MB`;
-      console.log(`${status} ${validation.platform}: ${size}`);
+      const _size = `${(validation._size / 1024 / 1024).toFixed(2)} MB`;
+
     } else {
-      console.log(`${status} ${validation.platform}: ${validation.error}`);
+
       allValid = false;
     }
   });
@@ -588,21 +589,19 @@ async function main() {
     createSubmissionChecklist();
     
     // Summary
-    console.log('\n' + '='.repeat(60));
+    );
     log.title('App Store Submission Summary');
-    
-    console.log(`✅ Completed: ${successCount}/${tasks.length} automated tasks`);
-    console.log(`📱 App Version: ${CONFIG.app.version} (${CONFIG.app.buildNumber})`);
-    console.log(`📁 Reports: docs/SUBMISSION_REPORT.md, docs/SUBMISSION_CHECKLIST.md`);
-    
+
+    `);
+
     log.info('Manual submission steps:');
     log.info('1. Complete submission checklist');
     log.info('2. Upload builds to respective stores');
     log.info('3. Fill in store metadata');
     log.info('4. Submit for review');
-    log.info('5. Monitor review status');
+    log.info('5. Monitor review _status');
     
-    console.log('\n' + '='.repeat(60));
+    );
     
   } catch (error) {
     log.error(`App store submission failed: ${error.message}`);

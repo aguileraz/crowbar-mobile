@@ -1,3 +1,4 @@
+ 
 /**
  * Testes E2E para busca de caixas
  * 
@@ -78,7 +79,7 @@ describe('Busca de Caixas', () => {
       await shopPage.expectSearchResultsVisible();
       
       // Verificar se há pelo menos um resultado
-      await expect(element(by.id('search-result-0'))).toBeVisible();
+      await expect(element(by.id('search-_result-0'))).toBeVisible();
       
       // Capturar screenshot dos resultados
       await shopPage.takeScreenshot('search-results-valid');
@@ -573,8 +574,7 @@ describe('Busca de Caixas', () => {
       
       // Verificar se resultados aparecem
       await shopPage.expectSearchResultsVisible();
-      
-      console.log(`Busca completada em ${duration}ms`);
+
     });
 
     it('deve manter performance com múltiplas buscas', async () => {

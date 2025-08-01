@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { analyticsService } from '../analyticsService';
 import { store } from '../../store';
@@ -38,10 +39,10 @@ describe('AnalyticsService', () => {
       (AsyncStorage.getItem as jest.Mock).mockResolvedValueOnce(null); // pending events
 
       // Executar inicialização
-      const result = await analyticsService.initialize();
+      const _result = await analyticsService.initialize();
 
       // Verificar resultado
-      expect(result.sessionId).toBe(mockSessionId);
+      expect(_result.sessionId).toBe(mockSessionId);
       expect((analyticsService as any).isInitialized).toBe(true);
       expect((analyticsService as any).userId).toBe('user-123');
     });
@@ -54,10 +55,10 @@ describe('AnalyticsService', () => {
       (AsyncStorage.setItem as jest.Mock).mockResolvedValue(undefined);
 
       // Executar inicialização
-      const result = await analyticsService.initialize();
+      const _result = await analyticsService.initialize();
 
       // Verificar que foi criado e salvo novo session ID
-      expect(result.sessionId).toBeTruthy();
+      expect(_result.sessionId).toBeTruthy();
       expect(AsyncStorage.setItem).toHaveBeenCalledWith(
         'analytics_session_id',
         expect.any(String)

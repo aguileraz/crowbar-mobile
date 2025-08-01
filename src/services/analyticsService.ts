@@ -469,7 +469,7 @@ class AnalyticsService {
    */
   
   // Latência da API
-  async trackApiLatency(endpoint: string, method: string, responseTime: number, status: number): Promise<void> {
+  async trackApiLatency(endpoint: string, method: string, responseTime: number, _status: number): Promise<void> {
     try {
       await this.logEvent('api_latency', {
         endpoint,

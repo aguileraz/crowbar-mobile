@@ -7,8 +7,6 @@
 
 const fs = require('fs');
 const path = require('path');
-const { execSync: _execSync } = require('child_process');
-
 // Configuration
 const CONFIG = {
   outputDir: './bundle-analysis',
@@ -24,7 +22,7 @@ const CONFIG = {
 };
 
 // Colors for console output
-const colors = {
+const _colors = {
   reset: '\x1b[0m',
   red: '\x1b[31m',
   green: '\x1b[32m',
@@ -37,11 +35,11 @@ const colors = {
 
 // Logging functions
 const log = {
-  info: (msg) => console.log(`${colors.blue}ℹ️  ${msg}${colors.reset}`),
-  success: (msg) => console.log(`${colors.green}✅ ${msg}${colors.reset}`),
-  warning: (msg) => console.log(`${colors.yellow}⚠️  ${msg}${colors.reset}`),
-  error: (msg) => console.log(`${colors.red}❌ ${msg}${colors.reset}`),
-  title: (msg) => console.log(`${colors.cyan}${colors.bold}📊 ${msg}${colors.reset}\n`),
+  info: (msg) => console.log(`ℹ️  ${msg}`),
+  success: (msg) => console.log(`✅ ${msg}`),
+  warning: (msg) => console.log(`⚠️  ${msg}`),
+  error: (msg) => console.error(`❌ ${msg}`),
+  title: (msg) => console.log(`\n📦 ${msg}\n${'='.repeat(40)}`),
 };
 
 /**
@@ -58,9 +56,9 @@ function formatFileSize(bytes) {
 /**
  * Get file size
  */
-function getFileSize(filePath) {
+function getFileSize(_filePath) {
   try {
-    const stats = fs.statSync(filePath);
+    const stats = fs.statSync(_filePath);
     return stats.size;
   } catch (error) {
     return 0;
@@ -101,14 +99,14 @@ function analyzeAndroidBundle() {
           if (file.isDirectory()) {
             findApks(fullPath);
           } else if (file.name.endsWith('.apk')) {
-            const size = getFileSize(fullPath);
+            const _size = getFileSize(fullPath);
             analysis.bundles.push({
               name: file.name,
               path: fullPath,
-              size,
+              size: _size,
               type: 'apk',
             });
-            analysis.totalSize += size;
+            analysis.totalSize += _size;
           }
         });
       };
@@ -125,14 +123,14 @@ function analyzeAndroidBundle() {
           if (file.isDirectory()) {
             findAabs(fullPath);
           } else if (file.name.endsWith('.aab')) {
-            const size = getFileSize(fullPath);
+            const _size = getFileSize(fullPath);
             analysis.bundles.push({
               name: file.name,
               path: fullPath,
-              size,
+              size: _size,
               type: 'aab',
             });
-            analysis.totalSize += size;
+            analysis.totalSize += _size;
           }
         });
       };
@@ -151,11 +149,11 @@ function analyzeAndroidBundle() {
           if (file.isDirectory()) {
             analyzeAssets(fullPath, relativePath);
           } else {
-            const size = getFileSize(fullPath);
+            const _size = getFileSize(fullPath);
             analysis.assets.push({
               name: file.name,
               path: relativePath,
-              size,
+              size: _size,
               type: path.extname(file.name).slice(1) || 'unknown',
             });
           }
@@ -206,14 +204,14 @@ function analyzeIosBundle() {
           if (file.isDirectory()) {
             findIpas(fullPath);
           } else if (file.name.endsWith('.ipa')) {
-            const size = getFileSize(fullPath);
+            const _size = getFileSize(fullPath);
             analysis.bundles.push({
               name: file.name,
               path: fullPath,
-              size,
+              size: _size,
               type: 'ipa',
             });
-            analysis.totalSize += size;
+            analysis.totalSize += _size;
           }
         });
       };
@@ -228,14 +226,14 @@ function analyzeIosBundle() {
         files.forEach(file => {
           const fullPath = path.join(dir, file.name);
           if (file.isDirectory() && file.name.endsWith('.app')) {
-            const size = getFolderSize(fullPath);
+            const _size = getFolderSize(fullPath);
             analysis.bundles.push({
               name: file.name,
               path: fullPath,
-              size,
+              size: _size,
               type: 'app',
             });
-            analysis.totalSize += size;
+            analysis.totalSize += _size;
           } else if (file.isDirectory()) {
             findApps(fullPath);
           }
@@ -256,11 +254,11 @@ function analyzeIosBundle() {
           if (file.isDirectory()) {
             analyzeAssets(fullPath, relativePath);
           } else if (!file.name.startsWith('.')) {
-            const size = getFileSize(fullPath);
+            const _size = getFileSize(fullPath);
             analysis.assets.push({
               name: file.name,
               path: relativePath,
-              size,
+              size: _size,
               type: path.extname(file.name).slice(1) || 'unknown',
             });
           }
@@ -339,13 +337,13 @@ function analyzeJavaScriptBundle() {
           if (file.isDirectory() && !file.name.startsWith('.')) {
             analyzeSourceFiles(fullPath, relativePath);
           } else if (file.name.match(/\.(js|jsx|ts|tsx)$/)) {
-            const size = getFileSize(fullPath);
+            const _size = getFileSize(fullPath);
             analysis.modules.push({
               name: relativePath,
-              size,
+              size: _size,
               type: 'source',
             });
-            analysis.totalSize += size;
+            analysis.totalSize += _size;
           }
         });
       };
@@ -366,11 +364,11 @@ function analyzeJavaScriptBundle() {
           if (fs.existsSync(packageJsonPath)) {
             try {
               const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-              const size = getFolderSize(pkgPath);
+              const _size = getFolderSize(pkgPath);
               
               analysis.modules.push({
                 name: pkg.name,
-                size,
+                size: _size,
                 type: 'dependency',
                 version: packageJson.version,
               });
@@ -590,16 +588,14 @@ async function main() {
     log.success(`HTML report saved to ${htmlReportPath}`);
 
     // Display summary
-    console.log('\n' + '='.repeat(60));
+    console.log("");
     log.title('Bundle Analysis Summary');
-    console.log(`📦 Total Bundle Size: ${formatFileSize(totalSize)}`);
-    console.log(`📱 Platforms Analyzed: ${platforms.length}`);
-    console.log(`💡 Total Recommendations: ${allRecommendations.length}`);
-    
+    console.log(`Analysis complete`);
+
     if (allRecommendations.length > 0) {
-      console.log('\n📋 Top Recommendations:');
-      allRecommendations.slice(0, 5).forEach((rec, index) => {
-        console.log(`   ${index + 1}. ${rec}`);
+
+      allRecommendations.slice(0, 5).forEach((_rec, _index) => {
+
       });
     }
 
@@ -610,7 +606,7 @@ async function main() {
       log.success(`Bundle size is within recommended limits`);
     }
 
-    console.log('\n' + '='.repeat(60));
+    console.log("");
 
   } catch (error) {
     log.error(`Bundle analysis failed: ${error.message}`);

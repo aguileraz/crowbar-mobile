@@ -52,8 +52,8 @@ class BasePage {
    * @param {string} testID - ID do elemento para teste
    * @param {number} timeout - Timeout em milissegundos
    */
-  async tapElement(testID, timeout = this.timeout.DEFAULT) {
-    await this.waitForElement(testID, timeout);
+  async tapElement(testID, _timeout = this.timeout.DEFAULT) {
+    await this.waitForElement(testID, _timeout);
     await element(by.id(testID)).tap();
   }
 
@@ -62,8 +62,8 @@ class BasePage {
    * @param {string} text - Texto do elemento
    * @param {number} timeout - Timeout em milissegundos
    */
-  async tapElementWithText(text, timeout = this.timeout.DEFAULT) {
-    await this.waitForElementWithText(text, timeout);
+  async tapElementWithText(text, _timeout = this.timeout.DEFAULT) {
+    await this.waitForElementWithText(text, _timeout);
     await element(by.text(text)).tap();
   }
 
@@ -73,8 +73,8 @@ class BasePage {
    * @param {string} text - Texto a ser digitado
    * @param {number} timeout - Timeout em milissegundos
    */
-  async typeText(testID, text, timeout = this.timeout.DEFAULT) {
-    await this.waitForElement(testID, timeout);
+  async typeText(testID, text, _timeout = this.timeout.DEFAULT) {
+    await this.waitForElement(testID, _timeout);
     await element(by.id(testID)).clearText();
     await element(by.id(testID)).typeText(text);
   }
@@ -84,8 +84,8 @@ class BasePage {
    * @param {string} testID - ID do elemento para teste
    * @param {number} timeout - Timeout em milissegundos
    */
-  async expectElementToBeVisible(testID, timeout = this.timeout.DEFAULT) {
-    await this.waitForElement(testID, timeout);
+  async expectElementToBeVisible(testID, _timeout = this.timeout.DEFAULT) {
+    await this.waitForElement(testID, _timeout);
     await expect(element(by.id(testID))).toBeVisible();
   }
 
@@ -95,8 +95,8 @@ class BasePage {
    * @param {string} text - Texto esperado
    * @param {number} timeout - Timeout em milissegundos
    */
-  async expectElementToHaveText(testID, text, timeout = this.timeout.DEFAULT) {
-    await this.waitForElement(testID, timeout);
+  async expectElementToHaveText(testID, text, _timeout = this.timeout.DEFAULT) {
+    await this.waitForElement(testID, _timeout);
     await expect(element(by.id(testID))).toHaveText(text);
   }
 
@@ -104,7 +104,7 @@ class BasePage {
    * Faz scroll em uma lista até encontrar um elemento
    * @param {string} scrollViewTestID - ID da lista/scroll view
    * @param {string} elementTestID - ID do elemento a ser encontrado
-   * @param {string} direction - Direção do scroll ('down' ou 'up')
+   * @param {string} 'vertical' - Direção do scroll ('down' ou 'up')
    * @param {number} offset - Offset do scroll (0.0 a 1.0)
    */
   async scrollToElement(scrollViewTestID, elementTestID, direction = 'down', offset = 0.5) {
@@ -136,9 +136,9 @@ class BasePage {
    * Aguarda carregamento desaparecer
    * @param {number} timeout - Timeout em milissegundos
    */
-  async waitForLoading(timeout = this.timeout.SLOW) {
+  async waitForLoading(_timeout = this.timeout.SLOW) {
     try {
-      await this.waitForElementToDisappear('loading-indicator', timeout);
+      await this.waitForElementToDisappear('loading-indicator', _timeout);
     } catch (error) {
       // Indicator de loading pode não estar presente
     }
@@ -149,8 +149,8 @@ class BasePage {
    * @param {string} screenTestID - ID da tela
    * @param {number} timeout - Timeout em milissegundos
    */
-  async waitForScreen(screenTestID, timeout = this.timeout.SLOW) {
-    await this.waitForElement(screenTestID, timeout);
+  async waitForScreen(screenTestID, _timeout = this.timeout.SLOW) {
+    await this.waitForElement(screenTestID, _timeout);
   }
 
   /**
@@ -182,9 +182,9 @@ class BasePage {
     
     try {
       await device.takeScreenshot(filename);
-      console.log(`Screenshot salvo: ${filename}`);
+
     } catch (error) {
-      console.error(`Erro ao capturar screenshot: ${error.message}`);
+
     }
   }
 

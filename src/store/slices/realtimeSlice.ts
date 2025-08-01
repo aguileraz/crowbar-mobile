@@ -194,7 +194,7 @@ const realtimeSlice = createSlice({
     },
     
     // Order updates
-    updateOrderStatus: (state, action: PayloadAction<{ orderId: string; status: string; tracking?: any }>) => {
+    updateOrderStatus: (state, action: PayloadAction<{ orderId: string; _status: string; tracking?: any }>) => {
       const { orderId, status, tracking } = action.payload;
       state.liveOrderUpdates[orderId] = {
         status,

@@ -7,7 +7,7 @@ import * as Keychain from 'react-native-keychain';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import logger from './loggerService';
 
-interface SecureStorageOptions {
+interface _SecureStorageOptions {
   service?: string;
   accessGroup?: string;
   accessible?: Keychain.ACCESSIBLE;
@@ -24,7 +24,7 @@ class SecureStorageService {
    */
   async setAuthToken(token: string): Promise<boolean> {
     try {
-      const result = await Keychain.setInternetCredentials(
+      const _result = await Keychain.setInternetCredentials(
         this.serviceName,
         this.tokenKey,
         token,
@@ -64,7 +64,7 @@ class SecureStorageService {
    */
   async setRefreshToken(token: string): Promise<boolean> {
     try {
-      const result = await Keychain.setInternetCredentials(
+      const _result = await Keychain.setInternetCredentials(
         `${this.serviceName}-refresh`,
         this.refreshTokenKey,
         token,
@@ -104,7 +104,7 @@ class SecureStorageService {
    */
   async setUserCredentials(email: string, password: string): Promise<boolean> {
     try {
-      const result = await Keychain.setInternetCredentials(
+      const _result = await Keychain.setInternetCredentials(
         `${this.serviceName}-credentials`,
         email,
         password,
@@ -147,7 +147,7 @@ class SecureStorageService {
    */
   async setSecureData(key: string, value: string): Promise<boolean> {
     try {
-      const result = await Keychain.setInternetCredentials(
+      const _result = await Keychain.setInternetCredentials(
         `${this.serviceName}-${key}`,
         key,
         value,

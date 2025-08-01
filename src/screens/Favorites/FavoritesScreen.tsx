@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import logger from '../../services/loggerService';
 import {
   View,
@@ -14,9 +14,9 @@ import {
   ActivityIndicator,
   SegmentedButtons,
   Menu,
-  Divider,
+
 } from 'react-native-paper';
-import { useDispatch, useSelector } from 'react-redux';
+import { _useDispatch, useSelector } from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -25,7 +25,6 @@ import { AppDispatch } from '../../store';
 import {
   fetchFavorites,
   removeFromFavorites,
-  clearError,
   selectFavorites,
   selectFavoritesLoading,
   selectFavoritesUpdating,
@@ -41,7 +40,7 @@ import ErrorMessage from '../../components/ErrorMessage';
 import { MysteryBox } from '../../types/api';
 
 // Theme
-import { theme, getSpacing, getBorderRadius } from '../../theme';
+import { _theme, getSpacing, getBorderRadius } from '../../theme';
 
 /**
  * Tela de Favoritos
@@ -60,7 +59,7 @@ const FavoritesScreen: React.FC<FavoritesScreenProps> = ({ navigation }) => {
   // Redux state
   const favorites = useSelector(selectFavorites);
   const isLoading = useSelector(selectFavoritesLoading);
-  const isUpdating = useSelector(selectFavoritesUpdating);
+  const _isUpdating = useSelector(selectFavoritesUpdating);
   const error = useSelector(selectFavoritesError);
   const pagination = useSelector(selectFavoritesPagination);
   
@@ -92,7 +91,7 @@ const FavoritesScreen: React.FC<FavoritesScreenProps> = ({ navigation }) => {
     try {
       await dispatch(fetchFavorites(1)).unwrap();
     } catch (err) {
-      logger.error('Error loading favorites:', err);
+      logger.error('Error loading favorites:', _err);
     }
   };
 
@@ -114,7 +113,7 @@ const FavoritesScreen: React.FC<FavoritesScreenProps> = ({ navigation }) => {
       try {
         await dispatch(fetchFavorites(pagination.currentPage + 1)).unwrap();
       } catch (err) {
-        logger.error('Error loading more favorites:', err);
+        logger.error('Error loading more favorites:', _err);
       } finally {
         setLoadingMore(false);
       }
@@ -125,7 +124,7 @@ const FavoritesScreen: React.FC<FavoritesScreenProps> = ({ navigation }) => {
    * Apply sorting to favorites
    */
   const applySorting = () => {
-    const sorted = [...favorites].sort((a, b) => {
+    const sorted = [...favorites].sort((a, _b) => {
       let comparison = 0;
       
       switch (sortBy) {
@@ -171,7 +170,7 @@ const FavoritesScreen: React.FC<FavoritesScreenProps> = ({ navigation }) => {
     try {
       await dispatch(removeFromFavorites(boxId)).unwrap();
     } catch (err) {
-      logger.error('Error removing favorite:', err);
+      logger.error('Error removing favorite:', _err);
     }
   };
 

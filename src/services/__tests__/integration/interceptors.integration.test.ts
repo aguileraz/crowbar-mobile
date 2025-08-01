@@ -1,3 +1,4 @@
+ 
 import { TestApiClient, testEnvironment, testData, testUtils, testInterceptors } from './testConfig';
 import { apiClient } from '../../api';
 import { userService } from '../../userService';
@@ -240,7 +241,7 @@ describe('Testes de Integração - Interceptors', () => {
       testClient.mockSuccess('get', '/user/profile', expectedResponse);
 
       // Act
-      const response = await userService.getProfile();
+      const _response = await userService.getProfile();
 
       // Assert
       expect(response).toEqual(testData.user);
@@ -493,7 +494,7 @@ describe('Testes de Integração - Interceptors', () => {
         return config;
       });
 
-      axiosInstance.interceptors.response.use((response) => {
+      axiosInstance.interceptors.response.use((_response) => {
         if (response.config.method === 'get') {
           const cacheKey = `${response.config.method}:${response.config.url}`;
           cache.set(cacheKey, response.data);
@@ -511,7 +512,7 @@ describe('Testes de Integração - Interceptors', () => {
       // Assert
       expect(result1).toEqual(testData.user);
       expect(result2).toEqual(testData.user);
-      expect(cache.size).toBe(1);
+      expect(cache._size).toBe(1);
       expect(cache.has('get:/user/profile')).toBe(true);
     });
 
@@ -537,7 +538,7 @@ describe('Testes de Integração - Interceptors', () => {
         return config;
       });
 
-      axiosInstance.interceptors.response.use((response) => {
+      axiosInstance.interceptors.response.use((_response) => {
         if (response.config.method === 'get') {
           const cacheKey = `${response.config.method}:${response.config.url}`;
           cache.set(cacheKey, response.data);
@@ -552,7 +553,7 @@ describe('Testes de Integração - Interceptors', () => {
       await cartService.addToCart('box-123', 1);
 
       // Assert
-      expect(cache.size).toBe(0); // Nenhum cache para POST
+      expect(cache._size).toBe(0); // Nenhum cache para POST
     });
   });
 
@@ -562,7 +563,7 @@ describe('Testes de Integração - Interceptors', () => {
       const axiosInstance = testClient.getAxiosInstance();
 
       // Interceptor de transformação de datas
-      axiosInstance.interceptors.response.use((response) => {
+      axiosInstance.interceptors.response.use((_response) => {
         if (response.data && typeof response.data === 'object') {
           const transformDates = (obj: any): any => {
             if (Array.isArray(obj)) {
@@ -597,11 +598,11 @@ describe('Testes de Integração - Interceptors', () => {
       testClient.mockSuccess('get', '/user/profile', expectedResponse);
 
       // Act
-      const result = await userService.getProfile();
+      const _result = await userService.getProfile();
 
       // Assert
-      expect(result.created_at).toBeInstanceOf(Date);
-      expect(result.updated_at).toBeInstanceOf(Date);
+      expect(_result.created_at).toBeInstanceOf(Date);
+      expect(_result.updated_at).toBeInstanceOf(Date);
     });
   });
 
@@ -611,10 +612,10 @@ describe('Testes de Integração - Interceptors', () => {
       const axiosInstance = testClient.getAxiosInstance();
 
       // Interceptor de validação
-      axiosInstance.interceptors.response.use((response) => {
+      axiosInstance.interceptors.response.use((_response) => {
         if (response.data && typeof response.data === 'object') {
           if (!response.data.hasOwnProperty('success') && !response.data.hasOwnProperty('data')) {
-            console.warn('⚠️ Response não segue padrão esperado:', response.data);
+            // 
           }
         }
         return response;
@@ -658,13 +659,13 @@ describe('Testes de Integração - Interceptors', () => {
       });
 
       // Interceptor 3
-      axiosInstance.interceptors.response.use((response) => {
+      axiosInstance.interceptors.response.use((_response) => {
         executionOrder.push('response-1');
         return response;
       });
 
       // Interceptor 4
-      axiosInstance.interceptors.response.use((response) => {
+      axiosInstance.interceptors.response.use((_response) => {
         executionOrder.push('response-2');
         return response;
       });

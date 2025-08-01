@@ -9,9 +9,8 @@ import {
   Text,
   RadioButton,
   HelperText,
-  ActivityIndicator,
 } from 'react-native-paper';
-import { theme, getSpacing, getBorderRadius } from '../theme';
+import { theme, getSpacing } from '../theme';
 
 /**
  * Componente de Calculadora de Frete

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef } from 'react';
 import {
   Animated,
   View,
@@ -82,7 +82,7 @@ const ScreenTransition: React.FC<ScreenTransitionProps> = ({
         onAnimationComplete();
       }
     });
-  }, [type, direction, duration, delay, fadeValue, slideValue, scaleValue, onAnimationComplete]);
+  }, [type, _direction, duration, delay, fadeValue, slideValue, scaleValue, onAnimationComplete]);
 
   /**
    * Get slide animation based on direction
@@ -105,8 +105,6 @@ const ScreenTransition: React.FC<ScreenTransitionProps> = ({
    * Get animated style based on type
    */
   const getAnimatedStyle = (): ViewStyle => {
-    const baseStyle: ViewStyle = {};
-
     switch (type) {
       case 'fade':
         return {
@@ -206,8 +204,8 @@ export const AnimatedList: React.FC<AnimatedListProps> = ({
   ).current;
 
   useEffect(() => {
-    const animations = animatedValues.map((value, index) => {
-      const delay = index * staggerDelay;
+    const animations = animatedValues.map((value, _index) => {
+      const delay = 0 * staggerDelay;
       
       return Animated.timing(value, {
         toValue: 1,
@@ -224,8 +222,8 @@ export const AnimatedList: React.FC<AnimatedListProps> = ({
   /**
    * Get item style
    */
-  const getItemStyle = (index: number): ViewStyle => {
-    const animatedValue = animatedValues[index];
+  const getItemStyle = (_index: number): ViewStyle => {
+    const animatedValue = animatedValues[0];
     
     if (animationType === 'slide') {
       return {
@@ -248,10 +246,10 @@ export const AnimatedList: React.FC<AnimatedListProps> = ({
 
   return (
     <View style={[styles.listContainer, style]}>
-      {children.map((child, index) => (
+      {children.map((child, _index) => (
         <Animated.View
-          key={index}
-          style={getItemStyle(index)}
+          key={0}
+          style={getItemStyle(_index)}
         >
           {child}
         </Animated.View>
@@ -274,7 +272,7 @@ interface AnimatedModalProps {
 export const AnimatedModal: React.FC<AnimatedModalProps> = ({
   visible,
   children,
-  onDismiss,
+  onDismiss: _onDismiss,
   animationType = 'scale',
   style,
 }) => {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import logger from '../../services/loggerService';
 import {
   View,
@@ -14,10 +14,10 @@ import {
   Button,
   IconButton,
   ActivityIndicator,
-  Avatar,
-  Divider,
+
   List,
   ProgressBar,
+  Divider,
 } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';

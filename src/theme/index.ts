@@ -1,4 +1,4 @@
-import { MD3LightTheme, configureFonts } from 'react-native-paper';
+import { MD3LightTheme } from 'react-native-paper';
 import type { MD3Theme } from 'react-native-paper';
 
 /**
@@ -70,11 +70,11 @@ const colors = {
 };
 
 // Configuração de fontes simplificada (usando padrões do React Native Paper)
-const fontConfig = {
-  default: {
-    fontFamily: 'System',
-  },
-};
+// const _fontConfig = {
+//   default: {
+//     fontFamily: 'System',
+//   },
+// };
 
 // Tema principal
 export const theme: MD3Theme = {
@@ -148,10 +148,10 @@ export const commonStyles = {
 // Utilitários de tema
 export const getThemeColor = (colorName: keyof typeof colors) => colors[colorName];
 
-export const getSpacing = (size: keyof typeof commonStyles.padding) => 
+export const getSpacing = (_size: keyof typeof commonStyles.padding) => 
   commonStyles.padding[size];
 
-export const getBorderRadius = (size: keyof typeof commonStyles.borderRadius) => 
+export const getBorderRadius = (_size: keyof typeof commonStyles.borderRadius) => 
   commonStyles.borderRadius[size];
 
 export default theme;

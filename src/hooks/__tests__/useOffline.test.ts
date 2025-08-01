@@ -1,3 +1,4 @@
+ 
 import React from 'react';
 import { renderHook, act } from '@testing-library/react-native';
 import { Provider } from 'react-redux';
@@ -62,11 +63,11 @@ describe('useOffline', () => {
     it('deve retornar estado offline correto', () => {
       const { result } = renderHook(() => useOffline(), { wrapper });
 
-      expect(result.current.isOnline).toBe(true);
-      expect(result.current.syncStatus).toBe('idle');
-      expect(result.current.pendingActions).toEqual([]);
-      expect(result.current.cacheStatus).toBeDefined();
-      expect(result.current.canSync).toBe(true);
+      expect(_result.current.isOnline).toBe(true);
+      expect(_result.current.syncStatus).toBe('idle');
+      expect(_result.current.pendingActions).toEqual([]);
+      expect(_result.current.cacheStatus).toBeDefined();
+      expect(_result.current.canSync).toBe(true);
     });
 
     it('deve sincronizar dados', async () => {
@@ -93,7 +94,7 @@ describe('useOffline', () => {
       });
 
       // Verificar se a ação foi adicionada
-      expect(result.current.pendingActions).toHaveLength(1);
+      expect(_result.current.pendingActions).toHaveLength(1);
     });
 
     it('deve verificar se está no modo offline', () => {
@@ -101,7 +102,7 @@ describe('useOffline', () => {
 
       const { result } = renderHook(() => useOffline(), { wrapper });
 
-      expect(result.current.isOfflineMode()).toBe(true);
+      expect(_result.current.isOfflineMode()).toBe(true);
     });
 
     it('deve limpar cache', async () => {
@@ -124,9 +125,9 @@ describe('useOffline', () => {
         wrapper: ({ children }: any) => React.createElement(Provider, { store }, children)
       });
 
-      expect(result.current.isSyncing).toBe(true);
-      expect(result.current.hasPendingActions).toBe(true);
-      expect(result.current.lastSyncError).toBe(false);
+      expect(_result.current.isSyncing).toBe(true);
+      expect(_result.current.hasPendingActions).toBe(true);
+      expect(_result.current.lastSyncError).toBe(false);
     });
   });
 
@@ -150,9 +151,9 @@ describe('useOffline', () => {
         await new Promise(resolve => setTimeout(resolve, 0));
       });
 
-      expect(result.current.data).toEqual(mockData);
-      expect(result.current.loading).toBe(false);
-      expect(result.current.error).toBeNull();
+      expect(_result.current.data).toEqual(mockData);
+      expect(_result.current.loading).toBe(false);
+      expect(_result.current.error).toBeNull();
     });
 
     it('deve atualizar cache manualmente', async () => {
@@ -193,8 +194,8 @@ describe('useOffline', () => {
         await new Promise(resolve => setTimeout(resolve, 0));
       });
 
-      expect(result.current.error).toEqual(mockError);
-      expect(result.current.data).toBeNull();
+      expect(_result.current.error).toEqual(mockError);
+      expect(_result.current.data).toBeNull();
     });
 
     it('deve refazer busca quando voltar online', async () => {
@@ -204,7 +205,7 @@ describe('useOffline', () => {
       // Começar offline
       const offlineStore = createMockStore({ isOnline: false });
       
-      const { result, rerender } = renderHook(() => 
+      const { result: _result, rerender } = renderHook(() => 
         useOfflineCache('test_key', mockFetcher, {
           strategy: CacheStrategy.NETWORK_FIRST,
         }), 
@@ -246,9 +247,9 @@ describe('useOffline', () => {
         await new Promise(resolve => setTimeout(resolve, 0));
       });
 
-      expect(result.current.uri).toBe(cachedUrl);
-      expect(result.current.loading).toBe(false);
-      expect(result.current.isFromCache).toBe(true);
+      expect(_result.current.uri).toBe(cachedUrl);
+      expect(_result.current.loading).toBe(false);
+      expect(_result.current.isFromCache).toBe(true);
     });
 
     it('deve usar URL original em caso de erro', async () => {
@@ -266,8 +267,8 @@ describe('useOffline', () => {
         await new Promise(resolve => setTimeout(resolve, 0));
       });
 
-      expect(result.current.uri).toBe(imageUrl);
-      expect(result.current.error).toEqual(mockError);
+      expect(_result.current.uri).toBe(imageUrl);
+      expect(_result.current.error).toEqual(mockError);
     });
 
     it('deve retornar null para URL null', () => {
@@ -276,7 +277,7 @@ describe('useOffline', () => {
         { wrapper }
       );
 
-      expect(result.current.uri).toBeNull();
+      expect(_result.current.uri).toBeNull();
     });
   });
 
@@ -374,7 +375,7 @@ describe('useOffline', () => {
       });
 
       expect(mockOnError).toHaveBeenCalledWith(mockError);
-      expect(result.current.error).toEqual(mockError);
+      expect(_result.current.error).toEqual(mockError);
     });
   });
 });

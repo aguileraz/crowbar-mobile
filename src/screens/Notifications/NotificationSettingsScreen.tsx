@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import logger from '../../services/loggerService';
 import {
   View,
@@ -12,11 +12,12 @@ import {
   IconButton,
   Switch,
   List,
-  Divider,
+
   Button,
   ActivityIndicator,
+  Divider,
 } from 'react-native-paper';
-import { useDispatch, useSelector } from 'react-redux';
+import { _useDispatch, useSelector } from 'react-redux';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 // Redux
@@ -39,7 +40,7 @@ import ErrorMessage from '../../components/ErrorMessage';
 import { NotificationSettings } from '../../types/api';
 
 // Theme
-import { theme, getSpacing } from '../../theme';
+import { _theme, getSpacing } from '../../theme';
 
 /**
  * Tela de Configurações de Notificação
@@ -86,7 +87,7 @@ const NotificationSettingsScreen: React.FC<NotificationSettingsScreenProps> = ({
       setIsLoading(true);
       await dispatch(fetchNotificationSettings()).unwrap();
     } catch (err) {
-      logger.error('Error loading settings:', err);
+      logger.error('Error loading settings:', _err);
     } finally {
       setIsLoading(false);
     }

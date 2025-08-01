@@ -31,7 +31,7 @@ export const useOffline = () => {
   const sync = useCallback(
     async (force = false) => {
       try {
-        const result = await dispatch(syncOfflineData(force)).unwrap();
+        const _result = await dispatch(syncOfflineData(force)).unwrap();
         return result;
       } catch (error) {
         logger.error('Erro ao sincronizar:', error);
@@ -43,7 +43,7 @@ export const useOffline = () => {
 
   // Adicionar ação para execução quando voltar online
   const addOfflineAction = useCallback(
-    async (type: string, data: any, priority: SyncPriority = SyncPriority.NORMAL) => {
+    async (type: string, data: any, _priority: SyncPriority = SyncPriority.NORMAL) => {
       try {
         await dispatch(addPendingAction({ type, data })).unwrap();
         
@@ -115,7 +115,7 @@ export const useOfflineCache = <T>(
 
   const {
     strategy = CacheStrategy.CACHE_FIRST,
-    priority = SyncPriority.NORMAL,
+    _priority = SyncPriority.NORMAL,
     autoFetch = true,
   } = options || {};
 
@@ -125,13 +125,13 @@ export const useOfflineCache = <T>(
     setError(null);
 
     try {
-      const result = await offlineService.getCachedData(
+      const _result = await offlineService.getCachedData(
         key,
         strategy,
         fetcher
       );
       
-      setData(result);
+      setData(_result);
       return result;
     } catch (err) {
       setError(err as Error);
@@ -145,14 +145,14 @@ export const useOfflineCache = <T>(
   const updateCache = useCallback(
     async (newData: T) => {
       try {
-        await offlineService.cacheData(key, newData, priority, strategy);
+        await offlineService.cacheData(_key, newData, priority, strategy);
         setData(newData);
       } catch (err) {
         setError(err as Error);
         throw err;
       }
     },
-    [key, priority, strategy]
+    [priority, strategy]
   );
 
   // Auto fetch on mount
@@ -182,7 +182,7 @@ export const useOfflineCache = <T>(
 /**
  * Hook para cache de imagens
  */
-export const useOfflineImage = (url: string | null, priority: SyncPriority = SyncPriority.LOW) => {
+export const useOfflineImage = (url: string | null, _priority: SyncPriority = SyncPriority.LOW) => {
   const [cachedUrl, setCachedUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -228,7 +228,7 @@ export const useOfflineAction = <T = any>(
   options?: {
     priority?: SyncPriority;
     optimisticUpdate?: (data: any) => void;
-    onSuccess?: (result: T) => void;
+    onSuccess?: (_result: T) => void;
     onError?: (error: Error) => void;
   }
 ) => {
@@ -238,7 +238,7 @@ export const useOfflineAction = <T = any>(
   const dispatch = useDispatch<AppDispatch>();
 
   const {
-    priority = SyncPriority.NORMAL,
+    _priority = SyncPriority.NORMAL,
     optimisticUpdate,
     onSuccess,
     onError,
@@ -257,8 +257,8 @@ export const useOfflineAction = <T = any>(
 
         if (isOnline) {
           // Executar ação imediatamente
-          const result = await executor(data);
-          if (onSuccess) onSuccess(result);
+          const _result = await executor(data);
+          if (onSuccess) onSuccess(_result);
           return result;
         } else {
           // Adicionar à fila offline
@@ -342,11 +342,11 @@ export const useOfflineDiffSync = <T extends { id?: string; _id?: string }>(
  * Hook específico para dados de boxes offline
  */
 export const useOfflineBoxes = () => {
-  const { data, loading, error, fetch } = useOfflineCache(
+  const {data, loading, error: _error, fetch} = useOfflineCache(
     'offline_boxes',
     async () => {
       // Simular chamada para API
-      // const response = await boxService.getBoxes();
+      // const _response = await boxService.getBoxes();
       // return response.data;
       return [];
     },
@@ -368,11 +368,11 @@ export const useOfflineBoxes = () => {
  * Hook específico para carrinho offline
  */
 export const useOfflineCart = () => {
-  const { addOfflineAction } = useOffline();
+  const {addOfflineAction: _addOfflineAction} = useOffline();
   
   const addToCart = useOfflineAction(
     'ADD_TO_CART',
-    async (data: { boxId: string; quantity: number }) => {
+    async (_data: { boxId: string; quantity: number }) => {
       // Simular adição ao carrinho
       // return await cartService.addToCart(data.boxId, data.quantity);
       return { success: true };
@@ -387,7 +387,7 @@ export const useOfflineCart = () => {
 
   const removeFromCart = useOfflineAction(
     'REMOVE_FROM_CART',
-    async (data: { itemId: string }) => {
+    async (_data: { itemId: string }) => {
       // Simular remoção do carrinho
       // return await cartService.removeFromCart(data.itemId);
       return { success: true };
@@ -412,7 +412,7 @@ export const useOfflineCart = () => {
  * Hook específico para perfil offline
  */
 export const useOfflineProfile = () => {
-  const { data, loading, error, fetch } = useOfflineCache(
+  const {data, loading, error: _error, fetch} = useOfflineCache(
     'offline_user_profile',
     async () => {
       // Simular busca de perfil
@@ -427,7 +427,7 @@ export const useOfflineProfile = () => {
 
   const updateProfile = useOfflineAction(
     'UPDATE_PROFILE',
-    async (profileData: any) => {
+    async (_profileData: any) => {
       // Simular atualização de perfil
       // return await userService.updateProfile(profileData);
       return { success: true };

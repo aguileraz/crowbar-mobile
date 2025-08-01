@@ -83,15 +83,15 @@ class BundleAnalyzer {
       const startTime = Date.now();
       
       // Simular análise de módulo
-      import(moduleName)
-        .then((module) => {
-          const loadTime = Date.now() - startTime;
-          
-          // Estimar tamanho baseado no tempo de carregamento
-          const estimatedSize = this.estimateModuleSize(loadTime, moduleName);
-          
-          const moduleInfo: ModuleInfo = {
-            name: moduleName,
+      // Dynamic imports não são suportados no React Native
+      // Vamos retornar uma estimativa
+      const loadTime = Date.now() - startTime;
+      
+      // Estimar tamanho baseado no nome do módulo
+      const estimatedSize = this.estimateModuleSize(loadTime, moduleName);
+      
+      const moduleInfo: ModuleInfo = {
+        name: moduleName,
             size: estimatedSize,
             gzippedSize: Math.round(estimatedSize * 0.7), // Estimativa de compressão
             type: this.getModuleType(moduleName),
@@ -100,18 +100,6 @@ class BundleAnalyzer {
           };
           
           resolve(moduleInfo);
-        })
-        .catch((error) => {
-          logger.error(`Error analyzing module ${moduleName}:`, error);
-          resolve({
-            name: moduleName,
-            size: 0,
-            gzippedSize: 0,
-            type: 'other',
-            isVendor: false,
-            isAsync: false,
-          });
-        });
     });
   }
 
@@ -133,7 +121,7 @@ class BundleAnalyzer {
     };
 
     // Verificar se é um módulo conhecido
-    for (const [module, size] of Object.entries(sizeEstimates)) {
+    for (const [module, _size] of Object.entries(sizeEstimates)) {
       if (moduleName.includes(module)) {
         return size;
       }
@@ -217,7 +205,7 @@ class BundleAnalyzer {
    */
   generateBundleReport(): BundleMetrics {
     const chunks = this.analyzeAsyncChunks();
-    const totalSize = chunks.reduce((sum, chunk) => sum + chunk.size, 0);
+    const totalSize = chunks.reduce((sum, chunk) => sum + chunk._size, 0);
     
     return {
       totalSize,
@@ -296,7 +284,7 @@ class BundleAnalyzer {
     }
 
     // Chunks grandes
-    const largeChunks = report.chunks.filter(chunk => chunk.size > 200000);
+    const largeChunks = report.chunks.filter(chunk => chunk._size > 200000);
     if (largeChunks.length > 0) {
       optimizations.push({
         type: 'chunk-optimization',
@@ -345,9 +333,9 @@ export function measurePerformance(target: any, propertyName: string, descriptor
     const measurementName = `${target.constructor.name}.${propertyName}`;
     bundleAnalyzer.startMeasurement(measurementName);
     
-    const result = method.apply(this, args);
+    const _result = method.apply(this, args);
     
-    if (result instanceof Promise) {
+    if (_result instanceof Promise) {
       return result.finally(() => {
         const duration = bundleAnalyzer.endMeasurement(measurementName);
         logger.debug(`${measurementName} took ${duration}ms`);
@@ -381,7 +369,7 @@ export const usePerformanceMonitor = (componentName: string) => {
         logger.debug(`${componentName} render #${renderCount + 1} took ${duration}ms`);
       }
     };
-  });
+  }, [componentName, renderCount]);
 
   return { renderCount, renderTime };
 };

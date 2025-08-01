@@ -1,0 +1,175 @@
+name: Docker E2E Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # Run nightly at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      test_mode:
+        description: 'Test mode (all, single, parallel)'
+        required: false
+        default: 'parallel'
+      api_level:
+        description: 'Android API level (21, 26, 31)'
+        required: false
+        default: '31'
+
+jobs:
+  docker-tests:
+    name: Run E2E Tests on Android Emulators
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    
+    strategy:
+      matrix:
+        include:
+          - api_level: 31
+            emulator_name: android-31
+          - api_level: 26
+            emulator_name: android-26
+          - api_level: 21
+            emulator_name: android-21
+      fail-fast: false
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🏗️ Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: |
+          npm ci
+          cd e2e && npm ci
+
+      - name: 🔨 Build Android APK
+        run: |
+          npm run build:android
+          # Verify APK exists
+          ls -la android/app/build/outputs/apk/release/
+
+      - name: 🐳 Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 🔧 Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: 🏗️ Build Docker images
+        run: |
+          docker-compose build ${{ matrix.emulator_name }}
+          docker-compose build test-runner
+
+      - name: 🚀 Run E2E tests
+        run: |
+          # Start specific emulator
+          docker-compose up -d ${{ matrix.emulator_name }}
+          
+          # Wait for emulator to be ready
+          docker-compose run --rm test-runner /app/scripts/wait-for-emulator.sh ${{ matrix.emulator_name }}
+          
+          # Run tests
+          docker-compose run --rm \
+            -e TEST_TARGETS="${{ matrix.emulator_name }}" \
+            -e PARALLEL_TESTS=false \
+            test-runner
+        env:
+          COMPOSE_HTTP_TIMEOUT: 120
+
+      - name: 📊 Generate test report
+        if: always()
+        run: |
+          # Copy results from container
+          docker cp crowbar-test-runner:/app/test-results ./test-results-${{ matrix.api_level }}
+          docker cp crowbar-test-runner:/app/reports ./test-reports-${{ matrix.api_level }}
+
+      - name: 📤 Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-api${{ matrix.api_level }}
+          path: |
+            test-results-${{ matrix.api_level }}/
+            test-reports-${{ matrix.api_level }}/
+
+      - name: 📸 Upload screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots-api${{ matrix.api_level }}
+          path: test-results-${{ matrix.api_level }}/screenshots/
+
+      - name: 🧹 Cleanup
+        if: always()
+        run: |
+          docker-compose down -v
+          docker system prune -f
+
+  merge-reports:
+    name: Merge Test Reports
+    needs: docker-tests
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📥 Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: 🔧 Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: 📊 Merge Allure reports
+        run: |
+          npm install -g allure-commandline
+          
+          # Merge all results
+          mkdir -p allure-results
+          find artifacts -name "*.json" -o -name "*.xml" | xargs cp -t allure-results
+          
+          # Generate combined report
+          allure generate allure-results -o allure-report --clean
+
+      - name: 📤 Upload combined report
+        uses: actions/upload-artifact@v4
+        with:
+          name: combined-test-report
+          path: allure-report/
+
+      - name: 📊 Publish test results
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: E2E Test Results
+          path: 'artifacts/**/junit-*.xml'
+          reporter: java-junit
+
+  notify:
+    name: Notify Results
+    needs: [docker-tests, merge-reports]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: 📱 Send notification
+        if: ${{ github.event_name != 'pull_request' }}
+        run: |
+          # Add notification logic here (Slack, Discord, etc.)
+          echo "Tests completed with status: ${{ needs.docker-tests.result }}"

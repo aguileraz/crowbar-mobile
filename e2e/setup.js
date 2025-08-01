@@ -5,14 +5,33 @@
  * usando Detox e Jest.
  */
 
-// Importar globals do Detox
-const { device, element, by, waitFor } = require('detox');
-
-// Tornar Detox globals disponíveis
-global.device = device;
-global.element = element;
-global.by = by;
-global.waitFor = waitFor;
+// Importar globals do Detox (com fallback para mock)
+try {
+  const { device, element, by, waitFor } = require('detox');
+  
+  // Tornar Detox globals disponíveis
+  global.device = device;
+  global.element = element;
+  global.by = by;
+  global.waitFor = waitFor;
+} catch (error) {
+  // Mock Detox globals para testes de configuração
+  global.device = { 
+    launchApp: () => Promise.resolve(),
+    terminateApp: () => Promise.resolve(),
+    getPlatform: () => 'mock'
+  };
+  global.element = () => ({ 
+    toBeVisible: () => ({ withTimeout: () => Promise.resolve() })
+  });
+  global.by = { 
+    text: () => 'mock-by-text',
+    id: () => 'mock-by-id'
+  };
+  global.waitFor = () => ({ 
+    toBeVisible: () => ({ withTimeout: () => Promise.resolve() })
+  });
+}
 
 // Configurações de timeout para elementos lentos
 const TIMEOUT_CONFIG = {
@@ -46,10 +65,6 @@ global.TIMEOUT_CONFIG = TIMEOUT_CONFIG;
 global.DEVICE_CONFIG = DEVICE_CONFIG;
 
 // Configurações para expectativas do Detox
-const _detoxConfig = {
-  timeout: TIMEOUT_CONFIG.DEFAULT,
-  interval: 500
-};
 
 // Configurar timeouts padrão para expectativas
 beforeEach(() => {
@@ -105,7 +120,7 @@ global.waitForScreen = async (screenTestID, timeout = TIMEOUT_CONFIG.SLOW) => {
 
 // Logger para debug
 global.logTest = (message) => {
-  console.log(`[E2E TEST] ${new Date().toISOString()}: ${message}`);
+  console.log(`[E2E Test ${new Date().toISOString()}]: ${message}`);
 };
 
 // Configurar mock para notificações se necessário

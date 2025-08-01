@@ -47,7 +47,7 @@ export const fetchFavorites = createAsyncThunk(
   'favorites/fetchFavorites',
   async (page: number = 1, { rejectWithValue }) => {
     try {
-      const response = await userService.getFavorites(page, 20);
+      const _response = await userService.getFavorites(page, 20);
       return {
         favorites: response.data,
         pagination: response.pagination,

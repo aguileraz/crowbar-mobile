@@ -13,6 +13,7 @@ import {
   IconButton,
   Card,
   Chip,
+
   Divider,
 } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
@@ -111,12 +112,12 @@ const ShareResultModal: React.FC<ShareResultModalProps> = ({
       
       const shareText = generateShareText();
       
-      const result = await Share.share({
+      const _result = await Share.share({
         message: shareText,
         title: 'Resultado da Abertura de Caixa - Crowbar',
       });
       
-      if (result.action === Share.sharedAction) {
+      if (_result.action === Share.sharedAction) {
         // Track share event
         if (openingResult) {
           dispatch(shareOpeningResult({

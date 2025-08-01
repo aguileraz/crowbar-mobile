@@ -50,7 +50,7 @@ export const openMysteryBox = createAsyncThunk(
   'boxOpening/openMysteryBox',
   async (boxId: string, { rejectWithValue }) => {
     try {
-      const result = await boxService.openBox(boxId);
+      const _result = await boxService.openBox(boxId);
       return result;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Erro ao abrir caixa');
@@ -66,7 +66,7 @@ export const fetchOpeningHistory = createAsyncThunk(
   async (params: { page?: number; limit?: number } = {}, { rejectWithValue }) => {
     try {
       const { page = 1, limit = 20 } = params;
-      const response = await boxService.getOpeningHistory(page, limit);
+      const _response = await boxService.getOpeningHistory(page, limit);
       return response;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Erro ao buscar histórico');

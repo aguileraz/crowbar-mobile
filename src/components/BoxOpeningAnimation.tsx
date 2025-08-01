@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useCallback } from 'react';
+import React, { useRef, useCallback } from 'react';
 import {
   View,
   StyleSheet,
@@ -59,8 +59,8 @@ const BoxOpeningAnimation: React.FC<BoxOpeningAnimationProps> = ({
    * Start particle explosion animation
    */
   const startParticleAnimation = useCallback(() => {
-    const animations = particleAnims.map((particle, index) => {
-      const angle = (index * 45) * (Math.PI / 180); // 45 degrees apart
+    const animations = particleAnims.map((particle, _index) => {
+      const angle = (_index * 45) * (Math.PI / 180); // 45 degrees apart
       const distance = 100;
       
       return Animated.sequence([
@@ -133,7 +133,8 @@ const BoxOpeningAnimation: React.FC<BoxOpeningAnimationProps> = ({
     if (box.images && box.images.length > 0) {
       return { uri: box.images[0].url };
     }
-    return require('../assets/images/default-box.png'); // Fallback image
+    // Use a placeholder URI instead of local asset for build compatibility
+    return { uri: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjY2NjIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNiIgZmlsbD0iIzMzMyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkJveCA8L3RleHQ+PC9zdmc+' };
   };
 
   /**
@@ -186,9 +187,9 @@ const BoxOpeningAnimation: React.FC<BoxOpeningAnimationProps> = ({
       {/* Particles */}
       {animationState === 'opening' && (
         <View style={styles.particlesContainer}>
-          {particleAnims.map((particle, index) => (
+          {particleAnims.map((particle, _index) => (
             <Animated.View
-              key={index}
+              key={0}
               style={[
                 styles.particle,
                 {

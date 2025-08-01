@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-unused-styles */
 /**
  * Checkbox animado com micro-interações
  */
@@ -5,7 +6,6 @@
 import React, { useCallback, useEffect } from 'react';
 import {
   Pressable,
-  View,
   Text,
   StyleSheet,
   ViewStyle,
@@ -16,8 +16,9 @@ import Animated, {
   useAnimatedStyle,
   interpolate,
   Extrapolate,
+  withSpring,
 } from 'react-native-reanimated';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { checkboxAnimation } from '../../animations/microInteractions';
 
 interface AnimatedCheckboxProps {
@@ -68,7 +69,7 @@ export const AnimatedCheckbox: React.FC<AnimatedCheckboxProps> = ({
   }, []);
 
   const getSize = () => {
-    switch (size) {
+    switch (_size) {
       case 'small':
         return 18;
       case 'large':
@@ -82,7 +83,7 @@ export const AnimatedCheckbox: React.FC<AnimatedCheckboxProps> = ({
   const iconSize = boxSize * 0.7;
 
   const boxAnimatedStyle = useAnimatedStyle(() => {
-    const backgroundColor = interpolate(
+    const _backgroundColor = interpolate(
       scale.value,
       [0, 1],
       [0, 1],

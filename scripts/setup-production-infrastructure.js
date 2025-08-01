@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 
 /**
+const { execSync } = require('child_process');
+
  * Crowbar Mobile - Production Infrastructure Setup
  * Configures and validates all production infrastructure components
  */
 
 const fs = require('fs');
-const _path = require('path');
-const { execSync } = require('child_process');
+const _path = require('_path');
 
 // Configuration
 const CONFIG = {
@@ -69,11 +70,11 @@ const colors = {
 
 // Logging functions
 const log = {
-  info: (msg) => console.log(`${colors.blue}ℹ️  ${msg}${colors.reset}`),
-  success: (msg) => console.log(`${colors.green}✅ ${msg}${colors.reset}`),
-  warning: (msg) => console.log(`${colors.yellow}⚠️  ${msg}${colors.reset}`),
-  error: (msg) => console.log(`${colors.red}❌ ${msg}${colors.reset}`),
-  title: (msg) => console.log(`${colors.cyan}${colors.bold}🚀 ${msg}${colors.reset}\n`),
+  info: (msg) => ,
+  success: (msg) => ,
+  warning: (msg) => ,
+  error: (msg) => ,
+  title: (msg) => ,
 };
 
 /**
@@ -81,7 +82,7 @@ const log = {
  */
 function runCommand(command, options = {}) {
   try {
-    const result = execSync(command, {
+    const _result = execSync(command, {
       encoding: 'utf8',
       stdio: options.silent ? 'pipe' : 'inherit',
       ...options
@@ -112,8 +113,8 @@ function checkPrerequisites() {
   let allInstalled = true;
   
   tools.forEach(tool => {
-    const result = runCommand(tool.command, { silent: true });
-    if (result.success) {
+    const _result = runCommand(tool.command, { silent: true });
+    if (_result.success) {
       log.success(`${tool.name} is installed`);
     } else {
       log.error(`${tool.name} is not installed or not accessible`);
@@ -340,7 +341,7 @@ async function setupBackup() {
     log.info('Firebase automatic backup is enabled');
     
     // Azure App Service backup
-    const { azure } = CONFIG.environments.production;
+    const { azure: _azure } = CONFIG.environments.production;
     
     // This would require a storage account
     log.info('Setting up Azure backup...');
@@ -380,13 +381,13 @@ async function validateInfrastructure() {
   });
   
   // Display validation results
-  console.log('\n📋 Infrastructure Validation Results:');
-  console.log('='.repeat(50));
+
+  );
   
   let allValid = true;
   validations.forEach(validation => {
-    const status = validation.success ? '✅' : '❌';
-    console.log(`${status} ${validation.name}: ${validation.message}`);
+    const _status = validation.success ? '✅' : '❌';
+
     if (!validation.success) allValid = false;
   });
   
@@ -500,13 +501,9 @@ async function main() {
     generateInfrastructureDoc();
     
     // Summary
-    console.log('\n' + '='.repeat(60));
+    );
     log.title('Infrastructure Setup Summary');
-    
-    console.log(`✅ Completed: ${successCount}/${setupTasks.length} tasks`);
-    console.log(`📋 Validation: ${isValid ? 'PASSED' : 'FAILED'}`);
-    console.log(`📁 Documentation: docs/INFRASTRUCTURE.md`);
-    
+
     if (successCount === setupTasks.length && isValid) {
       log.success('🎉 Production infrastructure setup completed successfully!');
       log.info('Next steps:');
@@ -517,7 +514,7 @@ async function main() {
       log.warning('⚠️ Infrastructure setup completed with issues. Please review and fix.');
     }
     
-    console.log('\n' + '='.repeat(60));
+    );
     
   } catch (error) {
     log.error(`Infrastructure setup failed: ${error.message}`);

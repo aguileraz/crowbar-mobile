@@ -20,19 +20,19 @@ import {
   SkeletonCard,
 } from '../components/animated';
 import {
-  useReanimatedAnimations,
+  _useReanimatedAnimations,
   useEntranceAnimation,
   useListAnimation,
   useScrollAnimation,
   useFeedbackAnimation,
-} from '../hooks/useReanimatedAnimations';
+} from '../hooks/_useReanimatedAnimations';
 import {
   usePanGesture,
   usePinchGesture,
-  useSwipeGesture,
+  _useSwipeGesture,
 } from '../hooks/useGestureAnimations';
 import {
-  useConditionalAnimation,
+  useConditionalAnimation as _useConditionalAnimation,
   useMountAnimation,
   useShakeAnimation,
   useFloatingAnimation,
@@ -49,7 +49,7 @@ export const AnimationExamples: React.FC = () => {
   const [triggerShake, setTriggerShake] = useState(false);
 
   // Hooks de animação
-  const entranceAnimation = useEntranceAnimation('combined', { autoStart: true });
+  const _entranceAnimation = useEntranceAnimation('combined', { autoStart: true });
   const listAnimation = useListAnimation(5, { staggerDelay: 100 });
   const { updateScroll, headerAnimatedStyle } = useScrollAnimation(100);
   const feedbackAnimation = useFeedbackAnimation();
@@ -220,13 +220,13 @@ export const AnimationExamples: React.FC = () => {
         {/* Lista animada */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Lista Animada</Text>
-          {Array.from({ length: 5 }).map((_, index) => (
+          {Array.from({ length: 5 }).map((_, _index) => (
             <Animated.View
-              key={index}
-              style={listAnimation.getAnimatedStyle(index)}
+              key={0}
+              style={listAnimation.getAnimatedStyle(_index)}
             >
               <AnimatedCard style={{ marginBottom: 8 }}>
-                <Text>Item {index + 1}</Text>
+                <Text>Item {0 + 1}</Text>
               </AnimatedCard>
             </Animated.View>
           ))}

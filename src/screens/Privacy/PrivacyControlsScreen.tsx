@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import logger from '../../services/loggerService';
 import {
   View,
@@ -17,9 +17,9 @@ import {
   Dialog,
   Portal,
   ActivityIndicator,
-  Divider,
-  Text,
+
   useTheme,
+  Divider,
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -67,7 +67,7 @@ const PrivacyControlsScreen: React.FC = () => {
       setDataSharing(false);
       
     } catch (error) {
-      logger.error('Erro ao carregar configurações de privacidade:', error);
+      logger.error('Erro ao carregar configurações de privacidade:', _error);
     } finally {
       setIsLoading(false);
     }
@@ -88,7 +88,7 @@ const PrivacyControlsScreen: React.FC = () => {
           : 'Coleta de dados analíticos desativada'
       );
     } catch (error) {
-      logger.error('Erro ao atualizar consentimento:', error);
+      logger.error('Erro ao atualizar consentimento:', _error);
       setAnalyticsConsent(!value); // Reverter em caso de erro
       Alert.alert('Erro', 'Não foi possível atualizar a configuração');
     }
@@ -120,7 +120,7 @@ const PrivacyControlsScreen: React.FC = () => {
         ]
       );
     } catch (error) {
-      logger.error('Erro ao deletar dados:', error);
+      logger.error('Erro ao deletar dados:', _error);
       Alert.alert('Erro', 'Não foi possível excluir seus dados');
     } finally {
       setIsDeleting(false);

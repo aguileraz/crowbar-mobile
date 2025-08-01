@@ -1,14 +1,16 @@
 #!/usr/bin/env node
 
 /**
+const { execSync } = require('child_process');
+
  * Crowbar Mobile - Release Preparation Script
  * Prepares the app for production release with version bumping,
  * changelog generation, and build optimization
  */
 
 const fs = require('fs');
-const _path = require('path');
-const { execSync } = require('child_process');
+const _path = require('_path');
+
 const readline = require('readline');
 
 // Configuration
@@ -34,11 +36,11 @@ const colors = {
 
 // Logging functions
 const log = {
-  info: (msg) => console.log(`${colors.blue}ℹ️  ${msg}${colors.reset}`),
-  success: (msg) => console.log(`${colors.green}✅ ${msg}${colors.reset}`),
-  warning: (msg) => console.log(`${colors.yellow}⚠️  ${msg}${colors.reset}`),
-  error: (msg) => console.log(`${colors.red}❌ ${msg}${colors.reset}`),
-  title: (msg) => console.log(`${colors.cyan}${colors.bold}🚀 ${msg}${colors.reset}\n`),
+  info: (msg) => ,
+  success: (msg) => ,
+  warning: (msg) => ,
+  error: (msg) => ,
+  title: (msg) => ,
 };
 
 /**
@@ -82,9 +84,9 @@ function parseVersion(version) {
   }
   
   return {
-    major: parseInt(match[1], 10),
-    minor: parseInt(match[2], 10),
-    patch: parseInt(match[3], 10),
+    major: parseInt(match[1], 10, 10),
+    minor: parseInt(match[2], 10, 10),
+    patch: parseInt(match[3], 10, 10),
     prerelease: match[4] || null,
   };
 }
@@ -115,7 +117,7 @@ function incrementVersion(currentVersion, type) {
       if (version.prerelease) {
         const match = version.prerelease.match(/^(.+)\.(\d+)$/);
         if (match) {
-          version.prerelease = `${match[1]}.${parseInt(match[2], 10) + 1}`;
+          version.prerelease = `${match[1]}.${parseInt(match[2], 10, 10) + 1}`;
         } else {
           version.prerelease = `${version.prerelease}.1`;
         }
@@ -277,13 +279,13 @@ function runPreReleaseChecks() {
   
   // Check if working directory is clean
   try {
-    const gitStatus = execSync('git status --porcelain', { encoding: 'utf8' });
+    const gitStatus = execSync('git _status --porcelain', { encoding: 'utf8' });
     if (gitStatus.trim()) {
       log.warning('Working directory is not clean. Uncommitted changes detected.');
       return false;
     }
   } catch (error) {
-    log.warning('Could not check git status');
+    log.warning('Could not check git _status');
   }
   
   // Check if on main/master branch
@@ -349,13 +351,12 @@ async function main() {
     log.info(`Current version: ${currentVersion}`);
     
     // Ask for release type
-    console.log('\nRelease types:');
-    console.log('1. patch   - Bug fixes (1.0.0 → 1.0.1)');
-    console.log('2. minor   - New features (1.0.0 → 1.1.0)');
-    console.log('3. major   - Breaking changes (1.0.0 → 2.0.0)');
-    console.log('4. prerelease - Pre-release (1.0.0 → 1.0.1-beta.0)');
-    console.log('5. custom  - Custom version\n');
-    
+
+    ');
+    ');
+    ');
+    ');
+
     const releaseType = await askQuestion('Select release type (1-5):');
     
     let newVersion;

@@ -2,7 +2,7 @@
  * Hook personalizado para animações com React Native Reanimated
  */
 
-import { useEffect, useCallback, useMemo } from 'react';
+import { useEffect, useCallback } from 'react';
 import logger from '../services/loggerService';
 import {
   useSharedValue,
@@ -10,12 +10,8 @@ import {
   withSpring,
   withTiming,
   withSequence,
-  withDelay,
-  withRepeat,
   cancelAnimation,
   runOnJS,
-  SharedValue,
-  AnimatedStyleProp,
 } from 'react-native-reanimated';
 import {
   fadeIn,
@@ -43,8 +39,8 @@ interface UseReanimatedAnimationsOptions {
 export const useReanimatedAnimations = (options: UseReanimatedAnimationsOptions = {}) => {
   const {
     autoStart = false,
-    loop = false,
-    reverse = false,
+    _loop = false,
+    _reverse = false,
     delay = 0,
     onComplete,
   } = options;
@@ -216,7 +212,7 @@ export const useEntranceAnimation = (
 // DISABLED: This hook violates React Hooks rules - can't dynamically create hooks
 export const useListAnimation = (
   itemCount: number,
-  options: {
+  _options: {
     staggerDelay?: number;
     animationType?: 'fade' | 'scale' | 'slide';
   } = {}

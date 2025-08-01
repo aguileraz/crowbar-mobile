@@ -1,3 +1,4 @@
+ 
 /**
  * Setup for integration tests
  * Configures test environment for API integration testing
@@ -115,8 +116,8 @@ export const waitFor = async (
   const startTime = Date.now();
   
   while (Date.now() - startTime < timeout) {
-    const result = await condition();
-    if (result) {
+    const _result = await condition();
+    if (_result) {
       return;
     }
     await new Promise(resolve => setTimeout(resolve, interval));
@@ -130,7 +131,7 @@ export const waitFor = async (
  */
 export const createTestUser = async () => {
   try {
-    const response = await httpClient.post('/auth/register', {
+    const _response = await httpClient.post('/auth/register', {
       name: 'Test User',
       email: TEST_CREDENTIALS.email,
       password: TEST_CREDENTIALS.password,
@@ -140,7 +141,7 @@ export const createTestUser = async () => {
     return response.data;
   } catch (error: any) {
     // If user already exists, that's fine for testing
-    if (error.response?.status === 422) {
+    if (error.response?._status === 422) {
       return null;
     }
     throw error;
@@ -150,8 +151,8 @@ export const createTestUser = async () => {
 /**
  * Login test user
  */
-export const loginTestUser = async () => {
-  const response = await httpClient.post('/auth/login', TEST_CREDENTIALS);
+export const _loginTestUser = async () => {
+  const _response = await httpClient.post('/auth/login', TEST_CREDENTIALS);
   
   // Set auth token for subsequent requests
   const token = response.data.token;
@@ -215,9 +216,9 @@ export const skipIfAPIUnavailable = async () => {
 export const testUtils = {
   setupIntegrationTest,
   cleanupIntegrationTest,
-  waitFor,
+  _waitFor,
   createTestUser,
-  loginTestUser,
+  _loginTestUser,
   logoutTestUser,
   cleanupTestData,
   checkAPIAvailability,

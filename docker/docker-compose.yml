@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  android-test:
+    build:
+      context: ..
+      dockerfile: docker/android/Dockerfile
+    container_name: crowbar-android-test
+    privileged: true  # Required for KVM acceleration
+    environment:
+      - ANDROID_AVD_NAME=test_avd
+      - ENABLE_VNC=true
+      - START_EMULATOR=true
+      - WAIT_FOR_EMULATOR=true
+      # Emulator configuration
+      - EMULATOR_EXTRA_ARGS=-no-snapshot-save -wipe-data
+    volumes:
+      # Mount the entire project
+      - ..:/app
+      # Cache directories for faster rebuilds
+      - gradle-cache:/root/.gradle
+      - android-cache:/root/.android
+      - npm-cache:/root/.npm
+      # Preserve AVD data between runs (optional)
+      # - avd-data:/root/.android/avd
+    ports:
+      - "5554:5554"  # Emulator console
+      - "5555:5555"  # ADB
+      - "5900:5900"  # VNC server
+      - "8081:8081"  # Metro bundler
+    devices:
+      # Enable KVM for hardware acceleration (Linux only)
+      - /dev/kvm:/dev/kvm
+    # Healthcheck to ensure emulator is ready
+    healthcheck:
+      test: ["CMD", "adb", "shell", "getprop", "sys.boot_completed"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
+    networks:
+      - android-test-network
+
+  # Optional: VNC web client for browser-based access
+  novnc:
+    image: theasp/novnc:latest
+    container_name: crowbar-novnc
+    environment:
+      - DISPLAY_WIDTH=1024
+      - DISPLAY_HEIGHT=768
+      - RUN_XTERM=no
+    ports:
+      - "6080:8080"  # noVNC web interface
+    depends_on:
+      - android-test
+    networks:
+      - android-test-network
+    command: ["--vnc", "android-test:5900"]
+
+volumes:
+  gradle-cache:
+  android-cache:
+  npm-cache:
+  # avd-data:  # Uncomment to persist AVD data
+
+networks:
+  android-test-network:
+    driver: bridge

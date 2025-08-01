@@ -3,7 +3,7 @@
  * Development dashboard for monitoring services status and metrics
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   ScrollView,
@@ -18,8 +18,9 @@ import {
   Chip,
   DataTable,
   Switch,
-  Divider,
+
   List,
+  Divider,
 } from 'react-native-paper';
 import { useMonitoring } from '../../hooks/useMonitoring';
 import config from '../../../config/environments';

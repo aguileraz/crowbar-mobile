@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-unused-styles */
 /**
  * Botão animado com feedback visual e háptico
  */
@@ -15,12 +16,12 @@ import {
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
-  interpolate,
-  Extrapolate,
+  withSpring,
+  withTiming,
+  withRepeat,
 } from 'react-native-reanimated';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { buttonPress } from '../../animations/microInteractions';
-import { SCALE_VALUES } from '../../animations/constants';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -34,7 +35,7 @@ interface AnimatedButtonProps extends Omit<PressableProps, 'style'> {
   style?: ViewStyle;
   textStyle?: TextStyle;
   loading?: boolean;
-  haptic?: boolean;
+  _haptic?: boolean;
   ripple?: boolean;
   onPress?: () => void;
 }
@@ -49,7 +50,7 @@ export const AnimatedButton: React.FC<AnimatedButtonProps> = ({
   style,
   textStyle,
   loading = false,
-  haptic = true,
+  _haptic = true,
   ripple = true,
   onPress,
   disabled,
@@ -61,8 +62,8 @@ export const AnimatedButton: React.FC<AnimatedButtonProps> = ({
 
   const handlePressIn = useCallback(() => {
     'worklet';
-    buttonPress(scale, { haptic, hapticType: 'light' });
-  }, [haptic]);
+    buttonPress(scale, { _haptic, _hapticType: 'light' });
+  }, [_haptic]);
 
   const handlePressOut = useCallback(() => {
     'worklet';
@@ -105,24 +106,24 @@ export const AnimatedButton: React.FC<AnimatedButtonProps> = ({
   });
 
   const getButtonStyle = (): ViewStyle => {
-    const baseStyle: ViewStyle = {
+    const _baseStyle: ViewStyle = {
       ...styles.button,
       ...styles[variant],
       ...styles[size],
       ...(disabled && styles.disabled),
       ...style,
     };
-    return baseStyle;
+    return _baseStyle;
   };
 
   const getTextStyle = (): TextStyle => {
-    const baseStyle: TextStyle = {
+    const _baseStyle: TextStyle = {
       ...styles.text,
       ...styles[`${variant}Text`],
       ...styles[`${size}Text`],
       ...textStyle,
     };
-    return baseStyle;
+    return _baseStyle;
   };
 
   const renderContent = () => {

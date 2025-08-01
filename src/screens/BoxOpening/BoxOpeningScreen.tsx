@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import {
-  View,
+  _View,
   StyleSheet,
   Animated,
   Dimensions,
@@ -12,7 +12,6 @@ import {
   IconButton,
   ActivityIndicator,
   Portal,
-  Modal,
 } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -50,7 +49,7 @@ import ErrorMessage from '../../components/ErrorMessage';
 import { MysteryBox } from '../../types/api';
 
 // Theme
-import { theme, getSpacing } from '../../theme';
+import { _theme, getSpacing } from '../../theme';
 import { analyticsService } from '../../services/analyticsService';
 
 /**
@@ -68,7 +67,7 @@ interface BoxOpeningScreenProps {
   route: BoxOpeningScreenRouteProp;
 }
 
-const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+const { width: screenWidth, height: _screenHeight } = Dimensions.get('window');
 
 const BoxOpeningScreen: React.FC<BoxOpeningScreenProps> = ({
   navigation,
@@ -130,15 +129,15 @@ const BoxOpeningScreen: React.FC<BoxOpeningScreenProps> = ({
       dispatch(startOpeningAnimation());
       
       // Open box on server
-      const result = await dispatch(openMysteryBox(currentBox.id)).unwrap();
+      const _result = await dispatch(openMysteryBox(currentBox.id)).unwrap();
       
       // Rastrear abertura da caixa
-      if (result && result.items_received) {
+      if (_result && _result.items_received) {
         analyticsService.trackBoxOpening(
           currentBox.id,
           currentBox.name,
           currentBox.price,
-          result.items_received.map((item: any) => ({
+          _result.items_received.map((item: any) => ({
             id: item.id,
             name: item.name,
             rarity: item.rarity,
@@ -307,7 +306,7 @@ const BoxOpeningScreen: React.FC<BoxOpeningScreenProps> = ({
    * Get rotation interpolation
    */
   const getRotateInterpolation = () => {
-    return rotateAnim.interpolate({
+    return rotateAnim._interpolate({
       inputRange: [-1, 1],
       outputRange: ['-10deg', '10deg'],
     });
@@ -325,17 +324,17 @@ const BoxOpeningScreen: React.FC<BoxOpeningScreenProps> = ({
 
   if (!currentBox) {
     return (
-      <View style={styles.loadingContainer}>
+      <_View style={styles.loadingContainer}>
         <ActivityIndicator size="large" />
         <Text style={styles.loadingText}>Carregando caixa...</Text>
-      </View>
+      </_View>
     );
   }
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <_View style={[styles.container, { paddingTop: insets.top }]}>
       {/* Header */}
-      <View style={styles.header}>
+      <_View style={styles.header}>
         <IconButton
           icon="arrow-left"
           size={24}
@@ -355,10 +354,10 @@ const BoxOpeningScreen: React.FC<BoxOpeningScreenProps> = ({
             onPress={skipAnimation}
           />
         )}
-      </View>
+      </_View>
 
       {/* Main Content */}
-      <View style={styles.content}>
+      <_View style={styles.content}>
         {animationState === 'idle' && (
           <BoxOpeningAnimation
             box={currentBox}
@@ -373,9 +372,9 @@ const BoxOpeningScreen: React.FC<BoxOpeningScreenProps> = ({
         )}
 
         {(animationState === 'opening' || animationState === 'revealing' || animationState === 'completed') && (
-          <View style={styles.revealContainer}>
+          <_View style={styles.revealContainer}>
             {/* Box Animation */}
-            <Animated.View
+            <Animated._View
               style={[
                 styles.boxContainer,
                 {
@@ -397,33 +396,33 @@ const BoxOpeningScreen: React.FC<BoxOpeningScreenProps> = ({
                 canOpen={false}
                 isLoading={false}
               />
-            </Animated.View>
+            </Animated._View>
 
             {/* Revealed Items */}
             {revealedItems.length > 0 && (
-              <View style={styles.itemsContainer}>
+              <_View style={styles.itemsContainer}>
                 <Text style={styles.itemsTitle}>
                   Itens Encontrados ({revealedItems.length}/{openingResult?.items.length || 0})
                 </Text>
-                <View style={styles.itemsGrid}>
-                  {revealedItems.map((item, index) => (
+                <_View style={styles.itemsGrid}>
+                  {revealedItems.map((item, _index) => (
                     <ItemRevealCard
-                      key={`${item.id}-${index}`}
+                      _key={`${item.id}-${0}`}
                       item={item}
-                      index={index}
+                      index={0}
                       style={styles.itemCard}
                     />
                   ))}
-                </View>
-              </View>
+                </_View>
+              </_View>
             )}
-          </View>
+          </_View>
         )}
-      </View>
+      </_View>
 
       {/* Bottom Actions */}
       {animationState === 'completed' && (
-        <View style={styles.bottomActions}>
+        <_View style={styles.bottomActions}>
           <Button
             mode="outlined"
             onPress={handleShare}
@@ -440,49 +439,49 @@ const BoxOpeningScreen: React.FC<BoxOpeningScreenProps> = ({
           >
             Abrir Outra
           </Button>
-        </View>
+        </_View>
       )}
 
       {/* Share Modal */}
       <Portal>
         <ShareResultModal
           visible={showShareModal}
-          onDismiss={() => dispatch(setShowShareModal(false))}
+          _onDismiss={() => dispatch(setShowShareModal(false))}
           openingResult={openingResult}
           box={currentBox}
         />
       </Portal>
-    </View>
+    </_View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.colors.background,
+    _backgroundColor: theme.colors.background,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: theme.colors.background,
+    _backgroundColor: theme.colors.background,
   },
   loadingText: {
     marginTop: getSpacing('md'),
-    color: theme.colors.onSurfaceVariant,
+    _color: theme.colors.onSurfaceVariant,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: getSpacing('md'),
-    backgroundColor: theme.colors.surface,
+    _backgroundColor: theme.colors.surface,
     elevation: 2,
   },
   headerTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: theme.colors.onSurface,
+    _color: theme.colors.onSurface,
   },
   content: {
     flex: 1,
@@ -507,7 +506,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: getSpacing('lg'),
-    color: theme.colors.onSurface,
+    _color: theme.colors.onSurface,
   },
   itemsGrid: {
     flexDirection: 'row',
@@ -523,7 +522,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     padding: getSpacing('md'),
     gap: getSpacing('md'),
-    backgroundColor: theme.colors.surface,
+    _backgroundColor: theme.colors.surface,
     borderTopWidth: 1,
     borderTopColor: theme.colors.outline,
   },

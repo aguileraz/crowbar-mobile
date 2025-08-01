@@ -1,67 +1,50 @@
-# E2E Tests - Crowbar Mobile
+# E2E Testing - Crowbar Mobile
 
-Este diretório contém os testes end-to-end (E2E) para o aplicativo Crowbar Mobile usando Detox.
+Este diretório contém a configuração e testes End-to-End (E2E) para o aplicativo Crowbar Mobile.
 
 ## 📋 Configuração
 
-### Pré-requisitos
+### Arquivos de Configuração
 
-#### Android
-- Android SDK instalado
-- ANDROID_HOME configurado
-- Emulador Android criado (ou dispositivo físico conectado)
-- Java 11+ instalado
+- **`.detoxrc.js`** (raiz do projeto): Configuração principal do Detox
+- **`jest.config.js`**: Configuração para testes E2E reais com Detox
+- **`jest.config.mock.js`**: Configuração para testes de validação sem emulador
+- **`setup.js`**: Setup global para testes E2E (com fallback para mock)
+- **`setup.mock.js`**: Setup mock completo para testes sem emulador
 
-#### iOS
-- macOS com Xcode instalado
-- Simulador iOS configurado
-- CocoaPods instalado
+### Configurações de Dispositivo
 
-### Instalação
+O Detox está configurado para suportar:
+
+- **iOS Simulator**: iPhone 15 (Debug/Release)
+- **Android Emulator**: Pixel_3a_API_30_x86 (Debug/Release)
+- **Android Device**: Dispositivos físicos conectados (Debug/Release)
+
+## 🧪 Tipos de Teste
+
+### 1. Testes de Configuração (Mock)
+Validam se o ambiente E2E está configurado corretamente sem precisar de emulador.
 
 ```bash
-# Instalar dependências
-npm install
+# Executar testes de configuração
+cd e2e && npx jest --config jest.config.mock.js
 
-# Build para testes (Android)
-npm run test:e2e:build:android
-
-# Build para testes (iOS)
-npm run test:e2e:build:ios
+# Testar arquivo específico
+cd e2e && npx jest tests/config.test.js --config jest.config.mock.js
 ```
 
-## 🏃‍♂️ Executando Testes
-
-### Usando o Script Helper
-
-```bash
-# Executar todos os testes (Android)
-npm run e2e:test
-
-# Executar teste específico
-npm run e2e:test e2e/tests/auth/login.test.js
-
-# Executar no iOS
-npm run e2e:test -- --platform=ios
-
-# Forçar rebuild
-npm run e2e:test -- --build
-
-# Com logs detalhados
-npm run e2e:test -- --debug
-```
-
-### Comandos Diretos
+### 2. Testes E2E Reais
+Executam testes no aplicativo real usando emulador/dispositivo.
 
 ```bash
-# Android
-npm run test:e2e:android
+# Android (Emulador)
+npx detox test --configuration android.emu.debug
 
-# iOS  
-npm run test:e2e:ios
+# Android (Dispositivo)
+npx detox test --configuration android.att.debug
 
-# Build + Test
-npm run test:e2e:build:android && npm run test:e2e:android
+# iOS (Simulador)
+npx detox test --configuration ios.sim.debug
 ```
 
 ## 📁 Estrutura

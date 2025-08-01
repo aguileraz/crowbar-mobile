@@ -1,6 +1,6 @@
+ 
 import { TestApiClient, testEnvironment, testData, testUtils } from './testConfig';
-import { apiClient, ApiError } from '../../api';
-import { auth } from '@react-native-firebase/auth';
+import { _auth } from '@react-native-firebase/auth';
 
 /**
  * Testes de integração para sistema de autenticação
@@ -66,7 +66,7 @@ describe('Testes de Integração - Autenticação', () => {
       testClient.mockSuccess('post', '/auth/login', expectedResponse);
 
       // Act
-      const response = await apiClient.post('/auth/login', credentials);
+      const _response = await apiClient.post('/auth/login', credentials);
 
       // Assert
       expect(response.success).toBe(true);
@@ -162,7 +162,7 @@ describe('Testes de Integração - Autenticação', () => {
       testClient.mockSuccess('post', '/auth/register', expectedResponse, 201);
 
       // Act
-      const response = await apiClient.post('/auth/register', userData);
+      const _response = await apiClient.post('/auth/register', userData);
 
       // Assert
       expect(response.success).toBe(true);
@@ -230,7 +230,7 @@ describe('Testes de Integração - Autenticação', () => {
       testClient.mockSuccess('post', '/auth/logout', expectedResponse);
 
       // Act
-      const response = await apiClient.post('/auth/logout');
+      const _response = await apiClient.post('/auth/logout');
 
       // Assert
       expect(response.success).toBe(true);
@@ -266,7 +266,7 @@ describe('Testes de Integração - Autenticação', () => {
       testClient.mockSuccess('post', '/auth/refresh', expectedResponse);
 
       // Act
-      const response = await apiClient.post('/auth/refresh');
+      const _response = await apiClient.post('/auth/refresh');
 
       // Assert
       expect(response.success).toBe(true);
@@ -301,7 +301,7 @@ describe('Testes de Integração - Autenticação', () => {
       testClient.mockSuccess('get', '/auth/verify-token', expectedResponse);
 
       // Act
-      const response = await apiClient.get('/auth/verify-token');
+      const _response = await apiClient.get('/auth/verify-token');
 
       // Assert
       expect(response.success).toBe(true);
@@ -321,7 +321,7 @@ describe('Testes de Integração - Autenticação', () => {
       testClient.mockSuccess('post', '/auth/forgot-password', expectedResponse);
 
       // Act
-      const response = await apiClient.post('/auth/forgot-password', { email });
+      const _response = await apiClient.post('/auth/forgot-password', { email });
 
       // Assert
       expect(response.success).toBe(true);
@@ -361,7 +361,7 @@ describe('Testes de Integração - Autenticação', () => {
       testClient.mockSuccess('post', '/auth/reset-password', expectedResponse);
 
       // Act
-      const response = await apiClient.post('/auth/reset-password', resetData);
+      const _response = await apiClient.post('/auth/reset-password', resetData);
 
       // Assert
       expect(response.success).toBe(true);
@@ -405,7 +405,7 @@ describe('Testes de Integração - Autenticação', () => {
       testClient.mockSuccess('post', '/auth/firebase-sync', expectedResponse);
 
       // Act
-      const response = await apiClient.post('/auth/firebase-sync', { firebase_token: firebaseToken });
+      const _response = await apiClient.post('/auth/firebase-sync', { firebase_token: firebaseToken });
 
       // Assert
       expect(response.success).toBe(true);

@@ -213,6 +213,22 @@ npm run test:e2e:android
 npm run test:e2e:ios
 ```
 
+### **Testes com Docker (Android)**
+```bash
+# Executar testes em emuladores Docker
+make -f Makefile.docker test           # Todos os APIs sequencialmente
+make -f Makefile.docker test-parallel  # Todos os APIs em paralelo
+make -f Makefile.docker test-api31     # Apenas API 31
+make -f Makefile.docker test-api26     # Apenas API 26
+make -f Makefile.docker test-api21     # Apenas API 21
+
+# Ver relatório de testes
+make -f Makefile.docker report
+
+# Limpar ambiente Docker
+make -f Makefile.docker clean
+```
+
 ## 📊 Scripts Disponíveis
 
 ### **Desenvolvimento**

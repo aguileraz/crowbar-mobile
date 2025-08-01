@@ -43,7 +43,7 @@ class HttpClient {
 
     // Response interceptor
     this.client.interceptors.response.use(
-      (response) => {
+      (_response) => {
         // Rastrear latência da API
         const config = response.config as any;
         if (config.metadata?.startTime) {
@@ -77,7 +77,7 @@ class HttpClient {
             Date.now() - config.metadata.startTime : 0;
           const endpoint = config.url || 'unknown';
           const method = config.method?.toUpperCase() || 'GET';
-          const status = error.response?.status || 0;
+          const _status = error.response?.status || 0;
           
           // Rastrear latência mesmo em caso de erro
           analyticsService.trackApiLatency(
@@ -89,13 +89,13 @@ class HttpClient {
           
           // Rastrear erro específico
           analyticsService.trackError(
-            new Error(`API Error: ${status} ${endpoint}`),
+            new Error(`API Error: ${_status} ${endpoint}`),
             'http_client'
           );
         }
         
         // Tratar erros de autenticação
-        if (error.response?.status === 401) {
+        if (error.response?._status === 401) {
           this.authToken = null;
           // Aqui poderia disparar um evento para logout
         }

@@ -1,0 +1,11 @@
+{
+  "timestamp": "2025-07-28T17:35:18.221Z",
+  "score": 70,
+  "maxScore": 100,
+  "percentage": 70,
+  "issues": [
+    "Potential hardcoded secrets detected",
+    "Switch to production Firebase project"
+  ],
+  "status": "WARNING"
+}

@@ -1,3 +1,4 @@
+ 
 import { reviewService } from '../reviewService';
 import { httpClient } from '../httpClient';
 import { Review, PaginatedResponse } from '../../types/api';
@@ -38,10 +39,10 @@ describe('ReviewService', () => {
       (httpClient.get as jest.Mock).mockResolvedValue({ data: mockResponse });
 
       // Executar
-      const result = await reviewService.getReviews('box-123');
+      const _result = await reviewService.getReviews('box-123');
 
       // Verificar
-      expect(result).toEqual(mockResponse);
+      expect(_result).toEqual(mockResponse);
       expect(httpClient.get).toHaveBeenCalledWith('/reviews', {
         params: {
           box_id: 'box-123',
@@ -68,10 +69,10 @@ describe('ReviewService', () => {
         order: 'desc',
       };
       
-      const result = await reviewService.getReviews('box-123', 2, 10, filters);
+      const _result = await reviewService.getReviews('box-123', 2, 10, filters);
 
       // Verificar
-      expect(result).toEqual(mockResponse);
+      expect(_result).toEqual(mockResponse);
       expect(httpClient.get).toHaveBeenCalledWith('/reviews', {
         params: {
           box_id: 'box-123',
@@ -116,10 +117,10 @@ describe('ReviewService', () => {
       (httpClient.get as jest.Mock).mockResolvedValue({ data: mockStatistics });
 
       // Executar
-      const result = await reviewService.getReviewStatistics('box-123');
+      const _result = await reviewService.getReviewStatistics('box-123');
 
       // Verificar
-      expect(result).toEqual(mockStatistics);
+      expect(_result).toEqual(mockStatistics);
       expect(httpClient.get).toHaveBeenCalledWith('/reviews/statistics', {
         params: { box_id: 'box-123' },
       });
@@ -152,10 +153,10 @@ describe('ReviewService', () => {
       (httpClient.get as jest.Mock).mockResolvedValue({ data: mockReview });
 
       // Executar
-      const result = await reviewService.getUserReview('box-123');
+      const _result = await reviewService.getUserReview('box-123');
 
       // Verificar
-      expect(result).toEqual(mockReview);
+      expect(_result).toEqual(mockReview);
       expect(httpClient.get).toHaveBeenCalledWith('/reviews/user', {
         params: { box_id: 'box-123' },
       });
@@ -168,10 +169,10 @@ describe('ReviewService', () => {
       (httpClient.get as jest.Mock).mockRejectedValue(mockError);
 
       // Executar
-      const result = await reviewService.getUserReview('box-123');
+      const _result = await reviewService.getUserReview('box-123');
 
       // Verificar
-      expect(result).toBeNull();
+      expect(_result).toBeNull();
     });
 
     it('deve propagar outros erros', async () => {
@@ -205,10 +206,10 @@ describe('ReviewService', () => {
       (httpClient.post as jest.Mock).mockResolvedValue({ data: mockCreatedReview });
 
       // Executar
-      const result = await reviewService.createReview(reviewData);
+      const _result = await reviewService.createReview(reviewData);
 
       // Verificar
-      expect(result).toEqual(mockCreatedReview);
+      expect(_result).toEqual(mockCreatedReview);
       expect(httpClient.post).toHaveBeenCalledWith('/reviews', {
         box_id: reviewData.boxId,
         rating: reviewData.rating,
@@ -242,10 +243,10 @@ describe('ReviewService', () => {
       (httpClient.post as jest.Mock).mockResolvedValue({ data: mockCreatedReview });
 
       // Executar
-      const result = await reviewService.createReview(reviewData);
+      const _result = await reviewService.createReview(reviewData);
 
       // Verificar
-      expect(result).toEqual(mockCreatedReview);
+      expect(_result).toEqual(mockCreatedReview);
       expect(httpClient.post).toHaveBeenCalledWith('/reviews', {
         box_id: reviewData.boxId,
         rating: reviewData.rating,
@@ -289,10 +290,10 @@ describe('ReviewService', () => {
       (httpClient.put as jest.Mock).mockResolvedValue({ data: mockUpdatedReview });
 
       // Executar
-      const result = await reviewService.updateReview('review-123', updateData);
+      const _result = await reviewService.updateReview('review-123', updateData);
 
       // Verificar
-      expect(result).toEqual(mockUpdatedReview);
+      expect(_result).toEqual(mockUpdatedReview);
       expect(httpClient.put).toHaveBeenCalledWith('/reviews/review-123', updateData);
     });
 
@@ -337,10 +338,10 @@ describe('ReviewService', () => {
       (httpClient.post as jest.Mock).mockResolvedValue({ data: mockResponse });
 
       // Executar
-      const result = await reviewService.markReviewHelpful('review-123', true);
+      const _result = await reviewService.markReviewHelpful('review-123', true);
 
       // Verificar
-      expect(result).toEqual(mockResponse);
+      expect(_result).toEqual(mockResponse);
       expect(httpClient.post).toHaveBeenCalledWith('/reviews/review-123/helpful', {
         helpful: true,
       });
@@ -356,10 +357,10 @@ describe('ReviewService', () => {
       (httpClient.post as jest.Mock).mockResolvedValue({ data: mockResponse });
 
       // Executar
-      const result = await reviewService.markReviewHelpful('review-123', false);
+      const _result = await reviewService.markReviewHelpful('review-123', false);
 
       // Verificar
-      expect(result).toEqual(mockResponse);
+      expect(_result).toEqual(mockResponse);
       expect(httpClient.post).toHaveBeenCalledWith('/reviews/review-123/helpful', {
         helpful: false,
       });
@@ -382,10 +383,10 @@ describe('ReviewService', () => {
       (httpClient.post as jest.Mock).mockResolvedValue({ data: mockResponse });
 
       // Executar
-      const result = await reviewService.reportReview('review-123', reportData.reason, reportData.description);
+      const _result = await reviewService.reportReview('review-123', reportData.reason, reportData.description);
 
       // Verificar
-      expect(result).toEqual(mockResponse);
+      expect(_result).toEqual(mockResponse);
       expect(httpClient.post).toHaveBeenCalledWith('/reviews/review-123/report', reportData);
     });
 
@@ -398,10 +399,10 @@ describe('ReviewService', () => {
       (httpClient.post as jest.Mock).mockResolvedValue({ data: mockResponse });
 
       // Executar
-      const result = await reviewService.reportReview('review-123', 'spam');
+      const _result = await reviewService.reportReview('review-123', 'spam');
 
       // Verificar
-      expect(result).toEqual(mockResponse);
+      expect(_result).toEqual(mockResponse);
       expect(httpClient.post).toHaveBeenCalledWith('/reviews/review-123/report', {
         reason: 'spam',
         description: undefined,
@@ -429,10 +430,10 @@ describe('ReviewService', () => {
       (httpClient.get as jest.Mock).mockResolvedValue({ data: mockTopReviews });
 
       // Executar
-      const result = await reviewService.getTopReviews('box-123', 5);
+      const _result = await reviewService.getTopReviews('box-123', 5);
 
       // Verificar
-      expect(result).toEqual(mockTopReviews);
+      expect(_result).toEqual(mockTopReviews);
       expect(httpClient.get).toHaveBeenCalledWith('/reviews/top', {
         params: {
           box_id: 'box-123',
@@ -480,10 +481,10 @@ describe('ReviewService', () => {
       (httpClient.get as jest.Mock).mockResolvedValue({ data: mockResponse });
 
       // Executar
-      const result = await reviewService.getUserReviews('user-123', 1, 20);
+      const _result = await reviewService.getUserReviews('user-123', 1, 20);
 
       // Verificar
-      expect(result).toEqual(mockResponse);
+      expect(_result).toEqual(mockResponse);
       expect(httpClient.get).toHaveBeenCalledWith('/reviews/user/user-123', {
         params: {
           page: 1,
@@ -503,10 +504,10 @@ describe('ReviewService', () => {
       (httpClient.get as jest.Mock).mockResolvedValue({ data: mockResponse });
 
       // Executar
-      const result = await reviewService.canUserReview('box-123');
+      const _result = await reviewService.canUserReview('box-123');
 
       // Verificar
-      expect(result).toEqual(mockResponse);
+      expect(_result).toEqual(mockResponse);
       expect(httpClient.get).toHaveBeenCalledWith('/reviews/can-review/box-123');
     });
 
@@ -518,8 +519,8 @@ describe('ReviewService', () => {
 
       (httpClient.get as jest.Mock).mockResolvedValue({ data: mockResponse });
 
-      const result = await reviewService.canUserReview('box-123');
-      expect(result).toEqual(mockResponse);
+      const _result = await reviewService.canUserReview('box-123');
+      expect(_result).toEqual(mockResponse);
     });
   });
 });

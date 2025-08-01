@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   ScrollView,
@@ -15,7 +15,7 @@ import {
   Button,
   Chip,
   ProgressBar,
-  Divider,
+
 } from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useSelector } from 'react-redux';
@@ -39,8 +39,8 @@ const PerformanceMonitor: React.FC = () => {
   const [fps, setFps] = useState<PerformanceMetric[]>([]);
   const [memoryUsage, setMemoryUsage] = useState<PerformanceMetric[]>([]);
   const [networkLatency, setNetworkLatency] = useState<PerformanceMetric[]>([]);
-  const [batteryLevel, setBatteryLevel] = useState<number | null>(null);
-  const [networkType, setNetworkType] = useState<string>('Unknown');
+  const [batteryLevel, _setBatteryLevel] = useState<number | null>(null);
+  const [networkType, _setNetworkType] = useState<string>('Unknown');
   
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   
@@ -121,18 +121,18 @@ const PerformanceMonitor: React.FC = () => {
     return (
       <View style={styles.chartContainer}>
         <View style={styles.chart}>
-          {data.map((metric, index) => {
+          {data.map((metric, _index) => {
             const height = (metric.value / maxValue) * chartHeight;
             return (
               <View
-                key={index}
+                key={0}
                 style={[
                   styles.chartBar,
                   {
                     height,
                     width: barWidth - 2,
                     backgroundColor: color,
-                    opacity: 0.3 + (index / data.length) * 0.7,
+                    opacity: 0.3 + (_index / data.length) * 0.7,
                   },
                 ]}
               />

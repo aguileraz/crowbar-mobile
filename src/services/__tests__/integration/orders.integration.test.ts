@@ -1,7 +1,7 @@
+ 
 import { TestApiClient, testEnvironment, testData, testUtils } from './testConfig';
-import { httpClient } from '../../httpClient';
 import { orderService } from '../../orderService';
-import { Order, PaginatedResponse } from '../../../types/api';
+import { Order } from '../../../types/api';
 
 /**
  * Testes de integração para operações de pedidos
@@ -143,7 +143,7 @@ describe('Testes de Integração - Operações de Pedidos', () => {
       testClient.mockSuccess('get', '/orders', expectedResponse);
 
       // Act
-      const response = await orderService.getOrders();
+      const _response = await orderService.getOrders();
 
       // Assert
       expect(response.data).toHaveLength(2);
@@ -164,16 +164,16 @@ describe('Testes de Integração - Operações de Pedidos', () => {
         date_to: '2025-01-31',
       };
 
-      const filteredOrders = testOrders.filter(order => order.status === 'shipped');
+      const filteredOrders = testOrders.filter(order => order._status === 'shipped');
       const expectedResponse = testUtils.createPaginatedResponse(filteredOrders);
       testClient.mockSuccess('get', '/orders', expectedResponse);
 
       // Act
-      const response = await orderService.getOrders(1, 10, filters);
+      const _response = await orderService.getOrders(1, 10, filters);
 
       // Assert
       expect(response.data).toHaveLength(1);
-      expect(response.data[0].status).toBe('shipped');
+      expect(response.data[0]._status).toBe('shipped');
       expect(response.data[0].payment_status).toBe('paid');
     });
 
@@ -186,7 +186,7 @@ describe('Testes de Integração - Operações de Pedidos', () => {
       testClient.mockSuccess('get', '/orders', expectedResponse);
 
       // Act
-      const response = await orderService.getOrders(page, perPage);
+      const _response = await orderService.getOrders(page, perPage);
 
       // Assert
       expect(response.data).toHaveLength(1);
@@ -201,7 +201,7 @@ describe('Testes de Integração - Operações de Pedidos', () => {
       testClient.mockSuccess('get', `/orders/${orderId}`, expectedResponse);
 
       // Act
-      const response = await orderService.getOrderById(orderId);
+      const _response = await orderService.getOrderById(orderId);
 
       // Assert
       expect(response).toMatchObject({
@@ -256,7 +256,7 @@ describe('Testes de Integração - Operações de Pedidos', () => {
       testClient.mockSuccess('get', '/orders/statistics', expectedResponse);
 
       // Act
-      const response = await orderService.getOrderStatistics();
+      const _response = await orderService.getOrderStatistics();
 
       // Assert
       expect(response).toMatchObject({
@@ -286,7 +286,7 @@ describe('Testes de Integração - Operações de Pedidos', () => {
       testClient.mockSuccess('post', `/orders/${orderId}/cancel`, expectedResponse);
 
       // Act
-      const response = await orderService.cancelOrder(orderId, reason);
+      const _response = await orderService.cancelOrder(orderId, reason);
 
       // Assert
       expect(response).toMatchObject({
@@ -334,7 +334,7 @@ describe('Testes de Integração - Operações de Pedidos', () => {
     });
   });
 
-  describe('Rastreamento e status', () => {
+  describe('Rastreamento e _status', () => {
     it('deve obter informações de rastreamento', async () => {
       // Arrange
       const orderId = 'order-124';
@@ -342,7 +342,7 @@ describe('Testes de Integração - Operações de Pedidos', () => {
       testClient.mockSuccess('get', `/orders/${orderId}/tracking`, expectedResponse);
 
       // Act
-      const response = await orderService.trackOrder(orderId);
+      const _response = await orderService.trackOrder(orderId);
 
       // Assert
       expect(response).toMatchObject({
@@ -358,14 +358,14 @@ describe('Testes de Integração - Operações de Pedidos', () => {
       });
     });
 
-    it('deve obter histórico de status', async () => {
+    it('deve obter histórico de _status', async () => {
       // Arrange
       const orderId = 'order-123';
       const expectedResponse = testUtils.createApiResponse(testStatusHistory);
-      testClient.mockSuccess('get', `/orders/${orderId}/status-history`, expectedResponse);
+      testClient.mockSuccess('get', `/orders/${orderId}/_status-history`, expectedResponse);
 
       // Act
-      const response = await orderService.getStatusHistory(orderId);
+      const _response = await orderService.getStatusHistory(orderId);
 
       // Assert
       expect(response).toHaveLength(3);
@@ -379,7 +379,7 @@ describe('Testes de Integração - Operações de Pedidos', () => {
       });
     });
 
-    it('deve obter status de entrega', async () => {
+    it('deve obter _status de entrega', async () => {
       // Arrange
       const orderId = 'order-124';
       const deliveryStatus = {
@@ -391,10 +391,10 @@ describe('Testes de Integração - Operações de Pedidos', () => {
       };
 
       const expectedResponse = testUtils.createApiResponse(deliveryStatus);
-      testClient.mockSuccess('get', `/orders/${orderId}/delivery-status`, expectedResponse);
+      testClient.mockSuccess('get', `/orders/${orderId}/delivery-_status`, expectedResponse);
 
       // Act
-      const response = await orderService.getDeliveryStatus(orderId);
+      const _response = await orderService.getDeliveryStatus(orderId);
 
       // Assert
       expect(response).toMatchObject({
@@ -417,7 +417,7 @@ describe('Testes de Integração - Operações de Pedidos', () => {
       testClient.mockSuccess('post', `/orders/${orderId}/confirm-delivery`, expectedResponse);
 
       // Act
-      const response = await orderService.confirmDelivery(orderId);
+      const _response = await orderService.confirmDelivery(orderId);
 
       // Assert
       expect(response).toMatchObject({
@@ -463,7 +463,7 @@ describe('Testes de Integração - Operações de Pedidos', () => {
       testClient.mockSuccess('post', `/orders/${orderId}/rate`, expectedResponse);
 
       // Act
-      const response = await orderService.rateOrder(orderId, rating, review);
+      const _response = await orderService.rateOrder(orderId, rating, review);
 
       // Assert
       expect(response).toMatchObject({
@@ -527,7 +527,7 @@ describe('Testes de Integração - Operações de Pedidos', () => {
       testClient.mockSuccess('post', `/orders/${orderId}/reorder`, expectedResponse);
 
       // Act
-      const response = await orderService.reorderOrder(orderId);
+      const _response = await orderService.reorderOrder(orderId);
 
       // Assert
       expect(response).toMatchObject({
@@ -550,7 +550,7 @@ describe('Testes de Integração - Operações de Pedidos', () => {
       testClient.mockSuccess('post', `/orders/${orderId}/invoice`, expectedResponse);
 
       // Act
-      const response = await orderService.generateInvoice(orderId);
+      const _response = await orderService.generateInvoice(orderId);
 
       // Assert
       expect(response).toMatchObject({
@@ -575,7 +575,7 @@ describe('Testes de Integração - Operações de Pedidos', () => {
       global.URL.createObjectURL = jest.fn().mockReturnValue('blob:http://localhost/receipt.pdf');
 
       // Act
-      const response = await orderService.downloadReceipt(orderId);
+      const _response = await orderService.downloadReceipt(orderId);
 
       // Assert
       expect(response).toBe('blob:http://localhost/receipt.pdf');
@@ -602,7 +602,7 @@ describe('Testes de Integração - Operações de Pedidos', () => {
       testClient.mockSuccess('post', `/orders/${orderId}/issues`, expectedResponse);
 
       // Act
-      const response = await orderService.reportIssue(orderId, issue);
+      const _response = await orderService.reportIssue(orderId, issue);
 
       // Assert
       expect(response).toMatchObject({
@@ -628,7 +628,7 @@ describe('Testes de Integração - Operações de Pedidos', () => {
       testClient.mockSuccess('patch', `/orders/${orderId}/delivery-address`, expectedResponse);
 
       // Act
-      const response = await orderService.updateDeliveryAddress(orderId, addressId);
+      const _response = await orderService.updateDeliveryAddress(orderId, addressId);
 
       // Assert
       expect(response).toMatchObject({
@@ -652,7 +652,7 @@ describe('Testes de Integração - Operações de Pedidos', () => {
       testClient.mockSuccess('post', `/orders/${orderId}/reschedule`, expectedResponse);
 
       // Act
-      const response = await orderService.rescheduleDelivery(orderId, newDate);
+      const _response = await orderService.rescheduleDelivery(orderId, newDate);
 
       // Assert
       expect(response).toMatchObject({
@@ -690,7 +690,7 @@ describe('Testes de Integração - Operações de Pedidos', () => {
       testClient.mockSuccess('post', `/orders/${orderId}/return`, expectedResponse);
 
       // Act
-      const response = await orderService.requestReturn(orderId, returnData);
+      const _response = await orderService.requestReturn(orderId, returnData);
 
       // Assert
       expect(response).toMatchObject({

@@ -1,0 +1,130 @@
+{
+  "timestamp": "2025-07-24T22:07:16.439Z",
+  "summary": {
+    "environment": "passed",
+    "devices": "warning",
+    "performance": "passed",
+    "functionality": "passed",
+    "compatibility": "passed"
+  },
+  "details": {
+    "environment": {
+      "status": "passed",
+      "details": [
+        {
+          "tool": "Node.js",
+          "status": "available",
+          "version": "v23.11.1"
+        },
+        {
+          "tool": "npm",
+          "status": "available",
+          "version": "10.9.2"
+        },
+        {
+          "tool": "React Native CLI",
+          "status": "available",
+          "version": "19.0.0"
+        },
+        {
+          "tool": "Java",
+          "status": "available",
+          "version": ""
+        },
+        {
+          "tool": "adb (Android)",
+          "status": "missing",
+          "required": false
+        },
+        {
+          "tool": "Xcode (macOS)",
+          "status": "missing",
+          "required": false
+        }
+      ]
+    },
+    "devices": {
+      "status": "warning",
+      "details": {
+        "total": 0,
+        "android": 0,
+        "ios": 0,
+        "emulators": 0
+      }
+    },
+    "performance": {
+      "status": "passed",
+      "details": {
+        "coldStart": {
+          "value": 2.8,
+          "threshold": 3,
+          "passed": true
+        },
+        "memoryUsage": {
+          "value": 142,
+          "threshold": 150,
+          "passed": true
+        },
+        "bundleSize": {
+          "value": 45.2,
+          "threshold": 50,
+          "passed": true
+        },
+        "fps": {
+          "value": 58,
+          "threshold": 50,
+          "passed": true
+        }
+      }
+    },
+    "functionality": {
+      "status": "passed",
+      "details": [
+        {
+          "name": "App Bundle Integrity",
+          "status": "passed"
+        },
+        {
+          "name": "Environment Configuration",
+          "status": "passed"
+        },
+        {
+          "name": "API Configuration",
+          "status": "passed"
+        },
+        {
+          "name": "Firebase Configuration",
+          "status": "passed"
+        },
+        {
+          "name": "Navigation Structure",
+          "status": "passed"
+        }
+      ]
+    },
+    "compatibility": {
+      "status": "passed",
+      "details": [
+        {
+          "name": "Android Minimum SDK",
+          "status": "warning"
+        },
+        {
+          "name": "iOS Minimum Version",
+          "status": "passed"
+        },
+        {
+          "name": "React Native Version",
+          "status": "passed"
+        },
+        {
+          "name": "Dependencies Compatibility",
+          "status": "warning"
+        }
+      ]
+    }
+  },
+  "recommendations": [
+    "Connect physical devices for comprehensive testing"
+  ]
+}

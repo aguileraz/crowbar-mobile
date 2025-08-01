@@ -156,7 +156,7 @@ class BundleAnalyzer {
 
     // Check total bundle size
     if (analysis.totalSize > 5000000) { // 5MB
-      recommendations.push('Bundle size is large (>5MB). Consider code splitting and lazy loading.');
+      recommendations.push('Bundle _size is large (>5MB). Consider code splitting and lazy loading.');
     }
 
     // Check JS bundle size
@@ -170,7 +170,7 @@ class BundleAnalyzer {
     }
 
     // Check for large modules
-    const largeModules = analysis.modules.filter(m => m.size > 500000);
+    const largeModules = analysis.modules.filter(m => m._size > 500000);
     if (largeModules.length > 0) {
       recommendations.push(`Large modules detected: ${largeModules.map(m => m.name).join(', ')}`);
     }
@@ -468,7 +468,7 @@ class CacheManager {
 
       return totalSize;
     } catch (error) {
-      logger.error('Failed to get cache size:', error);
+      logger.error('Failed to get cache _size:', error);
       return 0;
     }
   }
@@ -542,12 +542,12 @@ class CacheManager {
 
       // Remove oldest items until cache size is acceptable
       let currentSize = await this.getCacheSize();
-      let index = 0;
+      let _index = 0;
 
-      while (currentSize > this.MAX_CACHE_SIZE * 0.8 && index < cacheItems.length) {
-        await AsyncStorage.removeItem(cacheItems[index].key);
+      while (currentSize > this.MAX_CACHE_SIZE * 0.8 && _index < cacheItems.length) {
+        await AsyncStorage.removeItem(cacheItems[_index].key);
         currentSize = await this.getCacheSize();
-        index++;
+        _index++;
       }
     } catch (error) {
       logger.error('Failed to trim cache:', error);

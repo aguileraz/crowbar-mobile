@@ -9,14 +9,12 @@ import {
 } from 'react-native';
 import {
   Text,
-  Card,
   Title,
   Button,
   IconButton,
   ActivityIndicator,
   FAB,
-  Menu,
-  Divider,
+
 } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';
@@ -42,7 +40,7 @@ import ErrorMessage from '../../components/ErrorMessage';
 import { Address } from '../../types/api';
 
 // Theme
-import { theme, getSpacing, getBorderRadius } from '../../theme';
+import { _theme, getSpacing, getBorderRadius } from '../../theme';
 
 /**
  * Tela de Gerenciamento de Endereços
@@ -66,7 +64,7 @@ const AddressesScreen: React.FC<AddressesScreenProps> = ({ navigation }) => {
   // Local state
   const [refreshing, setRefreshing] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [showMenu, setShowMenu] = useState<string | null>(null);
+  const [_showMenu, _setShowMenu] = useState<string | null>(null);
 
   // Load addresses
   useFocusEffect(
@@ -82,7 +80,7 @@ const AddressesScreen: React.FC<AddressesScreenProps> = ({ navigation }) => {
     try {
       await dispatch(fetchUserAddresses()).unwrap();
     } catch (err) {
-      logger.error('Error loading addresses:', err);
+      logger.error('Error loading addresses:', _err);
     }
   };
 

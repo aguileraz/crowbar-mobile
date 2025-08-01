@@ -6,9 +6,6 @@
  */
 
 const fs = require('fs');
-const _path = require('path');
-const { execSync } = require('child_process');
-
 // Configuration
 const CONFIG = {
   app: {
@@ -61,11 +58,11 @@ const colors = {
 
 // Logging functions
 const log = {
-  info: (msg) => console.log(`${colors.blue}ℹ️  ${msg}${colors.reset}`),
-  success: (msg) => console.log(`${colors.green}✅ ${msg}${colors.reset}`),
-  warning: (msg) => console.log(`${colors.yellow}⚠️  ${msg}${colors.reset}`),
-  error: (msg) => console.log(`${colors.red}❌ ${msg}${colors.reset}`),
-  title: (msg) => console.log(`${colors.cyan}${colors.bold}📱 ${msg}${colors.reset}\n`),
+  info: (msg) => console.log(`ℹ️  ${msg}`),
+  success: (msg) => console.log(`✅ ${msg}`),
+  warning: (msg) => console.log(`⚠️  ${msg}`),
+  error: (msg) => console.error(`❌ ${msg}`),
+  title: (msg) => console.log(`\n📦 ${msg}\n${'='.repeat(40)}`),
 };
 
 /**
@@ -73,7 +70,7 @@ const log = {
  */
 function runCommand(command, options = {}) {
   try {
-    const result = execSync(command, {
+    const _result = require('child_process').execSync(command, {
       encoding: 'utf8',
       stdio: options.silent ? 'pipe' : 'inherit',
       cwd: options.cwd || process.cwd(),
@@ -117,8 +114,8 @@ function checkPrerequisites() {
   let allPassed = true;
   
   checks.forEach(check => {
-    const result = runCommand(check.command, { silent: true });
-    if (result.success) {
+    const _result = runCommand(check.command, { silent: true });
+    if (_result.success) {
       log.success(`${check.name} is available`);
     } else {
       log.error(`${check.name} is not available`);
@@ -265,9 +262,8 @@ function buildIOS() {
     log.info('Building iOS project...');
     const { ios } = CONFIG;
     
-    const buildCommand = `cd ios && xcodebuild -workspace CrowbarMobile.xcworkspace -scheme ${ios.scheme} -configuration ${ios.configuration} -destination generic/platform=iOS -archivePath build/CrowbarMobile.xcarchive archive`;
-    
-    const buildResult = runCommand(buildCommand);
+    const _buildCommand = `cd ios && xcodebuild -workspace CrowbarMobile.xcworkspace -scheme ${ios.scheme} -configuration ${ios.configuration} -destination generic/platform=iOS -archivePath build/CrowbarMobile.xcarchive archive`;
+
     if (!buildResult.success) {
       log.error('iOS build failed');
       return false;
@@ -366,15 +362,14 @@ function validateBuilds() {
   }
   
   // Display validation results
-  console.log('\n📋 Build Validation Results:');
-  console.log('='.repeat(60));
+  console.log("");
+}
   
   let allValid = true;
   validations.forEach(validation => {
     const status = validation.valid ? '✅' : '❌';
     const size = `${(validation.size / 1024 / 1024).toFixed(2)} MB`;
-    console.log(`${status} ${validation.platform}: ${size}`);
-    console.log(`   Path: ${validation.path}`);
+    console.log(`${status} ${validation.name}: ${size}`);
     if (!validation.valid) allValid = false;
   });
   
@@ -526,13 +521,9 @@ async function main() {
     generateBuildReport();
     
     // Summary
-    console.log('\n' + '='.repeat(60));
-    log.title('Production Build Summary');
-    
-    console.log(`✅ Completed: ${successCount}/${tasks.length} tasks`);
-    console.log(`📱 App Version: ${CONFIG.app.version} (${CONFIG.app.buildNumber})`);
-    console.log(`📁 Report: docs/BUILD_REPORT.md`);
-    
+      log.title('Production Build Summary');
+    console.log(`\nCompleted ${successCount}/${tasks.length} build tasks`);
+
     if (successCount >= 3) { // At least prepare, one platform, and validate
       log.success('🎉 Production builds completed successfully!');
       log.info('Next steps:');
@@ -544,7 +535,7 @@ async function main() {
       log.warning('⚠️ Production builds completed with issues. Please review and fix.');
     }
     
-    console.log('\n' + '='.repeat(60));
+    );
     
   } catch (error) {
     log.error(`Production build failed: ${error.message}`);

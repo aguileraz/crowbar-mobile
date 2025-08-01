@@ -43,7 +43,7 @@ export class BoxService {
    * Obter caixas em destaque
    */
   async getFeaturedBoxes(limit: number = 10): Promise<MysteryBox[]> {
-    const response = await apiClient.get<MysteryBox[]>(`/boxes/featured?limit=${limit}`);
+    const _response = await apiClient.get<MysteryBox[]>(`/boxes/featured?limit=${limit}`);
     return response.data;
   }
 
@@ -51,7 +51,7 @@ export class BoxService {
    * Obter caixas mais populares
    */
   async getPopularBoxes(limit: number = 10): Promise<MysteryBox[]> {
-    const response = await apiClient.get<MysteryBox[]>(`/boxes/popular?limit=${limit}`);
+    const _response = await apiClient.get<MysteryBox[]>(`/boxes/popular?limit=${limit}`);
     return response.data;
   }
 
@@ -59,7 +59,7 @@ export class BoxService {
    * Obter caixas recém-lançadas
    */
   async getNewBoxes(limit: number = 10): Promise<MysteryBox[]> {
-    const response = await apiClient.get<MysteryBox[]>(`/boxes/new?limit=${limit}`);
+    const _response = await apiClient.get<MysteryBox[]>(`/boxes/new?limit=${limit}`);
     return response.data;
   }
 
@@ -67,7 +67,7 @@ export class BoxService {
    * Obter detalhes de uma caixa específica
    */
   async getBoxById(id: string): Promise<MysteryBox> {
-    const response = await apiClient.get<MysteryBox>(`/boxes/${id}`);
+    const _response = await apiClient.get<MysteryBox>(`/boxes/${id}`);
     return response.data;
   }
 
@@ -76,7 +76,7 @@ export class BoxService {
    */
   async searchBoxes(query: string, filters: Omit<SearchFilters, 'query'> = {}): Promise<SearchResult> {
     const searchFilters = { ...filters, query };
-    const response = await apiClient.post<SearchResult>('/boxes/search', searchFilters);
+    const _response = await apiClient.post<SearchResult>('/boxes/search', searchFilters);
     return response.data;
   }
 
@@ -84,7 +84,7 @@ export class BoxService {
    * Obter sugestões de busca
    */
   async getSearchSuggestions(query: string): Promise<string[]> {
-    const response = await apiClient.get<string[]>(`/boxes/search/suggestions?q=${encodeURIComponent(query)}`);
+    const _response = await apiClient.get<string[]>(`/boxes/search/suggestions?q=${encodeURIComponent(query)}`);
     return response.data;
   }
 
@@ -92,7 +92,7 @@ export class BoxService {
    * Obter categorias
    */
   async getCategories(): Promise<Category[]> {
-    const response = await apiClient.get<Category[]>('/categories');
+    const _response = await apiClient.get<Category[]>('/categories');
     return response.data;
   }
 
@@ -100,7 +100,7 @@ export class BoxService {
    * Obter categoria por ID
    */
   async getCategoryById(id: string): Promise<Category> {
-    const response = await apiClient.get<Category>(`/categories/${id}`);
+    const _response = await apiClient.get<Category>(`/categories/${id}`);
     return response.data;
   }
 
@@ -116,7 +116,7 @@ export class BoxService {
    * Obter reviews de uma caixa
    */
   async getBoxReviews(boxId: string, page: number = 1, perPage: number = 10): Promise<PaginatedResponse<Review>> {
-    const response = await apiClient.get<Review[]>(`/boxes/${boxId}/reviews?page=${page}&per_page=${perPage}`);
+    const _response = await apiClient.get<Review[]>(`/boxes/${boxId}/reviews?page=${page}&per_page=${perPage}`);
     return response;
   }
 
@@ -128,7 +128,7 @@ export class BoxService {
     comment?: string;
     images?: string[];
   }): Promise<Review> {
-    const response = await apiClient.post<Review>(`/boxes/${boxId}/reviews`, review);
+    const _response = await apiClient.post<Review>(`/boxes/${boxId}/reviews`, review);
     return response.data;
   }
 
@@ -149,7 +149,7 @@ export class BoxService {
     reviews_count: number;
     recent_openings: BoxOpenedEvent[];
   }> {
-    const response = await apiClient.get(`/boxes/${boxId}/stats`);
+    const _response = await apiClient.get(`/boxes/${boxId}/stats`);
     return response.data;
   }
 
@@ -161,7 +161,7 @@ export class BoxService {
     stock: number;
     max_per_user?: number;
   }> {
-    const response = await apiClient.get(`/boxes/${boxId}/stock?quantity=${quantity}`);
+    const _response = await apiClient.get(`/boxes/${boxId}/stock?quantity=${quantity}`);
     return response.data;
   }
 
@@ -169,7 +169,7 @@ export class BoxService {
    * Obter caixas relacionadas/similares
    */
   async getRelatedBoxes(boxId: string, limit: number = 6): Promise<MysteryBox[]> {
-    const response = await apiClient.get<MysteryBox[]>(`/boxes/${boxId}/related?limit=${limit}`);
+    const _response = await apiClient.get<MysteryBox[]>(`/boxes/${boxId}/related?limit=${limit}`);
     return response.data;
   }
 
@@ -180,7 +180,7 @@ export class BoxService {
     date: string;
     price: number;
   }[]> {
-    const response = await apiClient.get(`/boxes/${boxId}/price-history?days=${days}`);
+    const _response = await apiClient.get(`/boxes/${boxId}/price-history?days=${days}`);
     return response.data;
   }
 
@@ -201,7 +201,7 @@ export class BoxService {
     tag: string;
     count: number;
   }[]> {
-    const response = await apiClient.get(`/tags/popular?limit=${limit}`);
+    const _response = await apiClient.get(`/tags/popular?limit=${limit}`);
     return response.data;
   }
 
@@ -214,7 +214,7 @@ export class BoxService {
     price_range: { min: number; max: number };
     tags: string[];
   }> {
-    const response = await apiClient.get('/boxes/filters');
+    const _response = await apiClient.get('/boxes/filters');
     return response.data;
   }
 }

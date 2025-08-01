@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import logger from '../../services/loggerService';
 import {
   ScrollView,
@@ -14,7 +14,7 @@ import {
   Paragraph,
   Button,
   Chip,
-  Divider,
+
   Text,
   useTheme,
   SegmentedButtons,
@@ -45,7 +45,7 @@ const AnalyticsScreen: React.FC = () => {
 
   // Dados do Redux
   const analytics = useSelector((state: RootState) => state.analytics);
-  const user = useSelector((state: RootState) => state.user.currentUser);
+  const _user = useSelector((state: RootState) => state.user.currentUser);
 
   useEffect(() => {
     loadData();
@@ -127,8 +127,8 @@ const AnalyticsScreen: React.FC = () => {
           </Card.Content>
         </Card>
 
-        {debugEvents.map((event, index) => (
-          <Card key={index} style={styles.eventCard}>
+        {debugEvents.map((event, _index) => (
+          <Card key={0} style={styles.eventCard}>
             <Card.Content>
               <View style={styles.eventHeader}>
                 <Chip 
@@ -163,7 +163,7 @@ const AnalyticsScreen: React.FC = () => {
   };
 
   const renderAnalyticsStatus = () => {
-    const status = analyticsService.getStatus();
+    const _status = analyticsService.getStatus();
     
     return (
       <Card style={styles.statusCard}>

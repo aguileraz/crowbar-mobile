@@ -298,7 +298,7 @@ export const usePerformanceOptimization = (
 
     // Cache size recommendations
     if (state.cacheSize > 30 * 1024 * 1024) { // 30MB
-      recommendations.push('Cache size is large. Consider clearing old cache items.');
+      recommendations.push('Cache _size is large. Consider clearing old cache items.');
     }
 
     // Network-based recommendations
@@ -344,7 +344,7 @@ export const usePerformanceOptimization = (
   /**
    * Get performance report
    */
-  const getPerformanceReport = useCallback(async () => {
+  const _getPerformanceReport = useCallback(async () => {
     try {
       const report = await bundleAnalyzer.exportReport();
       return report;

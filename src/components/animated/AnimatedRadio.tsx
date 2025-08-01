@@ -1,8 +1,9 @@
+/* eslint-disable react-native/no-unused-styles */
 /**
  * Radio button animado com micro-interações
  */
 
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import {
   Pressable,
   View,
@@ -66,7 +67,7 @@ export const AnimatedRadio: React.FC<AnimatedRadioProps> = ({
   }, [borderScale]);
 
   const getSize = () => {
-    switch (size) {
+    switch (_size) {
       case 'small':
         return 18;
       case 'large':

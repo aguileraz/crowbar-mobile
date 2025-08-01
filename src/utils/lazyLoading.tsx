@@ -38,9 +38,9 @@ const SkeletonFallback: React.FC<{ type: string }> = ({ type }) => {
     case 'boxList':
       return (
         <View style={styles.skeletonContainer}>
-          {Array.from({ length: 6 }).map((_, index) => (
+          {Array.from({ length: 6 }).map((_, _index) => (
             <LoadingSkeleton
-              key={index}
+              key={0}
               width="48%"
               height={180}
               style={styles.skeletonItem}
@@ -51,9 +51,9 @@ const SkeletonFallback: React.FC<{ type: string }> = ({ type }) => {
     case 'cart':
       return (
         <View style={styles.skeletonContainer}>
-          {Array.from({ length: 3 }).map((_, index) => (
+          {Array.from({ length: 3 }).map((_, _index) => (
             <LoadingSkeleton
-              key={index}
+              key={0}
               width="100%"
               height={80}
               style={styles.skeletonItem}
@@ -107,7 +107,7 @@ export function withLazyLoading<P extends object>(
   options: LazyComponentProps = {}
 ) {
   const LazyComponent = lazy(importFunc);
-  const { fallback: Fallback = DefaultFallback, errorBoundary: ErrorBoundary } = options;
+  const { fallback: Fallback = DefaultFallback, errorBoundary: _ErrorBoundary } = options;
 
   return React.forwardRef<any, P>((props, ref) => (
     <LazyErrorBoundary>
@@ -126,7 +126,7 @@ export function withLazyScreen<P extends object>(
   options: LazyScreenProps = {}
 ) {
   const LazyComponent = lazy(importFunc);
-  const { skeletonType = 'default', errorBoundary: ErrorBoundary } = options;
+  const { skeletonType = 'default', errorBoundary: _ErrorBoundary } = options;
 
   const SkeletonComponent = () => <SkeletonFallback type={skeletonType} />;
 

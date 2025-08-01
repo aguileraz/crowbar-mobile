@@ -1,4 +1,5 @@
 import messaging, { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
+// eslint-disable-next-line react-native/split-platform-components
 import { PermissionsAndroid, Platform, Alert, Linking } from 'react-native';
 import { httpClient } from './httpClient';
 import { Notification, NotificationSettings, PaginatedResponse } from '../types/api';
@@ -250,7 +251,7 @@ class NotificationService {
   /**
    * Agendar notificação local
    */
-  async scheduleLocalNotification(notification: {
+  async scheduleLocalNotification(_notification: {
     title: string;
     body: string;
     data?: any;

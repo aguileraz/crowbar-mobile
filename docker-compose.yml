@@ -1,0 +1,127 @@
+version: '3.8'
+
+services:
+  # Android API 31 (main testing target)
+  android-31:
+    build:
+      context: .
+      dockerfile: docker/android/Dockerfile
+    container_name: crowbar-android-31
+    privileged: true
+    environment:
+      - DEVICE_NAME=Pixel 4
+      - ANDROID_API_LEVEL=31
+      - APPIUM_PORT=4723
+      - ADB_PORT=5555
+      - EMULATOR_NAME=test
+      - EMULATOR_DEVICE=pixel_4
+      - EMULATOR_SKIN=1080x2280
+      - EMULATOR_ARGS=-no-window -no-audio -gpu swiftshader_indirect
+    ports:
+      - "4723:4723"
+      - "5555:5555"
+      - "5554:5554"
+    volumes:
+      - ./android/app/build/outputs/apk:/app
+      - ./test-results:/app/test-results
+      - ./e2e:/app/e2e
+      - /dev/kvm:/dev/kvm
+    healthcheck:
+      test: ["CMD", "adb", "devices", "|", "grep", "emulator"]
+      interval: 30s
+      timeout: 30s
+      retries: 5
+      start_period: 120s
+
+  # Android API 26 (Oreo compatibility)
+  android-26:
+    build:
+      context: .
+      dockerfile: docker/android/Dockerfile.api26
+    container_name: crowbar-android-26
+    privileged: true
+    environment:
+      - DEVICE_NAME=Pixel 2
+      - ANDROID_API_LEVEL=26
+      - APPIUM_PORT=4724
+      - ADB_PORT=5556
+      - EMULATOR_NAME=test
+      - EMULATOR_DEVICE=pixel_2
+      - EMULATOR_SKIN=1080x1920
+      - EMULATOR_ARGS=-no-window -no-audio -gpu swiftshader_indirect
+    ports:
+      - "4724:4723"
+      - "5556:5555"
+      - "5557:5554"
+    volumes:
+      - ./android/app/build/outputs/apk:/app
+      - ./test-results:/app/test-results
+      - ./e2e:/app/e2e
+      - /dev/kvm:/dev/kvm
+    depends_on:
+      android-31:
+        condition: service_healthy
+
+  # Android API 21 (minimum support)
+  android-21:
+    build:
+      context: .
+      dockerfile: docker/android/Dockerfile.api21
+    container_name: crowbar-android-21
+    privileged: true
+    environment:
+      - DEVICE_NAME=Nexus 5
+      - ANDROID_API_LEVEL=21
+      - APPIUM_PORT=4725
+      - ADB_PORT=5558
+      - EMULATOR_NAME=test
+      - EMULATOR_DEVICE=Nexus_5
+      - EMULATOR_SKIN=1080x1920
+      - EMULATOR_ARGS=-no-window -no-audio -gpu swiftshader_indirect
+    ports:
+      - "4725:4723"
+      - "5558:5555"
+      - "5559:5554"
+    volumes:
+      - ./android/app/build/outputs/apk:/app
+      - ./test-results:/app/test-results
+      - ./e2e:/app/e2e
+      - /dev/kvm:/dev/kvm
+    depends_on:
+      android-26:
+        condition: service_healthy
+
+  # Test runner service
+  test-runner:
+    build:
+      context: .
+      dockerfile: docker/tests/Dockerfile.runner
+    container_name: crowbar-test-runner
+    environment:
+      - TEST_TARGETS=android-31,android-26,android-21
+      - PARALLEL_TESTS=true
+      - GENERATE_REPORT=true
+      - SCREENSHOT_ON_FAILURE=true
+    volumes:
+      - ./e2e:/app/e2e
+      - ./test-results:/app/test-results
+      - ./docker/tests/scripts:/app/scripts
+    depends_on:
+      android-31:
+        condition: service_healthy
+      android-26:
+        condition: service_healthy
+      android-21:
+        condition: service_healthy
+    command: ["/app/scripts/run-tests.sh"]
+
+networks:
+  default:
+    name: crowbar-testing
+    driver: bridge
+
+volumes:
+  test-results:
+    driver: local
+  screenshots:
+    driver: local

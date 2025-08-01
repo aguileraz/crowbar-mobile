@@ -1,3 +1,4 @@
+ 
 import { boxService } from '../boxService';
 import { httpClient } from '../httpClient';
 
@@ -37,12 +38,12 @@ describe('BoxService', () => {
 
       mockedHttpClient.get.mockResolvedValue(mockResponse);
 
-      const result = await boxService.getBoxes();
+      const _result = await boxService.getBoxes();
 
       expect(mockedHttpClient.get).toHaveBeenCalledWith('/boxes', {
         params: { page: 1, per_page: 20 },
       });
-      expect(result).toEqual(mockResponse.data);
+      expect(_result).toEqual(mockResponse.data);
     });
 
     it('should handle API error', async () => {
@@ -94,10 +95,10 @@ describe('BoxService', () => {
 
       mockedHttpClient.get.mockResolvedValue({ data: mockBox });
 
-      const result = await boxService.getBoxById('1');
+      const _result = await boxService.getBoxById('1');
 
       expect(mockedHttpClient.get).toHaveBeenCalledWith('/boxes/1');
-      expect(result).toEqual(mockBox);
+      expect(_result).toEqual(mockBox);
     });
 
     it('should handle not found error', async () => {
@@ -119,12 +120,12 @@ describe('BoxService', () => {
 
       mockedHttpClient.get.mockResolvedValue(mockResponse);
 
-      const result = await boxService.searchBoxes('test query');
+      const _result = await boxService.searchBoxes('test query');
 
       expect(mockedHttpClient.get).toHaveBeenCalledWith('/boxes/search', {
         params: { q: 'test query', page: 1, per_page: 20 },
       });
-      expect(result).toEqual(mockResponse.data);
+      expect(_result).toEqual(mockResponse.data);
     });
 
     it('should handle empty query', async () => {
@@ -144,12 +145,12 @@ describe('BoxService', () => {
       const mockResponse = { data: { data: [], pagination: {} } };
       mockedHttpClient.get.mockResolvedValue(mockResponse);
 
-      const result = await boxService.getBoxesByCategory('electronics');
+      const _result = await boxService.getBoxesByCategory('electronics');
 
       expect(mockedHttpClient.get).toHaveBeenCalledWith('/boxes/category/electronics', {
         params: { page: 1, per_page: 20 },
       });
-      expect(result).toEqual(mockResponse.data);
+      expect(_result).toEqual(mockResponse.data);
     });
   });
 
@@ -162,10 +163,10 @@ describe('BoxService', () => {
 
       mockedHttpClient.get.mockResolvedValue({ data: mockBoxes });
 
-      const result = await boxService.getFeaturedBoxes();
+      const _result = await boxService.getFeaturedBoxes();
 
       expect(mockedHttpClient.get).toHaveBeenCalledWith('/boxes/featured');
-      expect(result).toEqual(mockBoxes);
+      expect(_result).toEqual(mockBoxes);
     });
   });
 
@@ -178,10 +179,10 @@ describe('BoxService', () => {
 
       mockedHttpClient.get.mockResolvedValue({ data: mockBoxes });
 
-      const result = await boxService.getPopularBoxes();
+      const _result = await boxService.getPopularBoxes();
 
       expect(mockedHttpClient.get).toHaveBeenCalledWith('/boxes/popular');
-      expect(result).toEqual(mockBoxes);
+      expect(_result).toEqual(mockBoxes);
     });
   });
 
@@ -194,10 +195,10 @@ describe('BoxService', () => {
 
       mockedHttpClient.get.mockResolvedValue({ data: mockCategories });
 
-      const result = await boxService.getCategories();
+      const _result = await boxService.getCategories();
 
       expect(mockedHttpClient.get).toHaveBeenCalledWith('/categories');
-      expect(result).toEqual(mockCategories);
+      expect(_result).toEqual(mockCategories);
     });
   });
 
@@ -213,10 +214,10 @@ describe('BoxService', () => {
 
       mockedHttpClient.post.mockResolvedValue({ data: mockResult });
 
-      const result = await boxService.openBox('1');
+      const _result = await boxService.openBox('1');
 
       expect(mockedHttpClient.post).toHaveBeenCalledWith('/boxes/1/open');
-      expect(result).toEqual(mockResult);
+      expect(_result).toEqual(mockResult);
     });
 
     it('should handle insufficient funds error', async () => {
@@ -245,12 +246,12 @@ describe('BoxService', () => {
 
       mockedHttpClient.get.mockResolvedValue(mockResponse);
 
-      const result = await boxService.getBoxReviews('1');
+      const _result = await boxService.getBoxReviews('1');
 
       expect(mockedHttpClient.get).toHaveBeenCalledWith('/boxes/1/reviews', {
         params: { page: 1, per_page: 20 },
       });
-      expect(result).toEqual(mockResponse.data);
+      expect(_result).toEqual(mockResponse.data);
     });
   });
 
@@ -270,10 +271,10 @@ describe('BoxService', () => {
 
       mockedHttpClient.post.mockResolvedValue({ data: mockReview });
 
-      const result = await boxService.addBoxReview('1', reviewData);
+      const _result = await boxService.addBoxReview('1', reviewData);
 
       expect(mockedHttpClient.post).toHaveBeenCalledWith('/boxes/1/reviews', reviewData);
-      expect(result).toEqual(mockReview);
+      expect(_result).toEqual(mockReview);
     });
 
     it('should handle validation errors', async () => {

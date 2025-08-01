@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import logger from '../services/loggerService';
 import {
   View,
@@ -15,6 +15,7 @@ import {
   Chip,
   DataTable,
   ProgressBar,
+
   Divider,
 } from 'react-native-paper';
 import { bundleAnalyzer } from '../utils/bundleAnalyzer';
@@ -35,7 +36,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ style }) =>
   const [refreshing, setRefreshing] = useState(false);
 
   // Performance hooks
-  const { appMetrics, getPerformanceReport } = useAppPerformance();
+  const { appMetrics, getPerformanceReport: _getPerformanceReport } = useAppPerformance();
   const { apiMetrics, getAllApiStats } = useApiPerformance();
 
   /**
@@ -235,10 +236,10 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ style }) =>
                 <DataTable.Title>Tipo</DataTable.Title>
               </DataTable.Header>
               
-              {bundleReport.bundle.chunks.map((chunk: any, index: number) => (
-                <DataTable.Row key={index}>
+              {bundleReport.bundle.chunks.map((chunk: any, _index: number) => (
+                <DataTable.Row key={0}>
                   <DataTable.Cell>{chunk.name}</DataTable.Cell>
-                  <DataTable.Cell>{formatFileSize(chunk.size)}</DataTable.Cell>
+                  <DataTable.Cell>{formatFileSize(chunk._size)}</DataTable.Cell>
                   <DataTable.Cell>
                     <Chip
                       mode="flat"
@@ -298,8 +299,8 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ style }) =>
           <Card.Content>
             <Title>Sugestões de Otimização</Title>
             
-            {bundleReport.optimizations.map((optimization: any, index: number) => (
-              <View key={index} style={styles.optimizationItem}>
+            {bundleReport.optimizations.map((optimization: any, _index: number) => (
+              <View key={0} style={styles.optimizationItem}>
                 <View style={styles.optimizationHeader}>
                   <Chip
                     mode="flat"

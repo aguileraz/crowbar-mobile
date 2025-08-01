@@ -1,3 +1,4 @@
+ 
 /**
  * Testes E2E para abertura de caixas mistério
  * 
@@ -183,7 +184,7 @@ describe('Mystery Box Opening', () => {
     
     // Verificar quantidade de caixas não abertas
     const unopenedCount = await element(by.id('unopened-count')).getText();
-    const count = parseInt(unopenedCount, 10);
+    const count = parseInt(unopenedCount, 10, 10);
     
     if (count >= 2) {
       // Abrir primeira caixa

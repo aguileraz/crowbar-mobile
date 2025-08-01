@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import logger from '../services/loggerService';
 import {
   View,
@@ -42,10 +42,10 @@ const HomeScreen: React.FC = () => {
 
   // Realtime hooks
   const { events, stats, onlineUsers, isConnected } = useLiveEvents(5);
-  const { hasToasts, showNextToast } = useLiveNotifications();
+  const { _hasToasts, _showNextToast } = useLiveNotifications();
 
   // Offline hooks
-  const { isOnline, syncStatus, hasPendingActions } = useOffline();
+  const { isOnline, _syncStatus, hasPendingActions } = useOffline();
 
   // Analytics hooks
   useScreenTracking('Home');

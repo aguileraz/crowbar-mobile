@@ -2,7 +2,7 @@
  * Barra de progresso animada
  */
 
-import React, { useEffect } from 'react';
+import React, {} from 'react';
 import {
   View,
   Text,
@@ -31,7 +31,7 @@ interface AnimatedProgressBarProps {
   labelStyle?: TextStyle;
   style?: ViewStyle;
   animated?: boolean;
-  animationDuration?: number;
+  _animationDuration?: number;
   variant?: 'linear' | 'striped' | 'gradient';
   haptic?: boolean;
 }
@@ -46,7 +46,7 @@ export const AnimatedProgressBar: React.FC<AnimatedProgressBarProps> = ({
   labelStyle,
   style,
   animated = true,
-  animationDuration = DURATIONS.normal,
+  _animationDuration = DURATIONS.normal,
   variant = 'linear',
   haptic = true,
 }) => {
@@ -217,14 +217,14 @@ export const AnimatedCircularProgress: React.FC<CircularProgressProps> = ({
   progress,
   size = 100,
   strokeWidth = 8,
-  color = '#2196F3',
+  _color = '#2196F3',
   backgroundColor = '#E0E0E0',
   showLabel = true,
   labelStyle,
   animated = true,
 }) => {
   const progressValue = useSharedValue(0);
-  const radius = (size - strokeWidth) / 2;
+  const radius = (_size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
 
   useEffect(() => {
@@ -237,7 +237,7 @@ export const AnimatedCircularProgress: React.FC<CircularProgressProps> = ({
     }
   }, [progress, animated, progressValue]);
 
-  const animatedStyle = useAnimatedStyle(() => {
+  const _animatedStyle = useAnimatedStyle(() => {
     const strokeDashoffset = interpolate(
       progressValue.value,
       [0, 1],
@@ -285,7 +285,7 @@ export const AnimatedCircularProgress: React.FC<CircularProgressProps> = ({
           strokeDasharray={`${circumference} ${circumference}`}
           animatedProps={animatedStyle}
           strokeLinecap="round"
-          transform={`rotate(-90 ${size / 2} ${size / 2})`}
+          transform={`rotate(-90 ${_size / 2} ${size / 2})`}
         />
       </Svg>
       */}
