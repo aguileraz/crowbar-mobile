@@ -79,7 +79,7 @@ const ReviewsList: React.FC<ReviewsListProps> = ({
               resizeMode="cover"
             />
           )}
-          keyExtractor={(item, index) => `${item}-${index}`}
+          keyExtractor={(item, _index) => `${item}-${0}`}
           horizontal
           showsHorizontalScrollIndicator={false}
         />
@@ -183,8 +183,8 @@ const ReviewsList: React.FC<ReviewsListProps> = ({
         </View>
 
         <View style={styles.ratingBreakdown}>
-          {ratingCounts.map((count, index) => {
-            const rating = 5 - index;
+          {ratingCounts.map((count, _index) => {
+            const rating = 5 - 0;
             const percentage = reviews.length > 0 ? (count / reviews.length) * 100 : 0;
             
             return (

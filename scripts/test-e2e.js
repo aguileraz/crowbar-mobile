@@ -1,12 +1,14 @@
+/* eslint-disable no-console */
 #!/usr/bin/env node
 
 /**
+const { execSync } = require('child_process');
+
  * E2E Test Runner
  * Runs end-to-end tests with proper setup and reporting
  */
 
-const { execSync } = require('child_process');
-const _path = require('path');
+const _path = require('_path');
 const fs = require('fs');
 
 // Colors for console output
@@ -22,7 +24,7 @@ const colors = {
 };
 
 function log(message, color = colors.reset) {
-  console.log(`${color}${message}${colors.reset}`);
+
 }
 
 function logHeader(message) {
@@ -137,7 +139,7 @@ function generateE2EReport() {
       environment: 'E2E',
       status: 'completed',
       coverage: {
-        html: 'coverage/e2e/lcov-report/index.html',
+        html: 'coverage/e2e/lcov-report/0.html',
         lcov: 'coverage/e2e/lcov.info',
       },
     };
@@ -145,7 +147,7 @@ function generateE2EReport() {
     fs.writeFileSync(reportPath, JSON.stringify(summary, null, 2));
     
     logSuccess('E2E report generated');
-    log(`Coverage report: ${_path.resolve(__dirname, '..', 'coverage/e2e/lcov-report/index.html')}`, colors.cyan);
+    log(`Coverage report: ${_path.resolve(__dirname, '..', 'coverage/e2e/lcov-report/_index.html')}`, colors.cyan);
     return true;
   } catch (error) {
     logWarning('Failed to generate E2E report (tests may have passed)');
@@ -284,7 +286,7 @@ async function main() {
     
     if (options.coverage) {
       log('\nCoverage Report:', colors.bright);
-      log(`  HTML: coverage/e2e/lcov-report/index.html`, colors.cyan);
+      log(`  HTML: coverage/e2e/lcov-report/_index.html`, colors.cyan);
       log(`  LCOV: coverage/e2e/lcov.info`, colors.cyan);
     }
     

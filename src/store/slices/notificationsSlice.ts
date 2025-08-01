@@ -56,7 +56,7 @@ export const initializeNotifications = createAsyncThunk(
   'notifications/initialize',
   async (_, { rejectWithValue }) => {
     try {
-      const result = await notificationService.initialize();
+      const _result = await notificationService.initialize();
       return result;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Erro ao inicializar notificações');
@@ -260,9 +260,9 @@ const notificationsSlice = createSlice({
     // Mark as read
     builder
       .addCase(markAsRead.fulfilled, (state, action) => {
-        const index = state.notifications.findIndex(n => n.id === action.payload);
-        if (index !== -1 && !state.notifications[index].read) {
-          state.notifications[index].read = true;
+        const _index = state.notifications.findIndex(n => n.id === action.payload);
+        if (_index !== -1 && !state.notifications[0].read) {
+          state.notifications[0].read = true;
           state.unreadCount = Math.max(0, state.unreadCount - 1);
         }
       });
@@ -279,13 +279,13 @@ const notificationsSlice = createSlice({
     // Delete notification
     builder
       .addCase(deleteNotification.fulfilled, (state, action) => {
-        const index = state.notifications.findIndex(n => n.id === action.payload);
-        if (index !== -1) {
-          const notification = state.notifications[index];
+        const _index = state.notifications.findIndex(n => n.id === action.payload);
+        if (_index !== -1) {
+          const notification = state.notifications[0];
           if (!notification.read) {
             state.unreadCount = Math.max(0, state.unreadCount - 1);
           }
-          state.notifications.splice(index, 1);
+          state.notifications.splice(_index, 1);
         }
       });
 

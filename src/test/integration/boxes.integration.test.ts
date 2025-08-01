@@ -1,3 +1,4 @@
+ 
 /**
  * Integration tests for boxes functionality
  * Tests real API communication for box-related endpoints
@@ -44,12 +45,12 @@ describe('Boxes Integration Tests', () => {
 
   describe('Fetch Boxes', () => {
     it('should fetch boxes list successfully', async () => {
-      const result = await store.dispatch(fetchBoxes({ page: 1 }));
+      const _result = await store.dispatch(fetchBoxes({ page: 1 }));
 
-      expect(result.type).toBe('boxes/fetchBoxes/fulfilled');
-      expect(result.payload).toHaveProperty('data');
-      expect(result.payload).toHaveProperty('pagination');
-      expect(Array.isArray(result.payload.data)).toBe(true);
+      expect(_result.type).toBe('boxes/fetchBoxes/fulfilled');
+      expect(_result.payload).toHaveProperty('data');
+      expect(_result.payload).toHaveProperty('pagination');
+      expect(Array.isArray(_result.payload.data)).toBe(true);
 
       // Check store state
       const state = store.getState();
@@ -80,12 +81,12 @@ describe('Boxes Integration Tests', () => {
         maxPrice: 100,
       };
 
-      const result = await store.dispatch(fetchBoxes({ page: 1, filters }));
+      const _result = await store.dispatch(fetchBoxes({ page: 1, filters }));
 
-      expect(result.type).toBe('boxes/fetchBoxes/fulfilled');
+      expect(_result.type).toBe('boxes/fetchBoxes/fulfilled');
       
       // Verify that returned boxes match the filters (if any)
-      if (result.payload.data.length > 0) {
+      if (_result.payload.data.length > 0) {
         result.payload.data.forEach((box: any) => {
           if (filters.category) {
             expect(box.category).toBe(filters.category);
@@ -102,10 +103,10 @@ describe('Boxes Integration Tests', () => {
 
     it('should handle API errors gracefully', async () => {
       // Test with invalid parameters
-      const result = await store.dispatch(fetchBoxes({ page: -1 }));
+      const _result = await store.dispatch(fetchBoxes({ page: -1 }));
 
       // Should either succeed with corrected params or fail gracefully
-      if (result.type === 'boxes/fetchBoxes/rejected') {
+      if (_result.type === 'boxes/fetchBoxes/rejected') {
         const state = store.getState();
         expect(state.boxes.error).toBeTruthy();
         expect(state.boxes.isLoading).toBe(false);
@@ -130,26 +131,26 @@ describe('Boxes Integration Tests', () => {
         return;
       }
 
-      const result = await store.dispatch(fetchBoxById(testBoxId));
+      const _result = await store.dispatch(fetchBoxById(testBoxId));
 
-      expect(result.type).toBe('boxes/fetchBoxById/fulfilled');
-      expect(result.payload).toHaveProperty('id', testBoxId);
-      expect(result.payload).toHaveProperty('name');
-      expect(result.payload).toHaveProperty('price');
-      expect(result.payload).toHaveProperty('description');
+      expect(_result.type).toBe('boxes/fetchBoxById/fulfilled');
+      expect(_result.payload).toHaveProperty('id', testBoxId);
+      expect(_result.payload).toHaveProperty('name');
+      expect(_result.payload).toHaveProperty('price');
+      expect(_result.payload).toHaveProperty('description');
 
       // Check store state
       const state = store.getState();
-      expect(state.boxes.selectedBox).toEqual(result.payload);
+      expect(state.boxes.selectedBox).toEqual(_result.payload);
       expect(state.boxes.isLoading).toBe(false);
     }, 10000);
 
     it('should handle non-existent box ID', async () => {
       const nonExistentId = 'non-existent-box-id-12345';
       
-      const result = await store.dispatch(fetchBoxById(nonExistentId));
+      const _result = await store.dispatch(fetchBoxById(nonExistentId));
 
-      expect(result.type).toBe('boxes/fetchBoxById/rejected');
+      expect(_result.type).toBe('boxes/fetchBoxById/rejected');
 
       const state = store.getState();
       expect(state.boxes.error).toBeTruthy();
@@ -161,14 +162,14 @@ describe('Boxes Integration Tests', () => {
     it('should search boxes successfully', async () => {
       const searchQuery = 'mystery';
       
-      const result = await store.dispatch(searchBoxes({ query: searchQuery }));
+      const _result = await store.dispatch(searchBoxes({ query: searchQuery }));
 
-      expect(result.type).toBe('boxes/searchBoxes/fulfilled');
-      expect(result.payload).toHaveProperty('data');
-      expect(Array.isArray(result.payload.data)).toBe(true);
+      expect(_result.type).toBe('boxes/searchBoxes/fulfilled');
+      expect(_result.payload).toHaveProperty('data');
+      expect(Array.isArray(_result.payload.data)).toBe(true);
 
       // Check that results contain the search term (if any results)
-      if (result.payload.data.length > 0) {
+      if (_result.payload.data.length > 0) {
         result.payload.data.forEach((box: any) => {
           const containsQuery = 
             box.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -179,24 +180,24 @@ describe('Boxes Integration Tests', () => {
 
       // Check store state
       const state = store.getState();
-      expect(state.boxes.searchResults).toEqual(result.payload.data);
+      expect(state.boxes.searchResults).toEqual(_result.payload.data);
       expect(state.boxes.isSearching).toBe(false);
     }, 10000);
 
     it('should handle empty search query', async () => {
-      const result = await store.dispatch(searchBoxes({ query: '' }));
+      const _result = await store.dispatch(searchBoxes({ query: '' }));
 
-      expect(result.type).toBe('boxes/searchBoxes/fulfilled');
-      expect(result.payload.data).toEqual([]);
+      expect(_result.type).toBe('boxes/searchBoxes/fulfilled');
+      expect(_result.payload.data).toEqual([]);
     }, 10000);
 
     it('should handle search with no results', async () => {
       const impossibleQuery = 'xyzabc123impossible';
       
-      const result = await store.dispatch(searchBoxes({ query: impossibleQuery }));
+      const _result = await store.dispatch(searchBoxes({ query: impossibleQuery }));
 
-      expect(result.type).toBe('boxes/searchBoxes/fulfilled');
-      expect(result.payload.data).toEqual([]);
+      expect(_result.type).toBe('boxes/searchBoxes/fulfilled');
+      expect(_result.payload.data).toEqual([]);
 
       const state = store.getState();
       expect(state.boxes.searchResults).toEqual([]);
@@ -223,10 +224,10 @@ describe('Boxes Integration Tests', () => {
       
       if (categories.length > 0) {
         const testCategory = categories[0];
-        const result = await boxService.getBoxesByCategory(testCategory.slug);
+        const _result = await boxService.getBoxesByCategory(testCategory.slug);
 
-        expect(result).toHaveProperty('data');
-        expect(Array.isArray(result.data)).toBe(true);
+        expect(_result).toHaveProperty('data');
+        expect(Array.isArray(_result.data)).toBe(true);
 
         // Verify boxes belong to the category
         result.data.forEach((box: any) => {
@@ -315,7 +316,7 @@ describe('Boxes Integration Tests', () => {
         expect(newReview).toHaveProperty('user');
       } catch (error: any) {
         // Handle case where user already reviewed this box
-        if (error.response?.status === 422) {
+        if (error.response?._status === 422) {
           expect(error.response.data).toHaveProperty('errors');
         } else {
           throw error;
@@ -329,19 +330,19 @@ describe('Boxes Integration Tests', () => {
       // This would require configuring a very short timeout
       // and testing with a slow endpoint
       
-      const result = await store.dispatch(fetchBoxes({ page: 1 }));
+      const _result = await store.dispatch(fetchBoxes({ page: 1 }));
       
       // Should either succeed or fail gracefully
-      expect(['boxes/fetchBoxes/fulfilled', 'boxes/fetchBoxes/rejected']).toContain(result.type);
+      expect(['boxes/fetchBoxes/fulfilled', 'boxes/fetchBoxes/rejected']).toContain(_result.type);
     }, 15000);
 
     it('should handle malformed responses', async () => {
       // This test would require the API to have an endpoint that returns malformed data
       // or we would need to mock the response at the HTTP level
       
-      const result = await store.dispatch(fetchBoxes({ page: 1 }));
+      const _result = await store.dispatch(fetchBoxes({ page: 1 }));
       
-      if (result.type === 'boxes/fetchBoxes/rejected') {
+      if (_result.type === 'boxes/fetchBoxes/rejected') {
         const state = store.getState();
         expect(state.boxes.error).toBeTruthy();
       }

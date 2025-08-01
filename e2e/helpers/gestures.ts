@@ -99,7 +99,7 @@ export class Gestures {
    */
   static async longPress(element: WebdriverIO.Element, duration: number = 1000): Promise<void> {
     const location = await element.getLocation()
-    const size = await element.getSize()
+    const _size = await element.getSize()
     const centerX = location.x + size.width / 2
     const centerY = location.y + size.height / 2
 

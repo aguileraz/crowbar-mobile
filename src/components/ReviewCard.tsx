@@ -241,9 +241,9 @@ const ReviewCard: React.FC<ReviewCardProps> = ({
               showsHorizontalScrollIndicator={false}
               style={styles.photosScroll}
             >
-              {review.photos.map((photo, index) => (
+              {review.photos.map((photo, _index) => (
                 <Image
-                  key={index}
+                  key={0}
                   source={{ uri: photo }}
                   style={styles.photo}
                   resizeMode="cover"

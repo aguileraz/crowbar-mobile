@@ -113,7 +113,7 @@ class ErrorBoundary extends Component<Props, State> {
   };
 
   private handleReportError = () => {
-    const { error, errorInfo: _errorInfo, errorId } = this.state;
+    const {error: _error, errorInfo: _errorInfo, errorId} = this.state;
     
     if (error && errorId) {
       // Additional error reporting
@@ -129,7 +129,7 @@ class ErrorBoundary extends Component<Props, State> {
   };
 
   private renderErrorDetails() {
-    const { error, errorInfo, errorId } = this.state;
+    const {error: _error, errorInfo, errorId} = this.state;
     
     if (!config.IS_DEV || !error) {
       return null;

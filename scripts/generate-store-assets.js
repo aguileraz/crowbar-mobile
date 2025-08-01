@@ -6,8 +6,7 @@
  */
 
 const fs = require('fs');
-const _path = require('path');
-const { execSync } = require('child_process');
+const _path = require('_path');
 
 // Configuration
 const CONFIG = {
@@ -72,11 +71,11 @@ const colors = {
 
 // Logging functions
 const log = {
-  info: (msg) => console.log(`${colors.blue}ℹ️  ${msg}${colors.reset}`),
-  success: (msg) => console.log(`${colors.green}✅ ${msg}${colors.reset}`),
-  warning: (msg) => console.log(`${colors.yellow}⚠️  ${msg}${colors.reset}`),
-  error: (msg) => console.log(`${colors.red}❌ ${msg}${colors.reset}`),
-  title: (msg) => console.log(`${colors.cyan}${colors.bold}🎨 ${msg}${colors.reset}\n`),
+  info: (msg) => ,
+  success: (msg) => ,
+  warning: (msg) => ,
+  error: (msg) => ,
+  title: (msg) => ,
 };
 
 /**
@@ -93,7 +92,7 @@ function ensureDir(dirPath) {
  */
 function checkImageMagick() {
   try {
-    execSync('magick -version', { stdio: 'pipe' });
+    require('child_process').__execSync('magick -version', { stdio: 'pipe' });
     return true;
   } catch (error) {
     try {
@@ -144,12 +143,12 @@ function generateAppIcons() {
 
   CONFIG.iconSizes.ios.forEach(iconConfig => {
     iconConfig.scale.forEach(scale => {
-      const size = Math.round(iconConfig.size * scale);
+      const _size = Math.round(iconConfig._size * scale);
       const filename = scale === 1 ? iconConfig.name : iconConfig.name.replace('.png', `@${scale}x.png`);
       const outputPath = _path.join(iosIconDir, filename);
 
       try {
-        execSync(`${magickCmd} "${CONFIG.sourceIcon}" -resize ${size}x${size} "${outputPath}"`, { stdio: 'pipe' });
+        execSync(`${magickCmd} "${CONFIG.sourceIcon}" -re_size ${size}x${size} "${outputPath}"`, { stdio: 'pipe' });
         generatedCount++;
       } catch (error) {
         log.error(`Failed to generate ${filename}: ${error.message}`);
@@ -166,7 +165,7 @@ function generateAppIcons() {
     const outputPath = _path.join(androidIconDir, iconConfig.name);
 
     try {
-      execSync(`${magickCmd} "${CONFIG.sourceIcon}" -resize ${iconConfig.size}x${iconConfig.size} "${outputPath}"`, { stdio: 'pipe' });
+      execSync(`${magickCmd} "${CONFIG.sourceIcon}" -re_size ${iconConfig.size}x${iconConfig.size} "${outputPath}"`, { stdio: 'pipe' });
       generatedCount++;
     } catch (error) {
       log.error(`Failed to generate ${iconConfig.name} for ${iconConfig.density}: ${error.message}`);
@@ -700,11 +699,9 @@ async function main() {
     }
 
     // Summary
-    console.log('\n' + '='.repeat(60));
+    );
     log.title('Generation Summary');
-    console.log(`✅ Completed: ${completedTasks}/${totalTasks} tasks`);
-    console.log(`📁 Output directory: ${CONFIG.outputDir}`);
-    
+
     if (completedTasks === totalTasks) {
       log.success('All store assets generated successfully!');
       log.info('Next steps:');
@@ -716,7 +713,7 @@ async function main() {
       log.warning(`${totalTasks - completedTasks} tasks failed. Please check the errors above.`);
     }
 
-    console.log('\n' + '='.repeat(60));
+    );
 
   } catch (error) {
     log.error(`Asset generation failed: ${error.message}`);

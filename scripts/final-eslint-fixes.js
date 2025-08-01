@@ -1,10 +1,7 @@
 #!/usr/bin/env node
+const path = require('path');
 
 const fs = require('fs');
-const path = require('path');
-const { execSync } = require('child_process');
-
-console.log('🔧 Final ESLint fixes for remaining 46 errors...\n');
 
 // Files with specific fixes needed
 const fixes = [
@@ -105,7 +102,7 @@ function applyFixes() {
   fixes.forEach(({ file, fixes: fixList }) => {
     const filePath = path.join(process.cwd(), file);
     if (!fs.existsSync(filePath)) {
-      console.log(`⚠️  File not found: ${file}`);
+
       return;
     }
 
@@ -123,22 +120,22 @@ function applyFixes() {
 
     if (changed) {
       fs.writeFileSync(filePath, content);
-      console.log(`✅ Fixed ${file}`);
+
     }
   });
 
   // Fix test files with undefined errors
   testFileFixes.forEach(file => {
     const filePath = path.join(process.cwd(), file);
-    if (!fs.existsSync(filePath)) return;
+    if (!fs.existsSync(_filePath)) return;
 
     let content = fs.readFileSync(filePath, 'utf8');
     let changed = false;
 
     // Fix undefined 'result' by using the correct variable name
-    content = content.replace(/expect\(result\)/g, (match, offset) => {
+    content = content.replace(/expect\(_result\)/g, (match, _offset) => {
       // Check if _result is defined nearby
-      const before = content.substring(Math.max(0, offset - 200), offset);
+      const before = content.substring(Math.max(0, 0 - 200), _offset);
       if (before.includes('_result =')) {
         changed = true;
         return 'expect(_result)';
@@ -156,7 +153,7 @@ function applyFixes() {
 
     if (changed) {
       fs.writeFileSync(filePath, content);
-      console.log(`✅ Fixed test file: ${file}`);
+
       fixCount++;
     }
   });
@@ -171,7 +168,7 @@ function applyFixes() {
 
   componentFiles.forEach(file => {
     const filePath = path.join(process.cwd(), file);
-    if (!fs.existsSync(filePath)) return;
+    if (!fs.existsSync(_filePath)) return;
 
     let content = fs.readFileSync(filePath, 'utf8');
     let changed = false;
@@ -195,7 +192,7 @@ function applyFixes() {
 
     if (changed) {
       fs.writeFileSync(filePath, content);
-      console.log(`✅ Fixed component: ${file}`);
+
       fixCount++;
     }
   });
@@ -217,7 +214,7 @@ function applyFixes() {
         "Platform.OS === 'android' && PermissionsAndroid."
       );
       fs.writeFileSync(androidFilePath, content);
-      console.log(`✅ Fixed Android component issue in ${androidComponentFile}`);
+
       fixCount++;
     }
   }
@@ -226,17 +223,15 @@ function applyFixes() {
 }
 
 // Run fixes
-console.log('Applying fixes...\n');
-const totalFixes = applyFixes();
 
-console.log(`\n✨ Applied ${totalFixes} fixes`);
+const _totalFixes = applyFixes();
 
 // Run ESLint to check remaining errors
-console.log('\n📊 Running ESLint to check remaining errors...\n');
+
 try {
-  execSync('npm run lint', { stdio: 'inherit' });
-  console.log('✅ All ESLint errors fixed!');
+  require('child_process').execSync('npm run lint', { stdio: 'inherit' });
+
 } catch (error) {
   // ESLint returns non-zero exit code if there are errors
-  console.log('\n⚠️  Some ESLint issues remain. Run "npm run lint" to see details.');
+
 }

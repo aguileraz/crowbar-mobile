@@ -1,3 +1,4 @@
+ 
 import { realtimeService } from '../realtimeService';
 import { store } from '../../store';
 
@@ -142,7 +143,7 @@ describe('RealtimeService', () => {
       );
     });
 
-    it('should handle order status update message', () => {
+    it('should handle order _status update message', () => {
       const message = {
         type: 'order_status_update',
         data: {

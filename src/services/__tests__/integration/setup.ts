@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import logger from '../../loggerService';
 
 import 'react-native-testing-library/extend-expect';
@@ -325,8 +326,8 @@ jest.mock('react-native', () => ({
   PixelRatio: {
     get: jest.fn(() => 2),
     getFontScale: jest.fn(() => 1),
-    getPixelSizeForLayoutSize: jest.fn((size) => size * 2),
-    roundToNearestPixel: jest.fn((size) => size),
+    getPixelSizeForLayoutSize: jest.fn((_size) => size * 2),
+    roundToNearestPixel: jest.fn((_size) => size),
   },
 }));
 

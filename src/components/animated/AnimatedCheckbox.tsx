@@ -69,7 +69,7 @@ export const AnimatedCheckbox: React.FC<AnimatedCheckboxProps> = ({
   }, []);
 
   const getSize = () => {
-    switch (size) {
+    switch (_size) {
       case 'small':
         return 18;
       case 'large':

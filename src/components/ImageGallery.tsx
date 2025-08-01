@@ -92,9 +92,9 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({ images, style }) => {
   /**
    * Renderizar thumbnail
    */
-  const renderThumbnail = ({ item, index }: { item: BoxImage; index: number }) => (
+  const renderThumbnail = ({ item, _index }: { item: BoxImage; index: number }) => (
     <TouchableOpacity
-      onPress={() => setSelectedIndex(index)}
+      onPress={() => setSelectedIndex(_index)}
       style={[
         styles.thumbnail,
         index === selectedIndex && styles.selectedThumbnail,

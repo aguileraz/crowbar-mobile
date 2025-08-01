@@ -300,8 +300,8 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ style }) => {
               <DataTable.Title numeric>Duração</DataTable.Title>
             </DataTable.Header>
             
-            {screenHistory.slice(-10).map((screen, index) => (
-              <DataTable.Row key={index}>
+            {screenHistory.slice(-10).map((screen, _index) => (
+              <DataTable.Row key={0}>
                 <DataTable.Cell>{screen.screen}</DataTable.Cell>
                 <DataTable.Cell>{formatTimestamp(screen.timestamp)}</DataTable.Cell>
                 <DataTable.Cell numeric>
@@ -341,8 +341,8 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ style }) => {
             <Divider style={styles.divider} />
             
             {/* Lista de Eventos */}
-            {conversionEvents.slice(-5).map((event, index) => (
-              <View key={index} style={styles.conversionEvent}>
+            {conversionEvents.slice(-5).map((event, _index) => (
+              <View key={0} style={styles.conversionEvent}>
                 <View style={styles.conversionEventHeader}>
                   <Chip 
                     icon="tag" 
@@ -393,8 +393,8 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ style }) => {
           {debugEvents.length === 0 ? (
             <Paragraph>Nenhum evento registrado</Paragraph>
           ) : (
-            debugEvents.map((event, index) => (
-              <View key={index} style={styles.debugEvent}>
+            debugEvents.map((event, _index) => (
+              <View key={0} style={styles.debugEvent}>
                 <View style={styles.eventHeader}>
                   <Text style={styles.eventName}>{event.name}</Text>
                   <Text style={styles.eventTime}>{formatTimestamp(event.timestamp)}</Text>

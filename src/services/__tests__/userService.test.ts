@@ -1,3 +1,4 @@
+ 
 import { userService } from '../userService';
 import { httpClient } from '../httpClient';
 
@@ -24,10 +25,10 @@ describe('UserService', () => {
 
       mockedHttpClient.get.mockResolvedValue({ data: mockProfile });
 
-      const result = await userService.getProfile();
+      const _result = await userService.getProfile();
 
       expect(mockedHttpClient.get).toHaveBeenCalledWith('/user/profile');
-      expect(result).toEqual(mockProfile);
+      expect(_result).toEqual(mockProfile);
     });
 
     it('should handle unauthorized error', async () => {
@@ -56,10 +57,10 @@ describe('UserService', () => {
 
       mockedHttpClient.patch.mockResolvedValue({ data: mockUpdatedProfile });
 
-      const result = await userService.updateProfile(updateData);
+      const _result = await userService.updateProfile(updateData);
 
       expect(mockedHttpClient.patch).toHaveBeenCalledWith('/user/profile', updateData);
-      expect(result).toEqual(mockUpdatedProfile);
+      expect(_result).toEqual(mockUpdatedProfile);
     });
 
     it('should handle validation errors', async () => {
@@ -87,15 +88,15 @@ describe('UserService', () => {
 
       mockedHttpClient.post.mockResolvedValue({ data: mockResponse });
 
-      const result = await userService.uploadAvatar(formData);
+      const _result = await userService.uploadAvatar(formData);
 
       expect(mockedHttpClient.post).toHaveBeenCalledWith('/user/avatar', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-      expect(result).toEqual(mockResponse);
+      expect(_result).toEqual(mockResponse);
     });
 
-    it('should handle file size error', async () => {
+    it('should handle file _size error', async () => {
       const mockError = {
         response: {
           status: 413,
@@ -135,10 +136,10 @@ describe('UserService', () => {
 
       mockedHttpClient.get.mockResolvedValue({ data: mockAddresses });
 
-      const result = await userService.getAddresses();
+      const _result = await userService.getAddresses();
 
       expect(mockedHttpClient.get).toHaveBeenCalledWith('/user/addresses');
-      expect(result).toEqual(mockAddresses);
+      expect(_result).toEqual(mockAddresses);
     });
   });
 
@@ -157,10 +158,10 @@ describe('UserService', () => {
 
       mockedHttpClient.post.mockResolvedValue({ data: mockAddress });
 
-      const result = await userService.addAddress(addressData);
+      const _result = await userService.addAddress(addressData);
 
       expect(mockedHttpClient.post).toHaveBeenCalledWith('/user/addresses', addressData);
-      expect(result).toEqual(mockAddress);
+      expect(_result).toEqual(mockAddress);
     });
   });
 
@@ -179,10 +180,10 @@ describe('UserService', () => {
 
       mockedHttpClient.patch.mockResolvedValue({ data: mockUpdatedAddress });
 
-      const result = await userService.updateAddress('1', updateData);
+      const _result = await userService.updateAddress('1', updateData);
 
       expect(mockedHttpClient.patch).toHaveBeenCalledWith('/user/addresses/1', updateData);
-      expect(result).toEqual(mockUpdatedAddress);
+      expect(_result).toEqual(mockUpdatedAddress);
     });
   });
 
@@ -224,10 +225,10 @@ describe('UserService', () => {
 
       mockedHttpClient.get.mockResolvedValue({ data: mockPaymentMethods });
 
-      const result = await userService.getPaymentMethods();
+      const _result = await userService.getPaymentMethods();
 
       expect(mockedHttpClient.get).toHaveBeenCalledWith('/user/payment-methods');
-      expect(result).toEqual(mockPaymentMethods);
+      expect(_result).toEqual(mockPaymentMethods);
     });
   });
 
@@ -252,10 +253,10 @@ describe('UserService', () => {
 
       mockedHttpClient.post.mockResolvedValue({ data: mockPaymentMethod });
 
-      const result = await userService.addPaymentMethod(paymentData);
+      const _result = await userService.addPaymentMethod(paymentData);
 
       expect(mockedHttpClient.post).toHaveBeenCalledWith('/user/payment-methods', paymentData);
-      expect(result).toEqual(mockPaymentMethod);
+      expect(_result).toEqual(mockPaymentMethod);
     });
   });
 
@@ -286,10 +287,10 @@ describe('UserService', () => {
 
       mockedHttpClient.get.mockResolvedValue({ data: mockStats });
 
-      const result = await userService.getStatistics();
+      const _result = await userService.getStatistics();
 
       expect(mockedHttpClient.get).toHaveBeenCalledWith('/user/statistics');
-      expect(result).toEqual(mockStats);
+      expect(_result).toEqual(mockStats);
     });
   });
 
@@ -303,10 +304,10 @@ describe('UserService', () => {
 
       mockedHttpClient.patch.mockResolvedValue({ data: { message: 'Password updated successfully' } });
 
-      const result = await userService.changePassword(passwordData);
+      const _result = await userService.changePassword(passwordData);
 
       expect(mockedHttpClient.patch).toHaveBeenCalledWith('/user/password', passwordData);
-      expect(result).toEqual({ message: 'Password updated successfully' });
+      expect(_result).toEqual({ message: 'Password updated successfully' });
     });
 
     it('should handle incorrect current password', async () => {

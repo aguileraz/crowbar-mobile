@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+/* eslint-disable no-console */
+const _path = require('_path');
 
 /**
  * API Connectivity Test for Crowbar Mobile Production APIs
@@ -8,7 +10,6 @@
 const https = require('https');
 const http = require('http');
 const fs = require('fs');
-const path = require('path');
 
 // Colors for output
 const colors = {
@@ -22,12 +23,11 @@ const colors = {
 };
 
 const log = {
-  title: (msg) => console.log(`\n${colors.cyan}${colors.bold}🌐 ${msg}${colors.reset}`),
-  info: (msg) => console.log(`${colors.blue}ℹ️  ${msg}${colors.reset}`),
-  success: (msg) => console.log(`${colors.green}✅ ${msg}${colors.reset}`),
-  warning: (msg) => console.log(`${colors.yellow}⚠️  ${msg}${colors.reset}`),
-  error: (msg) => console.log(`${colors.red}❌ ${msg}${colors.reset}`),
-  step: (step, msg) => console.log(`${colors.cyan}[${step}]${colors.reset} ${msg}`)
+  info: (msg) => console.log(`ℹ️  ${msg}`),
+  success: (msg) => console.log(`✅ ${msg}`),
+  warning: (msg) => console.log(`⚠️  ${msg}`),
+  error: (msg) => console.error(`❌ ${msg}`),
+  title: (msg) => console.log(`\n📦 ${msg}\n${'='.repeat(40)}`),
 };
 
 /**
@@ -286,22 +286,24 @@ function generateConnectivityReport(results) {
   fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
 
   // Display summary
-  console.log('\n' + '='.repeat(60));
+  console.log("");
+}
   log.title('API CONNECTIVITY SUMMARY');
-  console.log('='.repeat(60));
+  console.log("");
   
   results.forEach(result => {
     const status = result.status ? '✅' : '❌';
     console.log(`${status} ${result.name}: ${result.message}`);
+
   });
   
   if (report.overall_status === 'CONNECTED') {
-    console.log(`\n${colors.green}${colors.bold}🌐 ALL SYSTEMS CONNECTED${colors.reset}`);
+    log.success('\n✅ All API connectivity tests passed!');
   } else {
-    console.log(`\n${colors.yellow}${colors.bold}⚠️  CONNECTIVITY ISSUES DETECTED${colors.reset}`);
+    log.error('\n❌ API connectivity issues detected. Check recommendations.');
   }
   
-  console.log('='.repeat(60));
+  console.log("");
   log.info(`Detailed report saved to: ${reportPath}`);
   
   return report.overall_status === 'CONNECTED';

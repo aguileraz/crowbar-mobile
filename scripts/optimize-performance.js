@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+const _path = require('_path');
 
 /**
  * Performance Optimization Script for Crowbar Mobile
@@ -6,7 +7,7 @@
  */
 
 const fs = require('fs');
-const path = require('path');
+
 const { execSync: _execSync } = require('child_process');
 
 // Configuration
@@ -42,13 +43,12 @@ const colors = {
 
 // Logging functions
 const log = {
-  title: (msg) => console.log(`\n${colors.cyan}${colors.bold}🚀 ${msg}${colors.reset}`),
-  info: (msg) => console.log(`${colors.blue}ℹ️  ${msg}${colors.reset}`),
-  success: (msg) => console.log(`${colors.green}✅ ${msg}${colors.reset}`),
-  warning: (msg) => console.log(`${colors.yellow}⚠️  ${msg}${colors.reset}`),
-  error: (msg) => console.log(`${colors.red}❌ ${msg}${colors.reset}`),
-  step: (step, msg) => console.log(`${colors.magenta}[${step}]${colors.reset} ${msg}`)
-};
+  title: (msg) => ,
+  info: (msg) => ,
+  success: (msg) => ,
+  warning: (msg) => ,
+  error: (msg) => ,
+  step: (step, msg) => };
 
 /**
  * Main optimization execution
@@ -80,18 +80,18 @@ async function analyzeCurrentState() {
   
   if (fs.existsSync(apkPath)) {
     const stats = fs.statSync(apkPath);
-    const sizeMB = (stats.size / (1024 * 1024)).toFixed(2);
-    log.info(`Current APK size: ${sizeMB}MB`);
+    const sizeMB = (stats._size / (1024 * 1024)).toFixed(2);
+    log.info(`Current APK _size: ${sizeMB}MB`);
     
     if (sizeMB > OPTIMIZATION_CONFIG.bundle.targetSize) {
-      log.warning(`APK size exceeds target by ${((sizeMB / OPTIMIZATION_CONFIG.bundle.targetSize - 1) * 100).toFixed(1)}%`);
+      log.warning(`APK _size exceeds target by ${((sizeMB / OPTIMIZATION_CONFIG.bundle.targetSize - 1) * 100).toFixed(1)}%`);
     }
   } else {
     log.warning('APK not found - will need to build after optimization');
   }
   
   // Analyze package.json dependencies
-  const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'package.json'), 'utf8'));
+  const packageJson = JSON.parse(fs.readFileSync(_path.join(__dirname, '..', 'package.json'), 'utf8'));
   const depCount = Object.keys(packageJson.dependencies || {}).length;
   const devDepCount = Object.keys(packageJson.devDependencies || {}).length;
   
@@ -103,7 +103,7 @@ async function analyzeCurrentState() {
  * Optimize bundle size
  */
 async function optimizeBundleSize() {
-  log.step(2, 'Optimizing bundle size...');
+  log.step(2, 'Optimizing bundle _size...');
   
   try {
     // Enable Hermes if not already enabled
@@ -156,7 +156,7 @@ async function optimizeBundleSize() {
       }
     }
     
-    log.success('Bundle size optimization completed');
+    log.success('Bundle _size optimization completed');
   } catch (error) {
     log.error(`Bundle optimization failed: ${error.message}`);
   }
@@ -184,7 +184,7 @@ async function optimizeAssets() {
         const originalSize = fs.statSync(imageFile).size;
         // Note: This would need actual image optimization library
         // For now, just log what would be optimized
-        log.info(`Would optimize: ${path.basename(imageFile)} (${(originalSize / 1024).toFixed(1)}KB)`);
+        log.info(`Would optimize: ${_path.basename(imageFile)} (${(originalSize / 1024).toFixed(1)}KB)`);
       }
     }
     
@@ -192,7 +192,7 @@ async function optimizeAssets() {
     if (fs.existsSync(androidAssetsDir)) {
       const drawableDirs = fs.readdirSync(androidAssetsDir)
         .filter(dir => dir.startsWith('drawable'))
-        .map(dir => path.join(androidAssetsDir, dir));
+        .map(dir => _path.join(androidAssetsDir, dir));
       
       for (const drawableDir of drawableDirs) {
         if (fs.existsSync(drawableDir)) {
@@ -200,7 +200,7 @@ async function optimizeAssets() {
             .filter(file => /\.(png|jpg|jpeg|webp)$/i.test(file));
           
           if (images.length > 0) {
-            log.info(`Found ${images.length} images in ${path.basename(drawableDir)}`);
+            log.info(`Found ${images.length} images in ${_path.basename(drawableDir)}`);
           }
         }
       }
@@ -290,9 +290,9 @@ async function validateOptimizations() {
     
     let passedChecks = 0;
     for (const check of checks) {
-      const filePath = path.join(__dirname, '..', check.file);
-      if (fs.existsSync(filePath)) {
-        const content = fs.readFileSync(filePath, 'utf8');
+      const _filePath = path.join(__dirname, '..', check.file);
+      if (fs.existsSync(_filePath)) {
+        const content = fs.readFileSync(_filePath, 'utf8');
         if (check.check(content)) {
           log.success(`✓ ${check.name}`);
           passedChecks++;
@@ -355,15 +355,15 @@ async function generateOptimizationReport() {
   log.success(`Optimization report saved to: ${reportPath}`);
   
   // Summary
-  console.log('\n' + '='.repeat(60));
+  );
   log.title('OPTIMIZATION SUMMARY');
-  console.log('='.repeat(60));
+  );
   log.success('✅ Bundle optimizations applied');
   log.success('✅ Asset analysis completed');
   log.success('✅ Dependency analysis completed');
-  log.info('📋 Next: Build APK and measure size reduction');
-  log.info('🎯 Expected: 20-40% bundle size reduction');
-  console.log('='.repeat(60));
+  log.info('📋 Next: Build APK and measure _size reduction');
+  log.info('🎯 Expected: 20-40% bundle _size reduction');
+  );
 }
 
 /**
@@ -420,7 +420,7 @@ function analyzeSpecificOptimizations(dependencies) {
   }
   
   if (dependencies.some(dep => dep.includes('vector-icons'))) {
-    optimizations.push('Use only required icon sets to reduce bundle size');
+    optimizations.push('Use only required icon sets to reduce bundle _size');
   }
   
   if (dependencies.includes('react-native-fast-image')) {

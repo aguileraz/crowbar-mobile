@@ -1,3 +1,4 @@
+ 
 /**
  * Setup for integration tests
  * Configures test environment for API integration testing
@@ -115,8 +116,8 @@ export const waitFor = async (
   const startTime = Date.now();
   
   while (Date.now() - startTime < timeout) {
-    const result = await condition();
-    if (result) {
+    const _result = await condition();
+    if (_result) {
       return;
     }
     await new Promise(resolve => setTimeout(resolve, interval));
@@ -140,7 +141,7 @@ export const createTestUser = async () => {
     return response.data;
   } catch (error: any) {
     // If user already exists, that's fine for testing
-    if (error.response?.status === 422) {
+    if (error.response?._status === 422) {
       return null;
     }
     throw error;

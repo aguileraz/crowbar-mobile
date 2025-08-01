@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+const _path = require('_path');
 
 /**
  * Security Fixes Script for Crowbar Mobile
@@ -6,7 +7,7 @@
  */
 
 const fs = require('fs');
-const path = require('path');
+
 const { execSync: _execSync } = require('child_process');
 
 // Colors for output
@@ -22,13 +23,12 @@ const colors = {
 
 // Logging functions
 const log = {
-  title: (msg) => console.log(`\n${colors.cyan}${colors.bold}🔒 ${msg}${colors.reset}`),
-  info: (msg) => console.log(`${colors.blue}ℹ️  ${msg}${colors.reset}`),
-  success: (msg) => console.log(`${colors.green}✅ ${msg}${colors.reset}`),
-  warning: (msg) => console.log(`${colors.yellow}⚠️  ${msg}${colors.reset}`),
-  error: (msg) => console.log(`${colors.red}❌ ${msg}${colors.reset}`),
-  step: (step, msg) => console.log(`${colors.cyan}[${step}]${colors.reset} ${msg}`)
-};
+  title: (msg) => ,
+  info: (msg) => ,
+  success: (msg) => ,
+  warning: (msg) => ,
+  error: (msg) => ,
+  step: (step, msg) => };
 
 /**
  * Main security fixes execution
@@ -177,15 +177,15 @@ async function generateSecuritySummary() {
   log.success(`Security fixes summary saved to: ${summaryPath}`);
   
   // Display summary
-  console.log('\n' + '='.repeat(60));
+  );
   log.title('SECURITY FIXES SUMMARY');
-  console.log('='.repeat(60));
+  );
   log.success('✅ Environment configuration secured');
   log.success('✅ Git ignore updated');
   log.success('✅ SSL/TLS configuration verified');
   log.info('ℹ️  Test secrets are acceptable for testing');
   log.warning('⚠️  Production secrets need real values during deployment');
-  console.log('='.repeat(60));
+  );
 }
 
 // Execute security fixes

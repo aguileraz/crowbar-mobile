@@ -1,3 +1,4 @@
+ 
 /**
  * Testes E2E para adicionar itens ao carrinho
  * 
@@ -159,7 +160,7 @@ describe('Carrinho de Compras', () => {
         await shopPage.takeScreenshot('add-unavailable-item');
       } catch (error) {
         // Item indisponível pode não existir no teste
-        console.log('Item indisponível não encontrado no teste');
+
       }
     });
   });
@@ -558,8 +559,7 @@ describe('Carrinho de Compras', () => {
       
       // Verificar se badge está correto
       await shopPage.expectCartBadge('5');
-      
-      console.log(`Adicionado 5 itens em ${duration}ms`);
+
     });
 
     it('deve manter performance com carrinho cheio', async () => {

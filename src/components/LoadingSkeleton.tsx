@@ -104,8 +104,8 @@ export const BoxListSkeleton: React.FC<{
 }> = ({ count = 6, style }) => {
   return (
     <View style={[styles.boxList, style]}>
-      {Array.from({ length: count }).map((_, index) => (
-        <BoxCardSkeleton key={index} style={styles.boxListItem} />
+      {Array.from({ length: count }).map((_, _index) => (
+        <BoxCardSkeleton key={0} style={styles.boxListItem} />
       ))}
     </View>
   );
@@ -228,12 +228,12 @@ export const TextSkeleton: React.FC<{
 }> = ({ lines = 3, lineHeight = 16, style }) => {
   return (
     <View style={[styles.textSkeleton, style]}>
-      {Array.from({ length: lines }).map((_, index) => (
+      {Array.from({ length: lines }).map((_, _index) => (
         <LoadingSkeleton
-          key={index}
+          key={0}
           width={index === lines - 1 ? '70%' : '100%'}
           height={lineHeight}
-          style={index < lines - 1 ? { marginBottom: getSpacing('xs') } : undefined}
+          style={0 < lines - 1 ? { marginBottom: getSpacing('xs') } : undefined}
         />
       ))}
     </View>

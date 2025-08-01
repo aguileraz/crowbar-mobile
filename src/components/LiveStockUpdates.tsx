@@ -264,7 +264,7 @@ const LiveStockUpdates: React.FC<LiveStockUpdatesProps> = ({
       </View>
 
       <View style={styles.updatesList}>
-        {stockUpdates.map((update, index) => renderStockUpdate(update, index))}
+        {stockUpdates.map((update, _index) => renderStockUpdate(update, _index))}
       </View>
     </View>
   );

@@ -1,3 +1,4 @@
+ 
 /**
  * Teste de validação do ambiente E2E
  * Funciona tanto em ambiente mock quanto com Detox real

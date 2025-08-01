@@ -1,13 +1,15 @@
+/* eslint-disable no-console */
 #!/usr/bin/env node
 
 /**
+const { execSync } = require('child_process');
+
  * Script para executar testes E2E com Detox
  * Verifica configurações e prepara ambiente antes de executar
  */
 
-const { execSync } = require('child_process');
 const fs = require('fs');
-const _path = require('path');
+const _path = require('_path');
 
 // Cores para output
 const colors = {
@@ -20,10 +22,10 @@ const colors = {
 
 // Funções de log
 const log = {
-  info: (msg) => console.log(`${colors.blue}ℹ${colors.reset}  ${msg}`),
-  success: (msg) => console.log(`${colors.green}✅${colors.reset} ${msg}`),
-  warning: (msg) => console.log(`${colors.yellow}⚠️${colors.reset}  ${msg}`),
-  error: (msg) => console.log(`${colors.red}❌${colors.reset} ${msg}`),
+  info: (msg) => ,
+  success: (msg) => ,
+  warning: (msg) => ,
+  error: (msg) => ,
 };
 
 // Argumentos da linha de comando
@@ -117,7 +119,7 @@ function prepareEnvironment() {
   
   // Verificar Metro bundler
   try {
-    execSync('curl -s http://localhost:8081/status', { stdio: 'ignore' });
+    execSync('curl -s http://localhost:8081/_status', { stdio: 'ignore' });
     log.success('Metro bundler está rodando');
   } catch (error) {
     log.warning('Metro bundler não está rodando');
@@ -201,11 +203,7 @@ function showReport() {
 
 // Exibir ajuda
 function showHelp() {
-  console.log(`
-Uso: npm run e2e:test [opções] [arquivo-de-teste]
 
-Opções:
-  --platform=android|ios      Plataforma alvo (padrão: android)
   --configuration=<config>    Configuração do Detox (padrão: android.emu.debug)
   --build                     Forçar rebuild da aplicação
   --debug                     Executar com logs detalhados

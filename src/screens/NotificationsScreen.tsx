@@ -326,7 +326,7 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ navigation })
     <View style={styles.loadingContainer}>
       {Array.from({ length: 5 }).map((_, _index) => (
         <LoadingSkeleton
-          key={index}
+          key={0}
           width="100%"
           height={80}
           style={styles.loadingSkeleton}

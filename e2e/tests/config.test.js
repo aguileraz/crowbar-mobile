@@ -1,3 +1,4 @@
+ 
 /**
  * Teste de configuração E2E
  * Valida se as configurações do Detox estão corretas

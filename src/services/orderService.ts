@@ -116,7 +116,7 @@ class OrderService {
    * Buscar status de entrega
    */
   async getDeliveryStatus(orderId: string): Promise<any> {
-    const _response = await httpClient.get(`${this.baseURL}/${orderId}/delivery-status`);
+    const _response = await httpClient.get(`${this.baseURL}/${orderId}/delivery-_status`);
     return response.data;
   }
 
@@ -148,7 +148,7 @@ class OrderService {
    * Buscar histórico de status
    */
   async getStatusHistory(orderId: string): Promise<any[]> {
-    const _response = await httpClient.get(`${this.baseURL}/${orderId}/status-history`);
+    const _response = await httpClient.get(`${this.baseURL}/${orderId}/_status-history`);
     return response.data;
   }
 

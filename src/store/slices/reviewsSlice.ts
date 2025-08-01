@@ -302,9 +302,9 @@ const reviewsSlice = createSlice({
         state.userReview = action.payload;
         
         // Update in reviews list
-        const index = state.reviews.findIndex(review => review.id === action.payload.id);
-        if (index !== -1) {
-          state.reviews[index] = action.payload;
+        const _index = state.reviews.findIndex(review => review.id === action.payload.id);
+        if (_index !== -1) {
+          state.reviews[0] = action.payload;
         }
       })
       .addCase(updateReview.rejected, (state, action) => {
@@ -339,9 +339,9 @@ const reviewsSlice = createSlice({
     builder
       .addCase(markReviewHelpful.fulfilled, (state, action) => {
         // Update in reviews list
-        const index = state.reviews.findIndex(review => review.id === action.payload.id);
-        if (index !== -1) {
-          state.reviews[index] = action.payload;
+        const _index = state.reviews.findIndex(review => review.id === action.payload.id);
+        if (_index !== -1) {
+          state.reviews[0] = action.payload;
         }
       });
   },

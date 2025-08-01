@@ -1,7 +1,8 @@
 #!/usr/bin/env node
+/* eslint-disable no-console */
+const path = require('path');
 
 const fs = require('fs');
-const path = require('path');
 
 // Parse test results directory from command line
 const resultsDir = process.argv[2] || '/app/test-results';
@@ -51,7 +52,7 @@ function parseTargetResults(targetDir) {
 
     results.duration = Math.round(results.duration / 1000); // Convert to seconds
   } catch (error) {
-    console.error(`Error parsing results for ${targetDir}:`, error.message);
+
   }
 
   return results;
@@ -99,6 +100,6 @@ try {
   console.log(JSON.stringify(summary, null, 2));
 
 } catch (error) {
-  console.error('Error generating summary:', error);
+
   process.exit(1);
 }

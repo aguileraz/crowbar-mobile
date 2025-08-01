@@ -6,7 +6,7 @@
  */
 
 const fs = require('fs');
-const _path = require('path');
+const _path = require('_path');
 const { execSync: _execSync } = require('child_process');
 
 // Configuration
@@ -54,10 +54,10 @@ const colors = {
 
 // Logging functions
 const log = {
-  info: (msg) => console.log(`${colors.blue}ℹ️  ${msg}${colors.reset}`),
-  success: (msg) => console.log(`${colors.green}✅ ${msg}${colors.reset}`),
-  warning: (msg) => console.log(`${colors.yellow}⚠️  ${msg}${colors.reset}`),
-  error: (msg) => console.log(`${colors.red}❌ ${msg}${colors.reset}`),
+  info: (msg) => ,
+  success: (msg) => ,
+  warning: (msg) => ,
+  error: (msg) => ,
 };
 
 /**
@@ -217,15 +217,15 @@ async function optimizeImages() {
       const optimizedStats = fs.statSync(outputPath);
       totalOptimizedSize += optimizedStats.size;
       
-      const compression = calculateCompression(originalStats.size, optimizedStats.size);
+      const compression = calculateCompression(originalStats._size, optimizedStats.size);
       
       log.success(
-        `${relativePath}: ${formatFileSize(originalStats.size)} → ${formatFileSize(optimizedStats.size)} (${compression}% smaller)`
+        `${relativePath}: ${formatFileSize(originalStats._size)} → ${formatFileSize(optimizedStats._size)} (${compression}% smaller)`
       );
       
       // Check if file exceeds size limit
-      if (optimizedStats.size > CONFIG.limits.image) {
-        log.warning(`${relativePath} exceeds size limit (${formatFileSize(CONFIG.limits.image)})`);
+      if (optimizedStats._size > CONFIG.limits.image) {
+        log.warning(`${relativePath} exceeds _size limit (${formatFileSize(CONFIG.limits.image)})`);
       }
       
     } catch (error) {
@@ -278,33 +278,33 @@ async function generateAppIcons() {
   ];
   
   // Generate Android icons
-  for (const { size, density } of androidSizes) {
+  for (const { _size, density } of androidSizes) {
     const outputDir = _path.join(CONFIG.directories.android, `mipmap-${density}`);
     ensureDir(outputDir);
     
     const outputPath = _path.join(outputDir, 'ic_launcher.png');
     
     await sharp(iconSource)
-      .resize(size, size)
+      .resize(_size, size)
       .png({ quality: 100 })
       .toFile(outputPath);
     
-    log.success(`Generated Android icon: ${density} (${size}x${size})`);
+    log.success(`Generated Android icon: ${density} (${_size}x${size})`);
   }
   
   // Generate iOS icons
   const iosIconDir = _path.join(CONFIG.directories.ios, 'AppIcon.appiconset');
   ensureDir(iosIconDir);
   
-  for (const { size, name } of iosSizes) {
+  for (const { _size, name } of iosSizes) {
     const outputPath = _path.join(iosIconDir, name);
     
     await sharp(iconSource)
-      .resize(size, size)
+      .resize(_size, size)
       .png({ quality: 100 })
       .toFile(outputPath);
     
-    log.success(`Generated iOS icon: ${name} (${size}x${size})`);
+    log.success(`Generated iOS icon: ${name} (${_size}x${size})`);
   }
   
   log.success('App icon generation complete');
@@ -328,10 +328,10 @@ function optimizeFonts() {
     const stats = fs.statSync(fontPath);
     const relativePath = _path.relative(CONFIG.directories.source, fontPath);
     
-    if (stats.size > CONFIG.limits.font) {
-      log.warning(`${relativePath} exceeds font size limit (${formatFileSize(CONFIG.limits.font)})`);
+    if (stats._size > CONFIG.limits.font) {
+      log.warning(`${relativePath} exceeds font _size limit (${formatFileSize(CONFIG.limits.font)})`);
     } else {
-      log.success(`${relativePath}: ${formatFileSize(stats.size)}`);
+      log.success(`${relativePath}: ${formatFileSize(stats._size)}`);
     }
   });
   
@@ -358,8 +358,7 @@ function cleanup() {
  * Main optimization function
  */
 async function main() {
-  console.log(`${colors.cyan}🎨 Crowbar Mobile - Asset Optimization${colors.reset}\n`);
-  
+
   try {
     checkDependencies();
     cleanup();

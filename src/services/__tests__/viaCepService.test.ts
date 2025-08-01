@@ -1,3 +1,4 @@
+ 
 import axios from 'axios';
 import { viaCepService } from '../viaCepService';
 
@@ -32,10 +33,10 @@ describe('ViaCepService', () => {
       mockedAxios.get.mockResolvedValue(mockResponse);
 
       // Executar
-      const result = await viaCepService.getAddressByCep('01310-100');
+      const _result = await viaCepService.getAddressByCep('01310-100');
 
       // Verificar
-      expect(result).toEqual(mockResponse.data);
+      expect(_result).toEqual(mockResponse.data);
       expect(mockedAxios.get).toHaveBeenCalledWith(
         'https://viacep.com.br/ws/01310100/json/',
         { timeout: 10000 }
@@ -135,10 +136,10 @@ describe('ViaCepService', () => {
       mockedAxios.get.mockResolvedValue(mockResponse);
 
       // Executar
-      const result = await viaCepService.getCepsByAddress('SP', 'São Paulo', 'Avenida Paulista');
+      const _result = await viaCepService.getCepsByAddress('SP', 'São Paulo', 'Avenida Paulista');
 
       // Verificar
-      expect(result).toEqual(mockResponse.data);
+      expect(_result).toEqual(mockResponse.data);
       expect(mockedAxios.get).toHaveBeenCalledWith(
         'https://viacep.com.br/ws/SP/São Paulo/Avenida Paulista/json/',
         { timeout: 10000 }

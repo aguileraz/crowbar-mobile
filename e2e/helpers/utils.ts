@@ -42,7 +42,7 @@ export class TestUtils {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
     const filepath = `${process.env.SCREENSHOT_DIR || './screenshots'}/${name}-${timestamp}.png`
     await browser.saveScreenshot(filepath)
-    console.log(`📸 Screenshot saved: ${filepath}`)
+
   }
 
   /**

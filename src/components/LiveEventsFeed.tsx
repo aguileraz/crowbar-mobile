@@ -103,7 +103,7 @@ const LiveEventsFeed: React.FC<LiveEventsFeedProps> = ({
   /**
    * Render event item
    */
-  const renderEventItem = ({ item, index }: { item: any; index: number }) => {
+  const renderEventItem = ({ item, _index }: { item: any; index: number }) => {
     const eventInfo = getEventInfo(item.type);
     
     return (

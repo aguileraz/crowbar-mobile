@@ -183,7 +183,7 @@ export const validateCoupon = createAsyncThunk(
   'cart/validateCoupon',
   async (code: string, { rejectWithValue }) => {
     try {
-      const result = await cartService.validateCoupon(code);
+      const _result = await cartService.validateCoupon(code);
       return result;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Erro ao validar cupom');

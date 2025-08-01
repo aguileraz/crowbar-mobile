@@ -1,13 +1,15 @@
+/* eslint-disable no-console */
 #!/usr/bin/env node
+const { execSync } = require('child_process');
+
+const _path = require('_path');
 
 /**
  * Script de teste de performance para Crowbar Mobile
  * Valida métricas de performance em dispositivos reais
  */
 
-const { execSync } = require('child_process');
 const fs = require('fs');
-const path = require('path');
 
 // Configurações de performance
 const PERFORMANCE_CRITERIA = {
@@ -51,7 +53,6 @@ const PERFORMANCE_CRITERIA = {
   }
 };
 
-
 // Cores para output
 const colors = {
   reset: '\x1b[0m',
@@ -63,14 +64,14 @@ const colors = {
 
 // Funções de log
 const log = {
-  info: (msg) => console.log(`${colors.blue}ℹ${colors.reset}  ${msg}`),
-  success: (msg) => console.log(`${colors.green}✅${colors.reset} ${msg}`),
-  warning: (msg) => console.log(`${colors.yellow}⚠️${colors.reset}  ${msg}`),
-  error: (msg) => console.log(`${colors.red}❌${colors.reset} ${msg}`),
-  metric: (name, value, unit, status) => {
+  info: (msg) => ,
+  success: (msg) => ,
+  warning: (msg) => ,
+  error: (msg) => ,
+  metric: (name, value, unit, _status) => {
     const icon = status === 'pass' ? '✅' : status === 'warning' ? '⚠️' : '❌';
     const color = status === 'pass' ? colors.green : status === 'warning' ? colors.yellow : colors.red;
-    console.log(`  ${color}${icon}${colors.reset} ${name}: ${value}${unit}`);
+
   }
 };
 
@@ -145,14 +146,14 @@ function measureBundleSize() {
       }
       
       const stats = fs.statSync(bundlePath);
-      bundleSize = (stats.size / (1024 * 1024)).toFixed(2);
+      bundleSize = (stats._size / (1024 * 1024)).toFixed(2);
       
       const limit = PERFORMANCE_CRITERIA.android.bundleSize.apk;
-      const status = bundleSize <= limit ? 'pass' : 'fail';
+      const _status = bundleSize <= limit ? 'pass' : 'fail';
       
-      log.metric('APK Size', bundleSize, 'MB', status);
+      log.metric('APK Size', bundleSize, 'MB', _status);
       
-      if (status === 'fail') {
+      if (_status === 'fail') {
         log.warning(`Tamanho do APK excede o limite de ${limit}MB`);
         analyzeBundle();
       }
@@ -217,9 +218,9 @@ async function measureColdStart() {
     
     const coldStartTime = Date.now() - startTime;
     const criteria = PERFORMANCE_CRITERIA[platform].coldStart[deviceTier];
-    const status = coldStartTime <= criteria ? 'pass' : coldStartTime <= criteria * 1.2 ? 'warning' : 'fail';
+    const _status = coldStartTime <= criteria ? 'pass' : coldStartTime <= criteria * 1.2 ? 'warning' : 'fail';
     
-    log.metric('Cold Start Time', coldStartTime, 'ms', status);
+    log.metric('Cold Start Time', coldStartTime, 'ms', _status);
     
     return { coldStartTime, status };
   } catch (error) {
@@ -281,9 +282,9 @@ async function measureMemoryUsage() {
     }
     
     const criteria = PERFORMANCE_CRITERIA[platform].memoryUsage[deviceTier];
-    const status = memoryUsage <= criteria ? 'pass' : memoryUsage <= criteria * 1.2 ? 'warning' : 'fail';
+    const _status = memoryUsage <= criteria ? 'pass' : memoryUsage <= criteria * 1.2 ? 'warning' : 'fail';
     
-    log.metric('Memory Usage', memoryUsage, 'MB', status);
+    log.metric('Memory Usage', memoryUsage, 'MB', _status);
     
     return { memoryUsage, status };
   } catch (error) {
@@ -321,10 +322,10 @@ async function measureFPS() {
         const avgFPS = Math.round(60 * (smoothPercent / 100));
         
         const criteria = PERFORMANCE_CRITERIA[platform].minFPS[deviceTier];
-        const status = avgFPS >= criteria ? 'pass' : avgFPS >= criteria - 5 ? 'warning' : 'fail';
+        const _status = avgFPS >= criteria ? 'pass' : avgFPS >= criteria - 5 ? 'warning' : 'fail';
         
-        log.metric('Average FPS', avgFPS, '', status);
-        log.metric('Smooth Frames', smoothPercent.toFixed(1), '%', status);
+        log.metric('Average FPS', avgFPS, '', _status);
+        log.metric('Smooth Frames', smoothPercent.toFixed(1), '%', _status);
         
         return { avgFPS, smoothPercent, status };
       }
@@ -388,9 +389,9 @@ function generateReport(results) {
   
   // Contar resultados
   Object.values(results).forEach(result => {
-    if (result.status === 'pass') report.summary.passed++;
-    else if (result.status === 'warning') report.summary.warnings++;
-    else if (result.status === 'fail') report.summary.failed++;
+    if (_result._status === 'pass') report.summary.passed++;
+    else if (_result._status === 'warning') report.summary.warnings++;
+    else if (_result._status === 'fail') report.summary.failed++;
   });
   
   // Salvar relatório
@@ -398,12 +399,10 @@ function generateReport(results) {
   fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
   
   // Exibir resumo
-  console.log('📊 RESUMO DA PERFORMANCE');
-  console.log('═'.repeat(50));
-  console.log(`${colors.green}✅ Passou:${colors.reset} ${report.summary.passed}`);
-  console.log(`${colors.yellow}⚠️  Avisos:${colors.reset} ${report.summary.warnings}`);
-  console.log(`${colors.red}❌ Falhou:${colors.reset} ${report.summary.failed}`);
-  console.log('═'.repeat(50));
+
+  );
+
+  );
   
   if (report.summary.failed > 0) {
     log.error('\n❌ O app não atende aos critérios de performance!');

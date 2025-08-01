@@ -121,7 +121,7 @@ class BundleAnalyzer {
     };
 
     // Verificar se é um módulo conhecido
-    for (const [module, size] of Object.entries(sizeEstimates)) {
+    for (const [module, _size] of Object.entries(sizeEstimates)) {
       if (moduleName.includes(module)) {
         return size;
       }
@@ -205,7 +205,7 @@ class BundleAnalyzer {
    */
   generateBundleReport(): BundleMetrics {
     const chunks = this.analyzeAsyncChunks();
-    const totalSize = chunks.reduce((sum, chunk) => sum + chunk.size, 0);
+    const totalSize = chunks.reduce((sum, chunk) => sum + chunk._size, 0);
     
     return {
       totalSize,
@@ -284,7 +284,7 @@ class BundleAnalyzer {
     }
 
     // Chunks grandes
-    const largeChunks = report.chunks.filter(chunk => chunk.size > 200000);
+    const largeChunks = report.chunks.filter(chunk => chunk._size > 200000);
     if (largeChunks.length > 0) {
       optimizations.push({
         type: 'chunk-optimization',
@@ -333,9 +333,9 @@ export function measurePerformance(target: any, propertyName: string, descriptor
     const measurementName = `${target.constructor.name}.${propertyName}`;
     bundleAnalyzer.startMeasurement(measurementName);
     
-    const result = method.apply(this, args);
+    const _result = method.apply(this, args);
     
-    if (result instanceof Promise) {
+    if (_result instanceof Promise) {
       return result.finally(() => {
         const duration = bundleAnalyzer.endMeasurement(measurementName);
         logger.debug(`${measurementName} took ${duration}ms`);

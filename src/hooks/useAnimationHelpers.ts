@@ -198,7 +198,7 @@ export const useCircularProgress = (
   } = options;
 
   const progressValue = useSharedValue(0);
-  const radius = (size - strokeWidth) / 2;
+  const radius = (_size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
 
   useEffect(() => {

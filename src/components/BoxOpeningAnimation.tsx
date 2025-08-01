@@ -59,8 +59,8 @@ const BoxOpeningAnimation: React.FC<BoxOpeningAnimationProps> = ({
    * Start particle explosion animation
    */
   const startParticleAnimation = useCallback(() => {
-    const animations = particleAnims.map((particle, index) => {
-      const angle = (index * 45) * (Math.PI / 180); // 45 degrees apart
+    const animations = particleAnims.map((particle, _index) => {
+      const angle = (_index * 45) * (Math.PI / 180); // 45 degrees apart
       const distance = 100;
       
       return Animated.sequence([
@@ -187,9 +187,9 @@ const BoxOpeningAnimation: React.FC<BoxOpeningAnimationProps> = ({
       {/* Particles */}
       {animationState === 'opening' && (
         <View style={styles.particlesContainer}>
-          {particleAnims.map((particle, index) => (
+          {particleAnims.map((particle, _index) => (
             <Animated.View
-              key={index}
+              key={0}
               style={[
                 styles.particle,
                 {

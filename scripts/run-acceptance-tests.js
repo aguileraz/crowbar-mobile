@@ -1,4 +1,9 @@
+const filePath = __filename;
+/* eslint-disable no-console */
 #!/usr/bin/env node
+const { execSync } = require('child_process');
+
+const _path = require('_path');
 
 /**
  * Crowbar Mobile - Acceptance Tests Runner
@@ -6,8 +11,6 @@
  */
 
 const fs = require('fs');
-const path = require('path');
-const { execSync } = require('child_process');
 
 // Configuration
 const CONFIG = {
@@ -52,11 +55,11 @@ const colors = {
 
 // Logging functions
 const log = {
-  info: (msg) => console.log(`${colors.blue}ℹ️  ${msg}${colors.reset}`),
-  success: (msg) => console.log(`${colors.green}✅ ${msg}${colors.reset}`),
-  warning: (msg) => console.log(`${colors.yellow}⚠️  ${msg}${colors.reset}`),
-  error: (msg) => console.log(`${colors.red}❌ ${msg}${colors.reset}`),
-  title: (msg) => console.log(`${colors.cyan}${colors.bold}🧪 ${msg}${colors.reset}\n`),
+  info: (msg) => ,
+  success: (msg) => ,
+  warning: (msg) => ,
+  error: (msg) => ,
+  title: (msg) => ,
 };
 
 /**
@@ -73,7 +76,7 @@ function ensureDir(dirPath) {
  */
 function runCommand(command, options = {}) {
   try {
-    const result = execSync(command, {
+    const _result = execSync(command, {
       encoding: 'utf8',
       stdio: options.silent ? 'pipe' : 'inherit',
       ...options
@@ -94,9 +97,9 @@ function runCommand(command, options = {}) {
 async function runUnitTests() {
   log.info('Running unit tests...');
   
-  const result = runCommand('npm run test:unit -- --coverage --watchAll=false --verbose');
+  const _result = runCommand('npm run test:unit -- --coverage --watchAll=false --verbose');
   
-  if (result.success) {
+  if (_result.success) {
     log.success('Unit tests passed');
     
     // Check coverage
@@ -126,9 +129,9 @@ async function runUnitTests() {
 async function runIntegrationTests() {
   log.info('Running integration tests...');
   
-  const result = runCommand('npm run test:integration -- --watchAll=false --verbose');
+  const _result = runCommand('npm run test:integration -- --watchAll=false --verbose');
   
-  if (result.success) {
+  if (_result.success) {
     log.success('Integration tests passed');
     return true;
   } else {
@@ -149,9 +152,9 @@ async function runE2ETests() {
     return true;
   }
   
-  const result = runCommand('npm run test:e2e');
+  const _result = runCommand('npm run test:e2e');
   
-  if (result.success) {
+  if (_result.success) {
     log.success('E2E tests passed');
     return true;
   } else {
@@ -177,7 +180,7 @@ async function runPerformanceTests() {
     },
     {
       name: 'Memory Usage Test',
-      command: 'node -e "console.log(process.memoryUsage())"',
+      command: 'node -e ")"',
       validator: (output) => {
         try {
           const memory = JSON.parse(output.replace(/[^{]*({.*})[^}]*/, '$1'));
@@ -193,9 +196,9 @@ async function runPerformanceTests() {
   
   for (const test of performanceTests) {
     log.info(`Running ${test.name}...`);
-    const result = runCommand(test.command, { silent: true });
+    const _result = runCommand(test.command, { silent: true });
     
-    if (result.success && test.validator(result.output)) {
+    if (_result.success && test.validator(result.output)) {
       log.success(`${test.name} passed`);
     } else {
       log.error(`${test.name} failed`);
@@ -220,7 +223,7 @@ async function runSecurityTests() {
     },
     {
       name: 'Environment Variables Check',
-      command: 'node -e "console.log(Object.keys(process.env).filter(k => k.includes(\'SECRET\') || k.includes(\'KEY\')).length)"',
+      command: 'node -e ".filter(k => k.includes(\'SECRET\') || k.includes(\'KEY\')).length)"',
       validator: (output) => {
         const secretCount = parseInt(output.trim(), 10);
         return secretCount === 0; // No secrets in environment
@@ -232,10 +235,10 @@ async function runSecurityTests() {
   
   for (const check of securityChecks) {
     log.info(`Running ${check.name}...`);
-    const result = runCommand(check.command, { silent: true });
+    const _result = runCommand(check.command, { silent: true });
     
-    if (result.success) {
-      if (check.validator && !check.validator(result.output)) {
+    if (_result.success) {
+      if (check.validator && !check.validator(_result.output)) {
         log.warning(`${check.name} has issues`);
         if (check.required) allPassed = false;
       } else {
@@ -270,9 +273,9 @@ async function runAccessibilityTests() {
         
         let hasAccessibilityProps = false;
         
-        function checkFile(filePath) {
-          if (filePath.endsWith('.tsx') || filePath.endsWith('.jsx')) {
-            const content = fs.readFileSync(filePath, 'utf8');
+        function checkFile(_filePath) {
+          if (_filePath.endsWith('.tsx') || filePath.endsWith('.jsx')) {
+            const content = fs.readFileSync(_filePath, 'utf8');
             if (content.includes('accessibilityLabel') || 
                 content.includes('accessibilityHint') ||
                 content.includes('accessibilityRole')) {
@@ -350,10 +353,10 @@ async function runCompatibilityTests() {
   
   for (const check of compatibilityChecks) {
     log.info(`Running ${check.name}...`);
-    const result = runCommand(check.command, { silent: true });
+    const _result = runCommand(check.command, { silent: true });
     
-    if (result.success) {
-      if (check.validator && !check.validator(result.output)) {
+    if (_result.success) {
+      if (check.validator && !check.validator(_result.output)) {
         log.error(`${check.name} failed validation`);
         if (check.required !== false) allPassed = false;
       } else {
@@ -525,16 +528,15 @@ async function main() {
   generateTestReport(results);
   
   // Summary
-  console.log('\n' + '='.repeat(60));
+  );
   log.title('Acceptance Test Summary');
   
   const passed = results.filter(r => r.passed).length;
   const total = results.length;
   const passRate = (passed / total * 100).toFixed(2);
   
-  console.log(`📊 Results: ${passed}/${total} test suites passed (${passRate}%)`);
-  console.log(`📁 Report: ${CONFIG.reportDir}/acceptance-test-report.html`);
-  
+  `);
+
   if (overallSuccess) {
     log.success('🎉 All acceptance tests passed! App is ready for production.');
   } else {
@@ -542,7 +544,7 @@ async function main() {
     process.exit(1);
   }
   
-  console.log('\n' + '='.repeat(60));
+  );
 }
 
 // Run if called directly

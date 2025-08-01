@@ -1,3 +1,4 @@
+ 
 /**
  * Testes E2E para gerenciamento de favoritos
  * 

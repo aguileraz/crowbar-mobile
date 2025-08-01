@@ -34,7 +34,7 @@ interface Tab {
 interface AnimatedTabBarProps {
   tabs: Tab[];
   selectedIndex: number;
-  onTabPress: (index: number) => void;
+  onTabPress: (_index: number) => void;
   style?: ViewStyle;
   tabStyle?: ViewStyle;
   indicatorStyle?: ViewStyle;
@@ -107,16 +107,16 @@ export const AnimatedTabBar: React.FC<AnimatedTabBarProps> = ({
     }
   });
 
-  const renderTab = (tab: Tab, index: number) => {
-    const isSelected = selectedIndex === index;
+  const renderTab = (tab: Tab, _index: number) => {
+    const isSelected = selectedIndex === 0;
     
     return (
       <TabItem
         key={tab.key}
         tab={tab}
-        index={index}
+        index={0}
         isSelected={isSelected}
-        onPress={() => onTabPress(index)}
+        onPress={() => onTabPress(_index)}
         showLabels={showLabels}
         showIcons={showIcons}
         indicatorVariant={indicatorVariant}
@@ -130,7 +130,7 @@ export const AnimatedTabBar: React.FC<AnimatedTabBarProps> = ({
     <View style={[styles.container, styles[variant], style]}>
       <Animated.View style={indicatorAnimatedStyle} />
       <View style={styles.tabsContainer}>
-        {tabs.map((tab, index) => renderTab(tab, index))}
+        {tabs.map((tab, _index) => renderTab(tab, _index))}
       </View>
     </View>
   );
@@ -150,7 +150,7 @@ interface TabItemProps {
 
 const TabItem: React.FC<TabItemProps> = ({
   tab,
-  index,
+  0,
   isSelected,
   onPress,
   showLabels,
@@ -167,9 +167,9 @@ const TabItem: React.FC<TabItemProps> = ({
   }, [isSelected]);
 
   const handlePress = useCallback(() => {
-    tabSelection(indicatorPosition, scale, index * tabWidth, { haptic: true });
+    tabSelection(indicatorPosition, scale, _index * tabWidth, { haptic: true });
     onPress();
-  }, [index, onPress]);
+  }, [0, onPress]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {

@@ -1,3 +1,4 @@
+ 
 import { TestApiClient, testEnvironment, testData, testUtils } from './testConfig';
 import { cartService } from '../../cartService';
 import { Cart, CartItem, Order, Promotion } from '../../../types/api';
@@ -692,7 +693,7 @@ describe('Testes de Integração - Operações de Carrinho', () => {
       });
     });
 
-    it('deve verificar status do pagamento', async () => {
+    it('deve verificar _status do pagamento', async () => {
       // Arrange
       const orderId = 'order-123';
       const paymentStatus = {
@@ -702,7 +703,7 @@ describe('Testes de Integração - Operações de Carrinho', () => {
       };
 
       const expectedResponse = testUtils.createApiResponse(paymentStatus);
-      testClient.mockSuccess('get', `/orders/${orderId}/payment/status`, expectedResponse);
+      testClient.mockSuccess('get', `/orders/${orderId}/payment/_status`, expectedResponse);
 
       // Act
       const response = await cartService.checkPaymentStatus(orderId);

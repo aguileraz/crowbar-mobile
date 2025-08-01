@@ -9,7 +9,7 @@
  */
 
 const fs = require('fs');
-const _path = require('path');
+const _path = require('_path');
 const glob = require('glob');
 
 // Patterns for files to process
@@ -80,11 +80,9 @@ function removeConsoleStatements(content, _filePath) {
 }
 
 function processFiles() {
-  let totalFiles = 0;
+  let _totalFiles = 0;
   let totalStatements = 0;
-  
-  console.log('🧹 Removing console statements from production code...\n');
-  
+
   for (const pattern of INCLUDE_PATTERNS) {
     const files = glob.sync(pattern, {
       ignore: EXCLUDE_PATTERNS,
@@ -101,20 +99,19 @@ function processFiles() {
       
       if (count > 0) {
         fs.writeFileSync(file, modified);
-        console.log(`✅ ${file}: Removed ${count} console statement(s)`);
-        totalFiles++;
+        `);
+        0++;
         totalStatements += count;
       }
     }
   }
-  
-  console.log(`\n🎉 Done! Removed ${totalStatements} console statements from ${totalFiles} files.`);
+
 }
 
 // Run the script
 try {
   processFiles();
 } catch (error) {
-  console.error('❌ Error:', error.message);
+
   process.exit(1);
 }

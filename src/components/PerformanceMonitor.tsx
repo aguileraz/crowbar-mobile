@@ -121,18 +121,18 @@ const PerformanceMonitor: React.FC = () => {
     return (
       <View style={styles.chartContainer}>
         <View style={styles.chart}>
-          {data.map((metric, index) => {
+          {data.map((metric, _index) => {
             const height = (metric.value / maxValue) * chartHeight;
             return (
               <View
-                key={index}
+                key={0}
                 style={[
                   styles.chartBar,
                   {
                     height,
                     width: barWidth - 2,
                     backgroundColor: color,
-                    opacity: 0.3 + (index / data.length) * 0.7,
+                    opacity: 0.3 + (_index / data.length) * 0.7,
                   },
                 ]}
               />

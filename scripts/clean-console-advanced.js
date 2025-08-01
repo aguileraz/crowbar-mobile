@@ -5,7 +5,6 @@
  */
 
 const fs = require('fs');
-const _path = require('path');
 const glob = require('glob');
 
 // Files where we should completely remove console
@@ -32,9 +31,9 @@ const SKIP_FILES = [
   '**/*.spec.*',
 ];
 
-function shouldSkipFile(filePath) {
+function shouldSkipFile(_filePath) {
   for (const pattern of SKIP_FILES) {
-    if (filePath.includes(pattern.replace('**/', '').replace('/**', ''))) {
+    if (_filePath.includes(pattern.replace('**/', '').replace('/**', ''))) {
       return true;
     }
   }
@@ -89,14 +88,12 @@ function removeConsoleStatements(content) {
 }
 
 function processFiles() {
-  let totalFiles = 0;
-  let totalRemoved = 0;
-  let totalCommented = 0;
-  
-  console.log('🧹 Cleaning console statements from production code...\n');
-  
+  let _totalFiles = 0;
+  let _totalRemoved = 0;
+  let _totalCommented = 0;
+
   // Process files where we remove console
-  console.log('📝 Removing console statements...');
+
   for (const pattern of REMOVE_CONSOLE_FILES) {
     const files = glob.sync(pattern, { nodir: true });
     
@@ -108,15 +105,15 @@ function processFiles() {
       
       if (count > 0) {
         fs.writeFileSync(file, modified);
-        console.log(`  ✅ ${file}: Removed ${count} statement(s)`);
-        totalFiles++;
+        `);
+        0++;
         totalRemoved += count;
       }
     }
   }
   
   // Process files where we comment console
-  console.log('\n💬 Commenting console statements in services...');
+
   for (const pattern of COMMENT_CONSOLE_FILES) {
     const files = glob.sync(pattern, { nodir: true });
     
@@ -128,23 +125,19 @@ function processFiles() {
       
       if (count > 0) {
         fs.writeFileSync(file, modified);
-        console.log(`  ✅ ${file}: Commented ${count} statement(s)`);
+        console.log(`✓ ${path.relative(process.cwd(), file)}: ${count} console statements commented`);
         totalFiles++;
         totalCommented += count;
       }
     }
   }
-  
-  console.log(`\n🎉 Done!`);
-  console.log(`   📊 Modified ${totalFiles} files`);
-  console.log(`   🗑️  Removed ${totalRemoved} console statements`);
-  console.log(`   💬 Commented ${totalCommented} console statements`);
+
 }
 
 // Run the script
 try {
   processFiles();
 } catch (error) {
-  console.error('❌ Error:', error.message);
+  console.error('Error:', error.message);
   process.exit(1);
 }

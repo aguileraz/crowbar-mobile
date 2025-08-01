@@ -31,7 +31,7 @@ export const useOffline = () => {
   const sync = useCallback(
     async (force = false) => {
       try {
-        const result = await dispatch(syncOfflineData(force)).unwrap();
+        const _result = await dispatch(syncOfflineData(force)).unwrap();
         return result;
       } catch (error) {
         logger.error('Erro ao sincronizar:', error);
@@ -125,13 +125,13 @@ export const useOfflineCache = <T>(
     setError(null);
 
     try {
-      const result = await offlineService.getCachedData(
+      const _result = await offlineService.getCachedData(
         key,
         strategy,
         fetcher
       );
       
-      setData(result);
+      setData(_result);
       return result;
     } catch (err) {
       setError(err as Error);
@@ -228,7 +228,7 @@ export const useOfflineAction = <T = any>(
   options?: {
     priority?: SyncPriority;
     optimisticUpdate?: (data: any) => void;
-    onSuccess?: (result: T) => void;
+    onSuccess?: (_result: T) => void;
     onError?: (error: Error) => void;
   }
 ) => {
@@ -257,8 +257,8 @@ export const useOfflineAction = <T = any>(
 
         if (isOnline) {
           // Executar ação imediatamente
-          const result = await executor(data);
-          if (onSuccess) onSuccess(result);
+          const _result = await executor(data);
+          if (onSuccess) onSuccess(_result);
           return result;
         } else {
           // Adicionar à fila offline
@@ -342,7 +342,7 @@ export const useOfflineDiffSync = <T extends { id?: string; _id?: string }>(
  * Hook específico para dados de boxes offline
  */
 export const useOfflineBoxes = () => {
-  const { data, loading, error, fetch } = useOfflineCache(
+  const {data, loading, error: _error, fetch} = useOfflineCache(
     'offline_boxes',
     async () => {
       // Simular chamada para API
@@ -368,7 +368,7 @@ export const useOfflineBoxes = () => {
  * Hook específico para carrinho offline
  */
 export const useOfflineCart = () => {
-  const { addOfflineAction: _addOfflineAction } = useOffline();
+  const {addOfflineAction: _addOfflineAction} = useOffline();
   
   const addToCart = useOfflineAction(
     'ADD_TO_CART',
@@ -412,7 +412,7 @@ export const useOfflineCart = () => {
  * Hook específico para perfil offline
  */
 export const useOfflineProfile = () => {
-  const { data, loading, error, fetch } = useOfflineCache(
+  const {data, loading, error: _error, fetch} = useOfflineCache(
     'offline_user_profile',
     async () => {
       // Simular busca de perfil

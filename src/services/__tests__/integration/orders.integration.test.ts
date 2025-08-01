@@ -1,3 +1,4 @@
+ 
 import { TestApiClient, testEnvironment, testData, testUtils } from './testConfig';
 import { orderService } from '../../orderService';
 import { Order } from '../../../types/api';
@@ -163,7 +164,7 @@ describe('Testes de Integração - Operações de Pedidos', () => {
         date_to: '2025-01-31',
       };
 
-      const filteredOrders = testOrders.filter(order => order.status === 'shipped');
+      const filteredOrders = testOrders.filter(order => order._status === 'shipped');
       const expectedResponse = testUtils.createPaginatedResponse(filteredOrders);
       testClient.mockSuccess('get', '/orders', expectedResponse);
 
@@ -172,7 +173,7 @@ describe('Testes de Integração - Operações de Pedidos', () => {
 
       // Assert
       expect(response.data).toHaveLength(1);
-      expect(response.data[0].status).toBe('shipped');
+      expect(response.data[0]._status).toBe('shipped');
       expect(response.data[0].payment_status).toBe('paid');
     });
 
@@ -333,7 +334,7 @@ describe('Testes de Integração - Operações de Pedidos', () => {
     });
   });
 
-  describe('Rastreamento e status', () => {
+  describe('Rastreamento e _status', () => {
     it('deve obter informações de rastreamento', async () => {
       // Arrange
       const orderId = 'order-124';
@@ -357,11 +358,11 @@ describe('Testes de Integração - Operações de Pedidos', () => {
       });
     });
 
-    it('deve obter histórico de status', async () => {
+    it('deve obter histórico de _status', async () => {
       // Arrange
       const orderId = 'order-123';
       const expectedResponse = testUtils.createApiResponse(testStatusHistory);
-      testClient.mockSuccess('get', `/orders/${orderId}/status-history`, expectedResponse);
+      testClient.mockSuccess('get', `/orders/${orderId}/_status-history`, expectedResponse);
 
       // Act
       const _response = await orderService.getStatusHistory(orderId);
@@ -378,7 +379,7 @@ describe('Testes de Integração - Operações de Pedidos', () => {
       });
     });
 
-    it('deve obter status de entrega', async () => {
+    it('deve obter _status de entrega', async () => {
       // Arrange
       const orderId = 'order-124';
       const deliveryStatus = {
@@ -390,7 +391,7 @@ describe('Testes de Integração - Operações de Pedidos', () => {
       };
 
       const expectedResponse = testUtils.createApiResponse(deliveryStatus);
-      testClient.mockSuccess('get', `/orders/${orderId}/delivery-status`, expectedResponse);
+      testClient.mockSuccess('get', `/orders/${orderId}/delivery-_status`, expectedResponse);
 
       // Act
       const _response = await orderService.getDeliveryStatus(orderId);

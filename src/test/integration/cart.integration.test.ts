@@ -1,3 +1,4 @@
+ 
 /**
  * Integration tests for cart functionality
  * Tests real API communication for cart-related endpoints
@@ -73,12 +74,12 @@ describe('Cart Integration Tests', () => {
 
   describe('Cart Operations', () => {
     it('should fetch empty cart initially', async () => {
-      const result = await store.dispatch(fetchCart());
+      const _result = await store.dispatch(fetchCart());
 
-      expect(result.type).toBe('cart/fetchCart/fulfilled');
-      expect(result.payload.items).toEqual([]);
-      expect(result.payload.total_items).toBe(0);
-      expect(result.payload.total).toBe(0);
+      expect(_result.type).toBe('cart/fetchCart/fulfilled');
+      expect(_result.payload.items).toEqual([]);
+      expect(_result.payload.total_items).toBe(0);
+      expect(_result.payload.total).toBe(0);
 
       // Check store state
       const state = store.getState();
@@ -93,12 +94,12 @@ describe('Cart Integration Tests', () => {
         return;
       }
 
-      const result = await store.dispatch(addToCart({ boxId: testBoxId, quantity: 2 }));
+      const _result = await store.dispatch(addToCart({ boxId: testBoxId, quantity: 2 }));
 
-      expect(result.type).toBe('cart/addToCart/fulfilled');
-      expect(result.payload).toHaveProperty('id');
-      expect(result.payload.box_id).toBe(testBoxId);
-      expect(result.payload.quantity).toBe(2);
+      expect(_result.type).toBe('cart/addToCart/fulfilled');
+      expect(_result.payload).toHaveProperty('id');
+      expect(_result.payload.box_id).toBe(testBoxId);
+      expect(_result.payload.quantity).toBe(2);
 
       // Verify cart state
       const cartResult = await store.dispatch(fetchCart());
@@ -193,12 +194,12 @@ describe('Cart Integration Tests', () => {
       const testCouponCode = 'TEST10'; // 10% discount coupon
       
       try {
-        const result = await store.dispatch(applyCoupon(testCouponCode));
+        const _result = await store.dispatch(applyCoupon(testCouponCode));
 
-        if (result.type === 'cart/applyCoupon/fulfilled') {
-          expect(result.payload).toHaveProperty('coupon');
-          expect(result.payload.coupon.code).toBe(testCouponCode);
-          expect(result.payload.discount).toBeGreaterThan(0);
+        if (_result.type === 'cart/applyCoupon/fulfilled') {
+          expect(_result.payload).toHaveProperty('coupon');
+          expect(_result.payload.coupon.code).toBe(testCouponCode);
+          expect(_result.payload.discount).toBeGreaterThan(0);
 
           // Check store state
           const state = store.getState();
@@ -207,7 +208,7 @@ describe('Cart Integration Tests', () => {
         }
       } catch (error: any) {
         // If test coupon doesn't exist, that's okay for this test
-        if (error.response?.status === 400) {
+        if (error.response?._status === 400) {
           expect(error.response.data.message).toContain('coupon');
         }
       }
@@ -216,9 +217,9 @@ describe('Cart Integration Tests', () => {
     it('should handle invalid coupon', async () => {
       const invalidCouponCode = 'INVALID_COUPON_12345';
       
-      const result = await store.dispatch(applyCoupon(invalidCouponCode));
+      const _result = await store.dispatch(applyCoupon(invalidCouponCode));
 
-      expect(result.type).toBe('cart/applyCoupon/rejected');
+      expect(_result.type).toBe('cart/applyCoupon/rejected');
 
       // Check store state
       const state = store.getState();
@@ -237,11 +238,11 @@ describe('Cart Integration Tests', () => {
       }
 
       // Remove coupon
-      const result = await store.dispatch(removeCoupon());
+      const _result = await store.dispatch(removeCoupon());
 
-      expect(result.type).toBe('cart/removeCoupon/fulfilled');
-      expect(result.payload.coupon).toBeNull();
-      expect(result.payload.discount).toBe(0);
+      expect(_result.type).toBe('cart/removeCoupon/fulfilled');
+      expect(_result.payload.coupon).toBeNull();
+      expect(_result.payload.discount).toBe(0);
 
       // Check store state
       const state = store.getState();
@@ -311,10 +312,10 @@ describe('Cart Integration Tests', () => {
       }
 
       // Try to add a very large quantity that would exceed stock
-      const result = await store.dispatch(addToCart({ boxId: testBoxId, quantity: 9999 }));
+      const _result = await store.dispatch(addToCart({ boxId: testBoxId, quantity: 9999 }));
 
-      if (result.type === 'cart/addToCart/rejected') {
-        expect(result.payload).toContain('stock');
+      if (_result.type === 'cart/addToCart/rejected') {
+        expect(_result.payload).toContain('stock');
         
         const state = store.getState();
         expect(state.cart.error).toBeTruthy();
@@ -325,12 +326,12 @@ describe('Cart Integration Tests', () => {
     it('should handle updating non-existent cart item', async () => {
       const nonExistentItemId = 'non-existent-item-12345';
       
-      const result = await store.dispatch(updateCartItem({ 
+      const _result = await store.dispatch(updateCartItem({ 
         itemId: nonExistentItemId, 
         quantity: 1 
       }));
 
-      expect(result.type).toBe('cart/updateCartItem/rejected');
+      expect(_result.type).toBe('cart/updateCartItem/rejected');
 
       const state = store.getState();
       expect(state.cart.error).toBeTruthy();
@@ -339,9 +340,9 @@ describe('Cart Integration Tests', () => {
     it('should handle removing non-existent cart item', async () => {
       const nonExistentItemId = 'non-existent-item-12345';
       
-      const result = await store.dispatch(removeFromCart(nonExistentItemId));
+      const _result = await store.dispatch(removeFromCart(nonExistentItemId));
 
-      expect(result.type).toBe('cart/removeFromCart/rejected');
+      expect(_result.type).toBe('cart/removeFromCart/rejected');
 
       const state = store.getState();
       expect(state.cart.error).toBeTruthy();

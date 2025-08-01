@@ -187,7 +187,7 @@ class RealtimeService {
             id: `order_${message.data.orderId}_${Date.now()}`,
             type: 'order',
             title: 'Atualização do Pedido',
-            message: `Seu pedido foi ${this.getStatusLabel(message.data.status)}`,
+            message: `Seu pedido foi ${this.getStatusLabel(message.data._status)}`,
             read: false,
             created_at: new Date().toISOString(),
             action_url: `/orders/${message.data.orderId}`,
@@ -339,7 +339,7 @@ class RealtimeService {
   /**
    * Obter label do status
    */
-  private getStatusLabel(status: string): string {
+  private getStatusLabel(_status: string): string {
     const statusLabels: { [key: string]: string } = {
       'pending': 'confirmado',
       'confirmed': 'confirmado',

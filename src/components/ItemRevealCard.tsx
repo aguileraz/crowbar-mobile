@@ -27,7 +27,7 @@ interface ItemRevealCardProps {
 
 const ItemRevealCard: React.FC<ItemRevealCardProps> = ({
   item,
-  index,
+  0,
   style,
 }) => {
   // Animation refs
@@ -48,8 +48,8 @@ const ItemRevealCard: React.FC<ItemRevealCardProps> = ({
    * Start reveal animation
    */
   const startRevealAnimation = useCallback(() => {
-    // Delay based on index for staggered effect
-    const delay = index * 200;
+    // Delay based on 0 for staggered effect
+    const delay = 0 * 200;
     
     Animated.sequence([
       Animated.delay(delay),
@@ -93,7 +93,7 @@ const ItemRevealCard: React.FC<ItemRevealCardProps> = ({
         )
       ] : []),
     ]).start();
-  }, [index, fadeAnim, rotateAnim, glowAnim, scaleAnim, isRareItem]);
+  }, [0, fadeAnim, rotateAnim, glowAnim, scaleAnim, isRareItem]);
 
   // Start reveal animation on mount
   useEffect(() => {

@@ -238,8 +238,8 @@ const BoxCard: React.FC<BoxCardProps> = ({
           {/* Tags (apenas para list) */}
           {variant === 'list' && box.tags.length > 0 && (
             <View style={styles.tags}>
-              {box.tags.slice(0, 3).map((tag, index) => (
-                <Chip key={index} mode="outlined" compact style={styles.tag}>
+              {box.tags.slice(0, 3).map((tag, _index) => (
+                <Chip key={0} mode="outlined" compact style={styles.tag}>
                   {tag}
                 </Chip>
               ))}

@@ -1,3 +1,4 @@
+ 
 import { orderService } from '../orderService';
 import { httpClient } from '../httpClient';
 import { Order, PaginatedResponse } from '../../types/api';
@@ -34,10 +35,10 @@ describe('OrderService', () => {
       (httpClient.get as jest.Mock).mockResolvedValue({ data: mockResponse });
 
       // Executar
-      const result = await orderService.getOrders();
+      const _result = await orderService.getOrders();
 
       // Verificar
-      expect(result).toEqual(mockResponse);
+      expect(_result).toEqual(mockResponse);
       expect(httpClient.get).toHaveBeenCalledWith('/orders', {
         params: {
           page: 1,
@@ -63,10 +64,10 @@ describe('OrderService', () => {
         end_date: '2025-01-31',
       };
       
-      const result = await orderService.getOrders(2, 10, filters);
+      const _result = await orderService.getOrders(2, 10, filters);
 
       // Verificar
-      expect(result).toEqual(mockResponse);
+      expect(_result).toEqual(mockResponse);
       expect(httpClient.get).toHaveBeenCalledWith('/orders', {
         params: {
           page: 2,
@@ -119,10 +120,10 @@ describe('OrderService', () => {
       (httpClient.get as jest.Mock).mockResolvedValue({ data: mockOrder });
 
       // Executar
-      const result = await orderService.getOrderById('order-123');
+      const _result = await orderService.getOrderById('order-123');
 
       // Verificar
-      expect(result).toEqual(mockOrder);
+      expect(_result).toEqual(mockOrder);
       expect(httpClient.get).toHaveBeenCalledWith('/orders/order-123');
     });
 
@@ -144,10 +145,10 @@ describe('OrderService', () => {
       (httpClient.post as jest.Mock).mockResolvedValue({ data: mockCancelledOrder });
 
       // Executar
-      const result = await orderService.cancelOrder('order-123');
+      const _result = await orderService.cancelOrder('order-123');
 
       // Verificar
-      expect(result).toEqual(mockCancelledOrder);
+      expect(_result).toEqual(mockCancelledOrder);
       expect(httpClient.post).toHaveBeenCalledWith('/orders/order-123/cancel', {
         reason: undefined,
       });
@@ -163,10 +164,10 @@ describe('OrderService', () => {
       (httpClient.post as jest.Mock).mockResolvedValue({ data: mockCancelledOrder });
 
       // Executar
-      const result = await orderService.cancelOrder('order-123', 'Produto indisponível');
+      const _result = await orderService.cancelOrder('order-123', 'Produto indisponível');
 
       // Verificar
-      expect(result).toEqual(mockCancelledOrder);
+      expect(_result).toEqual(mockCancelledOrder);
       expect(httpClient.post).toHaveBeenCalledWith('/orders/order-123/cancel', {
         reason: 'Produto indisponível',
       });
@@ -191,10 +192,10 @@ describe('OrderService', () => {
       (httpClient.post as jest.Mock).mockResolvedValue({ data: mockResponse });
 
       // Executar
-      const result = await orderService.reorderOrder('order-123');
+      const _result = await orderService.reorderOrder('order-123');
 
       // Verificar
-      expect(result).toEqual(mockResponse);
+      expect(_result).toEqual(mockResponse);
       expect(httpClient.post).toHaveBeenCalledWith('/orders/order-123/reorder');
     });
 
@@ -230,10 +231,10 @@ describe('OrderService', () => {
       (httpClient.get as jest.Mock).mockResolvedValue({ data: mockTrackingInfo });
 
       // Executar
-      const result = await orderService.trackOrder('order-123');
+      const _result = await orderService.trackOrder('order-123');
 
       // Verificar
-      expect(result).toEqual(mockTrackingInfo);
+      expect(_result).toEqual(mockTrackingInfo);
       expect(httpClient.get).toHaveBeenCalledWith('/orders/order-123/tracking');
     });
 
@@ -255,10 +256,10 @@ describe('OrderService', () => {
       (httpClient.post as jest.Mock).mockResolvedValue({ data: mockRatedOrder });
 
       // Executar
-      const result = await orderService.rateOrder('order-123', 5);
+      const _result = await orderService.rateOrder('order-123', 5);
 
       // Verificar
-      expect(result).toEqual(mockRatedOrder);
+      expect(_result).toEqual(mockRatedOrder);
       expect(httpClient.post).toHaveBeenCalledWith('/orders/order-123/rate', {
         rating: 5,
         review: undefined,
@@ -275,10 +276,10 @@ describe('OrderService', () => {
       (httpClient.post as jest.Mock).mockResolvedValue({ data: mockRatedOrder });
 
       // Executar
-      const result = await orderService.rateOrder('order-123', 4, 'Ótimo produto, entrega rápida!');
+      const _result = await orderService.rateOrder('order-123', 4, 'Ótimo produto, entrega rápida!');
 
       // Verificar
-      expect(result).toEqual(mockRatedOrder);
+      expect(_result).toEqual(mockRatedOrder);
       expect(httpClient.post).toHaveBeenCalledWith('/orders/order-123/rate', {
         rating: 4,
         review: 'Ótimo produto, entrega rápida!',
@@ -314,10 +315,10 @@ describe('OrderService', () => {
       (httpClient.get as jest.Mock).mockResolvedValue({ data: mockStatistics });
 
       // Executar
-      const result = await orderService.getOrderStatistics();
+      const _result = await orderService.getOrderStatistics();
 
       // Verificar
-      expect(result).toEqual(mockStatistics);
+      expect(_result).toEqual(mockStatistics);
       expect(httpClient.get).toHaveBeenCalledWith('/orders/statistics');
     });
   });
@@ -333,10 +334,10 @@ describe('OrderService', () => {
       (httpClient.post as jest.Mock).mockResolvedValue({ data: mockInvoiceResponse });
 
       // Executar
-      const result = await orderService.generateInvoice('order-123');
+      const _result = await orderService.generateInvoice('order-123');
 
       // Verificar
-      expect(result).toEqual(mockInvoiceResponse);
+      expect(_result).toEqual(mockInvoiceResponse);
       expect(httpClient.post).toHaveBeenCalledWith('/orders/order-123/invoice');
     });
 
@@ -362,10 +363,10 @@ describe('OrderService', () => {
       });
 
       // Executar
-      const result = await orderService.downloadReceipt('order-123');
+      const _result = await orderService.downloadReceipt('order-123');
 
       // Verificar
-      expect(result).toBe(mockUrl);
+      expect(_result).toBe(mockUrl);
       expect(httpClient.get).toHaveBeenCalledWith('/orders/order-123/receipt', {
         responseType: 'blob',
       });
@@ -391,10 +392,10 @@ describe('OrderService', () => {
       (httpClient.post as jest.Mock).mockResolvedValue({ data: mockResponse });
 
       // Executar
-      const result = await orderService.reportIssue('order-123', 'damaged', 'Produto chegou danificado');
+      const _result = await orderService.reportIssue('order-123', 'damaged', 'Produto chegou danificado');
 
       // Verificar
-      expect(result).toEqual(mockResponse);
+      expect(_result).toEqual(mockResponse);
       expect(httpClient.post).toHaveBeenCalledWith('/orders/order-123/report-issue', {
         issueType: 'damaged',
         description: 'Produto chegou danificado',
@@ -412,7 +413,7 @@ describe('OrderService', () => {
       (httpClient.post as jest.Mock).mockResolvedValue({ data: mockResponse });
 
       // Executar
-      const result = await orderService.reportIssue(
+      const _result = await orderService.reportIssue(
         'order-123', 
         'wrong_item', 
         'Recebi produto errado',
@@ -420,7 +421,7 @@ describe('OrderService', () => {
       );
 
       // Verificar
-      expect(result).toEqual(mockResponse);
+      expect(_result).toEqual(mockResponse);
       expect(httpClient.post).toHaveBeenCalledWith('/orders/order-123/report-issue', {
         issueType: 'wrong_item',
         description: 'Recebi produto errado',
@@ -453,10 +454,10 @@ describe('OrderService', () => {
       (httpClient.get as jest.Mock).mockResolvedValue({ data: mockUpdates });
 
       // Executar
-      const result = await orderService.getOrderUpdates('order-123');
+      const _result = await orderService.getOrderUpdates('order-123');
 
       // Verificar
-      expect(result).toEqual(mockUpdates);
+      expect(_result).toEqual(mockUpdates);
       expect(httpClient.get).toHaveBeenCalledWith('/orders/order-123/updates');
     });
   });

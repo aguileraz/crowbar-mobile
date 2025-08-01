@@ -90,7 +90,7 @@ export const OfflineNavigationWrapper: React.FC<OfflineNavigationWrapperProps> =
   // Interceptar navegação para telas que requerem conexão
   const _handleNavigationStateChange = (state: any) => {
     if (!isOnline && state?.routes) {
-      const currentRoute = state.routes[state.index];
+      const currentRoute = state.routes[state.0];
       
       // Verificar se a tela atual requer conexão
       const onlineRequiredScreens = [

@@ -1,3 +1,4 @@
+ 
 /**
  * E2E Tests for Authentication Flow
  * Tests complete user authentication scenarios

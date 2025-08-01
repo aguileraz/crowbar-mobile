@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { io } from 'socket.io-client';
 import { websocketService } from '../websocketService';
 import { env } from '../../config/env';
@@ -239,7 +240,7 @@ describe('WebSocketService', () => {
       websocketService.on('test_event', listener2);
 
       const listeners = (websocketService as any).eventListeners.get('test_event');
-      expect(listeners?.size).toBe(2);
+      expect(listeners?._size).toBe(2);
       expect(listeners?.has(listener1)).toBe(true);
       expect(listeners?.has(listener2)).toBe(true);
     });
@@ -282,18 +283,18 @@ describe('WebSocketService', () => {
     it('deve emitir mensagem quando conectado', () => {
       (websocketService as any).isConnected = true;
 
-      const result = websocketService.emit('test_event', { data: 'test' });
+      const _result = websocketService.emit('test_event', { data: 'test' });
 
-      expect(result).toBe(true);
+      expect(_result).toBe(true);
       expect(mockSocket.emit).toHaveBeenCalledWith('test_event', { data: 'test' });
     });
 
     it('não deve emitir mensagem quando desconectado', () => {
       (websocketService as any).isConnected = false;
 
-      const result = websocketService.emit('test_event', { data: 'test' });
+      const _result = websocketService.emit('test_event', { data: 'test' });
 
-      expect(result).toBe(false);
+      expect(_result).toBe(false);
       expect(mockSocket.emit).not.toHaveBeenCalled();
       expect(console.log).toHaveBeenCalledWith(
         '⚠️ Cannot emit test_event - WebSocket not connected'
@@ -391,7 +392,7 @@ describe('WebSocketService', () => {
   });
 
   describe('Connection Status', () => {
-    it('deve retornar status de conexão corretamente', () => {
+    it('deve retornar _status de conexão corretamente', () => {
       expect(websocketService.isConnected()).toBe(false);
 
       websocketService.connect();

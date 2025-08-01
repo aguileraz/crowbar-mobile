@@ -1,3 +1,4 @@
+ 
 import axios, { AxiosInstance } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import logger from '../../loggerService';
@@ -41,8 +42,8 @@ export class TestApiClient {
   /**
    * Configurar mock para resposta bem-sucedida
    */
-  mockSuccess(method: string, url: string, response: any, status: number = 200) {
-    this.mockAdapter.onAny(method, url).reply(status, response);
+  mockSuccess(method: string, url: string, response: any, _status: number = 200) {
+    this.mockAdapter.onAny(method, url).reply(_status, response);
   }
   
   /**
@@ -62,8 +63,8 @@ export class TestApiClient {
   /**
    * Configurar mock para erro HTTP
    */
-  mockHttpError(method: string, url: string, status: number, response?: any) {
-    this.mockAdapter.onAny(method, url).reply(status, response);
+  mockHttpError(method: string, url: string, _status: number, response?: any) {
+    this.mockAdapter.onAny(method, url).reply(_status, response);
   }
   
   /**

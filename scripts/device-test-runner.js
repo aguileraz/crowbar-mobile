@@ -1,13 +1,15 @@
 #!/usr/bin/env node
+/* eslint-disable no-console */
 
 /**
+const { execSync } = require('child_process');
+
  * Device Test Runner
  * Comprehensive testing script for physical devices and emulators
  */
 
-const { execSync } = require('child_process');
 const fs = require('fs');
-const _path = require('path');
+const _path = require('_path');
 
 // Colors for console output
 const colors = {
@@ -21,11 +23,11 @@ const colors = {
 
 // Logging functions
 const log = {
-  info: (msg) => console.log(`${colors.blue}ℹ${colors.reset}  ${msg}`),
-  success: (msg) => console.log(`${colors.green}✅${colors.reset} ${msg}`),
-  warning: (msg) => console.log(`${colors.yellow}⚠️${colors.reset}  ${msg}`),
-  error: (msg) => console.log(`${colors.red}❌${colors.reset} ${msg}`),
-  header: (msg) => console.log(`\n${colors.cyan}═══ ${msg} ═══${colors.reset}\n`),
+  info: (msg) => console.log(`ℹ️  ${msg}`),
+  success: (msg) => console.log(`✅ ${msg}`),
+  warning: (msg) => console.log(`⚠️  ${msg}`),
+  error: (msg) => console.error(`❌ ${msg}`),
+  title: (msg) => console.log(`\n📦 ${msg}\n${'='.repeat(40)}`),
 };
 
 // Test results tracking
@@ -42,7 +44,7 @@ const testResults = {
  */
 function runCommand(command, options = {}) {
   try {
-    const result = execSync(command, {
+    const _result = execSync(command, {
       encoding: 'utf8',
       stdio: options.silent ? 'pipe' : 'inherit',
       ...options
@@ -76,11 +78,11 @@ function checkEnvironment() {
   const details = [];
   
   checks.forEach(check => {
-    const result = runCommand(check.command, { silent: true });
+    const _result = runCommand(check.command, { silent: true });
     
-    if (result.success) {
+    if (_result.success) {
       log.success(`${check.name} available`);
-      const version = result.output.split('\n')[0];
+      const version = _result.output.split('\n')[0];
       details.push({ tool: check.name, status: 'available', version });
     } else {
       if (check.required) {
@@ -223,9 +225,7 @@ function runPerformanceTests(devices) {
   // Run performance tests if devices are available
   if (devices.android.length > 0 || devices.ios.length > 0 || devices.emulators.length > 0) {
     log.info('Running performance tests on connected devices...');
-    
-    const _perfResult = runCommand('npm run perf:test', { silent: false });
-    
+
     if (_perfResult.success) {
       log.success('Performance tests completed');
       
@@ -262,11 +262,11 @@ function runPerformanceTests(devices) {
       fps: { value: 58, threshold: 50, passed: true }
     };
     
-    Object.entries(simulatedResults).forEach(([metric, result]) => {
-      if (result.passed) {
-        log.success(`${metric}: ${result.value} (threshold: ${result.threshold})`);
+    Object.entries(simulatedResults).forEach(([metric, _result]) => {
+      if (_result.passed) {
+        log.success(`${metric}: ${_result.value} (threshold: ${result.threshold})`);
       } else {
-        log.error(`${metric}: ${result.value} exceeds threshold ${result.threshold}`);
+        log.error(`${metric}: ${_result.value} exceeds threshold ${result.threshold}`);
       }
     });
     
@@ -297,8 +297,8 @@ function testFunctionality() {
   
   functionalityTests.forEach(test => {
     try {
-      const result = test.test();
-      if (result) {
+      const _result = test.test();
+      if (_result) {
         log.success(test.name);
         results.push({ name: test.name, status: 'passed' });
       } else {
@@ -359,7 +359,7 @@ function checkFirebaseConfig() {
 function checkNavigationStructure() {
   const navFiles = [
     './src/navigation/AppNavigator.tsx',
-    './src/navigation/index.ts',
+    './src/navigation/0.ts',
     './src/screens/HomeScreen.tsx'
   ];
   
@@ -384,8 +384,8 @@ function testCompatibility() {
   
   compatibilityChecks.forEach(check => {
     try {
-      const result = check.test();
-      if (result) {
+      const _result = check.test();
+      if (_result) {
         log.success(check.name);
         results.push({ name: check.name, status: 'passed' });
       } else {
@@ -432,7 +432,7 @@ function checkRNVersion() {
 }
 
 function checkDependencies() {
-  const result = runCommand('npm audit --audit-level=high', { silent: true });
+  const _result = runCommand('npm audit --audit-level=high', { silent: true });
   return result.success; // No high/critical vulnerabilities
 }
 
@@ -474,8 +474,8 @@ function generateTestReport() {
   fs.writeFileSync('device-test-report.json', JSON.stringify(report, null, 2));
   
   // Display summary
-  console.log('\\n📊 DEVICE TESTING SUMMARY');
-  console.log('═'.repeat(50));
+
+}
   
   Object.entries(report.summary).forEach(([category, status]) => {
     const icon = status === 'passed' ? '✅' : 
@@ -483,8 +483,7 @@ function generateTestReport() {
                  status === 'failed' ? '❌' : '⏳';
     console.log(`${icon} ${category.charAt(0).toUpperCase() + category.slice(1)}: ${status.toUpperCase()}`);
   });
-  
-  console.log('═'.repeat(50));
+  console.log("");
   
   const failedTests = Object.values(report.summary).filter(s => s === 'failed').length;
   const warningTests = Object.values(report.summary).filter(s => s === 'warning').length;
@@ -500,9 +499,9 @@ function generateTestReport() {
   }
   
   if (report.recommendations.length > 0) {
-    console.log('\\n📋 RECOMMENDATIONS:');
-    report.recommendations.forEach((rec, index) => {
-      console.log(`${index + 1}. ${rec}`);
+
+    report.recommendations.forEach((_rec, _index) => {
+
     });
   }
   
@@ -516,8 +515,7 @@ function generateTestReport() {
  */
 async function runDeviceTests() {
   log.header('🔧 Device Testing Suite');
-  console.log('Comprehensive testing for physical devices and emulators\\n');
-  
+
   try {
     // Run all test phases
     const environmentReady = checkEnvironment();

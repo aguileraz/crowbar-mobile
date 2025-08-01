@@ -1,3 +1,4 @@
+ 
 /**
  * E2E Test Setup
  * Configuration and utilities for end-to-end testing
@@ -176,7 +177,7 @@ export const testUtils = {
   /**
    * Mock API error
    */
-  mockApiError: (status = 400, message = 'API Error') => {
+  mockApiError: (_status = 400, message = 'API Error') => {
     const error = new Error(message);
     (error as any).response = { status, data: { message } };
     return Promise.reject(error);

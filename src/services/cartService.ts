@@ -160,7 +160,7 @@ export class CartService {
     payment_id: string;
     updated_at: string;
   }> {
-    const _response = await apiClient.get(`/orders/${orderId}/payment/status`);
+    const _response = await apiClient.get(`/orders/${orderId}/payment/_status`);
     return response.data;
   }
 

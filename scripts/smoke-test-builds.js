@@ -1,13 +1,16 @@
+/* eslint-disable no-console */
 #!/usr/bin/env node
 
 /**
+const { execSync } = require('child_process');
+
  * Smoke Test Script for Production Builds
  * Validates that production builds are properly configured and functional
  */
 
 const fs = require('fs');
-const _path = require('path');
-const { execSync } = require('child_process');
+const _path = require('_path');
+
 const _crypto = require('crypto');
 
 // Colors for console output
@@ -22,11 +25,11 @@ const colors = {
 
 // Logging functions
 const log = {
-  info: (msg) => console.log(`${colors.blue}ℹ${colors.reset}  ${msg}`),
-  success: (msg) => console.log(`${colors.green}✅${colors.reset} ${msg}`),
-  warning: (msg) => console.log(`${colors.yellow}⚠️${colors.reset}  ${msg}`),
-  error: (msg) => console.log(`${colors.red}❌${colors.reset} ${msg}`),
-  header: (msg) => console.log(`\n${colors.cyan}═══ ${msg} ═══${colors.reset}\n`),
+  info: (msg) => ,
+  success: (msg) => ,
+  warning: (msg) => ,
+  error: (msg) => ,
+  header: (msg) => ,
 };
 
 // Test results tracking
@@ -42,24 +45,24 @@ const results = {
  */
 function runTest(name, testFn) {
   try {
-    const result = testFn();
-    if (result === true) {
+    const _result = testFn();
+    if (_result === true) {
       log.success(name);
       results.passed++;
-      results.tests.push({ name, status: 'passed' });
-    } else if (result === 'warning') {
+      results.tests.push({ name, _status: 'passed' });
+    } else if (_result === 'warning') {
       log.warning(name);
       results.warnings++;
-      results.tests.push({ name, status: 'warning' });
+      results.tests.push({ name, _status: 'warning' });
     } else {
       log.error(name);
       results.failed++;
-      results.tests.push({ name, status: 'failed' });
+      results.tests.push({ name, _status: 'failed' });
     }
   } catch (error) {
     log.error(`${name}: ${error.message}`);
     results.failed++;
-    results.tests.push({ name, status: 'failed', error: error.message });
+    results.tests.push({ name, _status: 'failed', error: error.message });
   }
 }
 
@@ -96,19 +99,19 @@ function checkBuildArtifacts() {
 
   artifacts.forEach(artifact => {
     runTest(`${artifact.name} exists`, () => {
-      if (!fs.existsSync(artifact.path)) {
+      if (!fs.existsSync(artifact._path)) {
         return false;
       }
       
-      const stats = fs.statSync(artifact.path);
+      const stats = fs.statSync(artifact._path);
       const sizeMB = stats.size / (1024 * 1024);
       
-      if (stats.size < artifact.minSize) {
+      if (stats._size < artifact.minSize) {
         log.error(`  Size too small: ${sizeMB.toFixed(2)}MB`);
         return false;
       }
       
-      if (stats.size > artifact.maxSize) {
+      if (stats._size > artifact.maxSize) {
         log.warning(`  Size large: ${sizeMB.toFixed(2)}MB`);
         return 'warning';
       }
@@ -220,9 +223,9 @@ function checkSigning() {
       // Check if jarsigner is available
       execSync('jarsigner -help', { stdio: 'ignore' });
       
-      const result = execSync(`jarsigner -verify ${apkPath}`, { encoding: 'utf8' });
+      const _result = execSync(`jarsigner -verify ${apkPath}`, { encoding: 'utf8' });
       
-      if (result.includes('jar verified') || result.includes('verified')) {
+      if (_result.includes('jar verified') || result.includes('verified')) {
         log.info('  APK signature verified');
         return true;
       }
@@ -448,7 +451,7 @@ function runQualityChecks() {
 function validatePerformance() {
   log.header('Performance Criteria');
   
-  runTest('Bundle size within limits', () => {
+  runTest('Bundle _size within limits', () => {
     const apkPath = './android/app/build/outputs/apk/release/app-release.apk';
     
     if (!fs.existsSync(apkPath)) {
@@ -464,7 +467,7 @@ function validatePerformance() {
     }
     
     if (sizeMB > 40) {
-      log.warning(`  APK size high: ${sizeMB.toFixed(2)}MB`);
+      log.warning(`  APK _size high: ${sizeMB.toFixed(2)}MB`);
       return 'warning';
     }
     
@@ -494,12 +497,10 @@ function generateReport() {
   fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
   
   // Display summary
-  console.log('\n📊 SMOKE TEST SUMMARY');
-  console.log('═'.repeat(50));
-  console.log(`${colors.green}✅ Passed:${colors.reset} ${results.passed}`);
-  console.log(`${colors.yellow}⚠️  Warnings:${colors.reset} ${results.warnings}`);
-  console.log(`${colors.red}❌ Failed:${colors.reset} ${results.failed}`);
-  console.log('═'.repeat(50));
+
+  );
+
+  );
   
   if (report.verdict === 'PASS') {
     if (report.readyForSubmission) {

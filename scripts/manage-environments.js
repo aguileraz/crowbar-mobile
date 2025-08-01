@@ -6,9 +6,6 @@
  */
 
 const fs = require('fs');
-const _path = require('path');
-const { execSync: _execSync } = require('child_process');
-
 // Configuration
 const ENVIRONMENTS = ['development', 'staging', 'production'];
 const ENV_FILES = {
@@ -32,22 +29,22 @@ const colors = {
 
 // Logging functions
 const log = {
-  info: (msg) => console.log(`${colors.blue}ℹ️  ${msg}${colors.reset}`),
-  success: (msg) => console.log(`${colors.green}✅ ${msg}${colors.reset}`),
-  warning: (msg) => console.log(`${colors.yellow}⚠️  ${msg}${colors.reset}`),
-  error: (msg) => console.log(`${colors.red}❌ ${msg}${colors.reset}`),
-  title: (msg) => console.log(`${colors.cyan}${colors.bold}🌍 ${msg}${colors.reset}\n`),
+  info: (msg) => ,
+  success: (msg) => ,
+  warning: (msg) => ,
+  error: (msg) => ,
+  title: (msg) => ,
 };
 
 /**
  * Parse environment file
  */
-function parseEnvFile(filePath) {
-  if (!fs.existsSync(filePath)) {
+function parseEnvFile(_filePath) {
+  if (!fs.existsSync(_filePath)) {
     return {};
   }
 
-  const content = fs.readFileSync(filePath, 'utf8');
+  const content = fs.readFileSync(_filePath, 'utf8');
   const env = {};
 
   content.split('\n').forEach(line => {
@@ -161,7 +158,7 @@ function validateEnvironment(environment) {
 
   if (issues.length > 0) {
     log.warning(`Environment ${environment} has ${issues.length} issues:`);
-    issues.forEach(issue => console.log(`  - ${issue}`));
+    issues.forEach(issue => );
     return false;
   }
 
@@ -204,11 +201,10 @@ function compareEnvironments(env1, env2) {
     log.success(`Environments ${env1} and ${env2} are identical`);
   } else {
     log.info(`Found ${differences.length} differences between ${env1} and ${env2}:`);
-    console.log('\nKey'.padEnd(30), env1.padEnd(20), env2.padEnd(20));
-    console.log('-'.repeat(70));
+    , env1.padEnd(20), env2.padEnd(20));
+    );
     differences.forEach(diff => {
-      console.log(
-        diff.key.padEnd(30),
+      ,
         String(diff[env1]).padEnd(20),
         String(diff[env2]).padEnd(20)
       );
@@ -227,10 +223,10 @@ function listEnvironments() {
     const envFile = ENV_FILES[env];
     const exists = fs.existsSync(envFile);
     const isCurrent = env === current;
-    const status = exists ? (isCurrent ? '(current)' : '(available)') : '(missing)';
+    const _status = exists ? (isCurrent ? '(current)' : '(available)') : '(missing)';
     const icon = exists ? (isCurrent ? '👉' : '📄') : '❌';
     
-    console.log(`  ${icon} ${env.padEnd(12)} ${status}`);
+    } ${status}`);
   });
 }
 
@@ -283,27 +279,7 @@ function createEnvironmentTemplate(environment) {
  * Show help
  */
 function showHelp() {
-  console.log(`
-${colors.cyan}${colors.bold}Crowbar Mobile - Environment Management${colors.reset}
-
-Usage: node scripts/manage-environments.js <command> [options]
-
-Commands:
-  switch <env>        Switch to specified environment
-  current             Show current environment
-  list                List all environments
-  validate <env>      Validate environment configuration
-  compare <env1> <env2>  Compare two environments
-  create <env>        Create environment template
-  help                Show this help message
-
-Examples:
-  node scripts/manage-environments.js switch staging
-  node scripts/manage-environments.js validate production
-  node scripts/manage-environments.js compare development staging
-  node scripts/manage-environments.js create testing
-
-Environments: ${ENVIRONMENTS.join(', ')}
+  }
 `);
 }
 

@@ -117,12 +117,10 @@ global.waitForScreen = jest.fn(async (screenTestID, timeout = TIMEOUT_CONFIG.SLO
 
 // Logger para debug
 global.logTest = jest.fn((message) => {
-  console.log(`[E2E TEST MOCK] ${new Date().toISOString()}: ${message}`);
+  console.log(`[E2E Test ${new Date().toISOString()}]: ${message}`);
 });
 
 // Mock para notificações
 global.mockNotifications = jest.fn(() => {
   // Mock implementation
 });
-
-console.log('[E2E MOCK] Setup mock carregado com sucesso');

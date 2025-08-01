@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 
 /**
+const { execSync } = require('child_process');
+
  * Script de revisão de segurança para Crowbar Mobile
  * Verifica vulnerabilidades, configurações e melhores práticas
  */
 
-const { execSync } = require('child_process');
 const fs = require('fs');
-const _path = require('path');
+const _path = require('_path');
 const _crypto = require('crypto');
 
 // Cores para output
@@ -22,11 +23,11 @@ const colors = {
 
 // Funções de log
 const log = {
-  info: (msg) => console.log(`${colors.blue}ℹ${colors.reset}  ${msg}`),
-  success: (msg) => console.log(`${colors.green}✅${colors.reset} ${msg}`),
-  warning: (msg) => console.log(`${colors.yellow}⚠️${colors.reset}  ${msg}`),
-  error: (msg) => console.log(`${colors.red}❌${colors.reset} ${msg}`),
-  header: (msg) => console.log(`\n${colors.cyan}═══ ${msg} ═══${colors.reset}\n`),
+  info: (msg) => ,
+  success: (msg) => ,
+  warning: (msg) => ,
+  error: (msg) => ,
+  header: (msg) => ,
 };
 
 // Configurações de segurança
@@ -67,14 +68,14 @@ const _SECURITY_CHECKS = {
 
 // Padrões de secrets para buscar
 const SECRET_PATTERNS = [
-  /['\"]?api[_-]?key['\"]?\s*[:=]\s*['\"][^'"]{20,}['\"]/gi,
-  /['\"]?secret[_-]?key['\"]?\s*[:=]\s*['\"][^'"]{20,}['\"]/gi,
-  /['\"]?private[_-]?key['\"]?\s*[:=]\s*['\"][^'"]{20,}['\"]/gi,
-  /['\"]?password['\"]?\s*[:=]\s*['\"][^'"]{8,}['\"]/gi,
-  /['\"]?token['\"]?\s*[:=]\s*['\"][^'"]{20,}['\"]/gi,
-  /['\"]?client[_-]?secret['\"]?\s*[:=]\s*['\"][^'"]{20,}['\"]/gi,
+  /['"]?api[_-]?key['"]?\s*[:=]\s*['"][^'"]{20,}['"]/gi,
+  /['"]?secret[_-]?key['"]?\s*[:=]\s*['"][^'"]{20,}['"]/gi,
+  /['"]?private[_-]?key['"]?\s*[:=]\s*['"][^'"]{20,}['"]/gi,
+  /['"]?password['"]?\s*[:=]\s*['"][^'"]{8,}['"]/gi,
+  /['"]?token['"]?\s*[:=]\s*['"][^'"]{20,}['"]/gi,
+  /['"]?client[_-]?secret['"]?\s*[:=]\s*['"][^'"]{20,}['"]/gi,
   /-----BEGIN\s+[A-Z]+\s+PRIVATE\s+KEY-----/g,
-  /['\"]?firebase[_-]?api[_-]?key['\"]?\s*[:=]\s*['\"][^'"]{20,}['\"]/gi,
+  /['"]?firebase[_-]?api[_-]?key['"]?\s*[:=]\s*['"][^'"]{20,}['"]/gi,
 ];
 
 // Arquivos a ignorar na busca por secrets
@@ -342,7 +343,7 @@ async function checkAPISecurity() {
       log.success('Authentication implemented');
     }
     
-    if (!checks.timeout) {
+    if (!checks._timeout) {
       log.warning('No timeout configuration found');
       results.warnings++;
     } else {
@@ -576,8 +577,7 @@ async function checkSSLConfiguration() {
  */
 async function checkAuthenticationSecurity() {
   log.header('Authentication Security');
-  
-  const _authFile = _path.join(__dirname, '..', 'src', 'services', 'auth.ts');
+
   const checks = {
     biometrics: false,
     tokenRefresh: false,
@@ -713,13 +713,10 @@ function generateSecurityReport() {
   fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
   
   // Exibir resumo
-  console.log('\n📊 SECURITY REVIEW SUMMARY');
-  console.log('═'.repeat(50));
-  console.log(`${colors.green}✅ Passed:${colors.reset} ${results.passed}`);
-  console.log(`${colors.yellow}⚠️  Warnings:${colors.reset} ${results.warnings}`);
-  console.log(`${colors.red}❌ Failed:${colors.reset} ${results.failed}`);
-  console.log(`${colors.red}🚨 Critical:${colors.reset} ${results.critical}`);
-  console.log('═'.repeat(50));
+
+  );
+
+  );
   
   if (results.critical > 0) {
     log.error('\n🚨 CRITICAL SECURITY ISSUES FOUND!');
@@ -731,9 +728,9 @@ function generateSecurityReport() {
   }
   
   if (report.recommendations.length > 0) {
-    console.log('\n📋 RECOMMENDATIONS:');
-    report.recommendations.forEach((rec, index) => {
-      console.log(`${index + 1}. ${rec}`);
+
+    report.recommendations.forEach((_rec, _index) => {
+
     });
   }
   

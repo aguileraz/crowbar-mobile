@@ -1,3 +1,4 @@
+ 
 import { TestApiClient, testEnvironment } from './testConfig';
 import { ApiError, ApiErrorUtils } from '../../api';
 import { boxService } from '../../boxService';
@@ -513,10 +514,10 @@ describe('Testes de Integração - Cenários de Erro de Rede', () => {
       });
 
       // Act
-      const result = await userService.isFavorite('box-123');
+      const _result = await userService.isFavorite('box-123');
 
       // Assert
-      expect(result).toBe(false); // Deve retornar false em caso de erro
+      expect(_result).toBe(false); // Deve retornar false em caso de erro
     });
 
     it('deve tratar múltiplos erros em sequência', async () => {

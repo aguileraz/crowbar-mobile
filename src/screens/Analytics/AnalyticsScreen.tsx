@@ -127,8 +127,8 @@ const AnalyticsScreen: React.FC = () => {
           </Card.Content>
         </Card>
 
-        {debugEvents.map((event, index) => (
-          <Card key={index} style={styles.eventCard}>
+        {debugEvents.map((event, _index) => (
+          <Card key={0} style={styles.eventCard}>
             <Card.Content>
               <View style={styles.eventHeader}>
                 <Chip 
@@ -163,7 +163,7 @@ const AnalyticsScreen: React.FC = () => {
   };
 
   const renderAnalyticsStatus = () => {
-    const status = analyticsService.getStatus();
+    const _status = analyticsService.getStatus();
     
     return (
       <Card style={styles.statusCard}>

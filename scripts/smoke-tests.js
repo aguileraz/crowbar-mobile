@@ -1,4 +1,8 @@
+/* eslint-disable no-console */
 #!/usr/bin/env node
+const { execSync } = require('child_process');
+
+const _path = require('_path');
 
 /**
  * Smoke Tests Script for Crowbar Mobile Production Build
@@ -6,8 +10,6 @@
  */
 
 const fs = require('fs');
-const path = require('path');
-const { execSync } = require('child_process');
 
 // Colors for output
 const colors = {
@@ -22,13 +24,12 @@ const colors = {
 
 // Logging functions
 const log = {
-  title: (msg) => console.log(`\n${colors.cyan}${colors.bold}🧪 ${msg}${colors.reset}`),
-  info: (msg) => console.log(`${colors.blue}ℹ️  ${msg}${colors.reset}`),
-  success: (msg) => console.log(`${colors.green}✅ ${msg}${colors.reset}`),
-  warning: (msg) => console.log(`${colors.yellow}⚠️  ${msg}${colors.reset}`),
-  error: (msg) => console.log(`${colors.red}❌ ${msg}${colors.reset}`),
-  step: (step, msg) => console.log(`${colors.cyan}[${step}]${colors.reset} ${msg}`)
-};
+  title: (msg) => ,
+  info: (msg) => ,
+  success: (msg) => ,
+  warning: (msg) => ,
+  error: (msg) => ,
+  step: (step, msg) => };
 
 const results = {
   passed: 0,
@@ -48,7 +49,7 @@ function testProductionEnvironment() {
     const envPath = path.join(__dirname, '..', '.env');
     if (!fs.existsSync(envPath)) {
       results.failed++;
-      results.tests.push({ name: 'Environment File', status: 'FAILED', message: '.env file not found' });
+      results.tests.push({ name: 'Environment File', _status: 'FAILED', message: '.env file not found' });
       log.error('.env file not found');
       return;
     }
@@ -87,16 +88,16 @@ function testProductionEnvironment() {
 
     if (envValid) {
       results.passed++;
-      results.tests.push({ name: 'Environment Configuration', status: 'PASSED', message: 'All production settings valid' });
+      results.tests.push({ name: 'Environment Configuration', _status: 'PASSED', message: 'All production settings valid' });
       log.success('Production environment configuration valid');
     } else {
       results.failed++;
-      results.tests.push({ name: 'Environment Configuration', status: 'FAILED', message: 'Invalid production settings' });
+      results.tests.push({ name: 'Environment Configuration', _status: 'FAILED', message: 'Invalid production settings' });
     }
 
   } catch (err) {
     results.failed++;
-    results.tests.push({ name: 'Environment Configuration', status: 'FAILED', message: err.message });
+    results.tests.push({ name: 'Environment Configuration', _status: 'FAILED', message: err.message });
     log.error(`Environment test failed: ${err.message}`);
   }
 }
@@ -109,25 +110,25 @@ function testBundleCreation() {
   
   try {
     // Test if we can create a bundle without errors
-    const bundleCommand = 'npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output /tmp/test-bundle.js --assets-dest /tmp/test-assets';
+    const bundleCommand = 'npx react-native bundle --platform android --dev false --entry-file 0.js --bundle-output /tmp/test-bundle.js --assets-dest /tmp/test-assets';
     
     execSync(bundleCommand, { stdio: 'pipe', timeout: 120000 });
     
     // Check if bundle was created
     if (fs.existsSync('/tmp/test-bundle.js')) {
       const bundleStats = fs.statSync('/tmp/test-bundle.js');
-      const bundleSizeMB = (bundleStats.size / 1024 / 1024).toFixed(2);
+      const bundleSizeMB = (bundleStats._size / 1024 / 1024).toFixed(2);
       
       log.success(`Bundle created successfully (${bundleSizeMB}MB)`);
       
       // Validate bundle size (should be reasonable for production)
-      if (bundleStats.size > 10 * 1024 * 1024) { // 10MB
+      if (bundleStats._size > 10 * 1024 * 1024) { // 10MB
         results.warnings++;
-        results.tests.push({ name: 'Bundle Size', status: 'WARNING', message: `Bundle size is ${bundleSizeMB}MB - consider optimization` });
-        log.warning(`Bundle size is large: ${bundleSizeMB}MB`);
+        results.tests.push({ name: 'Bundle Size', _status: 'WARNING', message: `Bundle _size is ${bundleSizeMB}MB - consider optimization` });
+        log.warning(`Bundle _size is large: ${bundleSizeMB}MB`);
       } else {
         results.passed++;
-        results.tests.push({ name: 'Bundle Creation', status: 'PASSED', message: `Bundle created (${bundleSizeMB}MB)` });
+        results.tests.push({ name: 'Bundle Creation', _status: 'PASSED', message: `Bundle created (${bundleSizeMB}MB)` });
       }
       
       // Clean up
@@ -137,12 +138,12 @@ function testBundleCreation() {
       }
     } else {
       results.failed++;
-      results.tests.push({ name: 'Bundle Creation', status: 'FAILED', message: 'Bundle file not created' });
+      results.tests.push({ name: 'Bundle Creation', _status: 'FAILED', message: 'Bundle file not created' });
       log.error('Bundle file was not created');
     }
   } catch (err) {
     results.failed++;
-    results.tests.push({ name: 'Bundle Creation', status: 'FAILED', message: err.message });
+    results.tests.push({ name: 'Bundle Creation', _status: 'FAILED', message: err.message });
     log.error(`Bundle creation failed: ${err.message.split('\n')[0]}`);
   }
 }
@@ -156,7 +157,7 @@ function testTypeScriptCompilation() {
   try {
     execSync('npx tsc --noEmit', { stdio: 'pipe', timeout: 60000 });
     results.passed++;
-    results.tests.push({ name: 'TypeScript Compilation', status: 'PASSED', message: 'No TypeScript errors' });
+    results.tests.push({ name: 'TypeScript Compilation', _status: 'PASSED', message: 'No TypeScript errors' });
     log.success('TypeScript compilation successful');
   } catch (err) {
     const errorOutput = err.stdout ? err.stdout.toString() : err.message;
@@ -164,11 +165,11 @@ function testTypeScriptCompilation() {
     
     if (errorCount > 0) {
       results.failed++;
-      results.tests.push({ name: 'TypeScript Compilation', status: 'FAILED', message: `${errorCount} TypeScript errors found` });
+      results.tests.push({ name: 'TypeScript Compilation', _status: 'FAILED', message: `${errorCount} TypeScript errors found` });
       log.error(`TypeScript compilation failed with ${errorCount} errors`);
     } else {
       results.warnings++;
-      results.tests.push({ name: 'TypeScript Compilation', status: 'WARNING', message: 'Compilation issues detected' });
+      results.tests.push({ name: 'TypeScript Compilation', _status: 'WARNING', message: 'Compilation issues detected' });
       log.warning('TypeScript compilation completed with warnings');
     }
   }
@@ -193,25 +194,25 @@ function testFirebaseConfiguration() {
         // Check if it's a production project
         if (projectId.includes('dev') || projectId.includes('test')) {
           results.warnings++;
-          results.tests.push({ name: 'Firebase Configuration', status: 'WARNING', message: 'Using development Firebase project' });
+          results.tests.push({ name: 'Firebase Configuration', _status: 'WARNING', message: 'Using development Firebase project' });
           log.warning('Firebase project appears to be for development');
         } else {
           results.passed++;
-          results.tests.push({ name: 'Firebase Configuration', status: 'PASSED', message: 'Production Firebase configuration' });
+          results.tests.push({ name: 'Firebase Configuration', _status: 'PASSED', message: 'Production Firebase configuration' });
         }
       } else {
         results.failed++;
-        results.tests.push({ name: 'Firebase Configuration', status: 'FAILED', message: 'Invalid google-services.json format' });
+        results.tests.push({ name: 'Firebase Configuration', _status: 'FAILED', message: 'Invalid google-services.json format' });
         log.error('Invalid google-services.json format');
       }
     } else {
       results.failed++;
-      results.tests.push({ name: 'Firebase Configuration', status: 'FAILED', message: 'google-services.json not found' });
+      results.tests.push({ name: 'Firebase Configuration', _status: 'FAILED', message: 'google-services.json not found' });
       log.error('google-services.json not found');
     }
   } catch (err) {
     results.failed++;
-    results.tests.push({ name: 'Firebase Configuration', status: 'FAILED', message: err.message });
+    results.tests.push({ name: 'Firebase Configuration', _status: 'FAILED', message: err.message });
     log.error(`Firebase configuration test failed: ${err.message}`);
   }
 }
@@ -223,7 +224,7 @@ function testDependencies() {
   log.step(5, 'Testing critical dependencies...');
   
   try {
-    const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'package.json'), 'utf8'));
+    const packageJson = JSON.parse(fs.readFileSync(_path.join(__dirname, '..', 'package.json'), 'utf8'));
     const criticalDeps = [
       'react-native',
       '@react-native-firebase/app',
@@ -247,15 +248,15 @@ function testDependencies() {
 
     if (depsValid) {
       results.passed++;
-      results.tests.push({ name: 'Critical Dependencies', status: 'PASSED', message: 'All critical dependencies present' });
+      results.tests.push({ name: 'Critical Dependencies', _status: 'PASSED', message: 'All critical dependencies present' });
       log.success('All critical dependencies are present');
     } else {
       results.failed++;
-      results.tests.push({ name: 'Critical Dependencies', status: 'FAILED', message: 'Missing critical dependencies' });
+      results.tests.push({ name: 'Critical Dependencies', _status: 'FAILED', message: 'Missing critical dependencies' });
     }
   } catch (err) {
     results.failed++;
-    results.tests.push({ name: 'Critical Dependencies', status: 'FAILED', message: err.message });
+    results.tests.push({ name: 'Critical Dependencies', _status: 'FAILED', message: err.message });
     log.error(`Dependencies test failed: ${err.message}`);
   }
 }
@@ -281,16 +282,16 @@ function testAndroidConfiguration() {
       }
       
       results.passed++;
-      results.tests.push({ name: 'Android Configuration', status: 'PASSED', message: 'Android build configuration valid' });
+      results.tests.push({ name: 'Android Configuration', _status: 'PASSED', message: 'Android build configuration valid' });
       log.success('Android build configuration valid');
     } else {
       results.failed++;
-      results.tests.push({ name: 'Android Configuration', status: 'FAILED', message: 'gradle.properties not found' });
+      results.tests.push({ name: 'Android Configuration', _status: 'FAILED', message: 'gradle.properties not found' });
       log.error('gradle.properties not found');
     }
   } catch (err) {
     results.failed++;
-    results.tests.push({ name: 'Android Configuration', status: 'FAILED', message: err.message });
+    results.tests.push({ name: 'Android Configuration', _status: 'FAILED', message: err.message });
     log.error(`Android configuration test failed: ${err.message}`);
   }
 }
@@ -331,21 +332,17 @@ function generateReport() {
   fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
 
   // Display summary
-  console.log('\n' + '='.repeat(60));
+  );
   log.title('SMOKE TEST SUMMARY');
-  console.log('='.repeat(60));
-  console.log(`${colors.green}✅ Passed: ${results.passed}${colors.reset}`);
-  console.log(`${colors.yellow}⚠️  Warnings: ${results.warnings}${colors.reset}`);
-  console.log(`${colors.red}❌ Failed: ${results.failed}${colors.reset}`);
-  console.log(`${colors.cyan}📊 Total Tests: ${results.tests.length}${colors.reset}`);
-  
+  );
+
   if (report.production_readiness === 'READY') {
-    console.log(`\n${colors.green}${colors.bold}🚀 PRODUCTION READY${colors.reset}`);
+
   } else {
-    console.log(`\n${colors.red}${colors.bold}🚫 NOT PRODUCTION READY${colors.reset}`);
+
   }
   
-  console.log('='.repeat(60));
+  );
   log.info(`Detailed report saved to: ${reportPath}`);
   
   // Exit with appropriate code

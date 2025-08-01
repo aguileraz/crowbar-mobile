@@ -118,7 +118,7 @@ const BoxDetailsScreen: React.FC<BoxDetailsScreenProps> = ({ navigation, route }
       const favorite = await userService.isFavorite(boxId);
       setIsFavorite(favorite);
     } catch (err) {
-      logger.error('Error loading favorite status:', err);
+      logger.error('Error loading favorite _status:', err);
     }
   };
 

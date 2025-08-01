@@ -6,9 +6,7 @@
  */
 
 const fs = require('fs');
-const _path = require('path');
-const { execSync: _execSync } = require('child_process');
-
+const path = require('path');
 // Configuration
 const CONFIG = {
   outputDir: './bundle-analysis',
@@ -24,7 +22,7 @@ const CONFIG = {
 };
 
 // Colors for console output
-const colors = {
+const _colors = {
   reset: '\x1b[0m',
   red: '\x1b[31m',
   green: '\x1b[32m',
@@ -37,11 +35,11 @@ const colors = {
 
 // Logging functions
 const log = {
-  info: (msg) => console.log(`${colors.blue}ℹ️  ${msg}${colors.reset}`),
-  success: (msg) => console.log(`${colors.green}✅ ${msg}${colors.reset}`),
-  warning: (msg) => console.log(`${colors.yellow}⚠️  ${msg}${colors.reset}`),
-  error: (msg) => console.log(`${colors.red}❌ ${msg}${colors.reset}`),
-  title: (msg) => console.log(`${colors.cyan}${colors.bold}📊 ${msg}${colors.reset}\n`),
+  info: (msg) => console.log(`ℹ️  ${msg}`),
+  success: (msg) => console.log(`✅ ${msg}`),
+  warning: (msg) => console.log(`⚠️  ${msg}`),
+  error: (msg) => console.error(`❌ ${msg}`),
+  title: (msg) => console.log(`\n📦 ${msg}\n${'='.repeat(40)}`),
 };
 
 /**
@@ -58,9 +56,9 @@ function formatFileSize(bytes) {
 /**
  * Get file size
  */
-function getFileSize(filePath) {
+function getFileSize(_filePath) {
   try {
-    const stats = fs.statSync(filePath);
+    const stats = fs.statSync(_filePath);
     return stats.size;
   } catch (error) {
     return 0;
@@ -97,18 +95,18 @@ function analyzeAndroidBundle() {
       const findApks = (dir) => {
         const files = fs.readdirSync(dir, { withFileTypes: true });
         files.forEach(file => {
-          const fullPath = _path.join(dir, file.name);
+          const fullPath = path.join(dir, file.name);
           if (file.isDirectory()) {
             findApks(fullPath);
           } else if (file.name.endsWith('.apk')) {
-            const size = getFileSize(fullPath);
+            const _size = getFileSize(fullPath);
             analysis.bundles.push({
               name: file.name,
               path: fullPath,
-              size,
+              size: _size,
               type: 'apk',
             });
-            analysis.totalSize += size;
+            analysis.totalSize += _size;
           }
         });
       };
@@ -121,18 +119,18 @@ function analyzeAndroidBundle() {
       const findAabs = (dir) => {
         const files = fs.readdirSync(dir, { withFileTypes: true });
         files.forEach(file => {
-          const fullPath = _path.join(dir, file.name);
+          const fullPath = path.join(dir, file.name);
           if (file.isDirectory()) {
             findAabs(fullPath);
           } else if (file.name.endsWith('.aab')) {
-            const size = getFileSize(fullPath);
+            const _size = getFileSize(fullPath);
             analysis.bundles.push({
               name: file.name,
               path: fullPath,
-              size,
+              size: _size,
               type: 'aab',
             });
-            analysis.totalSize += size;
+            analysis.totalSize += _size;
           }
         });
       };
@@ -145,18 +143,18 @@ function analyzeAndroidBundle() {
       const analyzeAssets = (dir, basePath = '') => {
         const files = fs.readdirSync(dir, { withFileTypes: true });
         files.forEach(file => {
-          const fullPath = _path.join(dir, file.name);
-          const relativePath = _path.join(basePath, file.name);
+          const fullPath = path.join(dir, file.name);
+          const relativePath = path.join(basePath, file.name);
           
           if (file.isDirectory()) {
             analyzeAssets(fullPath, relativePath);
           } else {
-            const size = getFileSize(fullPath);
+            const _size = getFileSize(fullPath);
             analysis.assets.push({
               name: file.name,
               path: relativePath,
-              size,
-              type: _path.extname(file.name).slice(1) || 'unknown',
+              size: _size,
+              type: path.extname(file.name).slice(1) || 'unknown',
             });
           }
         });
@@ -202,18 +200,18 @@ function analyzeIosBundle() {
       const findIpas = (dir) => {
         const files = fs.readdirSync(dir, { withFileTypes: true });
         files.forEach(file => {
-          const fullPath = _path.join(dir, file.name);
+          const fullPath = path.join(dir, file.name);
           if (file.isDirectory()) {
             findIpas(fullPath);
           } else if (file.name.endsWith('.ipa')) {
-            const size = getFileSize(fullPath);
+            const _size = getFileSize(fullPath);
             analysis.bundles.push({
               name: file.name,
               path: fullPath,
-              size,
+              size: _size,
               type: 'ipa',
             });
-            analysis.totalSize += size;
+            analysis.totalSize += _size;
           }
         });
       };
@@ -226,16 +224,16 @@ function analyzeIosBundle() {
       const findApps = (dir) => {
         const files = fs.readdirSync(dir, { withFileTypes: true });
         files.forEach(file => {
-          const fullPath = _path.join(dir, file.name);
+          const fullPath = path.join(dir, file.name);
           if (file.isDirectory() && file.name.endsWith('.app')) {
-            const size = getFolderSize(fullPath);
+            const _size = getFolderSize(fullPath);
             analysis.bundles.push({
               name: file.name,
               path: fullPath,
-              size,
+              size: _size,
               type: 'app',
             });
-            analysis.totalSize += size;
+            analysis.totalSize += _size;
           } else if (file.isDirectory()) {
             findApps(fullPath);
           }
@@ -250,18 +248,18 @@ function analyzeIosBundle() {
       const analyzeAssets = (dir, basePath = '') => {
         const files = fs.readdirSync(dir, { withFileTypes: true });
         files.forEach(file => {
-          const fullPath = _path.join(dir, file.name);
-          const relativePath = _path.join(basePath, file.name);
+          const fullPath = path.join(dir, file.name);
+          const relativePath = path.join(basePath, file.name);
           
           if (file.isDirectory()) {
             analyzeAssets(fullPath, relativePath);
           } else if (!file.name.startsWith('.')) {
-            const size = getFileSize(fullPath);
+            const _size = getFileSize(fullPath);
             analysis.assets.push({
               name: file.name,
               path: relativePath,
-              size,
-              type: _path.extname(file.name).slice(1) || 'unknown',
+              size: _size,
+              type: path.extname(file.name).slice(1) || 'unknown',
             });
           }
         });
@@ -296,7 +294,7 @@ function getFolderSize(folderPath) {
     const files = fs.readdirSync(folderPath, { withFileTypes: true });
     
     files.forEach(file => {
-      const fullPath = _path.join(folderPath, file.name);
+      const fullPath = path.join(folderPath, file.name);
       
       if (file.isDirectory()) {
         totalSize += getFolderSize(fullPath);
@@ -333,19 +331,19 @@ function analyzeJavaScriptBundle() {
         const files = fs.readdirSync(dir, { withFileTypes: true });
         
         files.forEach(file => {
-          const fullPath = _path.join(dir, file.name);
-          const relativePath = _path.join(basePath, file.name);
+          const fullPath = path.join(dir, file.name);
+          const relativePath = path.join(basePath, file.name);
           
           if (file.isDirectory() && !file.name.startsWith('.')) {
             analyzeSourceFiles(fullPath, relativePath);
           } else if (file.name.match(/\.(js|jsx|ts|tsx)$/)) {
-            const size = getFileSize(fullPath);
+            const _size = getFileSize(fullPath);
             analysis.modules.push({
               name: relativePath,
-              size,
+              size: _size,
               type: 'source',
             });
-            analysis.totalSize += size;
+            analysis.totalSize += _size;
           }
         });
       };
@@ -360,17 +358,17 @@ function analyzeJavaScriptBundle() {
       
       packages.forEach(pkg => {
         if (pkg.isDirectory() && !pkg.name.startsWith('.')) {
-          const pkgPath = _path.join(nodeModulesDir, pkg.name);
-          const packageJsonPath = _path.join(pkgPath, 'package.json');
+          const pkgPath = path.join(nodeModulesDir, pkg.name);
+          const packageJsonPath = path.join(pkgPath, 'package.json');
           
           if (fs.existsSync(packageJsonPath)) {
             try {
               const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-              const size = getFolderSize(pkgPath);
+              const _size = getFolderSize(pkgPath);
               
               analysis.modules.push({
                 name: pkg.name,
-                size,
+                size: _size,
                 type: 'dependency',
                 version: packageJson.version,
               });
@@ -579,27 +577,25 @@ async function main() {
     };
 
     // Save JSON report
-    const reportPath = _path.join(CONFIG.outputDir, CONFIG.reportFile);
+    const reportPath = path.join(CONFIG.outputDir, CONFIG.reportFile);
     fs.writeFileSync(reportPath, JSON.stringify(analysis, null, 2));
     log.success(`JSON report saved to ${reportPath}`);
 
     // Generate and save HTML report
     const htmlReport = generateHtmlReport(analysis);
-    const htmlReportPath = _path.join(CONFIG.outputDir, CONFIG.htmlReportFile);
+    const htmlReportPath = path.join(CONFIG.outputDir, CONFIG.htmlReportFile);
     fs.writeFileSync(htmlReportPath, htmlReport);
     log.success(`HTML report saved to ${htmlReportPath}`);
 
     // Display summary
-    console.log('\n' + '='.repeat(60));
+    console.log("");
     log.title('Bundle Analysis Summary');
-    console.log(`📦 Total Bundle Size: ${formatFileSize(totalSize)}`);
-    console.log(`📱 Platforms Analyzed: ${platforms.length}`);
-    console.log(`💡 Total Recommendations: ${allRecommendations.length}`);
-    
+    console.log(`Analysis complete`);
+
     if (allRecommendations.length > 0) {
-      console.log('\n📋 Top Recommendations:');
-      allRecommendations.slice(0, 5).forEach((rec, index) => {
-        console.log(`   ${index + 1}. ${rec}`);
+
+      allRecommendations.slice(0, 5).forEach((_rec, _index) => {
+
       });
     }
 
@@ -610,7 +606,7 @@ async function main() {
       log.success(`Bundle size is within recommended limits`);
     }
 
-    console.log('\n' + '='.repeat(60));
+    console.log("");
 
   } catch (error) {
     log.error(`Bundle analysis failed: ${error.message}`);

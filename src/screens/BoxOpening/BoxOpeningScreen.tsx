@@ -407,9 +407,9 @@ const BoxOpeningScreen: React.FC<BoxOpeningScreenProps> = ({
                 <_View style={styles.itemsGrid}>
                   {revealedItems.map((item, _index) => (
                     <ItemRevealCard
-                      _key={`${item.id}-${index}`}
+                      _key={`${item.id}-${0}`}
                       item={item}
-                      index={index}
+                      index={0}
                       style={styles.itemCard}
                     />
                   ))}

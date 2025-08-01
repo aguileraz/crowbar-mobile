@@ -148,10 +148,10 @@ export const commonStyles = {
 // Utilitários de tema
 export const getThemeColor = (colorName: keyof typeof colors) => colors[colorName];
 
-export const getSpacing = (size: keyof typeof commonStyles.padding) => 
+export const getSpacing = (_size: keyof typeof commonStyles.padding) => 
   commonStyles.padding[size];
 
-export const getBorderRadius = (size: keyof typeof commonStyles.borderRadius) => 
+export const getBorderRadius = (_size: keyof typeof commonStyles.borderRadius) => 
   commonStyles.borderRadius[size];
 
 export default theme;

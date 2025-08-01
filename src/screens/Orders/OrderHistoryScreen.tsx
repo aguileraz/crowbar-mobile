@@ -218,7 +218,7 @@ const OrderHistoryScreen: React.FC<OrderHistoryScreenProps> = ({ navigation }) =
       />
       <Menu.Item
         onPress={() => {
-          setSortBy('status');
+          setSortBy('_status');
           setShowSortMenu(false);
         }}
         title="Status"

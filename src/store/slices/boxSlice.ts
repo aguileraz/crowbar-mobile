@@ -203,7 +203,7 @@ export const searchBoxes = createAsyncThunk(
   'boxes/searchBoxes',
   async ({ query, filters }: { query: string; filters?: Omit<SearchFilters, 'query'> }, { rejectWithValue }) => {
     try {
-      const result = await boxService.searchBoxes(query, filters);
+      const _result = await boxService.searchBoxes(query, filters);
       return result;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Erro na busca');

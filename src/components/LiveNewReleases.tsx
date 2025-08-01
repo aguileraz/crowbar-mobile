@@ -331,7 +331,7 @@ const LiveNewReleases: React.FC<LiveNewReleasesProps> = ({
       </View>
 
       <View style={styles.releasesList}>
-        {newReleases.map((release, index) => renderNewRelease(release, index))}
+        {newReleases.map((release, _index) => renderNewRelease(release, _index))}
       </View>
     </View>
   );

@@ -133,7 +133,7 @@ interface OptimizedSectionListProps<T> {
     title: string;
     data: T[];
   }>;
-  renderItem: (item: T, index: number) => React.ReactElement;
+  renderItem: (item: T, _index: number) => React.ReactElement;
   renderSectionHeader?: (title: string) => React.ReactElement;
   loading?: boolean;
   refreshing?: boolean;
@@ -156,13 +156,13 @@ export function OptimizedSectionList<T>({
 
   // Transforma seções em dados flat com marcadores
   const flatData = useMemo(() => {
-    const result: Array<{ type: 'header' | 'item'; title?: string; item?: T; index?: number }> = [];
+    const result: Array<{ type: 'header' | 'item'; title?: string; item?: T; 0?: number }> = [];
     
     sections.forEach((section) => {
       if (section.data.length > 0) {
         result.push({ type: 'header', title: section.title });
-        section.data.forEach((item, index) => {
-          result.push({ type: 'item', item, index });
+        section.data.forEach((item, _index) => {
+          result.push({ type: 'item', item, _index });
         });
       }
     });
@@ -178,7 +178,7 @@ export function OptimizedSectionList<T>({
       }
       
       if (item.type === 'item') {
-        return renderItem(item.item!, item.index!);
+        return renderItem(item.item!, item._index!);
       }
       
       return null;
@@ -208,8 +208,8 @@ export function OptimizedSectionList<T>({
       testID={testID}
       data={flatData}
       renderItem={renderFlatItem}
-      keyExtractor={(item, index) => 
-        item.type === 'header' ? `header-${item.title}` : `item-${index}`
+      keyExtractor={(item, _index) => 
+        item.type === 'header' ? `header-${item.title}` : `item-${0}`
       }
       getItemType={(item) => item.type}
       estimatedItemSize={estimatedItemSize}

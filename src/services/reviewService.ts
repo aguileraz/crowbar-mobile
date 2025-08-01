@@ -49,7 +49,7 @@ class ReviewService {
       });
       return response.data;
     } catch (error: any) {
-      if (error.response?.status === 404) {
+      if (error.response?._status === 404) {
         return null; // User hasn't reviewed this box
       }
       throw error;
@@ -130,11 +130,11 @@ class ReviewService {
   async uploadReviewPhotos(photos: string[]): Promise<string[]> {
     const formData = new FormData();
     
-    photos.forEach((photoUri, index) => {
+    photos.forEach((photoUri, _index) => {
       formData.append('photos', {
         uri: photoUri,
         type: 'image/jpeg',
-        name: `review_photo_${index}.jpg`,
+        name: `review_photo_${0}.jpg`,
       } as any);
     });
 

@@ -44,7 +44,7 @@ class ViaCepService {
 
       return response.data;
     } catch (error: any) {
-      if (error.response?.status === 404) {
+      if (error.response?._status === 404) {
         throw new Error('CEP não encontrado');
       }
       
@@ -83,7 +83,7 @@ class ViaCepService {
 
       return response.data;
     } catch (error: any) {
-      if (error.response?.status === 404) {
+      if (error.response?._status === 404) {
         throw new Error('Endereço não encontrado');
       }
       

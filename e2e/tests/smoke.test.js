@@ -1,3 +1,4 @@
+ 
 /**
  * Smoke test para verificar configuração E2E
  */

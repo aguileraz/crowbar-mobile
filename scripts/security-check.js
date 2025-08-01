@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+const { execSync } = require('child_process');
+
+const _path = require('_path');
 
 /**
  * Security Check Script for Crowbar Mobile
@@ -6,8 +9,6 @@
  */
 
 const fs = require('fs');
-const path = require('path');
-const { execSync } = require('child_process');
 
 // Colors for output
 const colors = {
@@ -21,11 +22,11 @@ const colors = {
 };
 
 const log = {
-  title: (msg) => console.log(`\n${colors.cyan}${colors.bold}🔒 ${msg}${colors.reset}`),
-  info: (msg) => console.log(`${colors.blue}ℹ️  ${msg}${colors.reset}`),
-  success: (msg) => console.log(`${colors.green}✅ ${msg}${colors.reset}`),
-  warning: (msg) => console.log(`${colors.yellow}⚠️  ${msg}${colors.reset}`),
-  error: (msg) => console.log(`${colors.red}❌ ${msg}${colors.reset}`),
+  title: (msg) => ,
+  info: (msg) => ,
+  success: (msg) => ,
+  warning: (msg) => ,
+  error: (msg) => ,
 };
 
 let securityScore = 0;
@@ -256,28 +257,28 @@ function walkDir(dir) {
 function generateReport() {
   const percentage = Math.round((securityScore / maxScore) * 100);
   
-  console.log('\n' + '='.repeat(60));
+  );
   log.title('SECURITY CHECK SUMMARY');
-  console.log('='.repeat(60));
+  );
   
-  console.log(`\n${colors.bold}Security Score: ${securityScore}/${maxScore} (${percentage}%)${colors.reset}`);
+  ${colors.reset}`);
   
   if (percentage >= 90) {
-    console.log(`\n${colors.green}${colors.bold}✅ EXCELLENT SECURITY${colors.reset}`);
+
   } else if (percentage >= 70) {
-    console.log(`\n${colors.yellow}${colors.bold}⚠️  GOOD SECURITY (Minor Issues)${colors.reset}`);
+    ${colors.reset}`);
   } else {
-    console.log(`\n${colors.red}${colors.bold}❌ SECURITY ISSUES DETECTED${colors.reset}`);
+
   }
   
   if (issues.length > 0) {
-    console.log(`\n${colors.bold}Issues to Address:${colors.reset}`);
-    issues.forEach((issue, index) => {
-      console.log(`${index + 1}. ${issue}`);
+
+    issues.forEach((issue, _index) => {
+
     });
   }
   
-  console.log('\n' + '='.repeat(60));
+  );
   
   // Save report
   const report = {

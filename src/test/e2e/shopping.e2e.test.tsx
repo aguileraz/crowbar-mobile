@@ -1,3 +1,4 @@
+ 
 /**
  * E2E Tests for Shopping Flow
  * Tests complete shopping experience from browsing to purchase

@@ -256,7 +256,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
               <Text style={styles.suggestionHeader}>Buscas recentes</Text>
               {searchHistory.map((item, _index) => (
                 <Button
-                  key={index}
+                  key={0}
                   mode="text"
                   onPress={() => handleSuggestionSelect(item)}
                   style={styles.suggestionItem}

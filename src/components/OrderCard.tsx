@@ -58,8 +58,8 @@ const OrderCard: React.FC<OrderCardProps> = ({
   /**
    * Get status color and label
    */
-  const getStatusInfo = (status: string) => {
-    switch (status) {
+  const getStatusInfo = (_status: string) => {
+    switch (_status) {
       case 'pending':
         return { color: '#FF9800', label: 'Pendente', icon: 'clock-outline' };
       case 'confirmed':
@@ -107,7 +107,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
     return `${totalItems} itens (${order.items.length} tipos)`;
   };
 
-  const statusInfo = getStatusInfo(order.status);
+  const statusInfo = getStatusInfo(order._status);
   const firstItemImage = getFirstItemImage();
 
   return (
@@ -199,7 +199,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
             Ver detalhes
           </Button>
           
-          {(order.status === 'delivered' || order.status === 'cancelled') && (
+          {(order._status === 'delivered' || order.status === 'cancelled') && (
             <Button
               mode="contained"
               style={styles.reorderButton}

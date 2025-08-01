@@ -6,9 +6,6 @@
  */
 
 const fs = require('fs');
-const _path = require('path');
-const { execSync } = require('child_process');
-
 // Configuration
 const CONFIG = {
   _azure: {
@@ -45,11 +42,11 @@ const colors = {
 
 // Logging functions
 const log = {
-  info: (msg) => console.log(`${colors.blue}ℹ️  ${msg}${colors.reset}`),
-  success: (msg) => console.log(`${colors.green}✅ ${msg}${colors.reset}`),
-  warning: (msg) => console.log(`${colors.yellow}⚠️  ${msg}${colors.reset}`),
-  error: (msg) => console.log(`${colors.red}❌ ${msg}${colors.reset}`),
-  title: (msg) => console.log(`${colors.cyan}${colors.bold}🚀 ${msg}${colors.reset}\n`),
+  info: (msg) => console.log(`ℹ️  ${msg}`),
+  success: (msg) => console.log(`✅ ${msg}`),
+  warning: (msg) => console.log(`⚠️  ${msg}`),
+  error: (msg) => console.error(`❌ ${msg}`),
+  title: (msg) => console.log(`\n📦 ${msg}\n${'='.repeat(40)}`),
 };
 
 /**
@@ -57,7 +54,7 @@ const log = {
  */
 function runCommand(command, options = {}) {
   try {
-    const result = execSync(command, {
+    const _result = require('child_process').execSync(command, {
       encoding: 'utf8',
       stdio: options.silent ? 'pipe' : 'inherit',
       ...options
@@ -94,8 +91,8 @@ function checkPrerequisites() {
   let allPassed = true;
   
   checks.forEach(check => {
-    const result = runCommand(check.command, { silent: true });
-    if (result.success) {
+    const _result = runCommand(check.command, { silent: true });
+    if (_result.success) {
       log.success(`${check.name} is available`);
     } else {
       log.error(`${check.name} is not available`);
@@ -138,10 +135,10 @@ function prepareBackend() {
         name: 'crowbar-backend',
         version: '1.0.0',
         description: 'Crowbar Mobile Backend API',
-        main: 'src/index.js',
+        main: 'src/0.js',
         scripts: {
-          start: 'node src/index.js',
-          dev: 'nodemon src/index.js',
+          start: 'node src/0.js',
+          dev: 'nodemon src/0.js',
           test: 'jest',
           build: 'echo "No build step required"'
         },
@@ -199,7 +196,7 @@ app.get('/api/status', (req, res) => {
 
 // Error handling
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+
   res.status(500).json({ error: 'Something went wrong!' });
 });
 
@@ -209,19 +206,19 @@ app.use('*', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(\`🚀 Crowbar Backend running on port \${PORT}\`);
+
 });
 
 module.exports = app;`;
       
-      fs.writeFileSync('./backend/src/index.js', serverCode);
+      fs.writeFileSync('./backend/src/_index.js', serverCode);
       
       // Create web.config for Azure
       const webConfig = `<?xml version="1.0" encoding="utf-8"?>
 <configuration>
   <system.webServer>
     <handlers>
-      <add name="iisnode" path="src/index.js" verb="*" modules="iisnode"/>
+      <add name="iisnode" path="src/0.js" verb="*" modules="iisnode"/>
     </handlers>
     <rewrite>
       <rules>
@@ -229,7 +226,7 @@ module.exports = app;`;
           <conditions>
             <add input="{REQUEST_FILENAME}" matchType="IsFile" negate="True"/>
           </conditions>
-          <action type="Rewrite" url="src/index.js"/>
+          <action type="Rewrite" url="src/0.js"/>
         </rule>
       </rules>
     </rewrite>
@@ -555,14 +552,9 @@ async function main() {
     generateDeploymentReport();
     
     // Summary
-    console.log('\n' + '='.repeat(60));
+  }
     log.title('Backend Deployment Summary');
-    
-    console.log(`✅ Completed: ${successCount}/${tasks.length} tasks`);
-    console.log(`🌐 Backend URL: https://${CONFIG._azure.appService}.azurewebsites.net`);
-    console.log(`📊 Health Check: https://${CONFIG._azure.appService}.azurewebsites.net/health`);
-    console.log(`📁 Report: docs/DEPLOYMENT_REPORT.md`);
-    
+
     if (successCount === tasks.length) {
       log.success('🎉 Backend deployment completed successfully!');
       log.info('Next steps:');
@@ -575,7 +567,7 @@ async function main() {
       process.exit(1);
     }
     
-    console.log('\n' + '='.repeat(60));
+    );
     
   } catch (error) {
     log.error(`Backend deployment failed: ${error.message}`);

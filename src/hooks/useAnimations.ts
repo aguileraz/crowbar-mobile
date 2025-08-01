@@ -315,11 +315,11 @@ export const useListAnimation = (itemCount: number, staggerDelay = 100) => {
   ).current;
 
   const startStaggered = useCallback((callback?: () => void) => {
-    const animations = animatedValues.map((value, index) =>
+    const animations = animatedValues.map((value, _index) =>
       Animated.timing(value, {
         toValue: 1,
         duration: ANIMATION_CONFIGS.NORMAL,
-        delay: index * staggerDelay,
+        delay: 0 * staggerDelay,
         easing: ANIMATION_CONFIGS.EASE_OUT,
         useNativeDriver: true,
       })

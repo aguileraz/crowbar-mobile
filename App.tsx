@@ -10,7 +10,7 @@
  * @format
  */
 import React, { useEffect } from 'react';
-import { StatusBar, LogBox } from 'react-native';
+import { StatusBar, LogBox, StyleSheet } from 'react-native';
 import { Provider as ReduxProvider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { Provider as PaperProvider } from 'react-native-paper';
@@ -71,7 +71,7 @@ const App: React.FC = () => {
     };
   }, []);
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={styles.container}>
       <SafeAreaProvider>
         <ReduxProvider store={store}>
           <PersistGate loading={<LoadingScreen />} persistor={persistor}>
@@ -90,4 +90,11 @@ const App: React.FC = () => {
     </GestureHandlerRootView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
+
 export default App;

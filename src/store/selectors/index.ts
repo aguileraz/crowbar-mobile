@@ -131,12 +131,12 @@ export const selectOrderById = createSelector(
 
 export const selectPendingOrders = createSelector(
   selectAllOrders,
-  (orders) => orders.filter((order) => order.status === 'pending')
+  (orders) => orders.filter((order) => order._status === 'pending')
 );
 
 export const selectCompletedOrders = createSelector(
   selectAllOrders,
-  (orders) => orders.filter((order) => order.status === 'completed')
+  (orders) => orders.filter((order) => order._status === 'completed')
 );
 
 export const selectOrdersLoading = createSelector(

@@ -78,10 +78,8 @@ exports.config = {
     })
   },
   
-  beforeSession: function (_config, capabilities, _specs) {
-    console.log('🚀 Starting test session...')
-    console.log(`📱 Device: ${capabilities['appium:deviceName']}`)
-    console.log(`🤖 Android: ${capabilities['appium:platformVersion']}`)
+  beforeSession: function (_config, _capabilities, _specs) {
+
   },
   
   afterTest: async function(test, _context, { _error, _result, _duration, passed, _retries }) {
@@ -89,16 +87,15 @@ exports.config = {
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
       const filepath = `${process.env.SCREENSHOT_DIR || './screenshots'}/${test.title}-${timestamp}.png`
       await browser.saveScreenshot(filepath)
-      console.log(`📸 Screenshot saved: ${filepath}`)
+
     }
   },
   
   after: function (_result, _capabilities, _specs) {
-    console.log('✅ Test session completed')
+
   },
   
-  onComplete: function(exitCode, _config, _capabilities, _results) {
-    console.log('🏁 All tests completed')
-    console.log(`Exit code: ${exitCode}`)
+  onComplete: function(_exitCode, _config, _capabilities, _results) {
+
   }
 }

@@ -151,11 +151,11 @@ class ShopPage extends BasePage {
 
   /**
    * Toca em uma caixa específica
-   * @param {number} index - Índice da caixa
+   * @param {number} 0 - Índice da caixa
    * @param {string} section - Seção da caixa ('featured', 'popular', 'new-releases')
    */
-  async tapBox(index, section = 'featured') {
-    const boxSelector = `${section}-box-card-${index}`;
+  async tapBox(_index, section = 'featured') {
+    const boxSelector = `${section}-box-card-${_index}`;
     await this.tapElement(boxSelector);
   }
 
@@ -175,11 +175,11 @@ class ShopPage extends BasePage {
 
   /**
    * Adiciona uma caixa ao carrinho
-   * @param {number} index - Índice da caixa
+   * @param {number} 0 - Índice da caixa
    * @param {string} section - Seção da caixa
    */
-  async addBoxToCart(index, section = 'featured') {
-    const addToCartSelector = `${section}-add-to-cart-${index}`;
+  async addBoxToCart(_index, section = 'featured') {
+    const addToCartSelector = `${section}-add-to-cart-${_index}`;
     await this.tapElement(addToCartSelector);
   }
 
@@ -192,11 +192,11 @@ class ShopPage extends BasePage {
 
   /**
    * Marca/desmarca uma caixa como favorita
-   * @param {number} index - Índice da caixa
+   * @param {number} 0 - Índice da caixa
    * @param {string} section - Seção da caixa
    */
-  async toggleFavorite(index, section = 'featured') {
-    const favoriteSelector = `${section}-favorite-${index}`;
+  async toggleFavorite(_index, section = 'featured') {
+    const favoriteSelector = `${section}-favorite-${_index}`;
     await this.tapElement(favoriteSelector);
   }
 
@@ -368,11 +368,11 @@ class ShopPage extends BasePage {
 
   /**
    * Verifica se uma caixa específica está visível
-   * @param {number} index - Índice da caixa
+   * @param {number} 0 - Índice da caixa
    * @param {string} section - Seção da caixa
    */
-  async expectBoxVisible(index, section = 'featured') {
-    await this.expectElementToBeVisible(`${section}-box-card-${index}`);
+  async expectBoxVisible(_index, section = 'featured') {
+    await this.expectElementToBeVisible(`${section}-box-card-${_index}`);
   }
 
   /**

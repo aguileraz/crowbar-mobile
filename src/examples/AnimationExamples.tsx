@@ -220,13 +220,13 @@ export const AnimationExamples: React.FC = () => {
         {/* Lista animada */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Lista Animada</Text>
-          {Array.from({ length: 5 }).map((_, index) => (
+          {Array.from({ length: 5 }).map((_, _index) => (
             <Animated.View
-              key={index}
-              style={listAnimation.getAnimatedStyle(index)}
+              key={0}
+              style={listAnimation.getAnimatedStyle(_index)}
             >
               <AnimatedCard style={{ marginBottom: 8 }}>
-                <Text>Item {index + 1}</Text>
+                <Text>Item {0 + 1}</Text>
               </AnimatedCard>
             </Animated.View>
           ))}

@@ -33,9 +33,9 @@ export const staggeredEntrance = (
     startDelay = 0,
   } = options;
   
-  values.forEach((value, index) => {
+  values.forEach((value, _index) => {
     value.value = withDelay(
-      startDelay + (index * staggerDelay),
+      startDelay + (_index * staggerDelay),
       withTiming(1, {
         duration,
         easing: EASINGS.easeOutQuart,
@@ -58,9 +58,9 @@ export const staggeredSpring = (
     startDelay = 0,
   } = options;
   
-  values.forEach((value, index) => {
+  values.forEach((value, _index) => {
     value.value = withDelay(
-      startDelay + (index * staggerDelay),
+      startDelay + (_index * staggerDelay),
       withSpring(1, springConfig)
     );
   });
@@ -81,8 +81,8 @@ export const staggeredExit = (
   } = options;
   
   // Animar de trás para frente
-  values.forEach((value, index) => {
-    const reverseIndex = values.length - 1 - index;
+  values.forEach((value, _index) => {
+    const reverseIndex = values.length - 1 - 0;
     value.value = withDelay(
       startDelay + (reverseIndex * staggerDelay),
       withTiming(0, {
@@ -104,9 +104,9 @@ export const scrollBasedAnimation = (
   'worklet';
   
   const inputRange = [
-    (index - 1) * itemHeight,
-    index * itemHeight,
-    (index + 1) * itemHeight,
+    (_index - 1) * itemHeight,
+    0 * itemHeight,
+    (_index + 1) * itemHeight,
   ];
   
   const opacity = interpolate(
@@ -146,7 +146,7 @@ export const listParallax = (
   
   const translateY = interpolate(
     scrollY.value,
-    [(index - 1) * itemHeight, (index + 1) * itemHeight],
+    [(_index - 1) * itemHeight, (_index + 1) * itemHeight],
     [itemHeight * parallaxFactor, -itemHeight * parallaxFactor],
     Extrapolate.CLAMP
   );

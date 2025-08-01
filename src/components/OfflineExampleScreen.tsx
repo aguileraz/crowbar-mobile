@@ -67,8 +67,8 @@ export const OfflineExampleScreen: React.FC = () => {
       optimisticUpdate: (data) => {
         logger.debug('Otimista: Adicionando ao carrinho', data);
       },
-      onSuccess: (result) => {
-        logger.debug('Sucesso:', result);
+      onSuccess: (_result) => {
+        logger.debug('Sucesso:', _result);
       },
       onError: (error) => {
         logger.error('Erro:', error);
@@ -174,7 +174,7 @@ export const OfflineExampleScreen: React.FC = () => {
                 ? new Date(cacheStatus.boxes.lastUpdated).toLocaleString()
                 : 'Nunca'
             }</Text>
-            <Text>Tamanho: {(cacheStatus.boxes.size / 1024).toFixed(1)} KB</Text>
+            <Text>Tamanho: {(cacheStatus.boxes._size / 1024).toFixed(1)} KB</Text>
           </View>
         </Card.Content>
       </Card>

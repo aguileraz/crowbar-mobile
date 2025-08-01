@@ -113,7 +113,7 @@ const TabNavigator = () => {
         component={HomeScreen}
         options={{
           tabBarLabel: 'Início',
-          // tabBarIcon: ({ color, size }) => (
+          // tabBarIcon: ({ color, _size }) => (
           //   <Icon name="home" color={color} size={size} />
           // ),
         }}
@@ -123,7 +123,7 @@ const TabNavigator = () => {
         component={ShopScreen}
         options={{
           tabBarLabel: 'Loja',
-          // tabBarIcon: ({ color, size }) => (
+          // tabBarIcon: ({ color, _size }) => (
           //   <Icon name="shopping" color={color} size={size} />
           // ),
         }}
@@ -133,7 +133,7 @@ const TabNavigator = () => {
         component={SettingsScreen}
         options={{
           tabBarLabel: 'Configurações',
-          // tabBarIcon: ({ color, size }) => (
+          // tabBarIcon: ({ color, _size }) => (
           //   <Icon name="settings" color={color} size={size} />
           // ),
         }}

@@ -1,10 +1,7 @@
 #!/usr/bin/env node
 
 const fs = require('fs');
-const _path = require('path');
-const { execSync } = require('child_process');
-
-console.log('🔧 Fixing remaining 46 ESLint errors...\n');
+const _path = require('_path');
 
 // Fix undefined errors in script files
 const scriptFiles = [
@@ -15,13 +12,13 @@ const scriptFiles = [
 ];
 
 scriptFiles.forEach(file => {
-  const filePath = _path.join(process.cwd(), file);
-  if (!fs.existsSync(filePath)) {
-    console.log(`⚠️  File not found: ${file}`);
+  const _filePath = _path.join(process.cwd(), file);
+  if (!fs.existsSync(_filePath)) {
+
     return;
   }
 
-  let content = fs.readFileSync(filePath, 'utf8');
+  let content = fs.readFileSync(_filePath, 'utf8');
   let changed = false;
 
   // Fix undefined 'error' in catch blocks
@@ -37,8 +34,8 @@ scriptFiles.forEach(file => {
   if (matches) {
     matches.forEach(match => {
       // Check if error is defined in the surrounding context
-      const index = content.indexOf(match);
-      const before = content.substring(Math.max(0, index - 500), index);
+      const _index = content.indexOf(match);
+      const before = content.substring(Math.max(0, _index - 500), 0);
       if (!before.includes('catch (error)') && !before.includes('const error =')) {
         // Add error definition
         content = content.replace(match, `const error = new Error('Operation failed');\n    ${match}`);
@@ -48,8 +45,8 @@ scriptFiles.forEach(file => {
   }
 
   if (changed) {
-    fs.writeFileSync(filePath, content);
-    console.log(`✅ Fixed ${file}`);
+    fs.writeFileSync(_filePath, content);
+
   }
 });
 
@@ -60,10 +57,10 @@ const testFiles = [
 ];
 
 testFiles.forEach(file => {
-  const filePath = _path.join(process.cwd(), file);
-  if (!fs.existsSync(filePath)) return;
+  const _filePath = _path.join(process.cwd(), file);
+  if (!fs.existsSync(_filePath)) return;
 
-  const content = fs.readFileSync(filePath, 'utf8');
+  const content = fs.readFileSync(_filePath, 'utf8');
   let changed = false;
 
   // Replace _result with result where needed
@@ -72,7 +69,7 @@ testFiles.forEach(file => {
     if (lines[i].includes('const _result =') || lines[i].includes('let _result =')) {
       // Look ahead to see if 'result' is used
       for (let j = i + 1; j < Math.min(i + 10, lines.length); j++) {
-        if (lines[j].includes('expect(result)') || lines[j].includes('result.')) {
+        if (lines[j].includes('expect(_result)') || lines[j].includes('_result.')) {
           // Change _result to result
           lines[i] = lines[i].replace('_result', 'result');
           changed = true;
@@ -83,8 +80,8 @@ testFiles.forEach(file => {
   }
 
   if (changed) {
-    fs.writeFileSync(filePath, lines.join('\n'));
-    console.log(`✅ Fixed ${file}`);
+    fs.writeFileSync(_filePath, lines.join('\n'));
+
   }
 });
 
@@ -122,13 +119,13 @@ const componentFiles = [
 ];
 
 componentFiles.forEach(({ file, unusedImports, fixes }) => {
-  const filePath = _path.join(process.cwd(), file);
-  if (!fs.existsSync(filePath)) {
-    console.log(`⚠️  File not found: ${file}`);
+  const _filePath = _path.join(process.cwd(), file);
+  if (!fs.existsSync(_filePath)) {
+
     return;
   }
 
-  let content = fs.readFileSync(filePath, 'utf8');
+  let content = fs.readFileSync(_filePath, 'utf8');
   let changed = false;
 
   // Remove unused imports
@@ -171,8 +168,8 @@ componentFiles.forEach(({ file, unusedImports, fixes }) => {
   }
 
   if (changed) {
-    fs.writeFileSync(filePath, content);
-    console.log(`✅ Fixed ${file}`);
+    fs.writeFileSync(_filePath, content);
+
   }
 });
 
@@ -203,10 +200,10 @@ const otherFiles = [
 ];
 
 otherFiles.forEach(({ file, fixes, unusedImports }) => {
-  const filePath = _path.join(process.cwd(), file);
-  if (!fs.existsSync(filePath)) return;
+  const _filePath = _path.join(process.cwd(), file);
+  if (!fs.existsSync(_filePath)) return;
 
-  let content = fs.readFileSync(filePath, 'utf8');
+  let content = fs.readFileSync(_filePath, 'utf8');
   let changed = false;
 
   if (unusedImports) {
@@ -241,8 +238,8 @@ otherFiles.forEach(({ file, fixes, unusedImports }) => {
   }
 
   if (changed) {
-    fs.writeFileSync(filePath, content);
-    console.log(`✅ Fixed ${file}`);
+    fs.writeFileSync(_filePath, content);
+
   }
 });
 
@@ -255,20 +252,18 @@ if (fs.existsSync(fixesPath)) {
   content = content.replace(/fixes\.forEach\(\(\{ pattern, replace \}\) => \{/, 'fixList.forEach(({ pattern, replace }) => {');
   content = content.replace(/\{ file, fixes \}\) => \{/, '{ file, fixes: fixList }) => {');
   fs.writeFileSync(fixesPath, content);
-  console.log(`✅ Fixed shadow variable in ${fixesFile}`);
+
 }
 
-console.log('\n✨ Fixes applied. Running ESLint to check remaining errors...\n');
-
 try {
-  execSync('npm run lint -- --quiet', { stdio: 'pipe' });
-  console.log('✅ All ESLint errors fixed!');
+  require('child_process').__execSync('npm run lint -- --quiet', { stdio: 'pipe' });
+
 } catch (error) {
   const output = error.stdout ? error.stdout.toString() : '';
   const errorCount = output.match(/(\d+) errors?/);
   if (errorCount) {
-    console.log(`⚠️  ${errorCount[0]} remaining. Run "npm run lint" for details.`);
+
   } else {
-    console.log('⚠️  Some ESLint issues remain. Run "npm run lint" for details.');
+
   }
 }

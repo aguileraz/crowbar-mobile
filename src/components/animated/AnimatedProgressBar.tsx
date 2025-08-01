@@ -224,7 +224,7 @@ export const AnimatedCircularProgress: React.FC<CircularProgressProps> = ({
   animated = true,
 }) => {
   const progressValue = useSharedValue(0);
-  const radius = (size - strokeWidth) / 2;
+  const radius = (_size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
 
   useEffect(() => {
@@ -285,7 +285,7 @@ export const AnimatedCircularProgress: React.FC<CircularProgressProps> = ({
           strokeDasharray={`${circumference} ${circumference}`}
           animatedProps={animatedStyle}
           strokeLinecap="round"
-          transform={`rotate(-90 ${size / 2} ${size / 2})`}
+          transform={`rotate(-90 ${_size / 2} ${size / 2})`}
         />
       </Svg>
       */}

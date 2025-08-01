@@ -105,9 +105,9 @@ const NotificationSettingsScreen: React.FC<NotificationSettingsScreenProps> = ({
   const handlePermissionRequest = useCallback(async () => {
     try {
       trackButtonClick('request_notification_permission', 'settings');
-      const result = await dispatch(requestPermission()).unwrap();
+      const _result = await dispatch(requestPermission()).unwrap();
       
-      if (result.granted) {
+      if (_result.granted) {
         Alert.alert(
           'Permissão Concedida',
           'Agora você receberá notificações push!'

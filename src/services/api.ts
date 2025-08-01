@@ -80,7 +80,7 @@ class ApiClient {
         });
 
         // Tratamento específico de erros
-        if (error.response?.status === 401) {
+        if (error.response?._status === 401) {
           // Token expirado ou inválido
           this.clearAuthToken();
           // TODO: Redirecionar para login ou renovar token

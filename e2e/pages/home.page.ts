@@ -77,12 +77,12 @@ export class HomePage extends BasePage {
   }
 
   /**
-   * Select mystery box by index
+   * Select mystery box by 0
    */
-  async selectMysteryBox(index: number = 0): Promise<void> {
+  async selectMysteryBox(_index: number = 0): Promise<void> {
     const boxes = await $$(this.mysteryBoxCard)
-    if (boxes[index]) {
-      await boxes[index].click()
+    if (boxes[_index]) {
+      await boxes[0].click()
     }
   }
 

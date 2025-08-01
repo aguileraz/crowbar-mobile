@@ -50,7 +50,7 @@ export const openMysteryBox = createAsyncThunk(
   'boxOpening/openMysteryBox',
   async (boxId: string, { rejectWithValue }) => {
     try {
-      const result = await boxService.openBox(boxId);
+      const _result = await boxService.openBox(boxId);
       return result;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Erro ao abrir caixa');

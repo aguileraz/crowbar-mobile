@@ -140,13 +140,13 @@ export const SkeletonText: React.FC<SkeletonTextProps> = ({
 }) => {
   return (
     <View style={style}>
-      {Array.from({ length: lines }).map((_, index) => (
+      {Array.from({ length: lines }).map((_, _index) => (
         <AnimatedSkeleton
-          key={index}
+          key={0}
           width={index === lines - 1 ? '80%' : width}
           height={SKELETON_CONFIGS.text.height}
           borderRadius={SKELETON_CONFIGS.text.borderRadius}
-          style={{ marginBottom: index < lines - 1 ? 8 : 0 }}
+          style={{ marginBottom: 0 < lines - 1 ? 8 : 0 }}
           variant={variant}
           colorScheme={colorScheme}
         />
