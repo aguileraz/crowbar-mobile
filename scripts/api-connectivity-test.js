@@ -145,15 +145,15 @@ async function testAPIConnectivity(config) {
       log.error(`API returned status ${response.statusCode}`);
       return false;
     }
-  } catch (error) {
-    if (error.code === 'ENOTFOUND') {
+  } catch (err) {
+    if (err.code === 'ENOTFOUND') {
       log.error('API hostname could not be resolved (DNS issue)');
-    } else if (error.code === 'ECONNREFUSED') {
+    } else if (err.code === 'ECONNREFUSED') {
       log.error('API connection refused (service may be down)');
-    } else if (error.code === 'TIMEOUT' || error.message.includes('timeout')) {
+    } else if (err.code === 'TIMEOUT' || err.message.includes('timeout')) {
       log.error('API request timed out (service may be slow)');
     } else {
-      log.error(`API connectivity failed: ${error.message}`);
+      log.error(`API connectivity failed: ${err.message}`);
     }
     return false;
   }
@@ -193,8 +193,8 @@ async function testWebSocketConnectivity(config) {
       log.warning(`WebSocket endpoint returned ${response.statusCode} - may need proper WebSocket client`);
       return true; // Not a critical failure
     }
-  } catch (error) {
-    log.warning(`WebSocket connectivity test failed: ${error.message}`);
+  } catch (err) {
+    log.warning(`WebSocket connectivity test failed: ${err.message}`);
     return true; // WebSocket failure is not critical for basic functionality
   }
 }
@@ -220,8 +220,8 @@ async function testFirebaseConnectivity() {
       log.error(`Firebase returned status ${response.statusCode}`);
       return false;
     }
-  } catch (error) {
-    log.error(`Firebase connectivity failed: ${error.message}`);
+  } catch (err) {
+    log.error(`Firebase connectivity failed: ${err.message}`);
     return false;
   }
 }
@@ -249,8 +249,8 @@ async function testExternalServices() {
       } else {
         log.warning(`${service.name} returned status ${response.statusCode}`);
       }
-    } catch (error) {
-      log.warning(`${service.name} connectivity failed: ${error.message}`);
+    } catch (err) {
+      log.warning(`${service.name} connectivity failed: ${err.message}`);
       // External services failing is not critical
     }
   }
@@ -352,8 +352,8 @@ async function runConnectivityTests() {
     const allConnected = generateConnectivityReport(results);
     return allConnected;
     
-  } catch (error) {
-    log.error(`Fatal error during connectivity tests: ${error.message}`);
+  } catch (err) {
+    log.error(`Fatal error during connectivity tests: ${err.message}`);
     return false;
   }
 }

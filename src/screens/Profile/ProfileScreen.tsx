@@ -14,7 +14,6 @@ import {
   Button,
   IconButton,
   ActivityIndicator,
-  Avatar,
 
   List,
   ProgressBar,

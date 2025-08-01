@@ -9,16 +9,14 @@ import {
 } from 'react-native';
 import {
   Text,
-  Card,
   Title,
   Button,
   IconButton,
   ActivityIndicator,
   FAB,
-  Menu,
 
 } from 'react-native-paper';
-import { _useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 

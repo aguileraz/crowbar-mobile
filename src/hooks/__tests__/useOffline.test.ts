@@ -204,7 +204,7 @@ describe('useOffline', () => {
       // Começar offline
       const offlineStore = createMockStore({ isOnline: false });
       
-      const { result, rerender } = renderHook(() => 
+      const { result: _result, rerender } = renderHook(() => 
         useOfflineCache('test_key', mockFetcher, {
           strategy: CacheStrategy.NETWORK_FIRST,
         }), 

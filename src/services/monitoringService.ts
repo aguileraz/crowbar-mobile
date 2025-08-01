@@ -159,7 +159,7 @@ class MonitoringService {
         // Set additional data
         if (context.additionalData) {
           Object.entries(context.additionalData).forEach(([key, value]) => {
-            crashlytics().setAttribute(_key, String(value));
+            crashlytics().setAttribute(key, String(value));
           });
         }
       }
@@ -248,7 +248,7 @@ class MonitoringService {
       
       if (attributes) {
         Object.entries(attributes).forEach(([key, value]) => {
-          trace.putAttribute(_key, value);
+          trace.putAttribute(key, value);
         });
       }
 

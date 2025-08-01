@@ -7,7 +7,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
+const { execSync: _execSync } = require('child_process');
 
 // Colors for output
 const colors = {
@@ -431,6 +431,7 @@ function createMigrationScript() {
 
 import { secureStorage } from '../services/secureStorage';
 import logger from '../services/loggerService';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export async function migrateToSecureStorage(): Promise<void> {
   try {

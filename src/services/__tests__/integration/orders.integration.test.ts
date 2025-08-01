@@ -1,7 +1,6 @@
 import { TestApiClient, testEnvironment, testData, testUtils } from './testConfig';
-import { httpClient } from '../../httpClient';
 import { orderService } from '../../orderService';
-import { Order, PaginatedResponse } from '../../../types/api';
+import { Order } from '../../../types/api';
 
 /**
  * Testes de integração para operações de pedidos

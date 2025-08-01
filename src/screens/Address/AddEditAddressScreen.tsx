@@ -206,7 +206,7 @@ const AddEditAddressScreen: React.FC<AddEditAddressScreenProps> = ({
           <Text style={styles.sectionLabel}>Tipo de endereço</Text>
           <SegmentedButtons
             value={formik.values.type}
-            onValueChange={(value) => formik.setFieldValue('type', _value)}
+            onValueChange={(value) => formik.setFieldValue('type', value)}
             buttons={[
               { value: 'home', label: 'Casa', icon: 'home' },
               { value: 'work', label: 'Trabalho', icon: 'office-building' },
@@ -343,7 +343,7 @@ const AddEditAddressScreen: React.FC<AddEditAddressScreenProps> = ({
             <Text style={styles.switchLabel}>Definir como endereço padrão</Text>
             <Switch
               value={formik.values.is_default}
-              onValueChange={(value) => formik.setFieldValue('is_default', _value)}
+              onValueChange={(value) => formik.setFieldValue('is_default', value)}
             />
           </View>
         </View>

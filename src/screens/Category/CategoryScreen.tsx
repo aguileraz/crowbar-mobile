@@ -25,7 +25,6 @@ import { RouteProp } from '@react-navigation/native';
 // Redux
 import { AppDispatch } from '../../store';
 import {
-  fetchBoxesByCategory,
   fetchBoxes,
   selectBoxes,
   selectCategories,

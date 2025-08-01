@@ -1,5 +1,4 @@
 import { TestApiClient, testEnvironment, testData, testUtils } from './testConfig';
-import { apiClient } from '../../api';
 import { cartService } from '../../cartService';
 import { Cart, CartItem, Order, Promotion } from '../../../types/api';
 
@@ -112,7 +111,7 @@ describe('Testes de Integração - Operações de Carrinho', () => {
       testClient.mockSuccess('get', '/cart', expectedResponse);
 
       // Act
-      const _response = await cartService.getCart();
+      const response = await cartService.getCart();
 
       // Assert
       expect(response).toMatchObject({
@@ -141,7 +140,7 @@ describe('Testes de Integração - Operações de Carrinho', () => {
       testClient.mockSuccess('post', '/cart/items', expectedResponse);
 
       // Act
-      const _response = await cartService.addToCart(boxId, quantity);
+      const response = await cartService.addToCart(boxId, quantity);
 
       // Assert
       expect(response).toMatchObject({
@@ -191,7 +190,7 @@ describe('Testes de Integração - Operações de Carrinho', () => {
       testClient.mockSuccess('put', `/cart/items/${itemId}`, expectedResponse);
 
       // Act
-      const _response = await cartService.updateCartItem(itemId, newQuantity);
+      const response = await cartService.updateCartItem(itemId, newQuantity);
 
       // Assert
       expect(response.items.find(item => item.id === itemId)).toMatchObject({
@@ -213,7 +212,7 @@ describe('Testes de Integração - Operações de Carrinho', () => {
       testClient.mockSuccess('delete', `/cart/items/${itemId}`, expectedResponse);
 
       // Act
-      const _response = await cartService.removeFromCart(itemId);
+      const response = await cartService.removeFromCart(itemId);
 
       // Assert
       expect(response.items.find(item => item.id === itemId)).toBeUndefined();
@@ -268,7 +267,7 @@ describe('Testes de Integração - Operações de Carrinho', () => {
       testClient.mockSuccess('post', '/cart/coupon', expectedResponse);
 
       // Act
-      const _response = await cartService.applyCoupon(couponCode);
+      const response = await cartService.applyCoupon(couponCode);
 
       // Assert
       expect(response).toMatchObject({
@@ -309,7 +308,7 @@ describe('Testes de Integração - Operações de Carrinho', () => {
       testClient.mockSuccess('post', '/cart/validate-coupon', expectedResponse);
 
       // Act
-      const _response = await cartService.validateCoupon(couponCode);
+      const response = await cartService.validateCoupon(couponCode);
 
       // Assert
       expect(response).toMatchObject({
@@ -336,7 +335,7 @@ describe('Testes de Integração - Operações de Carrinho', () => {
       testClient.mockSuccess('delete', '/cart/coupon', expectedResponse);
 
       // Act
-      const _response = await cartService.removeCoupon();
+      const response = await cartService.removeCoupon();
 
       // Assert
       expect(response).toMatchObject({
@@ -358,7 +357,7 @@ describe('Testes de Integração - Operações de Carrinho', () => {
       testClient.mockSuccess('post', '/cart/validate-coupon', expectedResponse);
 
       // Act
-      const _response = await cartService.validateCoupon(couponCode);
+      const response = await cartService.validateCoupon(couponCode);
 
       // Assert
       expect(response).toMatchObject({
@@ -395,7 +394,7 @@ describe('Testes de Integração - Operações de Carrinho', () => {
       testClient.mockSuccess('post', '/cart/shipping', expectedResponse);
 
       // Act
-      const _response = await cartService.calculateShipping(addressId);
+      const response = await cartService.calculateShipping(addressId);
 
       // Assert
       expect(response.options).toHaveLength(2);
@@ -426,7 +425,7 @@ describe('Testes de Integração - Operações de Carrinho', () => {
       testClient.mockSuccess('post', '/cart/shipping/zip', expectedResponse);
 
       // Act
-      const _response = await cartService.calculateShippingByZip(zipCode);
+      const response = await cartService.calculateShippingByZip(zipCode);
 
       // Assert
       expect(response.options).toHaveLength(1);
@@ -468,7 +467,7 @@ describe('Testes de Integração - Operações de Carrinho', () => {
       testClient.mockSuccess('get', '/cart/delivery-estimate', expectedResponse);
 
       // Act
-      const _response = await cartService.estimateDelivery(addressId);
+      const response = await cartService.estimateDelivery(addressId);
 
       // Assert
       expect(response).toMatchObject({
@@ -497,7 +496,7 @@ describe('Testes de Integração - Operações de Carrinho', () => {
       testClient.mockSuccess('post', '/orders', expectedResponse);
 
       // Act
-      const _response = await cartService.checkout(checkoutData);
+      const response = await cartService.checkout(checkoutData);
 
       // Assert
       expect(response).toMatchObject({
@@ -531,7 +530,7 @@ describe('Testes de Integração - Operações de Carrinho', () => {
       testClient.mockSuccess('post', '/cart/summary', expectedResponse);
 
       // Act
-      const _response = await cartService.getOrderSummary(summaryData);
+      const response = await cartService.getOrderSummary(summaryData);
 
       // Assert
       expect(response).toMatchObject({
@@ -585,7 +584,7 @@ describe('Testes de Integração - Operações de Carrinho', () => {
       testClient.mockSuccess('get', '/cart/availability', expectedResponse);
 
       // Act
-      const _response = await cartService.checkAvailability();
+      const response = await cartService.checkAvailability();
 
       // Assert
       expect(response).toMatchObject({
@@ -627,7 +626,7 @@ describe('Testes de Integração - Operações de Carrinho', () => {
       testClient.mockSuccess('post', `/orders/${orderId}/payment`, expectedResponse);
 
       // Act
-      const _response = await cartService.processPayment(orderId, paymentData);
+      const response = await cartService.processPayment(orderId, paymentData);
 
       // Assert
       expect(response).toMatchObject({
@@ -655,7 +654,7 @@ describe('Testes de Integração - Operações de Carrinho', () => {
       testClient.mockSuccess('post', `/orders/${orderId}/payment`, expectedResponse);
 
       // Act
-      const _response = await cartService.processPayment(orderId, paymentData);
+      const response = await cartService.processPayment(orderId, paymentData);
 
       // Assert
       expect(response).toMatchObject({
@@ -683,7 +682,7 @@ describe('Testes de Integração - Operações de Carrinho', () => {
       testClient.mockSuccess('post', `/orders/${orderId}/payment`, expectedResponse);
 
       // Act
-      const _response = await cartService.processPayment(orderId, paymentData);
+      const response = await cartService.processPayment(orderId, paymentData);
 
       // Assert
       expect(response).toMatchObject({
@@ -706,7 +705,7 @@ describe('Testes de Integração - Operações de Carrinho', () => {
       testClient.mockSuccess('get', `/orders/${orderId}/payment/status`, expectedResponse);
 
       // Act
-      const _response = await cartService.checkPaymentStatus(orderId);
+      const response = await cartService.checkPaymentStatus(orderId);
 
       // Assert
       expect(response).toMatchObject({
@@ -739,7 +738,7 @@ describe('Testes de Integração - Operações de Carrinho', () => {
       testClient.mockSuccess('get', '/payment/methods', expectedResponse);
 
       // Act
-      const _response = await cartService.getPaymentMethods();
+      const response = await cartService.getPaymentMethods();
 
       // Assert
       expect(response).toMatchObject({
@@ -768,7 +767,7 @@ describe('Testes de Integração - Operações de Carrinho', () => {
       testClient.mockSuccess('get', '/payment/installments', expectedResponse);
 
       // Act
-      const _response = await cartService.calculateInstallments(amount);
+      const response = await cartService.calculateInstallments(amount);
 
       // Assert
       expect(response).toHaveLength(3);
@@ -823,7 +822,7 @@ describe('Testes de Integração - Operações de Carrinho', () => {
       testClient.mockSuccess('post', '/cart/save', expectedResponse);
 
       // Act
-      const _response = await cartService.saveForLater();
+      const response = await cartService.saveForLater();
 
       // Assert
       expect(response).toMatchObject({
@@ -837,7 +836,7 @@ describe('Testes de Integração - Operações de Carrinho', () => {
       testClient.mockSuccess('post', '/cart/restore', expectedResponse);
 
       // Act
-      const _response = await cartService.restoreSavedCart();
+      const response = await cartService.restoreSavedCart();
 
       // Assert
       expect(response).toMatchObject({
@@ -861,7 +860,7 @@ describe('Testes de Integração - Operações de Carrinho', () => {
       testClient.mockSuccess('get', '/cart/saved', expectedResponse);
 
       // Act
-      const _response = await cartService.hasSavedCart();
+      const response = await cartService.hasSavedCart();
 
       // Assert
       expect(response).toMatchObject({
@@ -881,7 +880,7 @@ describe('Testes de Integração - Operações de Carrinho', () => {
       testClient.mockSuccess('post', '/cart/share', expectedResponse);
 
       // Act
-      const _response = await cartService.shareCart();
+      const response = await cartService.shareCart();
 
       // Assert
       expect(response).toMatchObject({
@@ -897,7 +896,7 @@ describe('Testes de Integração - Operações de Carrinho', () => {
       testClient.mockSuccess('post', '/cart/import', expectedResponse);
 
       // Act
-      const _response = await cartService.importSharedCart(shareToken);
+      const response = await cartService.importSharedCart(shareToken);
 
       // Assert
       expect(response).toMatchObject({

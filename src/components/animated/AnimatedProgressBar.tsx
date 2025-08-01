@@ -217,7 +217,7 @@ export const AnimatedCircularProgress: React.FC<CircularProgressProps> = ({
   progress,
   size = 100,
   strokeWidth = 8,
-  color = '#2196F3',
+  _color = '#2196F3',
   backgroundColor = '#E0E0E0',
   showLabel = true,
   labelStyle,

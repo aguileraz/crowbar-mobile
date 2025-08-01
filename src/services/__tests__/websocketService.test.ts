@@ -1,4 +1,4 @@
-import { io, Socket } from 'socket.io-client';
+import { io } from 'socket.io-client';
 import { websocketService } from '../websocketService';
 import { env } from '../../config/env';
 

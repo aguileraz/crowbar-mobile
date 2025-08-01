@@ -7,7 +7,6 @@
 
 const { execSync } = require('child_process');
 const fs = require('fs');
-const _path = require('path');
 
 // Colors for console output
 const colors = {
@@ -369,7 +368,7 @@ function generateFinalReport() {
   console.log('\n' + '═'.repeat(60));
   log.header('📊 FINAL BUILD VALIDATION SUMMARY');
   
-  Object.entries(steps).forEach(([key, step]) => {
+  Object.entries(steps).forEach(([_key, step]) => {
     const icon = step.status === 'passed' ? '✅' : 
                  step.status === 'warning' ? '⚠️' : 
                  step.status === 'failed' ? '❌' : 
@@ -446,7 +445,7 @@ async function runFinalValidation() {
 // Run if called directly
 if (require.main === module) {
   runFinalValidation().catch(_error => {
-    log.error(`Fatal error: ${error.message}`);
+    log.error(`Fatal error: ${_error.message}`);
     process.exit(1);
   });
 }

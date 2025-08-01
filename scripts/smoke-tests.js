@@ -94,10 +94,10 @@ function testProductionEnvironment() {
       results.tests.push({ name: 'Environment Configuration', status: 'FAILED', message: 'Invalid production settings' });
     }
 
-  } catch (error) {
+  } catch (err) {
     results.failed++;
-    results.tests.push({ name: 'Environment Configuration', status: 'FAILED', message: error.message });
-    log.error(`Environment test failed: ${error.message}`);
+    results.tests.push({ name: 'Environment Configuration', status: 'FAILED', message: err.message });
+    log.error(`Environment test failed: ${err.message}`);
   }
 }
 
@@ -140,10 +140,10 @@ function testBundleCreation() {
       results.tests.push({ name: 'Bundle Creation', status: 'FAILED', message: 'Bundle file not created' });
       log.error('Bundle file was not created');
     }
-  } catch (error) {
+  } catch (err) {
     results.failed++;
-    results.tests.push({ name: 'Bundle Creation', status: 'FAILED', message: error.message });
-    log.error(`Bundle creation failed: ${error.message.split('\n')[0]}`);
+    results.tests.push({ name: 'Bundle Creation', status: 'FAILED', message: err.message });
+    log.error(`Bundle creation failed: ${err.message.split('\n')[0]}`);
   }
 }
 
@@ -158,8 +158,8 @@ function testTypeScriptCompilation() {
     results.passed++;
     results.tests.push({ name: 'TypeScript Compilation', status: 'PASSED', message: 'No TypeScript errors' });
     log.success('TypeScript compilation successful');
-  } catch (error) {
-    const errorOutput = error.stdout ? error.stdout.toString() : error.message;
+  } catch (err) {
+    const errorOutput = err.stdout ? err.stdout.toString() : err.message;
     const errorCount = (errorOutput.match(/error TS/g) || []).length;
     
     if (errorCount > 0) {
@@ -209,10 +209,10 @@ function testFirebaseConfiguration() {
       results.tests.push({ name: 'Firebase Configuration', status: 'FAILED', message: 'google-services.json not found' });
       log.error('google-services.json not found');
     }
-  } catch (error) {
+  } catch (err) {
     results.failed++;
-    results.tests.push({ name: 'Firebase Configuration', status: 'FAILED', message: error.message });
-    log.error(`Firebase configuration test failed: ${error.message}`);
+    results.tests.push({ name: 'Firebase Configuration', status: 'FAILED', message: err.message });
+    log.error(`Firebase configuration test failed: ${err.message}`);
   }
 }
 
@@ -253,10 +253,10 @@ function testDependencies() {
       results.failed++;
       results.tests.push({ name: 'Critical Dependencies', status: 'FAILED', message: 'Missing critical dependencies' });
     }
-  } catch (error) {
+  } catch (err) {
     results.failed++;
-    results.tests.push({ name: 'Critical Dependencies', status: 'FAILED', message: error.message });
-    log.error(`Dependencies test failed: ${error.message}`);
+    results.tests.push({ name: 'Critical Dependencies', status: 'FAILED', message: err.message });
+    log.error(`Dependencies test failed: ${err.message}`);
   }
 }
 
@@ -273,7 +273,6 @@ function testAndroidConfiguration() {
       
       // Check key production settings
       const hasHermes = gradleProps.includes('hermesEnabled=true');
-      const hasProguard = gradleProps.includes('android.enableR8=true') || gradleProps.includes('minifyEnabled');
       
       if (hasHermes) {
         log.success('Hermes JS engine enabled');
@@ -289,10 +288,10 @@ function testAndroidConfiguration() {
       results.tests.push({ name: 'Android Configuration', status: 'FAILED', message: 'gradle.properties not found' });
       log.error('gradle.properties not found');
     }
-  } catch (error) {
+  } catch (err) {
     results.failed++;
-    results.tests.push({ name: 'Android Configuration', status: 'FAILED', message: error.message });
-    log.error(`Android configuration test failed: ${error.message}`);
+    results.tests.push({ name: 'Android Configuration', status: 'FAILED', message: err.message });
+    log.error(`Android configuration test failed: ${err.message}`);
   }
 }
 
@@ -368,8 +367,8 @@ async function runSmokeTests() {
     testAndroidConfiguration();
     
     generateReport();
-  } catch (error) {
-    log.error(`Fatal error during smoke tests: ${error.message}`);
+  } catch (err) {
+    log.error(`Fatal error during smoke tests: ${err.message}`);
     process.exit(1);
   }
 }

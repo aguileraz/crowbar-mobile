@@ -355,7 +355,7 @@ describe('OrderService', () => {
       const mockUrl = 'blob:http://localhost/123456';
       
       global.URL.createObjectURL = jest.fn().mockReturnValue(mockUrl);
-      global.Blob = jest.fn().mockImplementation((content, options) => mockBlob) as any;
+      global.Blob = jest.fn().mockImplementation((_content, _options) => mockBlob) as any;
 
       (httpClient.get as jest.Mock).mockResolvedValue({ 
         data: 'PDF content',

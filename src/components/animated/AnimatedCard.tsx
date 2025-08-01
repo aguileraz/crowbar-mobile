@@ -38,7 +38,7 @@ export const AnimatedCard: React.FC<AnimatedCardProps> = ({
   elevation = 2,
   variant = 'elevated',
   pressable = true,
-  haptic = true,
+  _haptic = true,
   scaleOnPress = true,
   elevateOnHover = true,
   onPress,

@@ -42,7 +42,7 @@ const results = {
  */
 function runTest(name, testFn) {
   try {
-    const _result = testFn();
+    const result = testFn();
     if (result === true) {
       log.success(name);
       results.passed++;
@@ -220,7 +220,7 @@ function checkSigning() {
       // Check if jarsigner is available
       execSync('jarsigner -help', { stdio: 'ignore' });
       
-      const _result = execSync(`jarsigner -verify ${apkPath}`, { encoding: 'utf8' });
+      const result = execSync(`jarsigner -verify ${apkPath}`, { encoding: 'utf8' });
       
       if (result.includes('jar verified') || result.includes('verified')) {
         log.info('  APK signature verified');
@@ -231,7 +231,7 @@ function checkSigning() {
     } catch (error) {
       // If jarsigner is not available, check with apksigner
       try {
-        const _result = execSync(`apksigner verify ${apkPath}`, { encoding: 'utf8' });
+        execSync(`apksigner verify ${apkPath}`, { encoding: 'utf8' });
         return true;
       } catch (apkError) {
         log.warning('  Unable to verify signature (tools not available)');
@@ -411,7 +411,7 @@ function runQualityChecks() {
   
   runTest('ESLint passes', () => {
     try {
-      const _result = execSync('npm run lint', { encoding: 'utf8', stdio: 'pipe' });
+      execSync('npm run lint', { encoding: 'utf8', stdio: 'pipe' });
       return true;
     } catch (error) {
       const output = error.stdout || error.stderr || '';

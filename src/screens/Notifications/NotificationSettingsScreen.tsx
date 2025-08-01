@@ -139,7 +139,7 @@ const NotificationSettingsScreen: React.FC<NotificationSettingsScreenProps> = ({
       right={() => (
         <Switch
           value={localSettings?.[key] || false}
-          onValueChange={(value) => updateSetting(key, _value)}
+          onValueChange={(value) => updateSetting(key, value)}
           disabled={isUpdating}
         />
       )}

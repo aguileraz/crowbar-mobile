@@ -6,7 +6,6 @@
 import React, { useCallback, useEffect } from 'react';
 import {
   Pressable,
-  View,
   Text,
   StyleSheet,
   ViewStyle,
@@ -84,7 +83,7 @@ export const AnimatedCheckbox: React.FC<AnimatedCheckboxProps> = ({
   const iconSize = boxSize * 0.7;
 
   const boxAnimatedStyle = useAnimatedStyle(() => {
-    const backgroundColor = interpolate(
+    const _backgroundColor = interpolate(
       scale.value,
       [0, 1],
       [0, 1],

@@ -329,6 +329,6 @@ if (process.argv.includes('--help') || process.argv.includes('-h')) {
 
 // Run the main function
 main().catch(_error => {
-  logError(`Fatal error: ${error.message}`);
+  logError(`Fatal error: ${_error.message}`);
   process.exit(1);
 });

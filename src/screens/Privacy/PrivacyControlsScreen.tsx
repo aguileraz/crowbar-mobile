@@ -18,7 +18,6 @@ import {
   Portal,
   ActivityIndicator,
 
-  Text,
   useTheme,
   Divider,
 } from 'react-native-paper';

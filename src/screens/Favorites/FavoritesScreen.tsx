@@ -25,7 +25,6 @@ import { AppDispatch } from '../../store';
 import {
   fetchFavorites,
   removeFromFavorites,
-  clearError,
   selectFavorites,
   selectFavoritesLoading,
   selectFavoritesUpdating,

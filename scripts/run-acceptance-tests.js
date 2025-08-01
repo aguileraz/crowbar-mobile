@@ -6,7 +6,7 @@
  */
 
 const fs = require('fs');
-const _path = require('path');
+const path = require('path');
 const { execSync } = require('child_process');
 
 // Configuration
@@ -79,11 +79,11 @@ function runCommand(command, options = {}) {
       ...options
     });
     return { success: true, output: result };
-  } catch (error) {
+  } catch (err) {
     return { 
       success: false, 
-      error: error.message,
-      output: error.stdout || error.stderr || ''
+      error: err.message,
+      output: err.stdout || err.stderr || ''
     };
   }
 }
@@ -182,7 +182,7 @@ async function runPerformanceTests() {
         try {
           const memory = JSON.parse(output.replace(/[^{]*({.*})[^}]*/, '$1'));
           return memory.heapUsed < CONFIG.performanceThresholds.memoryUsage;
-        } catch {
+        } catch (err) {
           return true;
         }
       }
@@ -284,7 +284,7 @@ async function runAccessibilityTests() {
         function walkDir(dir) {
           const files = fs.readdirSync(dir);
           files.forEach(file => {
-            const fullPath = _path.join(dir, file);
+            const fullPath = path.join(dir, file);
             const stat = fs.statSync(fullPath);
             if (stat.isDirectory()) {
               walkDir(fullPath);
@@ -398,7 +398,7 @@ function generateTestReport(results) {
   
   // JSON report
   fs.writeFileSync(
-    _path.join(CONFIG.reportDir, 'acceptance-test-report.json'),
+    path.join(CONFIG.reportDir, 'acceptance-test-report.json'),
     JSON.stringify(report, null, 2)
   );
   
@@ -461,7 +461,7 @@ function generateTestReport(results) {
 </html>`;
   
   fs.writeFileSync(
-    _path.join(CONFIG.reportDir, 'acceptance-test-report.html'),
+    path.join(CONFIG.reportDir, 'acceptance-test-report.html'),
     htmlReport
   );
   
@@ -508,16 +508,16 @@ async function main() {
         overallSuccess = false;
       }
       
-    } catch (error) {
+    } catch (err) {
       const duration = Date.now() - startTime;
       results.push({
         name: suite.name,
         passed: false,
         duration,
-        error: error.message
+        error: err.message
       });
       overallSuccess = false;
-      log.error(`${suite.name} threw an error: ${error.message}`);
+      log.error(`${suite.name} threw an error: ${err.message}`);
     }
   }
   
@@ -548,7 +548,7 @@ async function main() {
 // Run if called directly
 if (require.main === module) {
   main().catch(_error => {
-    log.error(`Acceptance tests failed: ${error.message}`);
+    log.error(`Acceptance tests failed: ${_error.message}`);
     process.exit(1);
   });
 }

@@ -340,7 +340,7 @@ async function setupBackup() {
     log.info('Firebase automatic backup is enabled');
     
     // Azure App Service backup
-    const { azure } = CONFIG.environments.production;
+    const { azure: _azure } = CONFIG.environments.production;
     
     // This would require a storage account
     log.info('Setting up Azure backup...');

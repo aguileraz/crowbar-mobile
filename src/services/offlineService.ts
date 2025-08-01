@@ -213,7 +213,7 @@ class OfflineService {
     key: string,
     data: any,
     priority: SyncPriority = SyncPriority.NORMAL,
-    strategy: CacheStrategy = CacheStrategy.NETWORK_FIRST
+    _strategy: CacheStrategy = CacheStrategy.NETWORK_FIRST
   ): Promise<void> {
     try {
       const compressed = this.compressData(data);
@@ -923,7 +923,7 @@ class OfflineService {
           if (cacheStatus.totalSize <= maxCacheSize) break;
           
           // Limpar caches com essa prioridade
-          for (const [type, key] of Object.entries(this.CACHE_KEYS)) {
+          for (const [_type, key] of Object.entries(this.CACHE_KEYS)) {
             const metadataStr = await AsyncStorage.getItem(`${key}_metadata`);
             if (metadataStr) {
               const metadata: CacheMetadata = JSON.parse(metadataStr);

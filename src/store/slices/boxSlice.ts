@@ -425,7 +425,6 @@ const boxSlice = createSlice({
 
 // Actions
 export const {
-  clearError,
   setSearchQuery,
   clearSearchResults,
   setActiveFilters,
@@ -433,7 +432,7 @@ export const {
   setSelectedCategory,
   clearSelectedBox,
   updateBoxStock,
-  resetState,
+  resetState
 } = boxSlice.actions;
 
 // Selectors

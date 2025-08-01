@@ -7,7 +7,7 @@
 
 const { execSync } = require('child_process');
 const fs = require('fs');
-const _path = require('path');
+const path = require('path');
 
 // Configurações de performance
 const PERFORMANCE_CRITERIA = {
@@ -51,18 +51,6 @@ const PERFORMANCE_CRITERIA = {
   }
 };
 
-// Device profiles
-const _DEVICE_PROFILES = {
-  android: {
-    high: ['Pixel 6', 'Galaxy S21', 'OnePlus 9'],
-    mid: ['Pixel 3a', 'Galaxy A52', 'Moto G Power'],
-    low: ['Galaxy J7', 'Moto E', 'Redmi 9A'],
-  },
-  ios: {
-    high: ['iPhone 13', 'iPhone 12', 'iPhone 11'],
-    mid: ['iPhone 8', 'iPhone SE', 'iPhone 7'],
-  }
-};
 
 // Cores para output
 const colors = {
@@ -149,7 +137,7 @@ function measureBundleSize() {
   
   try {
     if (platform === 'android') {
-      bundlePath = _path.join(__dirname, '..', 'android', 'app', 'build', 'outputs', 'apk', buildType, `app-${buildType}.apk`);
+      bundlePath = path.join(__dirname, '..', 'android', 'app', 'build', 'outputs', 'apk', buildType, `app-${buildType}.apk`);
       
       if (!fs.existsSync(bundlePath)) {
         log.warning('APK não encontrado. Construindo...');
@@ -406,7 +394,7 @@ function generateReport(results) {
   });
   
   // Salvar relatório
-  const reportPath = _path.join(__dirname, '..', 'performance-report.json');
+  const reportPath = path.join(__dirname, '..', 'performance-report.json');
   fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
   
   // Exibir resumo
@@ -463,6 +451,6 @@ async function runPerformanceTests() {
 
 // Executar
 runPerformanceTests().catch(_error => {
-  log.error(`Erro fatal: ${error.message}`);
+  log.error(`Erro fatal: ${_error.message}`);
   process.exit(1);
 });

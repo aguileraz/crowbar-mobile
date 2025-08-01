@@ -1,6 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { apiClient, ApiClient } from '../../api';
 import logger from '../../loggerService';
 
 /**

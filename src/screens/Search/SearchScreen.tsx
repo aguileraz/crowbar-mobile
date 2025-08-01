@@ -6,19 +6,8 @@ import {
   FlatList,
   Keyboard,
 } from 'react-native';
-import {
-  Text,
-  Searchbar,
-  Card,
-  Title,
-  Button,
-  Chip,
-  ActivityIndicator,
-  IconButton,
-
-  Divider,
-} from 'react-native-paper';
-import { _useDispatch, useSelector } from 'react-redux';
+import { Searchbar, ActivityIndicator, IconButton, Divider, Card, Text, Button, Chip } from 'react-native-paper';
+import { useDispatch, useSelector } from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -247,7 +236,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
               <Text style={styles.suggestionHeader}>Sugestões</Text>
               {suggestions.map((suggestion, _index) => (
                 <Button
-                  key={index}
+                  key={_index}
                   mode="text"
                   onPress={() => handleSuggestionSelect(suggestion)}
                   style={styles.suggestionItem}

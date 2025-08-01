@@ -1,5 +1,5 @@
 import messaging from '@react-native-firebase/messaging';
-import { PermissionsAndroid, Platform, Alert, Linking } from 'react-native';
+import { Platform, Alert, Linking } from 'react-native';
 import notifee from '@notifee/react-native';
 import { notificationService } from '../notificationService';
 import { httpClient } from '../httpClient';

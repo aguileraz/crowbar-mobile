@@ -345,12 +345,7 @@ const cartSlice = createSlice({
 });
 
 // Actions
-export const {
-  clearError,
-  setSelectedShippingOption,
-  clearShippingOptions,
-  resetCart,
-} = cartSlice.actions;
+export const { setSelectedShippingOption, clearShippingOptions, resetCart,  } = cartSlice.actions;
 
 // Selectors
 export const selectCart = (state: { cart: CartState }) => state.cart.cart;

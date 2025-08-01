@@ -1,5 +1,4 @@
 import { TestApiClient, testEnvironment, testData, testUtils } from './testConfig';
-import { ApiError } from '../../api';
 import { _auth } from '@react-native-firebase/auth';
 
 /**

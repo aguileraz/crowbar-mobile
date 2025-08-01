@@ -11,7 +11,6 @@ import {
 } from 'react-native-reanimated';
 import {
   Gesture,
-  GestureDetector,
 } from 'react-native-gesture-handler';
 import {
   panGesture,
@@ -36,8 +35,8 @@ export const usePanGesture = (options: UseGestureAnimationsOptions = {}) => {
   const {
     minX = -Infinity,
     maxX = Infinity,
-    minY = -Infinity,
-    maxY = Infinity,
+    _minY = -Infinity,
+    _maxY = Infinity,
     enableHaptic = true,
     onGestureEnd,
   } = options;

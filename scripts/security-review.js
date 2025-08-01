@@ -765,6 +765,6 @@ async function runSecurityReview() {
 
 // Executar
 runSecurityReview().catch(_error => {
-  log.error(`Fatal error: ${error.message}`);
+  log.error(`Fatal error: ${_error.message}`);
   process.exit(1);
 });

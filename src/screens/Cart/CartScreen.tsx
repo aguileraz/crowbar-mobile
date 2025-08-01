@@ -14,7 +14,6 @@ import {
   Button,
   IconButton,
   ActivityIndicator,
-  TextInput,
 
   Chip,
   Divider,
@@ -34,7 +33,6 @@ import {
   removeCoupon,
   calculateShippingByZip,
   setSelectedShippingOption,
-  clearError,
   selectCart,
   selectCartItems,
   selectCartIsLoading,

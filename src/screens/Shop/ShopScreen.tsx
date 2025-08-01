@@ -8,17 +8,7 @@ import {
   FlatList,
   Dimensions,
 } from 'react-native';
-import {
-  Text,
-  Card,
-  Title,
-  Paragraph,
-  Button,
-  Chip,
-  ActivityIndicator,
-  Searchbar,
-  FAB,
-} from 'react-native-paper';
+import { Paragraph, Button, ActivityIndicator, Searchbar, FAB, Title } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';

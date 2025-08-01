@@ -244,6 +244,6 @@ async function main() {
 
 // Executar
 main().catch(_error => {
-  log.error(`Erro inesperado: ${error.message}`);
+  log.error(`Erro inesperado: ${_error.message}`);
   process.exit(1);
 });

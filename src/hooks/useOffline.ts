@@ -43,7 +43,7 @@ export const useOffline = () => {
 
   // Adicionar ação para execução quando voltar online
   const addOfflineAction = useCallback(
-    async (type: string, data: any, priority: SyncPriority = SyncPriority.NORMAL) => {
+    async (type: string, data: any, _priority: SyncPriority = SyncPriority.NORMAL) => {
       try {
         await dispatch(addPendingAction({ type, data })).unwrap();
         
@@ -115,7 +115,7 @@ export const useOfflineCache = <T>(
 
   const {
     strategy = CacheStrategy.CACHE_FIRST,
-    priority = SyncPriority.NORMAL,
+    _priority = SyncPriority.NORMAL,
     autoFetch = true,
   } = options || {};
 
@@ -182,7 +182,7 @@ export const useOfflineCache = <T>(
 /**
  * Hook para cache de imagens
  */
-export const useOfflineImage = (url: string | null, priority: SyncPriority = SyncPriority.LOW) => {
+export const useOfflineImage = (url: string | null, _priority: SyncPriority = SyncPriority.LOW) => {
   const [cachedUrl, setCachedUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -238,7 +238,7 @@ export const useOfflineAction = <T = any>(
   const dispatch = useDispatch<AppDispatch>();
 
   const {
-    priority = SyncPriority.NORMAL,
+    _priority = SyncPriority.NORMAL,
     optimisticUpdate,
     onSuccess,
     onError,
@@ -368,11 +368,11 @@ export const useOfflineBoxes = () => {
  * Hook específico para carrinho offline
  */
 export const useOfflineCart = () => {
-  const { addOfflineAction } = useOffline();
+  const { addOfflineAction: _addOfflineAction } = useOffline();
   
   const addToCart = useOfflineAction(
     'ADD_TO_CART',
-    async (data: { boxId: string; quantity: number }) => {
+    async (_data: { boxId: string; quantity: number }) => {
       // Simular adição ao carrinho
       // return await cartService.addToCart(data.boxId, data.quantity);
       return { success: true };
@@ -387,7 +387,7 @@ export const useOfflineCart = () => {
 
   const removeFromCart = useOfflineAction(
     'REMOVE_FROM_CART',
-    async (data: { itemId: string }) => {
+    async (_data: { itemId: string }) => {
       // Simular remoção do carrinho
       // return await cartService.removeFromCart(data.itemId);
       return { success: true };
@@ -427,7 +427,7 @@ export const useOfflineProfile = () => {
 
   const updateProfile = useOfflineAction(
     'UPDATE_PROFILE',
-    async (profileData: any) => {
+    async (_profileData: any) => {
       // Simular atualização de perfil
       // return await userService.updateProfile(profileData);
       return { success: true };

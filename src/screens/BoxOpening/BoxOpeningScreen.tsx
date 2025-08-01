@@ -12,9 +12,8 @@ import {
   IconButton,
   ActivityIndicator,
   Portal,
-  Modal,
 } from 'react-native-paper';
-import { _useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

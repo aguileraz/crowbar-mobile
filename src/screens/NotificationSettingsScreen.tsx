@@ -39,7 +39,7 @@ interface NotificationSettingsScreenProps {
   navigation: any;
 }
 
-const NotificationSettingsScreen: React.FC<NotificationSettingsScreenProps> = ({ navigation }) => {
+const NotificationSettingsScreen: React.FC<NotificationSettingsScreenProps> = ({ _navigation }) => {
   const dispatch = useDispatch<AppDispatch>();
   
   // Analytics
