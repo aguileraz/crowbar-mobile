@@ -24,7 +24,7 @@ class LoggerService {
    */
   debug(message: string, context?: string, extra?: any) {
     if (this.isDev) {
-      
+      console.debug(`🐛 ${context ? `[${context}] ` : ''}${message}`, extra ? extra : '');
     }
     this.addLog('debug', message, context, extra);
   }
@@ -34,7 +34,7 @@ class LoggerService {
    */
   info(message: string, context?: string, extra?: any) {
     if (this.isDev) {
-      
+      console.info(`ℹ️ ${context ? `[${context}] ` : ''}${message}`, extra ? extra : '');
     }
     this.addLog('info', message, context, extra);
   }
@@ -44,7 +44,7 @@ class LoggerService {
    */
   warn(message: string, context?: string, extra?: any) {
     if (this.isDev) {
-      
+      console.warn(`⚠️ ${context ? `[${context}] ` : ''}${message}`, extra ? extra : '');
     }
     this.addLog('warn', message, context, extra);
   }
@@ -53,7 +53,7 @@ class LoggerService {
    * Log de erro - sempre mostrado
    */
   error(message: string, context?: string, error?: any) {
-    
+    console.error(`❌ ${context ? `[${context}] ` : ''}${message}`, error ? error : '');
     this.addLog('error', message, context, error);
     
     // Em produção, enviar erros para serviço de monitoramento
@@ -67,7 +67,7 @@ class LoggerService {
    */
   performance(operation: string, duration: number) {
     if (this.isDev && duration > 100) {
-      
+      console.warn(`⏱️ Performance: ${operation} took ${duration}ms`);
     }
     this.addLog('info', `Performance: ${operation}`, 'PERF', { duration });
   }

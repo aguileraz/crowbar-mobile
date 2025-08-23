@@ -22,11 +22,11 @@ const colors = {
 };
 
 const log = {
-  title: (msg) => ,
-  info: (msg) => ,
-  success: (msg) => ,
-  warning: (msg) => ,
-  error: (msg) => ,
+  title: (msg) => console.log(`🎯 ${msg}`),
+  info: (msg) => console.log(`ℹ️  ${msg}`),
+  success: (msg) => console.log(`✅ ${msg}`),
+  warning: (msg) => console.log(`⚠️  ${msg}`),
+  error: (msg) => console.log(`❌ ${msg}`),
 };
 
 let securityScore = 0;

@@ -98,6 +98,22 @@ export interface MysteryBox {
   original_price?: number;
   discount_percentage?: number;
   category: Category;
+  limited_time_offer?: {
+    ends_at: string;
+    label?: string;
+    discount_percentage?: number;
+  };
+  opening_window?: {
+    opens_at: string;
+    closes_at: string;
+    days_left: number;
+  };
+  flash_sale?: {
+    active: boolean;
+    ends_at: string;
+    original_price: number;
+    sale_price: number;
+  };
   images: BoxImage[];
   thumbnail: string;
   rarity: 'common' | 'rare' | 'epic' | 'legendary';

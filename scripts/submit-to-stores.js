@@ -52,11 +52,11 @@ const colors = {
 
 // Logging functions
 const log = {
-  info: (msg) => ,
-  success: (msg) => ,
-  warning: (msg) => ,
-  error: (msg) => ,
-  title: (msg) => ,
+  info: (msg) => console.log(`ℹ️  ${msg}`),
+  success: (msg) => console.log(`✅ ${msg}`),
+  warning: (msg) => console.log(`⚠️  ${msg}`),
+  error: (msg) => console.log(`❌ ${msg}`),
+  title: (msg) => console.log(`🎯 ${msg}`),
 };
 
 /**

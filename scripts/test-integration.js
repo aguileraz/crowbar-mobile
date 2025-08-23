@@ -1,14 +1,12 @@
-/* eslint-disable no-console */
 #!/usr/bin/env node
 
 /**
-const { execSync } = require('child_process');
-
  * Integration Test Runner
  * Runs integration tests with proper setup and cleanup
  */
 
-const _path = require('_path');
+const path = require('path');
+const { execSync } = require('child_process');
 
 // Colors for console output
 const colors = {
@@ -23,7 +21,7 @@ const colors = {
 };
 
 function log(message, color = colors.reset) {
-
+  console.log(`${color}${message}${colors.reset}`);
 }
 
 function logHeader(message) {

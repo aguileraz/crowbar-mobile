@@ -43,28 +43,56 @@ export class TestApiClient {
    * Configurar mock para resposta bem-sucedida
    */
   mockSuccess(method: string, url: string, response: any, _status: number = 200) {
-    this.mockAdapter.onAny(method, url).reply(_status, response);
+    if (method.toLowerCase() === 'post') {
+      this.mockAdapter.onPost(url).reply(_status, response);
+    } else if (method.toLowerCase() === 'get') {
+      this.mockAdapter.onGet(url).reply(_status, response);
+    } else if (method.toLowerCase() === 'put') {
+      this.mockAdapter.onPut(url).reply(_status, response);
+    } else if (method.toLowerCase() === 'delete') {
+      this.mockAdapter.onDelete(url).reply(_status, response);
+    } else {
+      this.mockAdapter.onAny().reply(_status, response);
+    }
   }
   
   /**
    * Configurar mock para erro de rede
    */
   mockNetworkError(method: string, url: string) {
-    this.mockAdapter.onAny(method, url).networkError();
+    if (method.toLowerCase() === 'post') {
+      this.mockAdapter.onPost(url).networkError();
+    } else if (method.toLowerCase() === 'get') {
+      this.mockAdapter.onGet(url).networkError();
+    } else {
+      this.mockAdapter.onAny().networkError();
+    }
   }
   
   /**
    * Configurar mock para timeout
    */
   mockTimeout(method: string, url: string) {
-    this.mockAdapter.onAny(method, url).timeout();
+    if (method.toLowerCase() === 'post') {
+      this.mockAdapter.onPost(url).timeout();
+    } else if (method.toLowerCase() === 'get') {
+      this.mockAdapter.onGet(url).timeout();
+    } else {
+      this.mockAdapter.onAny().timeout();
+    }
   }
   
   /**
    * Configurar mock para erro HTTP
    */
   mockHttpError(method: string, url: string, _status: number, response?: any) {
-    this.mockAdapter.onAny(method, url).reply(_status, response);
+    if (method.toLowerCase() === 'post') {
+      this.mockAdapter.onPost(url).reply(_status, response);
+    } else if (method.toLowerCase() === 'get') {
+      this.mockAdapter.onGet(url).reply(_status, response);
+    } else {
+      this.mockAdapter.onAny().reply(_status, response);
+    }
   }
   
   /**

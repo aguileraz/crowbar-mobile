@@ -1,8 +1,8 @@
-/* eslint-disable no-console */
 #!/usr/bin/env node
+/* eslint-disable no-console */
 const { execSync } = require('child_process');
 
-const _path = require('_path');
+const path = require('path');
 
 /**
  * Script de teste de performance para Crowbar Mobile
@@ -64,14 +64,14 @@ const colors = {
 
 // Funções de log
 const log = {
-  info: (msg) => ,
-  success: (msg) => ,
-  warning: (msg) => ,
-  error: (msg) => ,
-  metric: (name, value, unit, _status) => {
+  info: (msg) => console.log(`ℹ️  ${msg}`),
+  success: (msg) => console.log(`✅ ${msg}`),
+  warning: (msg) => console.log(`⚠️  ${msg}`),
+  error: (msg) => console.error(`❌ ${msg}`),
+  metric: (name, value, unit, status) => {
     const icon = status === 'pass' ? '✅' : status === 'warning' ? '⚠️' : '❌';
     const color = status === 'pass' ? colors.green : status === 'warning' ? colors.yellow : colors.red;
-
+    console.log(`${icon} ${color}${name}: ${value}${unit}${colors.reset}`);
   }
 };
 
@@ -146,7 +146,7 @@ function measureBundleSize() {
       }
       
       const stats = fs.statSync(bundlePath);
-      bundleSize = (stats._size / (1024 * 1024)).toFixed(2);
+      bundleSize = (stats.size / (1024 * 1024)).toFixed(2);
       
       const limit = PERFORMANCE_CRITERIA.android.bundleSize.apk;
       const _status = bundleSize <= limit ? 'pass' : 'fail';
@@ -222,7 +222,7 @@ async function measureColdStart() {
     
     log.metric('Cold Start Time', coldStartTime, 'ms', _status);
     
-    return { coldStartTime, status };
+    return { coldStartTime, status: _status };
   } catch (error) {
     log.error(`Erro ao medir cold start: ${error.message}`);
     return { coldStartTime: 0, status: 'fail' };
@@ -286,7 +286,7 @@ async function measureMemoryUsage() {
     
     log.metric('Memory Usage', memoryUsage, 'MB', _status);
     
-    return { memoryUsage, status };
+    return { memoryUsage, status: _status };
   } catch (error) {
     log.error(`Erro ao medir memória: ${error.message}`);
     return { memoryUsage: 0, status: 'fail' };
@@ -327,7 +327,7 @@ async function measureFPS() {
         log.metric('Average FPS', avgFPS, '', _status);
         log.metric('Smooth Frames', smoothPercent.toFixed(1), '%', _status);
         
-        return { avgFPS, smoothPercent, status };
+        return { avgFPS, smoothPercent, status: _status };
       }
     } else {
       log.info('Medição de FPS iOS não implementada');
@@ -389,9 +389,9 @@ function generateReport(results) {
   
   // Contar resultados
   Object.values(results).forEach(result => {
-    if (_result._status === 'pass') report.summary.passed++;
-    else if (_result._status === 'warning') report.summary.warnings++;
-    else if (_result._status === 'fail') report.summary.failed++;
+    if (result.status === 'pass') report.summary.passed++;
+    else if (result.status === 'warning') report.summary.warnings++;
+    else if (result.status === 'fail') report.summary.failed++;
   });
   
   // Salvar relatório
@@ -399,10 +399,10 @@ function generateReport(results) {
   fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
   
   // Exibir resumo
-
-  );
-
-  );
+  console.log(`\n📊 Resumo de Performance:\n`);
+  console.log(`✅ Testes aprovados: ${report.summary.passed}`);
+  console.log(`⚠️  Avisos: ${report.summary.warnings}`);
+  console.log(`❌ Falhas: ${report.summary.failed}`);
   
   if (report.summary.failed > 0) {
     log.error('\n❌ O app não atende aos critérios de performance!');

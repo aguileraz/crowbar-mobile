@@ -6,6 +6,7 @@
  */
 
 const fs = require('fs');
+const path = require('path');
 // Configuration
 const CONFIG = {
   _azure: {
@@ -59,7 +60,7 @@ function runCommand(command, options = {}) {
       stdio: options.silent ? 'pipe' : 'inherit',
       ...options
     });
-    return { success: true, output: result };
+    return { success: true, output: _result };
   } catch (error) {
     return { 
       success: false, 
@@ -552,7 +553,6 @@ async function main() {
     generateDeploymentReport();
     
     // Summary
-  }
     log.title('Backend Deployment Summary');
 
     if (successCount === tasks.length) {
@@ -566,8 +566,6 @@ async function main() {
       log.error('❌ Backend deployment failed. Please check the logs and fix issues.');
       process.exit(1);
     }
-    
-    );
     
   } catch (error) {
     log.error(`Backend deployment failed: ${error.message}`);

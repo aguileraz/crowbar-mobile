@@ -44,17 +44,6 @@ const CONFIG = {
   }
 };
 
-// Colors for console output
-const colors = {
-  reset: '\x1b[0m',
-  red: '\x1b[31m',
-  green: '\x1b[32m',
-  yellow: '\x1b[33m',
-  blue: '\x1b[34m',
-  magenta: '\x1b[35m',
-  cyan: '\x1b[36m',
-  bold: '\x1b[1m',
-};
 
 // Logging functions
 const log = {
@@ -70,7 +59,7 @@ const log = {
  */
 function runCommand(command, options = {}) {
   try {
-    const _result = require('child_process').execSync(command, {
+    const result = require('child_process').execSync(command, {
       encoding: 'utf8',
       stdio: options.silent ? 'pipe' : 'inherit',
       cwd: options.cwd || process.cwd(),
@@ -262,8 +251,9 @@ function buildIOS() {
     log.info('Building iOS project...');
     const { ios } = CONFIG;
     
-    const _buildCommand = `cd ios && xcodebuild -workspace CrowbarMobile.xcworkspace -scheme ${ios.scheme} -configuration ${ios.configuration} -destination generic/platform=iOS -archivePath build/CrowbarMobile.xcarchive archive`;
-
+    const buildCommand = `cd ios && xcodebuild -workspace CrowbarMobile.xcworkspace -scheme ${ios.scheme} -configuration ${ios.configuration} -destination generic/platform=iOS -archivePath build/CrowbarMobile.xcarchive archive`;
+    
+    const buildResult = runCommand(buildCommand);
     if (!buildResult.success) {
       log.error('iOS build failed');
       return false;
@@ -363,13 +353,12 @@ function validateBuilds() {
   
   // Display validation results
   console.log("");
-}
   
   let allValid = true;
   validations.forEach(validation => {
     const status = validation.valid ? '✅' : '❌';
     const size = `${(validation.size / 1024 / 1024).toFixed(2)} MB`;
-    console.log(`${status} ${validation.name}: ${size}`);
+    console.log(`${status} ${validation.platform}: ${size}`);
     if (!validation.valid) allValid = false;
   });
   
@@ -534,8 +523,6 @@ async function main() {
     } else {
       log.warning('⚠️ Production builds completed with issues. Please review and fix.');
     }
-    
-    );
     
   } catch (error) {
     log.error(`Production build failed: ${error.message}`);

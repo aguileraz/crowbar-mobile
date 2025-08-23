@@ -1,0 +1,20 @@
+[
+  {
+    "timestamp": "2025-08-04T11:11:28.972Z",
+    "duration": 0,
+    "passRate": 0,
+    "visualCompliance": 0
+  },
+  {
+    "timestamp": "2025-08-04T11:12:04.049Z",
+    "duration": 135.69,
+    "passRate": 88,
+    "visualCompliance": 93.5
+  },
+  {
+    "timestamp": "2025-08-04T19:20:20.372Z",
+    "duration": 135.69,
+    "passRate": 88,
+    "visualCompliance": 93.5
+  }
+]

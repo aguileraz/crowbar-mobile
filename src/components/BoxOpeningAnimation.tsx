@@ -1,4 +1,4 @@
-import React, { useRef, useCallback } from 'react';
+import React, { useRef, useCallback, useEffect } from 'react';
 import {
   View,
   StyleSheet,
@@ -59,8 +59,8 @@ const BoxOpeningAnimation: React.FC<BoxOpeningAnimationProps> = ({
    * Start particle explosion animation
    */
   const startParticleAnimation = useCallback(() => {
-    const animations = particleAnims.map((particle, _index) => {
-      const angle = (_index * 45) * (Math.PI / 180); // 45 degrees apart
+    const animations = particleAnims.map((particle, index) => {
+      const angle = (index * 45) * (Math.PI / 180); // 45 degrees apart
       const distance = 100;
       
       return Animated.sequence([
@@ -187,9 +187,9 @@ const BoxOpeningAnimation: React.FC<BoxOpeningAnimationProps> = ({
       {/* Particles */}
       {animationState === 'opening' && (
         <View style={styles.particlesContainer}>
-          {particleAnims.map((particle, _index) => (
+          {particleAnims.map((particle, index) => (
             <Animated.View
-              key={0}
+              key={index}
               style={[
                 styles.particle,
                 {

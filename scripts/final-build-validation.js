@@ -360,7 +360,6 @@ function generateFinalReport() {
   fs.writeFileSync('final-validation-report.json', JSON.stringify(report, null, 2));
   
   // Display summary
-}
   log.header('📊 FINAL BUILD VALIDATION SUMMARY');
   
   Object.entries(steps).forEach(([_key, step]) => {
@@ -374,13 +373,13 @@ function generateFinalReport() {
   
   if (report.readyForSubmission) {
     log.success('✅ VALIDATION PASSED - Ready for app store submission!');
-
   } else if (failedSteps.length > 0) {
     log.error('❌ VALIDATION FAILED - Critical issues must be fixed');
-    console.log(`${icon} ${step.name}`);
+    failedSteps.forEach(step => {
+      console.log(`❌ ${step.name}: ${step.error || 'Failed'}`);
+    });
   } else {
     log.warning('⚠️  VALIDATION PASSED WITH WARNINGS - Review before submission');
-    console.log(`${icon} ${step.name}`);
   }
 
   console.log("");

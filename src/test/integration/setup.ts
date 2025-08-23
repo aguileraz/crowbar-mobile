@@ -216,7 +216,7 @@ export const skipIfAPIUnavailable = async () => {
 export const testUtils = {
   setupIntegrationTest,
   cleanupIntegrationTest,
-  _waitFor,
+  waitFor,
   createTestUser,
   _loginTestUser,
   logoutTestUser,

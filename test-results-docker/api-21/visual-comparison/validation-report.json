@@ -1,0 +1,41 @@
+{
+  "timestamp": "2025-08-04T11:11:59.986Z",
+  "apiLevel": "21",
+  "deviceName": "Nexus 5",
+  "totalScreens": 7,
+  "passed": 6,
+  "failed": 1,
+  "averageMatch": 94.2,
+  "screens": {
+    "login": {
+      "validated": true,
+      "match": 96
+    },
+    "profile": {
+      "validated": true,
+      "match": 93
+    },
+    "shop": {
+      "validated": true,
+      "match": 95
+    },
+    "productPage": {
+      "validated": true,
+      "match": 94
+    },
+    "category": {
+      "validated": true,
+      "match": 92
+    },
+    "cart": {
+      "validated": true,
+      "match": 88
+    },
+    "checkout": {
+      "validated": true,
+      "match": 97
+    }
+  },
+  "overallCompliance": 93.5,
+  "status": "PASSED"
+}

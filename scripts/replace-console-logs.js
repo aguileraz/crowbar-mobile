@@ -84,7 +84,7 @@ function processFile(_filePath) {
       
       if (importMatch) {
         // Adicionar após os outros imports
-        const lastImportIndex = importMatch.0 + importMatch[0].length;
+        const lastImportIndex = importMatch.index + importMatch[0].length;
         content = content.slice(0, lastImportIndex) + importStatement + content.slice(lastImportIndex);
       } else {
         // Adicionar no início do arquivo

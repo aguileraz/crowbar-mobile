@@ -91,17 +91,6 @@ const PRODUCTION_CONFIG = {
   ENABLE_DEBUGGER_DETECTION: 'true',
 };
 
-// Colors for console output
-const colors = {
-  reset: '\x1b[0m',
-  red: '\x1b[31m',
-  green: '\x1b[32m',
-  yellow: '\x1b[33m',
-  blue: '\x1b[34m',
-  magenta: '\x1b[35m',
-  cyan: '\x1b[36m',
-  bold: '\x1b[1m',
-};
 
 // Logging functions
 const log = {
@@ -189,7 +178,7 @@ function validateEnvironment() {
   
   if (issues.length > 0) {
     log.warning(`Environment validation found ${issues.length} issues:`);
-    issues.forEach(issue => );
+    issues.forEach(issue => log.warning(`  - ${issue}`));
     return false;
   }
   
@@ -242,7 +231,7 @@ function configureAzureEnvironment() {
       const command = `az webapp config appsettings set --name ${appName} --resource-group ${resourceGroup} --settings ${chunk.join(' ')}`;
       
       try {
-        require('child_process').__execSync(command, { stdio: 'pipe' });
+        require('child_process').execSync(command, { stdio: 'pipe' });
         log.success(`Configured variables ${i + 1}-${Math.min(i + chunkSize, envVars.length)}`);
       } catch (error) {
         log.error(`Failed to configure variables ${i + 1}-${Math.min(i + chunkSize, envVars.length)}: ${error.message}`);
@@ -482,8 +471,6 @@ async function main() {
     } else {
       log.warning('⚠️ Environment configuration completed with issues');
     }
-    
-    );
     
   } catch (error) {
     log.error(`Environment configuration failed: ${error.message}`);

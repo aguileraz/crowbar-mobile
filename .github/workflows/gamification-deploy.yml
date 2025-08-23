@@ -1,0 +1,316 @@
+name: Deploy Gamification System
+
+on:
+  push:
+    branches: [ main, production ]
+    paths:
+      - 'src/components/**'
+      - 'src/hooks/**'
+      - 'src/services/**'
+      - 'src/screens/**'
+      - 'scripts/gamification-migration.sql'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment Environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+env:
+  NODE_VERSION: '18.x'
+  JAVA_VERSION: '17'
+
+jobs:
+  build-and-test:
+    name: Build and Test Gamification
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: ☕ Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          
+      - name: 📦 Install dependencies
+        run: |
+          npm ci --legacy-peer-deps
+          
+      - name: 🧪 Run tests
+        run: |
+          npm run test:coverage
+          npm run type-check
+          
+      - name: 📊 Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage/lcov.info
+          
+      - name: 🔍 Lint code
+        run: |
+          npm run lint
+          
+  build-android:
+    name: Build Android APK/AAB
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: ☕ Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          
+      - name: 📦 Install dependencies
+        run: |
+          npm ci --legacy-peer-deps
+          
+      - name: 🔐 Setup Android signing
+        env:
+          ANDROID_KEYSTORE: ${{ secrets.ANDROID_KEYSTORE }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          echo "$ANDROID_KEYSTORE" | base64 --decode > android/app/release.keystore
+          echo "MYAPP_RELEASE_STORE_FILE=release.keystore" >> android/gradle.properties
+          echo "MYAPP_RELEASE_KEY_ALIAS=$KEY_ALIAS" >> android/gradle.properties
+          echo "MYAPP_RELEASE_STORE_PASSWORD=$KEYSTORE_PASSWORD" >> android/gradle.properties
+          echo "MYAPP_RELEASE_KEY_PASSWORD=$KEY_PASSWORD" >> android/gradle.properties
+          
+      - name: 🤖 Build Android
+        run: |
+          cd android
+          ./gradlew assembleRelease
+          ./gradlew bundleRelease
+          
+      - name: 📦 Upload APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: android-apk
+          path: android/app/build/outputs/apk/release/*.apk
+          
+      - name: 📦 Upload AAB
+        uses: actions/upload-artifact@v3
+        with:
+          name: android-aab
+          path: android/app/build/outputs/bundle/release/*.aab
+          
+  build-ios:
+    name: Build iOS IPA
+    needs: build-and-test
+    runs-on: macos-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/production'
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: 📦 Install dependencies
+        run: |
+          npm ci --legacy-peer-deps
+          cd ios && pod install
+          
+      - name: 🔐 Setup iOS signing
+        env:
+          BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
+          P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
+          BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: |
+          # Create variables
+          CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
+          PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+          
+          # Import certificate and provisioning profile
+          echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode --output $CERTIFICATE_PATH
+          echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode --output $PP_PATH
+          
+          # Create temporary keychain
+          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          
+          # Import certificate to keychain
+          security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          security list-keychain -d user -s $KEYCHAIN_PATH
+          
+          # Apply provisioning profile
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
+          
+      - name: 🍎 Build iOS
+        run: |
+          cd ios
+          xcodebuild -workspace CrowbarMobile.xcworkspace \
+                     -scheme CrowbarMobile \
+                     -configuration Release \
+                     -archivePath $PWD/build/CrowbarMobile.xcarchive \
+                     archive
+          xcodebuild -exportArchive \
+                     -archivePath $PWD/build/CrowbarMobile.xcarchive \
+                     -exportOptionsPlist ExportOptions.plist \
+                     -exportPath $PWD/build
+                     
+      - name: 📦 Upload IPA
+        uses: actions/upload-artifact@v3
+        with:
+          name: ios-ipa
+          path: ios/build/*.ipa
+          
+  deploy-database:
+    name: Deploy Database Migrations
+    needs: [build-android]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event.inputs.environment == 'production'
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        
+      - name: 🗄️ Run database migrations
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          # Install PostgreSQL client
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+          
+          # Run migration
+          psql "$DATABASE_URL" < scripts/gamification-migration.sql
+          
+          echo "✅ Database migrations complete"
+          
+  deploy-backend:
+    name: Deploy Backend APIs
+    needs: deploy-database
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        
+      - name: 🚀 Deploy to server
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+        run: |
+          echo "$DEPLOY_KEY" > deploy_key
+          chmod 600 deploy_key
+          
+          # Copy backend specs to server
+          scp -i deploy_key -o StrictHostKeyChecking=no \
+            ai-docs/planning/BACKEND_GAMIFICATION_SPECS.md \
+            $DEPLOY_USER@$DEPLOY_HOST:/opt/crowbar/docs/
+            
+          echo "✅ Backend specs deployed"
+          
+  deploy-app-stores:
+    name: Deploy to App Stores
+    needs: [build-android, build-ios]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/production'
+    
+    steps:
+      - name: 📥 Download Android AAB
+        uses: actions/download-artifact@v3
+        with:
+          name: android-aab
+          
+      - name: 📥 Download iOS IPA
+        uses: actions/download-artifact@v3
+        with:
+          name: ios-ipa
+        continue-on-error: true
+          
+      - name: 🚀 Upload to Google Play
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT }}
+          packageName: com.crowbar.mobile
+          releaseFiles: '*.aab'
+          track: production
+          status: completed
+          inAppUpdatePriority: 2
+          
+      - name: 🚀 Upload to App Store
+        if: success() && steps.download-ios.outcome == 'success'
+        env:
+          APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+        run: |
+          # Use App Store Connect API to upload IPA
+          echo "Uploading to App Store..."
+          # Add actual upload command here
+          
+  notify:
+    name: Send Notifications
+    needs: [deploy-app-stores]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: 📢 Notify team
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        run: |
+          STATUS="${{ needs.deploy-app-stores.result }}"
+          COLOR="good"
+          EMOJI="✅"
+          
+          if [ "$STATUS" != "success" ]; then
+            COLOR="danger"
+            EMOJI="❌"
+          fi
+          
+          curl -X POST $SLACK_WEBHOOK \
+            -H 'Content-Type: application/json' \
+            -d "{
+              \"attachments\": [{
+                \"color\": \"$COLOR\",
+                \"title\": \"$EMOJI Gamification Deployment - $STATUS\",
+                \"text\": \"Deployment to ${{ github.event.inputs.environment || 'production' }} completed\",
+                \"fields\": [
+                  {
+                    \"title\": \"Branch\",
+                    \"value\": \"${{ github.ref_name }}\",
+                    \"short\": true
+                  },
+                  {
+                    \"title\": \"Commit\",
+                    \"value\": \"${{ github.sha }}\",
+                    \"short\": true
+                  }
+                ]
+              }]
+            }"

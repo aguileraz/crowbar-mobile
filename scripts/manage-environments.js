@@ -15,25 +15,25 @@ const ENV_FILES = {
 };
 const ACTIVE_ENV_FILE = '.env';
 
-// Colors for console output
-const colors = {
-  reset: '\x1b[0m',
-  red: '\x1b[31m',
-  green: '\x1b[32m',
-  yellow: '\x1b[33m',
-  blue: '\x1b[34m',
-  magenta: '\x1b[35m',
-  cyan: '\x1b[36m',
-  bold: '\x1b[1m',
-};
+// Colors for console output (removed - using emoji instead)
+// const _colors = {
+//   reset: '\x1b[0m',
+//   red: '\x1b[31m',
+//   green: '\x1b[32m',
+//   yellow: '\x1b[33m',
+//   blue: '\x1b[34m',
+//   magenta: '\x1b[35m',
+//   cyan: '\x1b[36m',
+//   bold: '\x1b[1m',
+// };
 
 // Logging functions
 const log = {
-  info: (msg) => ,
-  success: (msg) => ,
-  warning: (msg) => ,
-  error: (msg) => ,
-  title: (msg) => ,
+  info: (msg) => console.log(`ℹ️  ${msg}`),
+  success: (msg) => console.log(`✅ ${msg}`),
+  warning: (msg) => console.log(`⚠️  ${msg}`),
+  error: (msg) => console.log(`❌ ${msg}`),
+  title: (msg) => console.log(`🎯 ${msg}`),
 };
 
 /**
@@ -158,7 +158,7 @@ function validateEnvironment(environment) {
 
   if (issues.length > 0) {
     log.warning(`Environment ${environment} has ${issues.length} issues:`);
-    issues.forEach(issue => );
+    issues.forEach(issue => log.error(`  - ${issue}`));
     return false;
   }
 
@@ -201,10 +201,11 @@ function compareEnvironments(env1, env2) {
     log.success(`Environments ${env1} and ${env2} are identical`);
   } else {
     log.info(`Found ${differences.length} differences between ${env1} and ${env2}:`);
-    , env1.padEnd(20), env2.padEnd(20));
-    );
+    console.log('Key'.padEnd(20), env1.padEnd(20), env2.padEnd(20));
+    console.log('---'.padEnd(20), '---'.padEnd(20), '---'.padEnd(20));
     differences.forEach(diff => {
-      ,
+      console.log(
+        diff.key.padEnd(20),
         String(diff[env1]).padEnd(20),
         String(diff[env2]).padEnd(20)
       );
@@ -223,10 +224,10 @@ function listEnvironments() {
     const envFile = ENV_FILES[env];
     const exists = fs.existsSync(envFile);
     const isCurrent = env === current;
-    const _status = exists ? (isCurrent ? '(current)' : '(available)') : '(missing)';
+    const status = exists ? (isCurrent ? '(current)' : '(available)') : '(missing)';
     const icon = exists ? (isCurrent ? '👉' : '📄') : '❌';
     
-    } ${status}`);
+    log.info(`  ${icon} ${env} ${status}`);
   });
 }
 
@@ -279,8 +280,16 @@ function createEnvironmentTemplate(environment) {
  * Show help
  */
 function showHelp() {
-  }
-`);
+  log.info('Environment Management Tool');
+  log.info('Usage: node scripts/manage-environments.js <command> [options]');
+  log.info('');
+  log.info('Commands:');
+  log.info('  switch <env>    Switch to specified environment');
+  log.info('  list           List all available environments');
+  log.info('  current        Show current environment');
+  log.info('  validate       Validate current environment');
+  log.info('  compare <env1> <env2>  Compare two environments');
+  log.info('  help           Show this help message');
 }
 
 /**

@@ -1,0 +1,33 @@
+
+# App Review Notes
+
+## Test Account
+Username: teste@crowbar.com.br
+Password: Teste123!
+
+## App Description
+Crowbar is a mystery box marketplace that aggregates sellers from major Brazilian e-commerce platforms (Magalu, Amazon, MercadoLivre, Shopee).
+
+## Key Features to Test
+1. Browse mystery boxes
+2. View product details
+3. Add to cart
+4. Simulated purchase flow
+5. User profile and achievements
+6. Review system
+
+## Important Notes
+- This is a Brazilian marketplace (Portuguese language)
+- Mystery boxes contain surprise items (gambling-like element properly rated)
+- All transactions are handled by third-party sellers
+- Firebase backend for authentication and data
+
+## Known Limitations
+- Payment processing in test mode
+- Limited inventory in test environment
+- Some features may be region-locked to Brazil
+
+## Contact
+Email: suporte@crowbar.com.br
+Phone: +55 11 XXXX-XXXX
+Available: Mon-Fri 9AM-6PM BRT

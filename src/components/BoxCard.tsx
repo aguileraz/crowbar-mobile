@@ -17,6 +17,8 @@ import {
 import { MysteryBox } from '../types/api';
 import { theme, getSpacing, getBorderRadius } from '../theme';
 import FavoriteButton from './FavoriteButton';
+import CountdownTimer from './CountdownTimer';
+import { getUrgencyLevel } from '../hooks/useCountdown';
 
 /**
  * Componente de Card para Caixas Misteriosas
@@ -207,6 +209,36 @@ const BoxCard: React.FC<BoxCardProps> = ({
               <Text style={styles.outOfStockText}>ESGOTADO</Text>
             </View>
           )}
+          
+          {/* Timer de Oferta Limitada */}
+          {box.limited_time_offer && (
+            <View style={styles.timerOverlay}>
+              <CountdownTimer
+                endDate={box.limited_time_offer.ends_at}
+                label={box.limited_time_offer.label || "Oferta termina em"}
+                variant="compact"
+                urgencyLevel="auto"
+                showIcon={true}
+                animate={true}
+              />
+            </View>
+          )}
+          
+          {/* Timer de Janela de Abertura */}
+          {box.opening_window && (
+            <View style={styles.openingWindowTimer}>
+              <Text style={styles.openingWindowLabel}>
+                {box.opening_window.days_left} dias para abrir
+              </Text>
+              <CountdownTimer
+                endDate={box.opening_window.closes_at}
+                variant="compact"
+                urgencyLevel="medium"
+                showIcon={false}
+                animate={false}
+              />
+            </View>
+          )}
         </View>
 
         {/* Conteúdo */}
@@ -229,8 +261,28 @@ const BoxCard: React.FC<BoxCardProps> = ({
             </Paragraph>
           )}
           
-          {/* Preço */}
-          {renderPriceInfo()}
+          {/* Preço com desconto de Flash Sale */}
+          {box.flash_sale && box.flash_sale.active ? (
+            <View style={styles.flashSaleContainer}>
+              <Badge style={styles.flashSaleBadge}>⚡ FLASH SALE</Badge>
+              <View style={styles.flashPriceContainer}>
+                <Text style={styles.flashPrice}>
+                  {formatPrice(box.flash_sale.sale_price)}
+                </Text>
+                <Text style={styles.flashOriginalPrice}>
+                  {formatPrice(box.flash_sale.original_price)}
+                </Text>
+              </View>
+              <CountdownTimer
+                endDate={box.flash_sale.ends_at}
+                variant="compact"
+                urgencyLevel="critical"
+                style={styles.flashSaleTimer}
+              />
+            </View>
+          ) : (
+            renderPriceInfo()
+          )}
           
           {/* Estatísticas (apenas para featured) */}
           {variant === 'featured' && renderStats()}
@@ -432,6 +484,63 @@ const styles = StyleSheet.create({
     marginRight: getSpacing('xs'),
     marginBottom: getSpacing('xs'),
     height: 24,
+  },
+  
+  // Timer overlays
+  timerOverlay: {
+    position: 'absolute',
+    top: getSpacing('sm'),
+    right: getSpacing('sm'),
+    zIndex: 2,
+  },
+  openingWindowTimer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    paddingVertical: getSpacing('xs'),
+    paddingHorizontal: getSpacing('sm'),
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  openingWindowLabel: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  
+  // Flash Sale
+  flashSaleContainer: {
+    backgroundColor: theme.colors.errorContainer,
+    padding: getSpacing('sm'),
+    borderRadius: getBorderRadius('md'),
+    marginBottom: getSpacing('sm'),
+  },
+  flashSaleBadge: {
+    backgroundColor: theme.colors.error,
+    marginBottom: getSpacing('xs'),
+    alignSelf: 'flex-start',
+  },
+  flashPriceContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: getSpacing('xs'),
+  },
+  flashPrice: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: theme.colors.error,
+    marginRight: getSpacing('sm'),
+  },
+  flashOriginalPrice: {
+    fontSize: 14,
+    color: theme.colors.onSurfaceVariant,
+    textDecorationLine: 'line-through',
+  },
+  flashSaleTimer: {
+    alignSelf: 'flex-start',
   },
 });
 

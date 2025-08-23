@@ -109,6 +109,35 @@ jest.mock('react-native-reanimated', () => {
   };
 });
 
+// Mock react-native Platform and other core modules
+jest.mock('react-native', () => {
+  const RN = jest.requireActual('react-native');
+  
+  return {
+    ...RN,
+    Platform: {
+      OS: 'ios',
+      Version: '14.0',
+      constants: {},
+      select: jest.fn(config => {
+        if (!config) return undefined;
+        return config.ios || config.default || config.native || Object.values(config)[0];
+      }),
+    },
+    Dimensions: {
+      get: jest.fn().mockReturnValue({ width: 375, height: 812 }),
+      addEventListener: jest.fn(),
+      removeEventListener: jest.fn(),
+    },
+    PixelRatio: {
+      get: jest.fn(() => 2),
+      getFontScale: jest.fn(() => 1),
+      getPixelSizeForLayoutSize: jest.fn(size => size * 2),
+      roundToNearestPixel: jest.fn(size => size),
+    },
+  };
+});
+
 // Mock react-native-safe-area-context
 jest.mock('react-native-safe-area-context', () => ({
   SafeAreaProvider: ({ children }) => children,
@@ -150,54 +179,77 @@ jest.mock('@react-native-firebase/app', () => ({
 
 jest.mock('@react-native-firebase/auth', () => ({
   __esModule: true,
-  default: () => ({
+  default: jest.fn(() => ({
     currentUser: null,
     signInWithEmailAndPassword: jest.fn(),
     createUserWithEmailAndPassword: jest.fn(),
     signOut: jest.fn(),
     onAuthStateChanged: jest.fn(),
-  }),
+    sendPasswordResetEmail: jest.fn(),
+  })),
 }));
 
 jest.mock('@react-native-firebase/firestore', () => ({
   __esModule: true,
-  default: () => ({
+  default: jest.fn(() => ({
     collection: jest.fn(() => ({
       doc: jest.fn(() => ({
         set: jest.fn(),
         get: jest.fn(),
         update: jest.fn(),
         delete: jest.fn(),
+        onSnapshot: jest.fn(),
       })),
       add: jest.fn(),
       get: jest.fn(),
-      where: jest.fn(),
-      orderBy: jest.fn(),
-      limit: jest.fn(),
+      where: jest.fn(() => ({
+        where: jest.fn(),
+        orderBy: jest.fn(),
+        limit: jest.fn(),
+        get: jest.fn(),
+      })),
+      orderBy: jest.fn(() => ({
+        where: jest.fn(),
+        orderBy: jest.fn(),
+        limit: jest.fn(),
+        get: jest.fn(),
+      })),
+      limit: jest.fn(() => ({
+        get: jest.fn(),
+      })),
+      onSnapshot: jest.fn(),
     })),
-  }),
+    batch: jest.fn(() => ({
+      set: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+      commit: jest.fn(),
+    })),
+  })),
 }));
 
 jest.mock('@react-native-firebase/messaging', () => ({
   __esModule: true,
-  default: () => ({
+  default: jest.fn(() => ({
     requestPermission: jest.fn(),
     getToken: jest.fn(),
     onMessage: jest.fn(),
     onNotificationOpenedApp: jest.fn(),
     getInitialNotification: jest.fn(),
     onTokenRefresh: jest.fn(),
-  }),
+    subscribeToTopic: jest.fn(),
+    unsubscribeFromTopic: jest.fn(),
+  })),
 }));
 
 jest.mock('@react-native-firebase/analytics', () => ({
   __esModule: true,
-  default: () => ({
+  default: jest.fn(() => ({
     logEvent: jest.fn(),
     setUserId: jest.fn(),
     setUserProperty: jest.fn(),
     setCurrentScreen: jest.fn(),
-  }),
+  })),
 }));
 
 
@@ -293,6 +345,26 @@ jest.mock('lz-string', () => ({
 
 // Mock react-native-vector-icons
 jest.mock('react-native-vector-icons/MaterialCommunityIcons', () => 'Icon');
+
+// Mock react-native-config
+jest.mock('react-native-config', () => ({
+  NODE_ENV: 'test',
+  API_BASE_URL: 'https://test-api.crowbar.com/api/v1',
+  SOCKET_URL: 'https://test-api.crowbar.com',
+  API_TIMEOUT: '10000',
+  FIREBASE_PROJECT_ID: 'crowbar-test',
+  FIREBASE_APP_ID: 'test-app-id',
+  FIREBASE_API_KEY: 'test-api-key',
+  FIREBASE_AUTH_DOMAIN: 'crowbar-test.firebaseapp.com',
+  FIREBASE_STORAGE_BUCKET: 'crowbar-test.appspot.com',
+  FIREBASE_MESSAGING_SENDER_ID: 'test-sender-id',
+  APP_VERSION: '1.0.0-test',
+  DEBUG_MODE: 'true',
+  ANALYTICS_ENABLED: 'false',
+  FLIPPER_ENABLED: 'false',
+  DEV_MENU_ENABLED: 'false',
+  LOG_LEVEL: 'debug',
+}));
 
 // Mock @notifee/react-native
 jest.mock('@notifee/react-native', () => ({

@@ -86,7 +86,11 @@
     "test:device": "node scripts/device-test-runner.js",
     "test:device:report": "cat device-test-report.json",
     "device:info": "echo 'Connect devices and run: npm run test:device'",
-    "device:setup": "npx react-native doctor"
+    "device:setup": "npx react-native doctor",
+    "test:docker": "make -f Makefile.docker test",
+    "test:docker:dashboard": "make -f Makefile.docker test-with-dashboard",
+    "dashboard:generate": "node scripts/generate-test-dashboard.js",
+    "dashboard:open": "make -f Makefile.docker dashboard"
   },
   "dependencies": {
     "@notifee/react-native": "^7.8.0",
@@ -116,6 +120,7 @@
     "react-native-gesture-handler": "^2.27.1",
     "react-native-image-picker": "^8.2.1",
     "react-native-keychain": "^10.0.0",
+    "react-native-linear-gradient": "^2.8.3",
     "react-native-paper": "^5.14.5",
     "react-native-reanimated": "^3.18.0",
     "react-native-safe-area-context": "^5.5.0",

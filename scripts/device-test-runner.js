@@ -1,25 +1,16 @@
 #!/usr/bin/env node
 /* eslint-disable no-console */
 
-/**
 const { execSync } = require('child_process');
 
+/**
  * Device Test Runner
  * Comprehensive testing script for physical devices and emulators
  */
 
 const fs = require('fs');
-const _path = require('_path');
+const path = require('path');
 
-// Colors for console output
-const colors = {
-  reset: '\x1b[0m',
-  red: '\x1b[31m',
-  green: '\x1b[32m',
-  yellow: '\x1b[33m',
-  blue: '\x1b[34m',
-  cyan: '\x1b[36m',
-};
 
 // Logging functions
 const log = {
@@ -44,7 +35,7 @@ const testResults = {
  */
 function runCommand(command, options = {}) {
   try {
-    const _result = execSync(command, {
+    const result = execSync(command, {
       encoding: 'utf8',
       stdio: options.silent ? 'pipe' : 'inherit',
       ...options
@@ -225,6 +216,8 @@ function runPerformanceTests(devices) {
   // Run performance tests if devices are available
   if (devices.android.length > 0 || devices.ios.length > 0 || devices.emulators.length > 0) {
     log.info('Running performance tests on connected devices...');
+    
+    const _perfResult = runCommand('npm run test:performance', { silent: true });
 
     if (_perfResult.success) {
       log.success('Performance tests completed');
@@ -264,9 +257,9 @@ function runPerformanceTests(devices) {
     
     Object.entries(simulatedResults).forEach(([metric, _result]) => {
       if (_result.passed) {
-        log.success(`${metric}: ${_result.value} (threshold: ${result.threshold})`);
+        log.success(`${metric}: ${_result.value} (threshold: ${_result.threshold})`);
       } else {
-        log.error(`${metric}: ${_result.value} exceeds threshold ${result.threshold}`);
+        log.error(`${metric}: ${_result.value} exceeds threshold ${_result.threshold}`);
       }
     });
     
@@ -433,7 +426,7 @@ function checkRNVersion() {
 
 function checkDependencies() {
   const _result = runCommand('npm audit --audit-level=high', { silent: true });
-  return result.success; // No high/critical vulnerabilities
+  return _result.success; // No high/critical vulnerabilities
 }
 
 /**
@@ -474,9 +467,6 @@ function generateTestReport() {
   fs.writeFileSync('device-test-report.json', JSON.stringify(report, null, 2));
   
   // Display summary
-
-}
-  
   Object.entries(report.summary).forEach(([category, status]) => {
     const icon = status === 'passed' ? '✅' : 
                  status === 'warning' ? '⚠️' : 
@@ -499,9 +489,9 @@ function generateTestReport() {
   }
   
   if (report.recommendations.length > 0) {
-
-    report.recommendations.forEach((_rec, _index) => {
-
+    log.warning('\\nRecommendations:');
+    report.recommendations.forEach((rec, index) => {
+      log.warning(`  ${index + 1}. ${rec}`);
     });
   }
   

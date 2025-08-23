@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import logger from '../../loggerService';
 
-import 'react-native-testing-library/extend-expect';
+import '@testing-library/jest-native/extend-expect';
 import 'jest-extended';
 
 /**
@@ -9,58 +9,7 @@ import 'jest-extended';
  * Configura mocks, globals e utilitários necessários
  */
 
-// Mock para AsyncStorage
-jest.mock('@react-native-async-storage/async-storage', () => ({
-  getItem: jest.fn(),
-  setItem: jest.fn(),
-  removeItem: jest.fn(),
-  clear: jest.fn(),
-  getAllKeys: jest.fn(),
-  multiGet: jest.fn(),
-  multiSet: jest.fn(),
-  multiRemove: jest.fn(),
-}));
-
-// Mock para React Native Config
-jest.mock('react-native-config', () => ({
-  NODE_ENV: 'test',
-  API_BASE_URL: 'https://test-api.crowbar.com/api/v1',
-  SOCKET_URL: 'https://test-api.crowbar.com',
-  API_TIMEOUT: '10000',
-  FIREBASE_PROJECT_ID: 'crowbar-test',
-  FIREBASE_APP_ID: 'test-app-id',
-  FIREBASE_API_KEY: 'test-api-key',
-  FIREBASE_AUTH_DOMAIN: 'crowbar-test.firebaseapp.com',
-  FIREBASE_STORAGE_BUCKET: 'crowbar-test.appspot.com',
-  FIREBASE_MESSAGING_SENDER_ID: 'test-sender-id',
-  APP_VERSION: '1.0.0-test',
-  DEBUG_MODE: 'true',
-  ANALYTICS_ENABLED: 'false',
-  FLIPPER_ENABLED: 'false',
-  DEV_MENU_ENABLED: 'false',
-  LOG_LEVEL: 'debug',
-}));
-
-// Mock para Firebase Auth
-jest.mock('@react-native-firebase/auth', () => ({
-  auth: jest.fn(() => ({
-    currentUser: null,
-    signInWithEmailAndPassword: jest.fn(),
-    createUserWithEmailAndPassword: jest.fn(),
-    signOut: jest.fn(),
-    sendPasswordResetEmail: jest.fn(),
-    onAuthStateChanged: jest.fn(),
-  })),
-}));
-
-// Mock para Firebase Firestore
-jest.mock('@react-native-firebase/firestore', () => ({
-  firestore: jest.fn(() => ({
-    collection: jest.fn(),
-    doc: jest.fn(),
-    batch: jest.fn(),
-  })),
-}));
+// Using global mocks from jest.setup.js - no need to redefine here
 
 // Mock para React Native Paper
 jest.mock('react-native-paper', () => ({
@@ -92,7 +41,7 @@ global.FormData = jest.fn(() => ({
 })) as any;
 
 // Mock para Blob
-global.Blob = jest.fn((content, options) => ({
+global.Blob = jest.fn().mockImplementation((content, options) => ({
   content,
   options,
   size: content ? content.length : 0,
@@ -326,8 +275,8 @@ jest.mock('react-native', () => ({
   PixelRatio: {
     get: jest.fn(() => 2),
     getFontScale: jest.fn(() => 1),
-    getPixelSizeForLayoutSize: jest.fn((_size) => size * 2),
-    roundToNearestPixel: jest.fn((_size) => size),
+    getPixelSizeForLayoutSize: jest.fn((_size) => _size * 2),
+    roundToNearestPixel: jest.fn((_size) => _size),
   },
 }));
 

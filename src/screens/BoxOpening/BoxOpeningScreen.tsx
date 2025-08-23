@@ -1,6 +1,6 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
-  _View,
+  View,
   StyleSheet,
   Animated,
   Dimensions,
@@ -47,9 +47,10 @@ import ErrorMessage from '../../components/ErrorMessage';
 
 // Types
 import { MysteryBox } from '../../types/api';
+import { RootStackParamList } from '../../navigation/AppNavigator';
 
 // Theme
-import { _theme, getSpacing } from '../../theme';
+import { theme, getSpacing } from '../../theme';
 import { analyticsService } from '../../services/analyticsService';
 
 /**
@@ -57,10 +58,8 @@ import { analyticsService } from '../../services/analyticsService';
  * Animações de abertura e revelação dos itens
  */
 
-type BoxOpeningScreenNavigationProp = NativeStackNavigationProp<any, 'BoxOpening'>;
-type BoxOpeningScreenRouteProp = RouteProp<{
-  BoxOpening: { box: MysteryBox };
-}, 'BoxOpening'>;
+type BoxOpeningScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'BoxOpening'>;
+type BoxOpeningScreenRouteProp = RouteProp<RootStackParamList, 'BoxOpening'>;
 
 interface BoxOpeningScreenProps {
   navigation: BoxOpeningScreenNavigationProp;
@@ -306,7 +305,7 @@ const BoxOpeningScreen: React.FC<BoxOpeningScreenProps> = ({
    * Get rotation interpolation
    */
   const getRotateInterpolation = () => {
-    return rotateAnim._interpolate({
+    return rotateAnim.interpolate({
       inputRange: [-1, 1],
       outputRange: ['-10deg', '10deg'],
     });
@@ -324,17 +323,17 @@ const BoxOpeningScreen: React.FC<BoxOpeningScreenProps> = ({
 
   if (!currentBox) {
     return (
-      <_View style={styles.loadingContainer}>
+      <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" />
         <Text style={styles.loadingText}>Carregando caixa...</Text>
-      </_View>
+      </View>
     );
   }
 
   return (
-    <_View style={[styles.container, { paddingTop: insets.top }]}>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
       {/* Header */}
-      <_View style={styles.header}>
+      <View style={styles.header}>
         <IconButton
           icon="arrow-left"
           size={24}
@@ -354,10 +353,10 @@ const BoxOpeningScreen: React.FC<BoxOpeningScreenProps> = ({
             onPress={skipAnimation}
           />
         )}
-      </_View>
+      </View>
 
       {/* Main Content */}
-      <_View style={styles.content}>
+      <View style={styles.content}>
         {animationState === 'idle' && (
           <BoxOpeningAnimation
             box={currentBox}
@@ -372,9 +371,9 @@ const BoxOpeningScreen: React.FC<BoxOpeningScreenProps> = ({
         )}
 
         {(animationState === 'opening' || animationState === 'revealing' || animationState === 'completed') && (
-          <_View style={styles.revealContainer}>
+          <View style={styles.revealContainer}>
             {/* Box Animation */}
-            <Animated._View
+            <Animated.View
               style={[
                 styles.boxContainer,
                 {
@@ -396,33 +395,33 @@ const BoxOpeningScreen: React.FC<BoxOpeningScreenProps> = ({
                 canOpen={false}
                 isLoading={false}
               />
-            </Animated._View>
+            </Animated.View>
 
             {/* Revealed Items */}
             {revealedItems.length > 0 && (
-              <_View style={styles.itemsContainer}>
+              <View style={styles.itemsContainer}>
                 <Text style={styles.itemsTitle}>
                   Itens Encontrados ({revealedItems.length}/{openingResult?.items.length || 0})
                 </Text>
-                <_View style={styles.itemsGrid}>
-                  {revealedItems.map((item, _index) => (
+                <View style={styles.itemsGrid}>
+                  {revealedItems.map((item, index) => (
                     <ItemRevealCard
-                      _key={`${item.id}-${0}`}
+                      key={`${item.id}-${index}`}
                       item={item}
                       index={0}
                       style={styles.itemCard}
                     />
                   ))}
-                </_View>
-              </_View>
+                </View>
+              </View>
             )}
-          </_View>
+          </View>
         )}
-      </_View>
+      </View>
 
       {/* Bottom Actions */}
       {animationState === 'completed' && (
-        <_View style={styles.bottomActions}>
+        <View style={styles.bottomActions}>
           <Button
             mode="outlined"
             onPress={handleShare}
@@ -439,49 +438,49 @@ const BoxOpeningScreen: React.FC<BoxOpeningScreenProps> = ({
           >
             Abrir Outra
           </Button>
-        </_View>
+        </View>
       )}
 
       {/* Share Modal */}
       <Portal>
         <ShareResultModal
           visible={showShareModal}
-          _onDismiss={() => dispatch(setShowShareModal(false))}
+          onDismiss={() => dispatch(setShowShareModal(false))}
           openingResult={openingResult}
           box={currentBox}
         />
       </Portal>
-    </_View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    _backgroundColor: theme.colors.background,
+    backgroundColor: theme.colors.background,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    _backgroundColor: theme.colors.background,
+    backgroundColor: theme.colors.background,
   },
   loadingText: {
     marginTop: getSpacing('md'),
-    _color: theme.colors.onSurfaceVariant,
+    color: theme.colors.onSurfaceVariant,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: getSpacing('md'),
-    _backgroundColor: theme.colors.surface,
+    backgroundColor: theme.colors.surface,
     elevation: 2,
   },
   headerTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    _color: theme.colors.onSurface,
+    color: theme.colors.onSurface,
   },
   content: {
     flex: 1,
@@ -506,7 +505,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: getSpacing('lg'),
-    _color: theme.colors.onSurface,
+    color: theme.colors.onSurface,
   },
   itemsGrid: {
     flexDirection: 'row',
@@ -522,7 +521,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     padding: getSpacing('md'),
     gap: getSpacing('md'),
-    _backgroundColor: theme.colors.surface,
+    backgroundColor: theme.colors.surface,
     borderTopWidth: 1,
     borderTopColor: theme.colors.outline,
   },

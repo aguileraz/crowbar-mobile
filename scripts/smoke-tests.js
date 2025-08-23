@@ -1,5 +1,5 @@
-/* eslint-disable no-console */
 #!/usr/bin/env node
+/* eslint-disable no-console */
 const { execSync } = require('child_process');
 
 const _path = require('_path');
@@ -24,12 +24,13 @@ const colors = {
 
 // Logging functions
 const log = {
-  title: (msg) => ,
-  info: (msg) => ,
-  success: (msg) => ,
-  warning: (msg) => ,
-  error: (msg) => ,
-  step: (step, msg) => };
+  title: (msg) => console.log(`\n📦 ${msg}\n${'='.repeat(40)}`),
+  info: (msg) => console.log(`ℹ️  ${msg}`),
+  success: (msg) => console.log(`✅ ${msg}`),
+  warning: (msg) => console.log(`⚠️  ${msg}`),
+  error: (msg) => console.error(`❌ ${msg}`),
+  step: (step, msg) => console.log(`\n${step}. ${msg}`),
+};
 
 const results = {
   passed: 0,

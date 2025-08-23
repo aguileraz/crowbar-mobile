@@ -1,15 +1,13 @@
-/* eslint-disable no-console */
 #!/usr/bin/env node
 
 /**
-const { execSync } = require('child_process');
-
  * E2E Test Runner
  * Runs end-to-end tests with proper setup and reporting
  */
 
-const _path = require('_path');
+const path = require('path');
 const fs = require('fs');
+const { execSync } = require('child_process');
 
 // Colors for console output
 const colors = {
@@ -24,7 +22,7 @@ const colors = {
 };
 
 function log(message, color = colors.reset) {
-
+  console.log(`${color}${message}${colors.reset}`);
 }
 
 function logHeader(message) {

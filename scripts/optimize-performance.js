@@ -43,12 +43,13 @@ const colors = {
 
 // Logging functions
 const log = {
-  title: (msg) => ,
-  info: (msg) => ,
-  success: (msg) => ,
-  warning: (msg) => ,
-  error: (msg) => ,
-  step: (step, msg) => };
+  title: (msg) => console.log(`🎯 ${msg}`),
+  info: (msg) => console.log(`ℹ️  ${msg}`),
+  success: (msg) => console.log(`✅ ${msg}`),
+  warning: (msg) => console.log(`⚠️  ${msg}`),
+  error: (msg) => console.log(`❌ ${msg}`),
+  step: (step, msg) => console.log(`${step}️⃣ ${msg}`)
+};
 
 /**
  * Main optimization execution
@@ -355,9 +356,7 @@ async function generateOptimizationReport() {
   log.success(`Optimization report saved to: ${reportPath}`);
   
   // Summary
-  );
   log.title('OPTIMIZATION SUMMARY');
-  );
   log.success('✅ Bundle optimizations applied');
   log.success('✅ Asset analysis completed');
   log.success('✅ Dependency analysis completed');

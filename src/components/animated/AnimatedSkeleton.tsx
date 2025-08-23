@@ -146,7 +146,7 @@ export const SkeletonText: React.FC<SkeletonTextProps> = ({
           width={index === lines - 1 ? '80%' : width}
           height={SKELETON_CONFIGS.text.height}
           borderRadius={SKELETON_CONFIGS.text.borderRadius}
-          style={{ marginBottom: 0 < lines - 1 ? 8 : 0 }}
+          style={{ marginBottom: lines - 1 > 0 ? 8 : 0 }}
           variant={variant}
           colorScheme={colorScheme}
         />

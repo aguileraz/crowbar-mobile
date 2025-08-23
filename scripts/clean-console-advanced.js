@@ -6,6 +6,7 @@
 
 const fs = require('fs');
 const glob = require('glob');
+const path = require('path');
 
 // Files where we should completely remove console
 const REMOVE_CONSOLE_FILES = [
@@ -88,9 +89,9 @@ function removeConsoleStatements(content) {
 }
 
 function processFiles() {
-  let _totalFiles = 0;
-  let _totalRemoved = 0;
-  let _totalCommented = 0;
+  let totalFiles = 0;
+  let totalRemoved = 0;
+  let totalCommented = 0;
 
   // Process files where we remove console
 
@@ -105,8 +106,8 @@ function processFiles() {
       
       if (count > 0) {
         fs.writeFileSync(file, modified);
-        `);
-        0++;
+        console.log('✓ ' + path.relative(process.cwd(), file) + ': ' + count + ' console statements removed');
+        totalFiles++;
         totalRemoved += count;
       }
     }
@@ -125,13 +126,19 @@ function processFiles() {
       
       if (count > 0) {
         fs.writeFileSync(file, modified);
-        console.log(`✓ ${path.relative(process.cwd(), file)}: ${count} console statements commented`);
+        console.log('✓ ' + path.relative(process.cwd(), file) + ': ' + count + ' console statements commented');
         totalFiles++;
         totalCommented += count;
       }
     }
   }
 
+  // Print summary
+  console.log('\n📋 Console Cleanup Summary:');
+  console.log(`• Files processed: ${totalFiles}`);
+  console.log(`• Statements removed: ${totalRemoved}`);
+  console.log(`• Statements commented: ${totalCommented}`);
+  console.log(`• Total processed: ${totalRemoved + totalCommented}`);
 }
 
 // Run the script

@@ -1,0 +1,156 @@
+version: '3.8'
+
+services:
+  # Build base image first
+  android-base:
+    build:
+      context: ./docker/android
+      dockerfile: Dockerfile.base
+    image: crowbar-android-base:latest
+    command: echo "Base image built successfully"
+
+  # Android API 21 (5.0 Lollipop)
+  android-api-21:
+    build:
+      context: ./docker/android/api-21
+      dockerfile: Dockerfile
+    image: crowbar-android-api-21:latest
+    container_name: crowbar-emulator-api-21
+    depends_on:
+      - android-base
+    ports:
+      - "5554:5554"
+      - "5555:5555"
+    volumes:
+      - ./android/app/build/outputs/apk:/apk
+      - ./test-results/api-21:/results
+      - /dev/kvm:/dev/kvm
+    privileged: true
+    environment:
+      - API_LEVEL=21
+      - DEVICE_NAME=Nexus 5
+      - TEST_APK_PATH=/apk/debug/app-debug.apk
+    networks:
+      - android-test-network
+
+  # Android API 26 (8.0 Oreo)
+  android-api-26:
+    build:
+      context: ./docker/android/api-26
+      dockerfile: Dockerfile
+    image: crowbar-android-api-26:latest
+    container_name: crowbar-emulator-api-26
+    depends_on:
+      - android-base
+    ports:
+      - "5556:5556"
+      - "5557:5557"
+    volumes:
+      - ./android/app/build/outputs/apk:/apk
+      - ./test-results/api-26:/results
+      - /dev/kvm:/dev/kvm
+    privileged: true
+    environment:
+      - API_LEVEL=26
+      - DEVICE_NAME=Pixel 2
+      - TEST_APK_PATH=/apk/debug/app-debug.apk
+    networks:
+      - android-test-network
+
+  # Android API 31 (12 S)
+  android-api-31:
+    build:
+      context: ./docker/android/api-31
+      dockerfile: Dockerfile
+    image: crowbar-android-api-31:latest
+    container_name: crowbar-emulator-api-31
+    depends_on:
+      - android-base
+    ports:
+      - "5560:5560"
+      - "5561:5561"
+    volumes:
+      - ./android/app/build/outputs/apk:/apk
+      - ./test-results/api-31:/results
+      - /dev/kvm:/dev/kvm
+    privileged: true
+    environment:
+      - API_LEVEL=31
+      - DEVICE_NAME=Pixel 4
+      - TEST_APK_PATH=/apk/debug/app-debug.apk
+    networks:
+      - android-test-network
+
+  # Appium Server for test execution
+  appium-server:
+    build:
+      context: ./docker/appium
+      dockerfile: Dockerfile
+    image: crowbar-appium:latest
+    container_name: crowbar-appium-server
+    depends_on:
+      - android-api-21
+      - android-api-26
+      - android-api-31
+    ports:
+      - "4723:4723"
+      - "4724:4724"
+      - "4725:4725"
+    volumes:
+      - ./e2e:/tests
+      - ./test-results:/results
+      - ./android/app/build/outputs/apk:/apk
+    environment:
+      - APPIUM_PORT=4723
+      - ANDROID_DEVICES=emulator-5554,emulator-5556,emulator-5560
+    networks:
+      - android-test-network
+    command: >
+      sh -c "
+        appium server --address 0.0.0.0 --port 4723 --allow-cors --log-level info &
+        sleep infinity
+      "
+
+  # Test Runner orchestrator
+  test-runner:
+    build:
+      context: ./docker/test-runner
+      dockerfile: Dockerfile
+    image: crowbar-test-runner:latest
+    container_name: crowbar-test-runner
+    depends_on:
+      - appium-server
+    volumes:
+      - ./e2e:/tests
+      - ./test-results:/results
+      - ./arquivos_fonte:/prototypes
+      - ./package.json:/workspace/package.json
+      - ./package-lock.json:/workspace/package-lock.json
+    environment:
+      - TEST_MODE=${TEST_MODE:-sequential}
+      - API_LEVELS=${API_LEVELS:-21,26,31}
+      - APPIUM_HOST=appium-server
+      - APPIUM_PORT=4723
+      - PROTOTYPE_PATH=/prototypes/OUT•Crowbar/_telas
+    networks:
+      - android-test-network
+    command: >
+      sh -c "
+        echo 'Waiting for emulators to be ready...' &&
+        sleep 30 &&
+        echo 'Starting test execution...' &&
+        npm run test:docker
+      "
+
+networks:
+  android-test-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
+
+volumes:
+  android-sdk:
+    driver: local
+  test-results:
+    driver: local

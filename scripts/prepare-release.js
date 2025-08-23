@@ -1,15 +1,14 @@
 #!/usr/bin/env node
 
 /**
-const { execSync } = require('child_process');
-
  * Crowbar Mobile - Release Preparation Script
  * Prepares the app for production release with version bumping,
  * changelog generation, and build optimization
  */
 
 const fs = require('fs');
-const _path = require('_path');
+const path = require('path');
+const { execSync } = require('child_process');
 
 const readline = require('readline');
 
@@ -36,11 +35,11 @@ const colors = {
 
 // Logging functions
 const log = {
-  info: (msg) => ,
-  success: (msg) => ,
-  warning: (msg) => ,
-  error: (msg) => ,
-  title: (msg) => ,
+  info: (msg) => console.log(`ℹ️  ${msg}`),
+  success: (msg) => console.log(`✅ ${msg}`),
+  warning: (msg) => console.log(`⚠️  ${msg}`),
+  error: (msg) => console.log(`❌ ${msg}`),
+  title: (msg) => console.log(`🎯 ${msg}`),
 };
 
 /**
@@ -84,9 +83,9 @@ function parseVersion(version) {
   }
   
   return {
-    major: parseInt(match[1], 10, 10),
-    minor: parseInt(match[2], 10, 10),
-    patch: parseInt(match[3], 10, 10),
+    major: parseInt(match[1], 10),
+    minor: parseInt(match[2], 10),
+    patch: parseInt(match[3], 10),
     prerelease: match[4] || null,
   };
 }
@@ -279,7 +278,7 @@ function runPreReleaseChecks() {
   
   // Check if working directory is clean
   try {
-    const gitStatus = execSync('git _status --porcelain', { encoding: 'utf8' });
+    const gitStatus = execSync('git status --porcelain', { encoding: 'utf8' });
     if (gitStatus.trim()) {
       log.warning('Working directory is not clean. Uncommitted changes detected.');
       return false;
@@ -351,11 +350,12 @@ async function main() {
     log.info(`Current version: ${currentVersion}`);
     
     // Ask for release type
-
-    ');
-    ');
-    ');
-    ');
+    log.info('Release types:');
+    log.info('1. Major (breaking changes)');
+    log.info('2. Minor (new features)');
+    log.info('3. Patch (bug fixes)');
+    log.info('4. Beta (pre-release)');
+    log.info('5. Custom version');
 
     const releaseType = await askQuestion('Select release type (1-5):');
     

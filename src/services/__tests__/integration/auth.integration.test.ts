@@ -1,26 +1,13 @@
  
 import { TestApiClient, testEnvironment, testData, testUtils } from './testConfig';
-import { _auth } from '@react-native-firebase/auth';
+import auth from '@react-native-firebase/auth';
 
 /**
  * Testes de integração para sistema de autenticação
  * Verifica fluxos de login, registro, logout e gerenciamento de tokens
  */
 
-// Mock do Firebase Auth
-jest.mock('@react-native-firebase/auth', () => ({
-  auth: jest.fn(() => ({
-    signInWithEmailAndPassword: jest.fn(),
-    createUserWithEmailAndPassword: jest.fn(),
-    signOut: jest.fn(),
-    sendPasswordResetEmail: jest.fn(),
-    currentUser: {
-      uid: 'firebase-test-uid',
-      email: 'test@crowbar.com',
-      getIdToken: jest.fn().mockResolvedValue('firebase-token'),
-    },
-  })),
-}));
+// Using global Firebase Auth mock from jest.setup.js
 
 describe('Testes de Integração - Autenticação', () => {
   let testClient: TestApiClient;
@@ -66,13 +53,13 @@ describe('Testes de Integração - Autenticação', () => {
       testClient.mockSuccess('post', '/auth/login', expectedResponse);
 
       // Act
-      const _response = await apiClient.post('/auth/login', credentials);
+      const response = await testClient.getAxiosInstance().post('/auth/login', credentials);
 
       // Assert
-      expect(response.success).toBe(true);
-      expect(response.data.user).toEqual(testData.user);
-      expect(response.data.token).toBe(testData.authToken);
-      expect(testUtils.isValidToken(response.data.token)).toBe(true);
+      expect(response.data.success).toBe(true);
+      expect(response.data.data.user).toEqual(testData.user);
+      expect(response.data.data.token).toBe(testData.authToken);
+      expect(testUtils.isValidToken(response.data.data.token)).toBe(true);
     });
 
     it('deve falhar com credenciais inválidas', async () => {

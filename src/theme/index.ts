@@ -149,9 +149,9 @@ export const commonStyles = {
 export const getThemeColor = (colorName: keyof typeof colors) => colors[colorName];
 
 export const getSpacing = (_size: keyof typeof commonStyles.padding) => 
-  commonStyles.padding[size];
+  commonStyles.padding[_size];
 
 export const getBorderRadius = (_size: keyof typeof commonStyles.borderRadius) => 
-  commonStyles.borderRadius[size];
+  commonStyles.borderRadius[_size];
 
 export default theme;

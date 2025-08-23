@@ -11,8 +11,13 @@ module.exports = {
     'node_modules/(?!(react-native|@react-native|react-redux|@reduxjs|redux-persist|@react-navigation|react-native-paper|react-native-vector-icons|react-native-config|@react-native-firebase)/)',
   ],
   testMatch: [
-    '<rootDir>/src/**/__tests__/**/*.(ts|tsx|js)',
+    '<rootDir>/src/**/__tests__/**/*.(test|spec).(ts|tsx|js)',
     '<rootDir>/src/**/*.(test|spec).(ts|tsx|js)',
+  ],
+  testPathIgnorePatterns: [
+    '/node_modules/',
+    '.*setup\\.ts$',
+    '.*testConfig\\.ts$',
   ],
   collectCoverageFrom: [
     'src/**/*.{ts,tsx}',

@@ -1,0 +1,409 @@
+{
+  "dashboard": {
+    "id": null,
+    "uid": "gamification-001",
+    "title": "Crowbar Gamification Dashboard",
+    "tags": ["gamification", "crowbar", "mobile"],
+    "timezone": "America/Sao_Paulo",
+    "schemaVersion": 27,
+    "version": 1,
+    "refresh": "30s",
+    "panels": [
+      {
+        "id": 1,
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+        "type": "graph",
+        "title": "Daily Active Users (DAU)",
+        "targets": [
+          {
+            "expr": "gamification_daily_active_users",
+            "legendFormat": "DAU",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          { "format": "short", "label": "Users" },
+          { "format": "short" }
+        ]
+      },
+      {
+        "id": 2,
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+        "type": "graph",
+        "title": "Engagement Rate",
+        "targets": [
+          {
+            "expr": "rate(gamification_user_actions_total[5m])",
+            "legendFormat": "{{action}}",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          { "format": "percentunit", "label": "Rate" },
+          { "format": "short" }
+        ]
+      },
+      {
+        "id": 3,
+        "gridPos": { "h": 8, "w": 8, "x": 0, "y": 8 },
+        "type": "stat",
+        "title": "Challenge Completion Rate",
+        "targets": [
+          {
+            "expr": "rate(gamification_challenges_completed[1h]) / rate(gamification_challenges_started[1h]) * 100",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "graphMode": "area",
+          "colorMode": "value",
+          "text": {
+            "titleSize": 16,
+            "valueSize": 48
+          }
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "color": "red", "value": null },
+                { "color": "yellow", "value": 30 },
+                { "color": "green", "value": 50 }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 4,
+        "gridPos": { "h": 8, "w": 8, "x": 8, "y": 8 },
+        "type": "stat",
+        "title": "Timer Conversion Rate",
+        "targets": [
+          {
+            "expr": "gamification_timer_conversion_rate * 100",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "graphMode": "area",
+          "colorMode": "value"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "color": "red", "value": null },
+                { "color": "yellow", "value": 25 },
+                { "color": "green", "value": 40 }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 5,
+        "gridPos": { "h": 8, "w": 8, "x": 16, "y": 8 },
+        "type": "stat",
+        "title": "Average Streak Length",
+        "targets": [
+          {
+            "expr": "avg(gamification_user_streak_days)",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "graphMode": "area",
+          "colorMode": "value"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "days",
+            "decimals": 1
+          }
+        }
+      },
+      {
+        "id": 6,
+        "gridPos": { "h": 10, "w": 12, "x": 0, "y": 16 },
+        "type": "graph",
+        "title": "Spin Wheel Usage",
+        "targets": [
+          {
+            "expr": "rate(gamification_spin_wheel_spins_total[1h])",
+            "legendFormat": "Spins/hour",
+            "refId": "A"
+          },
+          {
+            "expr": "rate(gamification_spin_wheel_rewards_total[1h])",
+            "legendFormat": "{{reward_type}}",
+            "refId": "B"
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "gridPos": { "h": 10, "w": 12, "x": 12, "y": 16 },
+        "type": "heatmap",
+        "title": "User Activity Heatmap",
+        "targets": [
+          {
+            "expr": "gamification_user_activity_by_hour",
+            "format": "heatmap",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "calculate": false,
+          "cellGap": 1,
+          "color": {
+            "scheme": "Spectral"
+          }
+        }
+      },
+      {
+        "id": 8,
+        "gridPos": { "h": 8, "w": 8, "x": 0, "y": 26 },
+        "type": "piechart",
+        "title": "Challenge Types Distribution",
+        "targets": [
+          {
+            "expr": "sum by (type) (gamification_challenges_active)",
+            "legendFormat": "{{type}}",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "pieType": "donut",
+          "displayLabels": ["name", "percent"],
+          "legendDisplayMode": "table",
+          "legendPlacement": "right"
+        }
+      },
+      {
+        "id": 9,
+        "gridPos": { "h": 8, "w": 8, "x": 8, "y": 26 },
+        "type": "bargauge",
+        "title": "Leaderboard Categories",
+        "targets": [
+          {
+            "expr": "topk(5, gamification_leaderboard_scores)",
+            "legendFormat": "{{user}}",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "orientation": "horizontal",
+          "displayMode": "gradient",
+          "showUnfilled": true
+        }
+      },
+      {
+        "id": 10,
+        "gridPos": { "h": 8, "w": 8, "x": 16, "y": 26 },
+        "type": "table",
+        "title": "Top Achievements Unlocked",
+        "targets": [
+          {
+            "expr": "topk(10, sum by (achievement) (gamification_achievements_unlocked_total))",
+            "format": "table",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "showHeader": true
+        },
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "align": "auto",
+              "displayMode": "auto"
+            }
+          }
+        }
+      },
+      {
+        "id": 11,
+        "gridPos": { "h": 6, "w": 24, "x": 0, "y": 34 },
+        "type": "alertlist",
+        "title": "Active Alerts",
+        "options": {
+          "showOptions": "current",
+          "maxItems": 10,
+          "sortOrder": "1",
+          "dashboardAlerts": false,
+          "alertName": "",
+          "dashboardTitle": "",
+          "tags": ["gamification"]
+        }
+      },
+      {
+        "id": 12,
+        "gridPos": { "h": 8, "w": 6, "x": 0, "y": 40 },
+        "type": "stat",
+        "title": "Total XP Distributed",
+        "targets": [
+          {
+            "expr": "sum(increase(gamification_xp_distributed_total[24h]))",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "graphMode": "none",
+          "colorMode": "background"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "color": "blue", "value": null }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 13,
+        "gridPos": { "h": 8, "w": 6, "x": 6, "y": 40 },
+        "type": "stat",
+        "title": "Total Coins Earned",
+        "targets": [
+          {
+            "expr": "sum(increase(gamification_coins_earned_total[24h]))",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "graphMode": "none",
+          "colorMode": "background"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "color": "yellow", "value": null }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 14,
+        "gridPos": { "h": 8, "w": 6, "x": 12, "y": 40 },
+        "type": "stat",
+        "title": "Flash Sales Revenue",
+        "targets": [
+          {
+            "expr": "sum(increase(gamification_flash_sales_revenue_total[24h]))",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "graphMode": "none",
+          "colorMode": "background"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "currencyBRL",
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "color": "green", "value": null }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 15,
+        "gridPos": { "h": 8, "w": 6, "x": 18, "y": 40 },
+        "type": "stat",
+        "title": "Error Rate",
+        "targets": [
+          {
+            "expr": "rate(gamification_errors_total[5m]) * 100",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "graphMode": "area",
+          "colorMode": "background"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "color": "green", "value": null },
+                { "color": "yellow", "value": 1 },
+                { "color": "red", "value": 5 }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "templating": {
+      "list": [
+        {
+          "name": "environment",
+          "type": "custom",
+          "current": {
+            "text": "production",
+            "value": "production"
+          },
+          "options": [
+            { "text": "production", "value": "production" },
+            { "text": "staging", "value": "staging" },
+            { "text": "development", "value": "development" }
+          ]
+        },
+        {
+          "name": "interval",
+          "type": "interval",
+          "current": {
+            "text": "5m",
+            "value": "5m"
+          },
+          "options": [
+            { "text": "1m", "value": "1m" },
+            { "text": "5m", "value": "5m" },
+            { "text": "15m", "value": "15m" },
+            { "text": "1h", "value": "1h" },
+            { "text": "6h", "value": "6h" },
+            { "text": "1d", "value": "1d" }
+          ]
+        }
+      ]
+    },
+    "time": {
+      "from": "now-6h",
+      "to": "now"
+    },
+    "timepicker": {
+      "refresh_intervals": ["10s", "30s", "1m", "5m", "15m", "30m", "1h"],
+      "time_options": ["5m", "15m", "1h", "6h", "12h", "24h", "2d", "7d", "30d"]
+    }
+  }
+}

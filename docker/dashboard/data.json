@@ -1,0 +1,155 @@
+{
+  "metrics": {
+    "totalTests": 75,
+    "passRate": "88%",
+    "avgDuration": "45s",
+    "apiCoverage": "0/3",
+    "coveragePercentage": 0
+  },
+  "testMatrix": [
+    {
+      "level": 21,
+      "version": "5.0 (Lollipop)",
+      "device": "Nexus 5",
+      "status": "failure",
+      "tests": {
+        "total": 25,
+        "passed": 22,
+        "failed": 1,
+        "skipped": 2
+      },
+      "duration": 45.23,
+      "timestamp": "2025-08-04T11:11:59.987Z",
+      "visualCompliance": 93.5,
+      "passRate": 88
+    },
+    {
+      "level": 26,
+      "version": "8.0 (Oreo)",
+      "device": "Pixel 2",
+      "status": "failure",
+      "tests": {
+        "total": 25,
+        "passed": 22,
+        "failed": 1,
+        "skipped": 2
+      },
+      "duration": 45.23,
+      "timestamp": "2025-08-04T11:11:59.987Z",
+      "visualCompliance": 93.5,
+      "passRate": 88
+    },
+    {
+      "level": 31,
+      "version": "12 (S)",
+      "device": "Pixel 4",
+      "status": "failure",
+      "tests": {
+        "total": 25,
+        "passed": 22,
+        "failed": 1,
+        "skipped": 2
+      },
+      "duration": 45.23,
+      "timestamp": "2025-08-04T11:11:59.988Z",
+      "visualCompliance": 93.5,
+      "passRate": 88
+    }
+  ],
+  "visualRegression": {
+    "screens": [
+      {
+        "name": "login",
+        "averageMatch": 96,
+        "status": "pass",
+        "results": {
+          "api21": 96,
+          "api26": 96,
+          "api31": 96
+        }
+      },
+      {
+        "name": "profile",
+        "averageMatch": 93,
+        "status": "pass",
+        "results": {
+          "api21": 93,
+          "api26": 93,
+          "api31": 93
+        }
+      },
+      {
+        "name": "shop",
+        "averageMatch": 95,
+        "status": "pass",
+        "results": {
+          "api21": 95,
+          "api26": 95,
+          "api31": 95
+        }
+      },
+      {
+        "name": "productPage",
+        "averageMatch": 94,
+        "status": "pass",
+        "results": {
+          "api21": 94,
+          "api26": 94,
+          "api31": 94
+        }
+      },
+      {
+        "name": "category",
+        "averageMatch": 92,
+        "status": "pass",
+        "results": {
+          "api21": 92,
+          "api26": 92,
+          "api31": 92
+        }
+      },
+      {
+        "name": "cart",
+        "averageMatch": 88,
+        "status": "warning",
+        "results": {
+          "api21": 88,
+          "api26": 88,
+          "api31": 88
+        }
+      },
+      {
+        "name": "checkout",
+        "averageMatch": 97,
+        "status": "pass",
+        "results": {
+          "api21": 97,
+          "api26": 97,
+          "api31": 97
+        }
+      }
+    ],
+    "overallCompliance": 93.5
+  },
+  "timeline": [
+    {
+      "time": "08:11",
+      "title": "API 31 Tests",
+      "description": "22/25 tests passed",
+      "status": "failure"
+    },
+    {
+      "time": "08:11",
+      "title": "API 26 Tests",
+      "description": "22/25 tests passed",
+      "status": "failure"
+    },
+    {
+      "time": "08:11",
+      "title": "API 21 Tests",
+      "description": "22/25 tests passed",
+      "status": "failure"
+    }
+  ],
+  "lastUpdated": "2025-08-04T19:20:20.371Z"
+}

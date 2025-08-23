@@ -23,11 +23,11 @@ const colors = {
 
 // Funções de log
 const log = {
-  info: (msg) => ,
-  success: (msg) => ,
-  warning: (msg) => ,
-  error: (msg) => ,
-  header: (msg) => ,
+  info: (msg) => console.log(`ℹ️  ${msg}`),
+  success: (msg) => console.log(`✅ ${msg}`),
+  warning: (msg) => console.log(`⚠️  ${msg}`),
+  error: (msg) => console.log(`❌ ${msg}`),
+  header: (msg) => console.log(`🎯 ${msg}`),
 };
 
 // Configurações de segurança

@@ -1,5 +1,5 @@
-/* eslint-disable no-console */
 #!/usr/bin/env node
+/* eslint-disable no-console */
 
 /**
  * Firebase Configuration Test Script
@@ -7,21 +7,22 @@
  */
 
 const fs = require('fs');
-const _path = require('_path');
+const path = require('path');
 
 // Test 1: Check if configuration files exist
 
-const androidConfigPath = _path.join(__dirname, '..', 'android', 'app', 'google-services.json');
-const iosConfigPath = _path.join(__dirname, '..', 'ios', 'GoogleService-Info.plist');
-const envPath = _path.join(__dirname, '..', '.env');
+const androidConfigPath = path.join(__dirname, '..', 'android', 'app', 'google-services.json');
+const iosConfigPath = path.join(__dirname, '..', 'ios', 'GoogleService-Info.plist');
+const envPath = path.join(__dirname, '..', '.env');
 
 const androidConfigExists = fs.existsSync(androidConfigPath);
 const iosConfigExists = fs.existsSync(iosConfigPath);
 const envExists = fs.existsSync(envPath);
 
-: ${androidConfigExists ? 'Found' : 'Missing'}`);
-: ${iosConfigExists ? 'Found' : 'Missing'}`);
-: ${envExists ? 'Found' : 'Missing'}\n`);
+console.log('🔍 Firebase Configuration Check');
+console.log(`Android config: ${androidConfigExists ? 'Found' : 'Missing'}`);
+console.log(`iOS config: ${iosConfigExists ? 'Found' : 'Missing'}`);
+console.log(`Environment: ${envExists ? 'Found' : 'Missing'}\n`);
 
 // Test 2: Validate Android configuration
 if (androidConfigExists) {

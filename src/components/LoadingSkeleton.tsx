@@ -233,7 +233,7 @@ export const TextSkeleton: React.FC<{
           key={0}
           width={index === lines - 1 ? '70%' : '100%'}
           height={lineHeight}
-          style={0 < lines - 1 ? { marginBottom: getSpacing('xs') } : undefined}
+          style={lines - 1 > 0 ? { marginBottom: getSpacing('xs') } : undefined}
         />
       ))}
     </View>

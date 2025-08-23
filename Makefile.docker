@@ -15,7 +15,9 @@ help:
 	@echo "  make test-api31     - Test on Android API 31 only"
 	@echo "  make clean          - Stop and remove all containers"
 	@echo "  make logs           - Show container logs"
-	@echo "  make report         - Open test report in browser"
+	@echo "  make report         - Generate and open test dashboard"
+	@echo "  make dashboard      - Generate interactive dashboard"
+	@echo "  make test-with-dashboard - Run tests and generate dashboard"
 	@echo ""
 	@echo "Advanced usage:"
 	@echo "  make test-debug     - Run tests with debug output"
@@ -25,7 +27,12 @@ help:
 # Build Docker images
 build:
 	@echo "🏗️  Building Docker images..."
-	docker-compose build
+	@echo "📦 Building Android base image first..."
+	docker compose -f docker-compose.android.yml build android-base
+	@echo "📦 Building specific Android API images..."
+	docker compose -f docker-compose.android.yml build android-api-21 android-api-26 android-api-31
+	@echo "📦 Building Appium and test runner..."
+	docker compose -f docker-compose.android.yml build appium-server test-runner
 
 # Run all tests sequentially
 test:
@@ -53,7 +60,7 @@ test-api31:
 # Run tests with debug output
 test-debug:
 	@echo "🐛 Running tests in debug mode..."
-	docker-compose run --rm \
+	docker compose -f docker-compose.android.yml run --rm \
 		-e DEBUG=true \
 		-e LOG_LEVEL=debug \
 		test-runner
@@ -61,30 +68,46 @@ test-debug:
 # Clean up containers
 clean:
 	@echo "🧹 Cleaning up Docker containers..."
-	docker-compose down -v
+	docker compose -f docker-compose.android.yml down -v
 	rm -rf test-results-docker test-reports-docker
 
 # Show logs
 logs:
-	docker-compose logs -f
+	docker compose -f docker-compose.android.yml logs -f
 
-# Open test report
+# Generate test reports and dashboard
 report:
-	@if [ -f "test-reports-docker/allure-report/index.html" ]; then \
-		echo "📊 Opening test report..."; \
-		open test-reports-docker/allure-report/index.html || \
-		xdg-open test-reports-docker/allure-report/index.html || \
-		echo "Please open: test-reports-docker/allure-report/index.html"; \
+	@echo "📊 Generating comprehensive test report..."
+	@mkdir -p test-reports-docker
+	@node scripts/generate-test-dashboard.js
+	@if [ -f "docker/dashboard/index.html" ]; then \
+		echo "✅ Dashboard generated successfully!"; \
+		echo "🌐 Opening dashboard..."; \
+		open docker/dashboard/index.html || \
+		xdg-open docker/dashboard/index.html || \
+		echo "Please open: docker/dashboard/index.html"; \
 	else \
-		echo "❌ No test report found. Run tests first."; \
+		echo "❌ Failed to generate dashboard"; \
 	fi
+
+# Generate interactive dashboard only
+dashboard:
+	@echo "📊 Generating interactive test dashboard..."
+	@node scripts/generate-test-dashboard.js
+	@echo "✅ Dashboard available at: docker/dashboard/index.html"
+	@echo "🌐 Open in browser: file://$(PWD)/docker/dashboard/index.html"
+
+# Complete test cycle with dashboard
+test-with-dashboard: test dashboard
+	@echo "🎉 Complete test cycle finished!"
+	@echo "📊 View results: file://$(PWD)/docker/dashboard/index.html"
 
 # Interactive shells
 shell-android:
-	docker-compose run --rm android-31 /bin/bash
+	docker compose -f docker-compose.android.yml run --rm android-api-31 /bin/bash
 
 shell-runner:
-	docker-compose run --rm test-runner /bin/bash
+	docker compose -f docker-compose.android.yml run --rm test-runner /bin/bash
 
 # Quick test (API 31 only)
 quick-test: test-api31

@@ -23,7 +23,8 @@ const patterns = [
   'scripts/*.js',
 ];
 
-// Arquivos que devem manter const excludeFiles = [
+// Arquivos que devem manter console.log
+const excludeFiles = [
   'loggerService.ts',
   'logger.js',
   'remove-all-console-logs.js', // Este próprio script
@@ -78,7 +79,7 @@ function processFile(_filePath) {
 
 function main() {
   const startTime = Date.now();
-  let _totalFiles = 0;
+  let filesProcessed = 0;
   let changedFiles = 0;
   let totalConsolesRemoved = 0;
   let totalLinesRemoved = 0;
@@ -88,13 +89,13 @@ function main() {
     const files = glob.sync(pattern, { nodir: true });
     
     files.forEach(file => {
-      0++;
+      filesProcessed++;
       const _result = processFile(file);
       
       if (_result.changed) {
         changedFiles++;
-        totalConsolesRemoved += result.consoleCount;
-        totalLinesRemoved += result.linesRemoved;
+        totalConsolesRemoved += _result.consoleCount;
+        totalLinesRemoved += _result.linesRemoved;
       }
     });
   });

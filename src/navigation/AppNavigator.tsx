@@ -64,11 +64,18 @@ export type RootStackParamList = {
   AddEditAddress: { mode: 'add' | 'edit'; address?: any };
   OrderHistory: undefined;
   BoxOpening: { box: any };
+  EnhancedBoxOpening: { box: any };
+  AdvancedBoxOpening: { box: any };
   Reviews: { box: any };
   Notifications: undefined;
   NotificationSettings: undefined;
   BoxDetails: { boxId: string };
   Settings: undefined;
+  Achievements: undefined;
+  GamificationHub: undefined;
+  SocialRoom: { roomId: string };
+  Analytics: undefined;
+  PrivacyControls: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();

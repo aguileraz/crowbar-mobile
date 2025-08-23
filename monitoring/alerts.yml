@@ -1,0 +1,189 @@
+groups:
+  - name: gamification_alerts
+    interval: 30s
+    rules:
+      # High Error Rate
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+          component: api
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate is {{ $value | humanizePercentage }} for the last 5 minutes"
+
+      # Low User Engagement
+      - alert: LowUserEngagement
+        expr: gamification_daily_active_users < 1000
+        for: 15m
+        labels:
+          severity: warning
+          component: gamification
+        annotations:
+          summary: "Low daily active users"
+          description: "DAU is {{ $value }}, below threshold of 1000"
+
+      # Challenge Completion Rate Low
+      - alert: LowChallengeCompletion
+        expr: rate(gamification_challenges_completed[1h]) / rate(gamification_challenges_started[1h]) < 0.3
+        for: 30m
+        labels:
+          severity: warning
+          component: challenges
+        annotations:
+          summary: "Low challenge completion rate"
+          description: "Only {{ $value | humanizePercentage }} of challenges are being completed"
+
+      # Streak System Issues
+      - alert: StreakProcessingFailed
+        expr: increase(gamification_streak_errors_total[5m]) > 10
+        for: 5m
+        labels:
+          severity: critical
+          component: streaks
+        annotations:
+          summary: "Streak processing failures"
+          description: "{{ $value }} streak processing errors in the last 5 minutes"
+
+      # Spin Wheel Abuse Detection
+      - alert: SpinWheelAbuse
+        expr: rate(gamification_spin_wheel_attempts[5m]) > 100
+        for: 5m
+        labels:
+          severity: warning
+          component: spin_wheel
+        annotations:
+          summary: "Potential spin wheel abuse detected"
+          description: "Abnormal spin wheel activity: {{ $value }} attempts per second"
+
+      # Database Performance
+      - alert: SlowDatabaseQueries
+        expr: pg_stat_database_conflicts > 10
+        for: 5m
+        labels:
+          severity: warning
+          component: database
+        annotations:
+          summary: "Database query conflicts"
+          description: "{{ $value }} database conflicts detected"
+
+      # Redis Memory Usage
+      - alert: RedisMemoryHigh
+        expr: redis_memory_used_bytes / redis_memory_max_bytes > 0.9
+        for: 10m
+        labels:
+          severity: warning
+          component: redis
+        annotations:
+          summary: "Redis memory usage high"
+          description: "Redis is using {{ $value | humanizePercentage }} of available memory"
+
+      # WebSocket Connection Issues
+      - alert: WebSocketConnectionsDropping
+        expr: rate(websocket_disconnections_total[5m]) > 50
+        for: 5m
+        labels:
+          severity: warning
+          component: websocket
+        annotations:
+          summary: "High WebSocket disconnection rate"
+          description: "{{ $value }} disconnections per second"
+
+      # Timer Conversion Rate
+      - alert: LowTimerConversion
+        expr: gamification_timer_conversion_rate < 0.25
+        for: 1h
+        labels:
+          severity: info
+          component: timers
+        annotations:
+          summary: "Timer conversion rate below target"
+          description: "Timer conversion at {{ $value | humanizePercentage }}, target is 25%"
+
+      # Leaderboard Update Delays
+      - alert: LeaderboardUpdateDelay
+        expr: gamification_leaderboard_update_lag_seconds > 300
+        for: 10m
+        labels:
+          severity: warning
+          component: leaderboard
+        annotations:
+          summary: "Leaderboard updates delayed"
+          description: "Leaderboard is {{ $value }} seconds behind"
+
+      # Flash Sale Performance
+      - alert: FlashSaleSystemDown
+        expr: up{job="gamification", endpoint="flash_sales"} == 0
+        for: 5m
+        labels:
+          severity: critical
+          component: flash_sales
+        annotations:
+          summary: "Flash sale system is down"
+          description: "Flash sale endpoint has been down for 5 minutes"
+
+      # XP System Issues
+      - alert: XPCalculationErrors
+        expr: increase(gamification_xp_calculation_errors_total[10m]) > 5
+        for: 10m
+        labels:
+          severity: warning
+          component: xp_system
+        annotations:
+          summary: "XP calculation errors detected"
+          description: "{{ $value }} XP calculation errors in the last 10 minutes"
+
+      # Achievement System
+      - alert: AchievementUnlockFailures
+        expr: increase(gamification_achievement_unlock_failures_total[5m]) > 10
+        for: 5m
+        labels:
+          severity: warning
+          component: achievements
+        annotations:
+          summary: "Achievement unlock failures"
+          description: "{{ $value }} achievement unlock failures detected"
+
+      # Notification Delivery
+      - alert: NotificationDeliveryFailed
+        expr: rate(gamification_notifications_failed_total[5m]) / rate(gamification_notifications_sent_total[5m]) > 0.1
+        for: 10m
+        labels:
+          severity: warning
+          component: notifications
+        annotations:
+          summary: "High notification failure rate"
+          description: "{{ $value | humanizePercentage }} of notifications are failing"
+
+      # API Response Time
+      - alert: SlowAPIResponse
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job="backend-api"}[5m])) > 1
+        for: 10m
+        labels:
+          severity: warning
+          component: api
+        annotations:
+          summary: "API response time degraded"
+          description: "95th percentile response time is {{ $value }}s"
+
+      # System Health
+      - alert: HighCPUUsage
+        expr: (100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)) > 80
+        for: 10m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: "High CPU usage"
+          description: "CPU usage is {{ $value }}%"
+
+      - alert: HighMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 90
+        for: 10m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: "High memory usage"
+          description: "Memory usage is {{ $value }}%"

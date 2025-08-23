@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* eslint-disable no-console */
-const _path = require('_path');
+const path = require('path');
 
 /**
  * API Connectivity Test for Crowbar Mobile Production APIs
@@ -11,16 +11,6 @@ const https = require('https');
 const http = require('http');
 const fs = require('fs');
 
-// Colors for output
-const colors = {
-  reset: '\x1b[0m',
-  red: '\x1b[31m',
-  green: '\x1b[32m',
-  yellow: '\x1b[33m',
-  blue: '\x1b[34m',
-  cyan: '\x1b[36m',
-  bold: '\x1b[1m'
-};
 
 const log = {
   info: (msg) => console.log(`ℹ️  ${msg}`),
@@ -28,6 +18,7 @@ const log = {
   warning: (msg) => console.log(`⚠️  ${msg}`),
   error: (msg) => console.error(`❌ ${msg}`),
   title: (msg) => console.log(`\n📦 ${msg}\n${'='.repeat(40)}`),
+  step: (num, msg) => console.log(`\n${num}. ${msg}`),
 };
 
 /**
@@ -287,14 +278,12 @@ function generateConnectivityReport(results) {
 
   // Display summary
   console.log("");
-}
   log.title('API CONNECTIVITY SUMMARY');
   console.log("");
   
   results.forEach(result => {
     const status = result.status ? '✅' : '❌';
     console.log(`${status} ${result.name}: ${result.message}`);
-
   });
   
   if (report.overall_status === 'CONNECTED') {
