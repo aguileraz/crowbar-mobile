@@ -101,3 +101,37 @@ commandlinetools.zip
 *.zip
 
 security-fixes-summary.json
+# Local artifacts, tools and logs
+# Agent/AI tooling
+.agent-os/
+.claude-flow/
+.hive-mind/
+.swarm/
+
+# Databases and state
+*.db
+*.db-wal
+*.db-shm
+
+# Logs and temp reports
+*.log
+logs/
+Dockerfile.*.log
+docker-build.log
+coverage/
+coverage-*/
+
+# Test runner outputs
+/test-results-docker/
+/test-results/
+**/junit-results-*.xml
+**/visual-report.json
+**/visual-comparison/
+
+# Bundling and analysis artifacts
+/bundle-analysis/
+/bundle-reports/
+*.cpuprofile
+*.heapsnapshot
+*.heapprofile
+
