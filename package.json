@@ -143,7 +143,7 @@
     "@react-native/metro-config": "0.80.1",
     "@react-native/typescript-config": "0.80.1",
     "@testing-library/jest-native": "^5.4.3",
-    "@testing-library/react-native": "^13.2.0",
+    "@testing-library/react-native": "^13.3.3",
     "@types/jest": "^29.5.13",
     "@types/react": "^19.1.0",
     "@types/react-redux": "^7.1.34",
