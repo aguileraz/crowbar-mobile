@@ -177,13 +177,13 @@ jobs:
 
     steps:
       - name: Download Android artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v6
         with:
           name: test-results-android
           path: test-results/android
 
       - name: Download iOS artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v6
         with:
           name: test-results-ios
           path: test-results/ios

@@ -244,12 +244,12 @@ jobs:
     
     steps:
       - name: 📥 Download Android AAB
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v6
         with:
           name: android-aab
           
       - name: 📥 Download iOS IPA
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v6
         with:
           name: ios-ipa
         continue-on-error: true
