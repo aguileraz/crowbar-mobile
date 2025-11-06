@@ -1,20 +1,25 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { FirebaseAuthTypes } from '@react-native-firebase/auth';
-import { firebaseAuth } from '../../config/firebase';
+import keycloakService from '../../services/keycloakService';
+import mfaService from '../../services/mfaService';
 import logger from '../../services/loggerService';
 
 /**
  * Authentication Redux Slice
- * Gerencia o estado de autenticação do usuário usando Firebase Auth
+ * Gerencia o estado de autenticação do usuário usando Keycloak OAuth2/OIDC
  */
 
 // Tipos para o estado de autenticação
 export interface User {
-  uid: string;
+  sub: string; // Keycloak subject (ID do usuário)
   email: string | null;
   displayName: string | null;
-  photoURL: string | null;
   emailVerified: boolean;
+  accessToken: string;
+  refreshToken: string;
+  idToken: string;
+  accessTokenExpirationDate: string;
+  gotifyToken?: string; // Token Gotify para push notifications
+  mfaEnabled?: boolean;
 }
 
 export interface AuthState {
@@ -24,6 +29,7 @@ export interface AuthState {
   isInitializing: boolean;
   error: string | null;
   lastLoginTime: number | null;
+  needsMfaSetup: boolean;
 }
 
 // Estado inicial
@@ -34,179 +40,223 @@ const initialState: AuthState = {
   isInitializing: true,
   error: null,
   lastLoginTime: null,
+  needsMfaSetup: false,
 };
-
-// Função utilitária para converter FirebaseUser para User
-const mapFirebaseUser = (firebaseUser: FirebaseAuthTypes.User): User => ({
-  uid: firebaseUser.uid,
-  email: firebaseUser.email,
-  displayName: firebaseUser.displayName,
-  photoURL: firebaseUser.photoURL,
-  emailVerified: firebaseUser.emailVerified,
-});
 
 // Async Thunks para operações de autenticação
 
 /**
- * Login com email e senha
+ * Login com Keycloak OAuth2
+ * Abre navegador para login e retorna com tokens
  */
-export const loginWithEmail = createAsyncThunk(
-  'auth/loginWithEmail',
-  async (
-    { email, password }: { email: string; password: string },
-    { rejectWithValue }
-  ) => {
+export const loginWithKeycloak = createAsyncThunk(
+  'auth/loginWithKeycloak',
+  async (_, { rejectWithValue }) => {
     try {
-      const userCredential = await firebaseAuth().signInWithEmailAndPassword(email, password);
-      return mapFirebaseUser(userCredential.user);
-    } catch (error: any) {
-      logger.error('Login error:', error);
-      
-      // Mapear erros do Firebase para mensagens em português
-      let errorMessage = 'Erro desconhecido ao fazer login';
-      
-      switch (error.code) {
-        case 'auth/user-not-found':
-          errorMessage = 'Usuário não encontrado';
-          break;
-        case 'auth/wrong-password':
-          errorMessage = 'Senha incorreta';
-          break;
-        case 'auth/invalid-email':
-          errorMessage = 'Email inválido';
-          break;
-        case 'auth/user-disabled':
-          errorMessage = 'Conta desabilitada';
-          break;
-        case 'auth/too-many-requests':
-          errorMessage = 'Muitas tentativas. Tente novamente mais tarde';
-          break;
-        case 'auth/network-request-failed':
-          errorMessage = 'Erro de conexão. Verifique sua internet';
-          break;
-        default:
-          errorMessage = error.message || 'Erro ao fazer login';
+      logger.info('Iniciando login com Keycloak...');
+
+      // Executar OAuth2 Authorization Code Flow
+      const authResult = await keycloakService.login();
+
+      // Obter informações do usuário
+      const userInfo = await keycloakService.getUserInfo();
+
+      // Verificar status MFA
+      let mfaEnabled = false;
+      try {
+        const mfaStatus = await mfaService.getStatus();
+        mfaEnabled = mfaStatus.mfaEnabled;
+      } catch (error) {
+        logger.warn('Failed to check MFA status:', error);
       }
-      
+
+      // Construir objeto User
+      const user: User = {
+        sub: userInfo.sub,
+        email: userInfo.email || null,
+        displayName: userInfo.name || userInfo.preferred_username || null,
+        emailVerified: userInfo.email_verified || false,
+        accessToken: authResult.accessToken,
+        refreshToken: authResult.refreshToken,
+        idToken: authResult.idToken,
+        accessTokenExpirationDate: authResult.accessTokenExpirationDate,
+        mfaEnabled,
+        // gotifyToken será obtido do backend após login
+      };
+
+      logger.info('Login com Keycloak realizado com sucesso', {
+        sub: user.sub,
+        email: user.email,
+      });
+
+      return user;
+    } catch (error: any) {
+      logger.error('Erro no login Keycloak:', error);
+
+      let errorMessage = 'Erro ao fazer login';
+
+      if (error.message) {
+        if (error.message.includes('User cancelled')) {
+          errorMessage = 'Login cancelado pelo usuário';
+        } else if (error.message.includes('network')) {
+          errorMessage = 'Erro de conexão. Verifique sua internet';
+        } else {
+          errorMessage = error.message;
+        }
+      }
+
       return rejectWithValue(errorMessage);
     }
   }
 );
 
 /**
- * Registro com email e senha
- */
-export const registerWithEmail = createAsyncThunk(
-  'auth/registerWithEmail',
-  async (
-    { email, password, displayName }: { email: string; password: string; displayName?: string },
-    { rejectWithValue }
-  ) => {
-    try {
-      const userCredential = await firebaseAuth().createUserWithEmailAndPassword(email, password);
-      
-      // Atualizar perfil com nome se fornecido
-      if (displayName) {
-        await userCredential.user.updateProfile({ displayName });
-      }
-      
-      return mapFirebaseUser(userCredential.user);
-    } catch (error: any) {
-      logger.error('Registration error:', error);
-      
-      let errorMessage = 'Erro desconhecido ao criar conta';
-      
-      switch (error.code) {
-        case 'auth/email-already-in-use':
-          errorMessage = 'Este email já está em uso';
-          break;
-        case 'auth/invalid-email':
-          errorMessage = 'Email inválido';
-          break;
-        case 'auth/weak-password':
-          errorMessage = 'Senha muito fraca. Use pelo menos 6 caracteres';
-          break;
-        case 'auth/network-request-failed':
-          errorMessage = 'Erro de conexão. Verifique sua internet';
-          break;
-        default:
-          errorMessage = error.message || 'Erro ao criar conta';
-      }
-      
-      return rejectWithValue(errorMessage);
-    }
-  }
-);
-
-/**
- * Logout
+ * Logout do Keycloak
  */
 export const logout = createAsyncThunk(
   'auth/logout',
   async (_, { rejectWithValue }) => {
     try {
-      await firebaseAuth().signOut();
+      logger.info('Executando logout...');
+      await keycloakService.logout();
+      logger.info('Logout realizado com sucesso');
       return null;
     } catch (error: any) {
-      logger.error('Logout error:', error);
+      logger.error('Erro no logout:', error);
       return rejectWithValue('Erro ao fazer logout');
     }
   }
 );
 
 /**
- * Reset de senha
+ * Refresh tokens (automático quando token expira)
  */
-export const resetPassword = createAsyncThunk(
-  'auth/resetPassword',
-  async (email: string, { rejectWithValue }) => {
+export const refreshTokens = createAsyncThunk(
+  'auth/refreshTokens',
+  async (_, { rejectWithValue }) => {
     try {
-      await firebaseAuth().sendPasswordResetEmail(email);
-      return email;
-    } catch (error: any) {
-      logger.error('Password reset error:', error);
-      
-      let errorMessage = 'Erro ao enviar email de recuperação';
-      
-      switch (error.code) {
-        case 'auth/user-not-found':
-          errorMessage = 'Usuário não encontrado';
-          break;
-        case 'auth/invalid-email':
-          errorMessage = 'Email inválido';
-          break;
-        case 'auth/network-request-failed':
-          errorMessage = 'Erro de conexão. Verifique sua internet';
-          break;
-        default:
-          errorMessage = error.message || 'Erro ao enviar email de recuperação';
+      logger.debug('Atualizando tokens...');
+      const newTokens = await keycloakService.refreshTokens();
+
+      if (!newTokens) {
+        throw new Error('Failed to refresh tokens');
       }
-      
-      return rejectWithValue(errorMessage);
+
+      logger.debug('Tokens atualizados com sucesso');
+
+      return {
+        accessToken: newTokens.accessToken,
+        refreshToken: newTokens.refreshToken,
+        idToken: newTokens.idToken,
+        accessTokenExpirationDate: newTokens.accessTokenExpirationDate,
+      };
+    } catch (error: any) {
+      logger.error('Erro ao atualizar tokens:', error);
+      return rejectWithValue('Sessão expirada. Faça login novamente');
     }
   }
 );
 
 /**
- * Verificar estado de autenticação atual
+ * Verificar estado de autenticação atual (tokens salvos)
  */
 export const checkAuthState = createAsyncThunk(
   'auth/checkAuthState',
   async (_, { rejectWithValue }) => {
     try {
-      return new Promise<User | null>((resolve) => {
-        const unsubscribe = firebaseAuth().onAuthStateChanged((user) => {
-          unsubscribe();
-          if (user) {
-            resolve(mapFirebaseUser(user));
-          } else {
-            resolve(null);
-          }
-        });
+      logger.debug('Verificando estado de autenticação...');
+
+      const isAuthenticated = await keycloakService.isAuthenticated();
+
+      if (!isAuthenticated) {
+        logger.debug('Usuário não autenticado');
+        return null;
+      }
+
+      // Obter token de acesso (auto-refresh se expirado)
+      const accessToken = await keycloakService.getAccessToken();
+
+      if (!accessToken) {
+        logger.debug('Token expirado e refresh falhou');
+        return null;
+      }
+
+      // Obter informações do usuário
+      const userInfo = await keycloakService.getUserInfo();
+
+      // Obter tokens do Keychain
+      const tokens = await keycloakService.getTokens();
+
+      if (!tokens) {
+        return null;
+      }
+
+      // Verificar status MFA
+      let mfaEnabled = false;
+      try {
+        const mfaStatus = await mfaService.getStatus();
+        mfaEnabled = mfaStatus.mfaEnabled;
+      } catch (error) {
+        logger.warn('Failed to check MFA status:', error);
+      }
+
+      const user: User = {
+        sub: userInfo.sub,
+        email: userInfo.email || null,
+        displayName: userInfo.name || userInfo.preferred_username || null,
+        emailVerified: userInfo.email_verified || false,
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
+        idToken: tokens.idToken,
+        accessTokenExpirationDate: tokens.accessTokenExpirationDate,
+        mfaEnabled,
+      };
+
+      logger.info('Usuário autenticado encontrado', {
+        sub: user.sub,
+        email: user.email,
       });
+
+      return user;
     } catch (error: any) {
-      logger.error('Auth state check error:', error);
-      return rejectWithValue('Erro ao verificar estado de autenticação');
+      logger.error('Erro ao verificar estado de autenticação:', error);
+      return rejectWithValue('Erro ao verificar autenticação');
+    }
+  }
+);
+
+/**
+ * Habilitar MFA (TOTP)
+ */
+export const enableMfa = createAsyncThunk(
+  'auth/enableMfa',
+  async (_, { rejectWithValue }) => {
+    try {
+      logger.info('Habilitando MFA...');
+      const response = await mfaService.enable();
+      logger.info('MFA habilitado com sucesso');
+      return response;
+    } catch (error: any) {
+      logger.error('Erro ao habilitar MFA:', error);
+      return rejectWithValue('Erro ao habilitar MFA');
+    }
+  }
+);
+
+/**
+ * Desabilitar MFA
+ */
+export const disableMfa = createAsyncThunk(
+  'auth/disableMfa',
+  async (credentialId: string, { rejectWithValue }) => {
+    try {
+      logger.info('Desabilitando MFA...');
+      await mfaService.disable(credentialId);
+      logger.info('MFA desabilitado com sucesso');
+      return null;
+    } catch (error: any) {
+      logger.error('Erro ao desabilitar MFA:', error);
+      return rejectWithValue('Erro ao desabilitar MFA');
     }
   }
 );
@@ -220,52 +270,42 @@ const authSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
-    
-    // Definir usuário (para uso com listener de auth state)
+
+    // Definir usuário manualmente
     setUser: (state, action: PayloadAction<User | null>) => {
       state.user = action.payload;
       state.isAuthenticated = !!action.payload;
       state.isInitializing = false;
     },
-    
+
+    // Atualizar token Gotify
+    setGotifyToken: (state, action: PayloadAction<string>) => {
+      if (state.user) {
+        state.user.gotifyToken = action.payload;
+      }
+    },
+
     // Finalizar inicialização
     finishInitialization: (state) => {
       state.isInitializing = false;
     },
   },
   extraReducers: (builder) => {
-    // Login com email
+    // Login com Keycloak
     builder
-      .addCase(loginWithEmail.pending, (state) => {
+      .addCase(loginWithKeycloak.pending, (state) => {
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(loginWithEmail.fulfilled, (state, action) => {
+      .addCase(loginWithKeycloak.fulfilled, (state, action) => {
         state.isLoading = false;
         state.user = action.payload;
         state.isAuthenticated = true;
         state.lastLoginTime = Date.now();
+        state.needsMfaSetup = !action.payload.mfaEnabled;
         state.error = null;
       })
-      .addCase(loginWithEmail.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload as string;
-      });
-
-    // Registro com email
-    builder
-      .addCase(registerWithEmail.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
-      })
-      .addCase(registerWithEmail.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.user = action.payload;
-        state.isAuthenticated = true;
-        state.lastLoginTime = Date.now();
-        state.error = null;
-      })
-      .addCase(registerWithEmail.rejected, (state, action) => {
+      .addCase(loginWithKeycloak.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       });
@@ -281,6 +321,7 @@ const authSlice = createSlice({
         state.user = null;
         state.isAuthenticated = false;
         state.lastLoginTime = null;
+        state.needsMfaSetup = false;
         state.error = null;
       })
       .addCase(logout.rejected, (state, action) => {
@@ -288,19 +329,26 @@ const authSlice = createSlice({
         state.error = action.payload as string;
       });
 
-    // Reset de senha
+    // Refresh tokens
     builder
-      .addCase(resetPassword.pending, (state) => {
+      .addCase(refreshTokens.pending, (state) => {
         state.isLoading = true;
-        state.error = null;
       })
-      .addCase(resetPassword.fulfilled, (state) => {
+      .addCase(refreshTokens.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.error = null;
+        if (state.user) {
+          state.user.accessToken = action.payload.accessToken;
+          state.user.refreshToken = action.payload.refreshToken;
+          state.user.idToken = action.payload.idToken;
+          state.user.accessTokenExpirationDate = action.payload.accessTokenExpirationDate;
+        }
       })
-      .addCase(resetPassword.rejected, (state, action) => {
+      .addCase(refreshTokens.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
+        // Forçar logout se refresh falhar
+        state.user = null;
+        state.isAuthenticated = false;
       });
 
     // Verificar estado de autenticação
@@ -312,16 +360,54 @@ const authSlice = createSlice({
         state.isInitializing = false;
         state.user = action.payload;
         state.isAuthenticated = !!action.payload;
+        if (action.payload) {
+          state.needsMfaSetup = !action.payload.mfaEnabled;
+        }
       })
       .addCase(checkAuthState.rejected, (state, action) => {
         state.isInitializing = false;
+        state.error = action.payload as string;
+      });
+
+    // Habilitar MFA
+    builder
+      .addCase(enableMfa.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(enableMfa.fulfilled, (state) => {
+        state.isLoading = false;
+        state.needsMfaSetup = false;
+        if (state.user) {
+          state.user.mfaEnabled = true;
+        }
+      })
+      .addCase(enableMfa.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      });
+
+    // Desabilitar MFA
+    builder
+      .addCase(disableMfa.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(disableMfa.fulfilled, (state) => {
+        state.isLoading = false;
+        if (state.user) {
+          state.user.mfaEnabled = false;
+        }
+      })
+      .addCase(disableMfa.rejected, (state, action) => {
+        state.isLoading = false;
         state.error = action.payload as string;
       });
   },
 });
 
 // Actions
-export const { clearError, setUser, finishInitialization } = authSlice.actions;
+export const { clearError, setUser, setGotifyToken, finishInitialization } = authSlice.actions;
 
 // Selectors
 export const selectAuth = (state: { auth: AuthState }) => state.auth;
@@ -330,5 +416,6 @@ export const selectIsAuthenticated = (state: { auth: AuthState }) => state.auth.
 export const selectIsLoading = (state: { auth: AuthState }) => state.auth.isLoading;
 export const selectIsInitializing = (state: { auth: AuthState }) => state.auth.isInitializing;
 export const selectAuthError = (state: { auth: AuthState }) => state.auth.error;
+export const selectNeedsMfaSetup = (state: { auth: AuthState }) => state.auth.needsMfaSetup;
 
 export default authSlice.reducer;
