@@ -75,16 +75,16 @@ jobs:
         with:
           fetch-depth: 0  # Fetch completo para análise
 
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'pnpm'
-
-      - name: 📦 Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 8
 
       - name: ☕ Setup Java JDK
         uses: actions/setup-java@v4
@@ -193,16 +193,16 @@ jobs:
       - name: 📥 Checkout
         uses: actions/checkout@v4
 
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'pnpm'
-
-      - name: 📦 Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 8
 
       - name: ☕ Setup Java
         uses: actions/setup-java@v4
