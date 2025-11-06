@@ -1,45 +1,35 @@
-import React, { useState } from 'react';
-import logger from '../../services/loggerService';
+import React from 'react';
 import {
   View,
   StyleSheet,
   ScrollView,
-  KeyboardAvoidingView,
-  Platform,
-  Alert,
+  Image,
 } from 'react-native';
 import {
-  Text,
-  TextInput,
   Button,
   Card,
   Title,
   Paragraph,
-
-  HelperText,
-  Checkbox,
-  Divider,
+  Text,
 } from 'react-native-paper';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
-import { useDispatch, useSelector } from 'react-redux';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-
-// Redux
-import { AppDispatch } from '../../store';
-import {
-  registerWithEmail,
-  clearError,
-  selectIsLoading,
-  selectAuthError,
-} from '../../store/slices/authSlice';
 
 // Tema
 import { theme, getSpacing, getBorderRadius } from '../../theme';
 
 /**
- * Tela de Registro
- * Interface para criação de nova conta com Firebase Auth
+ * Tela de Registro (DEPRECATED)
+ *
+ * ⚠️ REGISTRO MIGRADO PARA KEYCLOAK
+ *
+ * Agora o registro é feito automaticamente no primeiro login via Keycloak.
+ * Esta tela apenas informa o usuário sobre a mudança e redireciona para LoginScreen.
+ *
+ * Fluxo novo:
+ * 1. Usuário clica em "Fazer Login" na LoginScreen
+ * 2. Browser abre com Keycloak
+ * 3. Usuário escolhe "Criar conta" no Keycloak
+ * 4. Após criar conta, retorna autenticado para o app
  */
 
 // Tipos de navegação
@@ -49,324 +39,266 @@ interface RegisterScreenProps {
   navigation: RegisterScreenNavigationProp;
 }
 
-// Schema de validação com Yup
-const registerValidationSchema = Yup.object().shape({
-  displayName: Yup.string()
-    .min(2, 'Nome deve ter pelo menos 2 caracteres')
-    .required('Nome é obrigatório'),
-  email: Yup.string()
-    .email('Email inválido')
-    .required('Email é obrigatório'),
-  password: Yup.string()
-    .min(6, 'Senha deve ter pelo menos 6 caracteres')
-    .matches(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-      'Senha deve conter pelo menos uma letra minúscula, uma maiúscula e um número'
-    )
-    .required('Senha é obrigatória'),
-  confirmPassword: Yup.string()
-    .oneOf([Yup.ref('password')], 'Senhas não coincidem')
-    .required('Confirmação de senha é obrigatória'),
-  acceptTerms: Yup.boolean()
-    .oneOf([true], 'Você deve aceitar os termos de uso')
-    .required('Você deve aceitar os termos de uso'),
-});
-
 const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
-  const dispatch = useDispatch<AppDispatch>();
-  const isLoading = useSelector(selectIsLoading);
-  const authError = useSelector(selectAuthError);
-  
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  // Formik para gerenciamento do formulário
-  const formik = useFormik({
-    initialValues: {
-      displayName: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
-      acceptTerms: false,
-    },
-    validationSchema: registerValidationSchema,
-    onSubmit: handleRegister,
-  });
-
-  // Limpar erro quando componente monta
-  useEffect(() => {
-    dispatch(clearError());
-  }, [dispatch]);
-
-  // Mostrar erro se houver
-  useEffect(() => {
-    if (authError) {
-      Alert.alert('Erro', authError, [
-        { text: 'OK', onPress: () => dispatch(clearError()) }
-      ]);
-    }
-  }, [authError, dispatch]);
-
-  /**
-   * Fazer registro
-   */
-  async function handleRegister(values: {
-    displayName: string;
-    email: string;
-    password: string;
-    confirmPassword: string;
-    acceptTerms: boolean;
-  }) {
-    try {
-      await dispatch(registerWithEmail({
-        email: values.email,
-        password: values.password,
-        displayName: values.displayName,
-      })).unwrap();
-      
-      // Mostrar sucesso
-      Alert.alert(
-        'Conta Criada',
-        'Sua conta foi criada com sucesso! Bem-vindo ao Crowbar Mobile.',
-        [{ text: 'OK' }]
-      );
-      
-      // Navegação será tratada pelo AuthNavigator
-    } catch (error) {
-      // Erro já tratado pelo slice
-      logger.error('Registration failed:', error);
-    }
-  }
-
-  /**
-   * Navegar para tela de login
-   */
   const navigateToLogin = () => {
     navigation.navigate('Login');
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    <ScrollView
+      contentContainerStyle={styles.scrollContent}
+      keyboardShouldPersistTaps="handled"
     >
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
-      >
-        <View style={styles.content}>
-          {/* Header */}
-          <View style={styles.header}>
-            <Title style={styles.title}>Criar Conta</Title>
-            <Paragraph style={styles.subtitle}>
-              Junte-se ao Crowbar Mobile e descubra caixas misteriosas incríveis
-            </Paragraph>
-          </View>
-
-          {/* Formulário */}
-          <Card style={styles.card}>
-            <Card.Content>
-              {/* Nome */}
-              <TextInput
-                label="Nome completo"
-                value={formik.values.displayName}
-                onChangeText={formik.handleChange('displayName')}
-                onBlur={formik.handleBlur('displayName')}
-                error={formik.touched.displayName && !!formik.errors.displayName}
-                autoCapitalize="words"
-                autoComplete="name"
-                style={styles.input}
-                disabled={isLoading}
-              />
-              <HelperText
-                type="error"
-                visible={formik.touched.displayName && !!formik.errors.displayName}
-              >
-                {formik.errors.displayName}
-              </HelperText>
-
-              {/* Email */}
-              <TextInput
-                label="Email"
-                value={formik.values.email}
-                onChangeText={formik.handleChange('email')}
-                onBlur={formik.handleBlur('email')}
-                error={formik.touched.email && !!formik.errors.email}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoComplete="email"
-                style={styles.input}
-                disabled={isLoading}
-              />
-              <HelperText
-                type="error"
-                visible={formik.touched.email && !!formik.errors.email}
-              >
-                {formik.errors.email}
-              </HelperText>
-
-              {/* Senha */}
-              <TextInput
-                label="Senha"
-                value={formik.values.password}
-                onChangeText={formik.handleChange('password')}
-                onBlur={formik.handleBlur('password')}
-                error={formik.touched.password && !!formik.errors.password}
-                secureTextEntry={!showPassword}
-                right={
-                  <TextInput.Icon
-                    icon={showPassword ? 'eye-off' : 'eye'}
-                    onPress={() => setShowPassword(!showPassword)}
-                  />
-                }
-                style={styles.input}
-                disabled={isLoading}
-              />
-              <HelperText
-                type="error"
-                visible={formik.touched.password && !!formik.errors.password}
-              >
-                {formik.errors.password}
-              </HelperText>
-
-              {/* Confirmar Senha */}
-              <TextInput
-                label="Confirmar senha"
-                value={formik.values.confirmPassword}
-                onChangeText={formik.handleChange('confirmPassword')}
-                onBlur={formik.handleBlur('confirmPassword')}
-                error={formik.touched.confirmPassword && !!formik.errors.confirmPassword}
-                secureTextEntry={!showConfirmPassword}
-                right={
-                  <TextInput.Icon
-                    icon={showConfirmPassword ? 'eye-off' : 'eye'}
-                    onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-                  />
-                }
-                style={styles.input}
-                disabled={isLoading}
-              />
-              <HelperText
-                type="error"
-                visible={formik.touched.confirmPassword && !!formik.errors.confirmPassword}
-              >
-                {formik.errors.confirmPassword}
-              </HelperText>
-
-              {/* Termos de uso */}
-              <View style={styles.checkboxContainer}>
-                <Checkbox
-                  status={formik.values.acceptTerms ? 'checked' : 'unchecked'}
-                  onPress={() => formik.setFieldValue('acceptTerms', !formik.values.acceptTerms)}
-                  disabled={isLoading}
-                />
-                <Text style={styles.checkboxText}>
-                  Eu aceito os{' '}
-                  <Text style={styles.linkText}>Termos de Uso</Text>
-                  {' '}e{' '}
-                  <Text style={styles.linkText}>Política de Privacidade</Text>
-                </Text>
-              </View>
-              <HelperText
-                type="error"
-                visible={formik.touched.acceptTerms && !!formik.errors.acceptTerms}
-              >
-                {formik.errors.acceptTerms}
-              </HelperText>
-
-              {/* Botão de registro */}
-              <Button
-                mode="contained"
-                onPress={() => formik.handleSubmit()}
-                loading={isLoading}
-                disabled={isLoading || !formik.isValid}
-                style={styles.primaryButton}
-                contentStyle={styles.buttonContent}
-              >
-                Criar Conta
-              </Button>
-
-              {/* Divider */}
-              <Divider style={styles.divider} />
-
-              {/* Botão para login */}
-              <Button
-                mode="text"
-                onPress={navigateToLogin}
-                disabled={isLoading}
-                style={styles.textButton}
-              >
-                Já tem uma conta? Faça login
-              </Button>
-            </Card.Content>
-          </Card>
+      <View style={styles.container}>
+        {/* Header */}
+        <View style={styles.header}>
+          <Image
+            source={require('../../assets/logo.png')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+          <Title style={styles.title}>Criar Nova Conta</Title>
+          <Paragraph style={styles.subtitle}>
+            Sistema de registro atualizado
+          </Paragraph>
         </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+
+        {/* Card Informativo */}
+        <Card style={styles.card}>
+          <Card.Content>
+            {/* Info sobre nova abordagem */}
+            <View style={styles.infoContainer}>
+              <Text style={styles.infoIcon}>🔐</Text>
+              <Text style={styles.infoTitle}>
+                Novo Sistema de Registro
+              </Text>
+              <Text style={styles.infoText}>
+                Agora o registro é feito via Keycloak, nosso sistema seguro de autenticação.
+              </Text>
+            </View>
+
+            {/* Como funciona */}
+            <View style={styles.stepsContainer}>
+              <Text style={styles.stepsTitle}>Como criar sua conta:</Text>
+
+              <View style={styles.step}>
+                <Text style={styles.stepNumber}>1</Text>
+                <View style={styles.stepContent}>
+                  <Text style={styles.stepTitle}>Clique em "Continuar para Login"</Text>
+                  <Text style={styles.stepDescription}>
+                    Você será levado para a tela de login
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.step}>
+                <Text style={styles.stepNumber}>2</Text>
+                <View style={styles.stepContent}>
+                  <Text style={styles.stepTitle}>Clique em "Fazer Login"</Text>
+                  <Text style={styles.stepDescription}>
+                    Um navegador seguro será aberto
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.step}>
+                <Text style={styles.stepNumber}>3</Text>
+                <View style={styles.stepContent}>
+                  <Text style={styles.stepTitle}>Escolha "Criar Conta"</Text>
+                  <Text style={styles.stepDescription}>
+                    Na tela do Keycloak, clique no link para criar sua conta
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.step}>
+                <Text style={styles.stepNumber}>4</Text>
+                <View style={styles.stepContent}>
+                  <Text style={styles.stepTitle}>Preencha seus dados</Text>
+                  <Text style={styles.stepDescription}>
+                    Email, senha e informações pessoais
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.step}>
+                <Text style={styles.stepNumber}>5</Text>
+                <View style={styles.stepContent}>
+                  <Text style={styles.stepTitle}>Pronto!</Text>
+                  <Text style={styles.stepDescription}>
+                    Você retornará ao app automaticamente autenticado
+                  </Text>
+                </View>
+              </View>
+            </View>
+
+            {/* Benefícios */}
+            <View style={styles.benefitsContainer}>
+              <Text style={styles.benefitsTitle}>Benefícios do novo sistema:</Text>
+              <Text style={styles.benefitItem}>✓ Autenticação mais segura com OAuth2</Text>
+              <Text style={styles.benefitItem}>✓ Suporte a MFA (Autenticação de 2 fatores)</Text>
+              <Text style={styles.benefitItem}>✓ Recuperação de senha simplificada</Text>
+              <Text style={styles.benefitItem}>✓ Login único (SSO) entre dispositivos</Text>
+            </View>
+
+            {/* Botão de ação */}
+            <Button
+              mode="contained"
+              onPress={navigateToLogin}
+              style={styles.primaryButton}
+              contentStyle={styles.buttonContent}
+              icon="arrow-right"
+            >
+              Continuar para Login
+            </Button>
+          </Card.Content>
+        </Card>
+
+        {/* Footer */}
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>
+            Problemas para criar conta?{'\n'}
+            Entre em contato: suporte@crowbar.com.br
+          </Text>
+        </View>
+      </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
+  scrollContent: {
+    flexGrow: 1,
+  },
   container: {
     flex: 1,
     backgroundColor: theme.colors.background,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    justifyContent: 'center',
-  },
-  content: {
-    padding: getSpacing('lg'),
+    padding: getSpacing(3),
   },
   header: {
     alignItems: 'center',
-    marginBottom: getSpacing('xl'),
+    marginTop: getSpacing(4),
+    marginBottom: getSpacing(3),
+  },
+  logo: {
+    width: 100,
+    height: 100,
+    marginBottom: getSpacing(2),
   },
   title: {
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: 'bold',
     color: theme.colors.primary,
-    marginBottom: getSpacing('sm'),
+    marginBottom: getSpacing(0.5),
+    textAlign: 'center',
   },
   subtitle: {
-    textAlign: 'center',
+    fontSize: 15,
     color: theme.colors.onSurfaceVariant,
-    fontSize: 16,
+    textAlign: 'center',
   },
   card: {
+    borderRadius: getBorderRadius('large'),
     elevation: 4,
-    borderRadius: getBorderRadius('lg'),
   },
-  input: {
-    marginBottom: getSpacing('xs'),
-  },
-  checkboxContainer: {
-    flexDirection: 'row',
+  infoContainer: {
+    backgroundColor: theme.colors.primaryContainer,
+    padding: getSpacing(2.5),
+    borderRadius: getBorderRadius('medium'),
+    marginBottom: getSpacing(3),
     alignItems: 'center',
-    marginTop: getSpacing('md'),
-    marginBottom: getSpacing('xs'),
   },
-  checkboxText: {
-    flex: 1,
-    marginLeft: getSpacing('sm'),
-    color: theme.colors.onSurface,
+  infoIcon: {
+    fontSize: 48,
+    marginBottom: getSpacing(1),
   },
-  linkText: {
-    color: theme.colors.primary,
+  infoTitle: {
+    fontSize: 18,
     fontWeight: 'bold',
+    color: theme.colors.onPrimaryContainer,
+    marginBottom: getSpacing(1),
+    textAlign: 'center',
+  },
+  infoText: {
+    fontSize: 14,
+    color: theme.colors.onPrimaryContainer,
+    textAlign: 'center',
+    opacity: 0.9,
+  },
+  stepsContainer: {
+    marginBottom: getSpacing(3),
+  },
+  stepsTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: theme.colors.onSurface,
+    marginBottom: getSpacing(2),
+  },
+  step: {
+    flexDirection: 'row',
+    marginBottom: getSpacing(2),
+    alignItems: 'flex-start',
+  },
+  stepNumber: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: theme.colors.primary,
+    color: theme.colors.onPrimary,
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    lineHeight: 32,
+    marginRight: getSpacing(2),
+  },
+  stepContent: {
+    flex: 1,
+    paddingTop: 4,
+  },
+  stepTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: theme.colors.onSurface,
+    marginBottom: getSpacing(0.5),
+  },
+  stepDescription: {
+    fontSize: 13,
+    color: theme.colors.onSurfaceVariant,
+    lineHeight: 18,
+  },
+  benefitsContainer: {
+    backgroundColor: theme.colors.surfaceVariant,
+    padding: getSpacing(2),
+    borderRadius: getBorderRadius('small'),
+    marginBottom: getSpacing(3),
+  },
+  benefitsTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: theme.colors.onSurfaceVariant,
+    marginBottom: getSpacing(1),
+  },
+  benefitItem: {
+    fontSize: 13,
+    color: theme.colors.onSurfaceVariant,
+    marginBottom: getSpacing(0.5),
+    lineHeight: 20,
   },
   primaryButton: {
-    marginTop: getSpacing('md'),
-    borderRadius: getBorderRadius('md'),
-  },
-  textButton: {
-    marginTop: getSpacing('sm'),
+    borderRadius: getBorderRadius('medium'),
   },
   buttonContent: {
-    paddingVertical: getSpacing('xs'),
+    paddingVertical: getSpacing(1),
   },
-  divider: {
-    marginVertical: getSpacing('lg'),
+  footer: {
+    marginTop: getSpacing(3),
+    alignItems: 'center',
+  },
+  footerText: {
+    fontSize: 12,
+    color: theme.colors.onSurfaceVariant,
+    textAlign: 'center',
+    lineHeight: 18,
   },
 });
 

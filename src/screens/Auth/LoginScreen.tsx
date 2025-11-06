@@ -1,33 +1,27 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import logger from '../../services/loggerService';
 import {
   View,
   StyleSheet,
   ScrollView,
-  KeyboardAvoidingView,
-  Platform,
   Alert,
+  Image,
 } from 'react-native';
 import {
-  TextInput,
   Button,
   Card,
   Title,
   Paragraph,
-
-  HelperText,
-  Divider,
+  Text,
+  ActivityIndicator,
 } from 'react-native-paper';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 // Redux
 import { AppDispatch } from '../../store';
 import {
-  loginWithEmail,
-  resetPassword,
+  loginWithKeycloak,
   clearError,
   selectIsLoading,
   selectAuthError,
@@ -38,7 +32,12 @@ import { theme, getSpacing, getBorderRadius } from '../../theme';
 
 /**
  * Tela de Login
- * Interface de autenticação com Firebase Auth
+ * Interface de autenticação com Keycloak OAuth2/OIDC
+ *
+ * ⚠️ MIGRADO DE FIREBASE PARA KEYCLOAK
+ * - Autenticação OAuth2 via browser
+ * - Registro via Keycloak web console
+ * - Reset de senha via Keycloak (não mais no app)
  */
 
 // Tipos de navegação
@@ -48,39 +47,10 @@ interface LoginScreenProps {
   navigation: LoginScreenNavigationProp;
 }
 
-// Schema de validação com Yup
-const loginValidationSchema = Yup.object().shape({
-  email: Yup.string()
-    .email('Email inválido')
-    .required('Email é obrigatório'),
-  password: Yup.string()
-    .min(6, 'Senha deve ter pelo menos 6 caracteres')
-    .required('Senha é obrigatória'),
-});
-
 const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
   const dispatch = useDispatch<AppDispatch>();
   const isLoading = useSelector(selectIsLoading);
   const authError = useSelector(selectAuthError);
-  
-  const [showPassword, setShowPassword] = useState(false);
-  const [isResetMode, setIsResetMode] = useState(false);
-
-  // Formik para gerenciamento do formulário
-  const formik = useFormik({
-    initialValues: {
-      email: '',
-      password: '',
-    },
-    validationSchema: loginValidationSchema,
-    onSubmit: async (values) => {
-      if (isResetMode) {
-        handlePasswordReset(values.email);
-      } else {
-        handleLogin(values);
-      }
-    },
-  });
 
   // Limpar erro quando componente monta
   useEffect(() => {
@@ -90,255 +60,197 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
   // Mostrar erro se houver
   useEffect(() => {
     if (authError) {
-      Alert.alert('Erro', authError, [
+      Alert.alert('Erro de Autenticação', authError, [
         { text: 'OK', onPress: () => dispatch(clearError()) }
       ]);
     }
   }, [authError, dispatch]);
 
   /**
-   * Fazer login
+   * Fazer login com Keycloak OAuth2
+   * Abre navegador para autenticação
    */
-  const handleLogin = async (values: { email: string; password: string }) => {
+  const handleLogin = async () => {
     try {
-      await dispatch(loginWithEmail(values)).unwrap();
+      logger.info('Iniciando login OAuth2...');
+      await dispatch(loginWithKeycloak()).unwrap();
+      logger.info('Login realizado com sucesso');
       // Navegação será tratada pelo AuthNavigator
-    } catch (error) {
-      // Erro já tratado pelo slice
-      logger.error('Login failed:', error);
+    } catch (error: any) {
+      logger.error('Login falhou:', error);
+      // Erro já tratado pelo slice e exibido no Alert acima
     }
-  };
-
-  /**
-   * Reset de senha
-   */
-  const handlePasswordReset = async (email: string) => {
-    if (!email) {
-      Alert.alert('Erro', 'Digite seu email para recuperar a senha');
-      return;
-    }
-
-    try {
-      await dispatch(resetPassword(email)).unwrap();
-      Alert.alert(
-        'Email Enviado',
-        'Verifique sua caixa de entrada para redefinir sua senha',
-        [
-          {
-            text: 'OK',
-            onPress: () => setIsResetMode(false),
-          },
-        ]
-      );
-    } catch (error) {
-      // Erro já tratado pelo slice
-      logger.error('Password reset failed:', error);
-    }
-  };
-
-  /**
-   * Navegar para tela de registro
-   */
-  const navigateToRegister = () => {
-    navigation.navigate('Register');
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    <ScrollView
+      contentContainerStyle={styles.scrollContent}
+      keyboardShouldPersistTaps="handled"
     >
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
-      >
-        <View style={styles.content}>
-          {/* Header */}
-          <View style={styles.header}>
-            <Title style={styles.title}>
-              {isResetMode ? 'Recuperar Senha' : 'Bem-vindo'}
-            </Title>
-            <Paragraph style={styles.subtitle}>
-              {isResetMode
-                ? 'Digite seu email para receber instruções de recuperação'
-                : 'Faça login para acessar o Crowbar Mobile'
-              }
-            </Paragraph>
-          </View>
+      <View style={styles.container}>
+        {/* Header com Logo */}
+        <View style={styles.header}>
+          <Image
+            source={require('../../assets/logo.png')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+          <Title style={styles.title}>Bem-vindo ao Crowbar</Title>
+          <Paragraph style={styles.subtitle}>
+            Marketplace de caixas misteriosas
+          </Paragraph>
+        </View>
 
-          {/* Formulário */}
-          <Card style={styles.card}>
-            <Card.Content>
-              {/* Email */}
-              <TextInput
-                label="Email"
-                value={formik.values.email}
-                onChangeText={formik.handleChange('email')}
-                onBlur={formik.handleBlur('email')}
-                error={formik.touched.email && !!formik.errors.email}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoComplete="email"
-                style={styles.input}
-                disabled={isLoading}
-              />
-              <HelperText
-                type="error"
-                visible={formik.touched.email && !!formik.errors.email}
-              >
-                {formik.errors.email}
-              </HelperText>
+        {/* Card de Login */}
+        <Card style={styles.card}>
+          <Card.Content>
+            {/* Informações sobre o novo sistema */}
+            <View style={styles.infoContainer}>
+              <Text style={styles.infoText}>
+                🔐 Login seguro via Keycloak
+              </Text>
+              <Text style={styles.infoSubtext}>
+                Autenticação OAuth2 com suporte a Multi-Factor Authentication (MFA)
+              </Text>
+            </View>
 
-              {/* Senha (apenas se não estiver em modo reset) */}
-              {!isResetMode && (
-                <>
-                  <TextInput
-                    label="Senha"
-                    value={formik.values.password}
-                    onChangeText={formik.handleChange('password')}
-                    onBlur={formik.handleBlur('password')}
-                    error={formik.touched.password && !!formik.errors.password}
-                    secureTextEntry={!showPassword}
-                    right={
-                      <TextInput.Icon
-                        icon={showPassword ? 'eye-off' : 'eye'}
-                        onPress={() => setShowPassword(!showPassword)}
-                      />
-                    }
-                    style={styles.input}
-                    disabled={isLoading}
-                  />
-                  <HelperText
-                    type="error"
-                    visible={formik.touched.password && !!formik.errors.password}
-                  >
-                    {formik.errors.password}
-                  </HelperText>
-                </>
-              )}
-
-              {/* Botão principal */}
+            {/* Botão de Login */}
+            {isLoading ? (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color={theme.colors.primary} />
+                <Text style={styles.loadingText}>
+                  Autenticando...
+                </Text>
+              </View>
+            ) : (
               <Button
                 mode="contained"
-                onPress={() => formik.handleSubmit()}
-                loading={isLoading}
-                disabled={isLoading || !formik.isValid}
-                style={styles.primaryButton}
+                onPress={handleLogin}
+                disabled={isLoading}
+                style={styles.loginButton}
                 contentStyle={styles.buttonContent}
+                icon="login"
               >
-                {isResetMode ? 'Enviar Email' : 'Entrar'}
+                Fazer Login
               </Button>
+            )}
 
-              {/* Divider */}
-              <Divider style={styles.divider} />
+            {/* Informações adicionais */}
+            <View style={styles.helpContainer}>
+              <Text style={styles.helpText}>
+                • Não possui conta? O registro será feito no primeiro acesso
+              </Text>
+              <Text style={styles.helpText}>
+                • Esqueceu a senha? Use "Recuperar senha" na tela de login do navegador
+              </Text>
+              <Text style={styles.helpText}>
+                • MFA disponível para maior segurança
+              </Text>
+            </View>
+          </Card.Content>
+        </Card>
 
-              {/* Botões secundários */}
-              {!isResetMode ? (
-                <>
-                  <Button
-                    mode="text"
-                    onPress={() => setIsResetMode(true)}
-                    disabled={isLoading}
-                    style={styles.textButton}
-                  >
-                    Esqueci minha senha
-                  </Button>
-
-                  <Button
-                    mode="outlined"
-                    onPress={navigateToRegister}
-                    disabled={isLoading}
-                    style={styles.outlinedButton}
-                    contentStyle={styles.buttonContent}
-                  >
-                    Criar conta
-                  </Button>
-                </>
-              ) : (
-                <Button
-                  mode="text"
-                  onPress={() => setIsResetMode(false)}
-                  disabled={isLoading}
-                  style={styles.textButton}
-                >
-                  Voltar ao login
-                </Button>
-              )}
-            </Card.Content>
-          </Card>
-
-          {/* Footer */}
-          <View style={styles.footer}>
-            <Paragraph style={styles.footerText}>
-              Ao continuar, você concorda com nossos{'\n'}
-              Termos de Uso e Política de Privacidade
-            </Paragraph>
-          </View>
+        {/* Footer */}
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>
+            Ao fazer login, você concorda com nossos{'\n'}
+            Termos de Uso e Política de Privacidade
+          </Text>
         </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+      </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
+  scrollContent: {
+    flexGrow: 1,
+  },
   container: {
     flex: 1,
     backgroundColor: theme.colors.background,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    justifyContent: 'center',
-  },
-  content: {
-    padding: getSpacing('lg'),
+    padding: getSpacing(3),
   },
   header: {
     alignItems: 'center',
-    marginBottom: getSpacing('xl'),
+    marginTop: getSpacing(6),
+    marginBottom: getSpacing(4),
+  },
+  logo: {
+    width: 120,
+    height: 120,
+    marginBottom: getSpacing(2),
   },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
     color: theme.colors.primary,
-    marginBottom: getSpacing('sm'),
+    marginBottom: getSpacing(1),
+    textAlign: 'center',
   },
   subtitle: {
-    textAlign: 'center',
-    color: theme.colors.onSurfaceVariant,
     fontSize: 16,
+    color: theme.colors.onSurfaceVariant,
+    textAlign: 'center',
   },
   card: {
+    borderRadius: getBorderRadius('large'),
     elevation: 4,
-    borderRadius: getBorderRadius('lg'),
   },
-  input: {
-    marginBottom: getSpacing('xs'),
+  infoContainer: {
+    backgroundColor: theme.colors.primaryContainer,
+    padding: getSpacing(2),
+    borderRadius: getBorderRadius('medium'),
+    marginBottom: getSpacing(3),
   },
-  primaryButton: {
-    marginTop: getSpacing('md'),
-    borderRadius: getBorderRadius('md'),
+  infoText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: theme.colors.onPrimaryContainer,
+    marginBottom: getSpacing(0.5),
   },
-  outlinedButton: {
-    marginTop: getSpacing('sm'),
-    borderRadius: getBorderRadius('md'),
+  infoSubtext: {
+    fontSize: 13,
+    color: theme.colors.onPrimaryContainer,
+    opacity: 0.8,
   },
-  textButton: {
-    marginTop: getSpacing('sm'),
+  loadingContainer: {
+    alignItems: 'center',
+    paddingVertical: getSpacing(3),
+  },
+  loadingText: {
+    marginTop: getSpacing(2),
+    fontSize: 14,
+    color: theme.colors.onSurfaceVariant,
+  },
+  loginButton: {
+    marginBottom: getSpacing(3),
+    borderRadius: getBorderRadius('medium'),
   },
   buttonContent: {
-    paddingVertical: getSpacing('xs'),
+    paddingVertical: getSpacing(1),
   },
-  divider: {
-    marginVertical: getSpacing('lg'),
+  helpContainer: {
+    marginTop: getSpacing(2),
+    padding: getSpacing(2),
+    backgroundColor: theme.colors.surfaceVariant,
+    borderRadius: getBorderRadius('small'),
+  },
+  helpText: {
+    fontSize: 13,
+    color: theme.colors.onSurfaceVariant,
+    marginBottom: getSpacing(1),
+    lineHeight: 20,
   },
   footer: {
+    marginTop: getSpacing(4),
     alignItems: 'center',
-    marginTop: getSpacing('xl'),
   },
   footerText: {
-    textAlign: 'center',
-    color: theme.colors.onSurfaceVariant,
     fontSize: 12,
+    color: theme.colors.onSurfaceVariant,
+    textAlign: 'center',
+    lineHeight: 18,
   },
 });
 
