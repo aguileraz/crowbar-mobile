@@ -79,7 +79,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'npm'
+          cache: 'pnpm'
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
 
       - name: ☕ Setup Java JDK
         uses: actions/setup-java@v4
@@ -119,7 +124,7 @@ jobs:
 
       # === INSTALAÇÃO ===
       - name: 📦 Install Dependencies
-        run: npm ci --legacy-peer-deps
+        run: pnpm install --frozen-lockfile
 
       # === BUILD ===
       - name: 🔨 Build Android Debug APK
@@ -192,7 +197,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'npm'
+          cache: 'pnpm'
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
 
       - name: ☕ Setup Java
         uses: actions/setup-java@v4
@@ -201,7 +211,7 @@ jobs:
           java-version: '17'
 
       - name: 📦 Install Dependencies
-        run: npm ci --legacy-peer-deps
+        run: pnpm install --frozen-lockfile
 
       - name: 🔨 Build Android
         run: cd android && ./gradlew assembleDebug
