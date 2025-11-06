@@ -8,7 +8,7 @@ module.exports = {
     '^.+\\.(js|jsx|ts|tsx)$': 'babel-jest',
   },
   transformIgnorePatterns: [
-    'node_modules/(?!(react-native|@react-native|react-redux|@reduxjs|redux-persist|@react-navigation|react-native-paper|react-native-vector-icons|react-native-config|@react-native-firebase)/)',
+    'node_modules/(?!(react-native|@react-native.+|react-redux|@reduxjs|redux-persist|@react-navigation|react-native-paper|react-native-vector-icons|react-native-config|@react-native-firebase|@react-native-community|@notifee|react-native-app-auth|invariant)/)',
   ],
   testMatch: [
     '<rootDir>/src/**/__tests__/**/*.(test|spec).(ts|tsx|js)',
@@ -30,6 +30,9 @@ module.exports = {
   coverageReporters: ['text', 'lcov', 'html'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
+    '@react-native/js-polyfills/error-guard': '<rootDir>/jest-mocks/error-guard.js',
+    '@react-native-firebase/messaging': '<rootDir>/jest-mocks/firebase-messaging.js',
+    'react-native-app-auth': '<rootDir>/jest-mocks/react-native-app-auth.js',
   },
   testTimeout: 10000,
   globals: {
