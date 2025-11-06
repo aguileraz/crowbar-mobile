@@ -1,0 +1,246 @@
+# GitHub Actions Workflow - Android E2E Tests com Detox
+# Versão: 1.0.0
+# Data: 2025-11-06
+#
+# Executa testes E2E (End-to-End) no Android usando Detox
+# Utiliza Android Emulator Runner para criar emulador com KVM
+#
+# Triggers:
+# - Push para branches develop, main, release/*
+# - Pull Requests
+# - Manual (workflow_dispatch)
+
+name: Android E2E Tests
+
+on:
+  # Executar em pushes para branches principais
+  push:
+    branches:
+      - develop
+      - main
+      - 'release/**'
+    # Ignorar alterações em documentação
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.github/**'
+      - '!.github/workflows/**'
+
+  # Executar em Pull Requests
+  pull_request:
+    branches:
+      - develop
+      - main
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+
+  # Permitir execução manual
+  workflow_dispatch:
+    inputs:
+      api_level:
+        description: 'Android API Level'
+        required: false
+        default: '33'
+      test_suite:
+        description: 'Test Suite (all, smoke, critical)'
+        required: false
+        default: 'all'
+
+# Limitar execuções concorrentes
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Job 1: Testes E2E com Detox
+  detox-e2e:
+    name: Detox E2E Tests (API ${{ matrix.api_level }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    # Matriz de testes
+    # Testar em diferentes versões do Android
+    strategy:
+      fail-fast: false
+      matrix:
+        api_level: [33]  # Android 13
+        # Adicionar mais níveis conforme necessário:
+        # api_level: [30, 33, 34]  # Android 11, 13, 14
+
+    steps:
+      # === SETUP ===
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch completo para análise
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: ☕ Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      # === CACHE ===
+      - name: 💾 Cache Node Modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            */node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: 💾 Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: 💾 Cache AVD (Android Virtual Device)
+        uses: actions/cache@v4
+        id: avd-cache
+        with:
+          path: |
+            ~/.android/avd/*
+            ~/.android/adb*
+          key: avd-${{ matrix.api_level }}-${{ runner.os }}
+
+      # === INSTALAÇÃO ===
+      - name: 📦 Install Dependencies
+        run: npm ci
+
+      # === BUILD ===
+      - name: 🔨 Build Android Debug APK
+        run: |
+          cd android
+          ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug
+        env:
+          JAVA_HOME: ${{ env.JAVA_HOME_17_X64 }}
+
+      # === TESTES E2E ===
+      - name: 🧪 Run Detox E2E Tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api_level }}
+          arch: x86_64
+          target: google_apis
+          profile: pixel_5
+          force-avd-creation: false
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
+          script: |
+            echo "=== Aguardando boot do emulador ==="
+            adb wait-for-device
+            adb shell input keyevent 82  # Unlock screen
+
+            echo "=== Executando testes Detox ==="
+            npm run test:e2e:android -- --loglevel trace
+
+      # === ARTIFACTS ===
+      - name: 📸 Upload Test Screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: detox-screenshots-api${{ matrix.api_level }}
+          path: |
+            artifacts/screenshots/**/*.png
+            artifacts/videos/**/*.mp4
+          retention-days: 7
+
+      - name: 📊 Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: detox-results-api${{ matrix.api_level }}
+          path: |
+            artifacts/**/*.log
+            artifacts/**/*.json
+          retention-days: 7
+
+      - name: 📱 Upload APKs (se falhou)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-apks-api${{ matrix.api_level }}
+          path: |
+            android/app/build/outputs/apk/debug/*.apk
+          retention-days: 3
+
+  # Job 2: Testes Smoke (rápidos)
+  smoke-tests:
+    name: Smoke Tests (Quick)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: ☕ Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: 📦 Install Dependencies
+        run: npm ci
+
+      - name: 🔨 Build Android
+        run: cd android && ./gradlew assembleDebug
+
+      - name: 🧪 Run Smoke Tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 33
+          arch: x86_64
+          target: google_apis
+          profile: pixel_5
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
+          script: |
+            adb wait-for-device
+            npm run test:e2e:smoke
+
+  # Job 3: Relatório de Resultados
+  results:
+    name: Test Results Summary
+    runs-on: ubuntu-latest
+    needs: [detox-e2e, smoke-tests]
+    if: always()
+
+    steps:
+      - name: 📊 Check Test Results
+        run: |
+          echo "### 📱 Android E2E Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Detox E2E**: ${{ needs.detox-e2e.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Smoke Tests**: ${{ needs.smoke-tests.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ needs.detox-e2e.result }}" == "success" ] && [ "${{ needs.smoke-tests.result }}" == "success" ]; then
+            echo "✅ **Todos os testes passaram!**" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **Alguns testes falharam. Verifique os logs acima.**" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: ❌ Fail Workflow if Tests Failed
+        if: needs.detox-e2e.result != 'success' || needs.smoke-tests.result != 'success'
+        run: exit 1
