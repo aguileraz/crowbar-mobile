@@ -152,7 +152,7 @@ jobs:
           ./gradlew assembleDebug --no-daemon --stacktrace
 
       - name: 📱 Upload Debug APK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: crowbar-debug-apk
           path: android/app/build/outputs/apk/debug/*.apk
@@ -233,14 +233,14 @@ jobs:
           ./gradlew assembleRelease bundleRelease --no-daemon --stacktrace
 
       - name: 📱 Upload Release APK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: crowbar-release-apk
           path: android/app/build/outputs/apk/release/*.apk
           retention-days: 30
 
       - name: 📦 Upload Release AAB (Bundle)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: crowbar-release-aab
           path: android/app/build/outputs/bundle/release/*.aab
