@@ -48,7 +48,7 @@ jobs:
           cache: 'npm'
 
       - name: 📦 Install Dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: 🔍 ESLint
         run: npm run lint -- --max-warnings 0
@@ -76,7 +76,7 @@ jobs:
           cache: 'npm'
 
       - name: 📦 Install Dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: 🧪 Run Unit Tests
         run: npm run test -- --coverage --maxWorkers=2
@@ -132,7 +132,7 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: 📦 Install Dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: 🔨 Build Android Debug
         run: |
@@ -191,7 +191,7 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: 📦 Install Dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: 🔐 Setup Keystore
         env:
@@ -272,7 +272,7 @@ jobs:
           cache: 'npm'
 
       - name: 📦 Install Dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: 🔒 Run npm audit
         run: npm audit --audit-level=moderate

@@ -119,7 +119,7 @@ jobs:
 
       # === INSTALAÇÃO ===
       - name: 📦 Install Dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       # === BUILD ===
       - name: 🔨 Build Android Debug APK
@@ -201,7 +201,7 @@ jobs:
           java-version: '17'
 
       - name: 📦 Install Dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: 🔨 Build Android
         run: cd android && ./gradlew assembleDebug
