@@ -123,7 +123,7 @@ jobs:
 
       # === INSTALAÇÃO ===
       - name: 📦 Install Dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       # === BUILD ===
       - name: 🔨 Build Android Debug APK
@@ -209,7 +209,7 @@ jobs:
           java-version: '17'
 
       - name: 📦 Install Dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       - name: 🔨 Build Android
         run: cd android && ./gradlew assembleDebug

@@ -52,7 +52,7 @@ jobs:
           version: 8
 
       - name: 📦 Install Dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       - name: 🔍 ESLint
         run: npm run lint -- --max-warnings 0
@@ -84,7 +84,7 @@ jobs:
           version: 8
 
       - name: 📦 Install Dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       - name: 🧪 Run Unit Tests
         run: npm run test -- --coverage --maxWorkers=2
@@ -144,7 +144,7 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: 📦 Install Dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       - name: 🔨 Build Android Debug
         run: |
@@ -207,7 +207,7 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: 📦 Install Dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       - name: 🔐 Setup Keystore
         env:
@@ -292,7 +292,7 @@ jobs:
           node-version: '18'
 
       - name: 📦 Install Dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       - name: 🔒 Run npm audit
         run: npm audit --audit-level=moderate
