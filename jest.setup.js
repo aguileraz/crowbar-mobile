@@ -7,19 +7,21 @@
 // API CLIENT MOCKS
 // ===================================
 
-// Mock API Client (usado por boxService, cartService, userService)
+// Mock API Client com detecção inteligente de endpoints
+// Substitui MSW devido a problemas de ESM com Jest/Babel
+// Usa fixtures e helper para retornar dados realistas baseados na URL
+const { createMockApiClient } = require('./src/test/helpers/mockApiClient');
+
+const mockApiClient = createMockApiClient();
+
+// Adiciona métodos extras não relacionados a HTTP
+mockApiClient.upload = jest.fn().mockResolvedValue({ data: {} });
+mockApiClient.setAuthToken = jest.fn();
+mockApiClient.getAuthToken = jest.fn(() => null);
+mockApiClient.clearAuthToken = jest.fn();
+
 jest.mock('./src/services/api', () => ({
-  apiClient: {
-    get: jest.fn().mockResolvedValue({ data: {} }),
-    post: jest.fn().mockResolvedValue({ data: {} }),
-    put: jest.fn().mockResolvedValue({ data: {} }),
-    patch: jest.fn().mockResolvedValue({ data: {} }),
-    delete: jest.fn().mockResolvedValue({ data: {} }),
-    upload: jest.fn().mockResolvedValue({ data: {} }),
-    setAuthToken: jest.fn(),
-    getAuthToken: jest.fn(() => null),
-    clearAuthToken: jest.fn(),
-  },
+  apiClient: mockApiClient,
 }));
 
 // Mock HTTP Client (usado por serviços legados)
@@ -784,9 +786,20 @@ global.__DEV__ = true;
 // Enhanced API Mocks for Integration Tests
 // ===================================
 
-// Import mock data handlers
-// Using direct apiClient mocks instead of MSW due to ESM compatibility issues
-// See src/test/mocks/handlers.ts for available mock endpoints
+// Mock API Client Strategy:
+// - Fixtures: src/test/fixtures/ contém dados mock reutilizáveis
+// - Helper: src/test/helpers/mockApiClient.ts detecta endpoints e retorna fixtures apropriados
+// - Override: Testes podem sobrescrever mocks usando overrideMockForEndpoint() ou mockApiError()
 //
-// Note: MSW 2.x has extensive ESM dependencies (until-async, strict-event-emitter, etc.)
-// that cause issues with Jest/Babel transformation. Using simpler mock approach instead.
+// Razão: MSW 2.x tem dependências ESM profundas (until-async, strict-event-emitter, @bundled-es-modules)
+// que causam erros de transformação no Jest/Babel mesmo quando adicionados ao transformIgnorePatterns.
+//
+// Uso em testes:
+//   import { overrideMockForEndpoint, mockApiError } from '@/test/helpers';
+//   import { apiClient } from '@/services/api';
+//
+//   // Override para cenário específico
+//   overrideMockForEndpoint(apiClient, 'get', '/cart', { data: customCart });
+//
+//   // Simular erro
+//   mockApiError(apiClient, 'get', '/cart', 500, 'Server Error');
