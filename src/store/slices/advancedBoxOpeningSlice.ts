@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { boxService } from '../../services/boxService';
 import { animationManager, ThemeType } from '../../services/animationManager';
-import { MysteryBox, BoxOpeningResult, BoxItem } from '../../types/api';
+import {MysteryBox, BoxOpeningResult} from '../../types/api';
 import { 
   AnimationState, 
   AnimationSystemState, 
@@ -9,7 +9,6 @@ import {
   TelemetryMetrics,
   AnimationTheme
 } from '../../types/animations';
-import { EmojiConfig } from '../../components/animations/EmojiReactionSystem';
 
 /**
  * Estado avançado do slice de abertura de caixas

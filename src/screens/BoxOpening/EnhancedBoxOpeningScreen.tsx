@@ -53,12 +53,12 @@ import {
 } from '../../store/slices/boxOpeningSlice';
 
 // Types
-import { MysteryBox } from '../../types/api';
+
 import { GameThemeType, EmojiReactionType, GamePhase } from '../../types/animations';
 import { RootStackParamList } from '../../navigation/AppNavigator';
 
 // Theme
-import { theme, getSpacing } from '../../theme';
+import {getSpacing} from '../../theme';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -205,12 +205,12 @@ const OPENING_PHASES: Record<string, GamePhase> = {
 
 const EnhancedBoxOpeningScreen: React.FC<Props> = ({ navigation, route }) => {
   const dispatch = useDispatch<AppDispatch>();
-  const insets = useSafeAreaInsets();
+  const _insets = useSafeAreaInsets();
   
   // Redux state
   const currentBox = useSelector(selectCurrentBox);
-  const openingResult = useSelector(selectOpeningResult);
-  const animationState = useSelector(selectAnimationState);
+  const _openingResult = useSelector(selectOpeningResult);
+  const _animationState = useSelector(selectAnimationState);
   
   // Local state
   const [selectedTheme, setSelectedTheme] = useState<GameThemeType>('fire');
@@ -242,10 +242,10 @@ const EnhancedBoxOpeningScreen: React.FC<Props> = ({ navigation, route }) => {
   /**
    * Pré-carrega assets do tema selecionado
    */
-  const preloadThemeAssets = useCallback(async (theme: GameThemeType) => {
+  const preloadThemeAssets = useCallback(async (themeType: GameThemeType) => {
     setIsPreloading(true);
     setPreloadProgress(0);
-    
+
     try {
       // Simular progresso de carregamento
       const progressInterval = setInterval(() => {
@@ -259,7 +259,7 @@ const EnhancedBoxOpeningScreen: React.FC<Props> = ({ navigation, route }) => {
       }, 100);
 
       // Pré-carregar assets do tema
-      await gamificationAssetManager.warmupTheme(theme);
+      await gamificationAssetManager.warmupTheme(themeType);
       
       clearInterval(progressInterval);
       setPreloadProgress(100);
@@ -271,7 +271,7 @@ const EnhancedBoxOpeningScreen: React.FC<Props> = ({ navigation, route }) => {
       }, 300);
       
     } catch (error) {
-      console.error('Erro ao pré-carregar assets:', error);
+      // console.error('Erro ao pré-carregar assets:', error);
       Alert.alert('Erro', 'Falha ao carregar animações');
       setIsPreloading(false);
     }
@@ -280,12 +280,12 @@ const EnhancedBoxOpeningScreen: React.FC<Props> = ({ navigation, route }) => {
   /**
    * Seleciona tema e inicia pré-carregamento
    */
-  const handleThemeSelect = useCallback(async (theme: GameThemeType) => {
-    setSelectedTheme(theme);
-    await preloadThemeAssets(theme);
-    
+  const handleThemeSelect = useCallback(async (themeType: GameThemeType) => {
+    setSelectedTheme(themeType);
+    await preloadThemeAssets(themeType);
+
     // Analytics
-    analyticsService.trackEngagement('theme_selected', theme, 1);
+    analyticsService.trackEngagement('theme_selected', themeType, 1);
   }, [preloadThemeAssets]);
 
   /**
@@ -462,15 +462,15 @@ const EnhancedBoxOpeningScreen: React.FC<Props> = ({ navigation, route }) => {
             <Paragraph>Selecione o efeito visual para sua abertura de caixa:</Paragraph>
             
             <View style={styles.themeOptions}>
-              {(['fire', 'ice', 'meteor'] as GameThemeType[]).map((theme) => (
+              {(['fire', 'ice', 'meteor'] as GameThemeType[]).map((themeType) => (
                 <Button
-                  key={theme}
-                  mode={selectedTheme === theme ? 'contained' : 'outlined'}
-                  onPress={() => handleThemeSelect(theme)}
+                  key={themeType}
+                  mode={selectedTheme === themeType ? 'contained' : 'outlined'}
+                  onPress={() => handleThemeSelect(themeType)}
                   style={styles.themeButton}
                   disabled={isPreloading}
                 >
-                  {theme === 'fire' ? '🔥 Fogo' : theme === 'ice' ? '❄️ Gelo' : '☄️ Meteoro'}
+                  {themeType === 'fire' ? '🔥 Fogo' : themeType === 'ice' ? '❄️ Gelo' : '☄️ Meteoro'}
                 </Button>
               ))}
             </View>

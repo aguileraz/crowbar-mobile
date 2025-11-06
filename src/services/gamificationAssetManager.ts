@@ -73,7 +73,7 @@ class GamificationAssetManager {
       await this.preloadEssentialAssets();
       
     } catch (error) {
-      console.error('❌ Erro ao inicializar Asset Manager:', error);
+      // console.error('❌ Erro ao inicializar Asset Manager:', error);
       throw error;
     }
   }
@@ -88,7 +88,7 @@ class GamificationAssetManager {
         this.config = { ...this.config, ...JSON.parse(savedConfig) };
       }
     } catch (error) {
-      console.warn('Erro ao carregar configuração salva:', error);
+      // console.warn('Erro ao carregar configuração salva:', error);
     }
   }
 
@@ -99,7 +99,7 @@ class GamificationAssetManager {
     try {
       await AsyncStorage.setItem('gamification_asset_config', JSON.stringify(this.config));
     } catch (error) {
-      console.warn('Erro ao salvar configuração:', error);
+      // console.warn('Erro ao salvar configuração:', error);
     }
   }
 
@@ -149,7 +149,7 @@ class GamificationAssetManager {
         cacheEntry.memorySize += frameSize;
         this.memoryUsage += frameSize;
       } catch (error) {
-        console.warn(`Erro ao carregar frame ${frameIndex} do asset ${assetId}:`, error);
+        // console.warn(`Erro ao carregar frame ${frameIndex} do asset ${assetId}:`, error);
       }
     }
 
@@ -214,7 +214,7 @@ class GamificationAssetManager {
       try {
         results[asset.type] = await this.loadAssetFrames(asset.id);
       } catch (error) {
-        console.error(`Erro ao carregar asset ${asset.id}:`, error);
+        // console.error(`Erro ao carregar asset ${asset.id}:`, error);
         results[asset.type] = [];
       }
     }
@@ -267,7 +267,7 @@ class GamificationAssetManager {
           this.memoryUsage += frameSize;
           frames.push(framePath);
         } catch (error) {
-          console.warn(`Erro ao carregar frame ${frameIndex}:`, error);
+          // console.warn(`Erro ao carregar frame ${frameIndex}:`, error);
           // Usar placeholder ou frame anterior
           frames.push(frames[frames.length - 1] || '');
         }

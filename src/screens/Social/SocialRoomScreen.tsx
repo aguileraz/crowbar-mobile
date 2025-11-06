@@ -39,7 +39,7 @@ import Animated, {
 // Serviços sociais
 import sharedRoomService from '../../services/sharedRoomService';
 import bettingService from '../../services/bettingService';
-import leaderboardService from '../../services/leaderboardService';
+
 import advancedHapticService from '../../services/advancedHapticService';
 
 // Componentes
@@ -54,11 +54,11 @@ import {
   SocialUser,
   ParticipantReaction,
 } from '../../types/social';
-import { EmojiReactionType, GameThemeType } from '../../types/animations';
+import {EmojiReactionType} from '../../types/animations';
 import { RootStackParamList } from '../../navigation/AppNavigator';
 
 // Theme
-import { theme, getSpacing } from '../../theme';
+import {getSpacing} from '../../theme';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -71,7 +71,7 @@ interface Props {
 }
 
 const SocialRoomScreen: React.FC<Props> = ({ navigation, route }) => {
-  const insets = useSafeAreaInsets();
+  const _insets = useSafeAreaInsets();
   
   // State da sala
   const [room, setRoom] = useState<SharedRoom | null>(null);
@@ -114,13 +114,13 @@ const SocialRoomScreen: React.FC<Props> = ({ navigation, route }) => {
           setRoom(updatedRoom);
           roomOpacity.value = withSpring(1);
         },
-        onParticipantJoin: (participant) => {
+        onParticipantJoin: (_participant) => {
           advancedHapticService.playGestureFeedback('tap');
           participantScale.value = withSpring(1.1, {}, () => {
             participantScale.value = withSpring(1);
           });
         },
-        onParticipantLeave: (userId) => {
+        onParticipantLeave: (_userId) => {
         },
         onReactionAdd: (reaction) => {
           addFloatingReaction(reaction);
@@ -150,7 +150,7 @@ const SocialRoomScreen: React.FC<Props> = ({ navigation, route }) => {
       setUserBalance(bettingService.getUserBalance());
       
     } catch (error) {
-      console.error('Erro ao conectar à sala:', error);
+      // console.error('Erro ao conectar à sala:', error);
       setConnectionStatus('disconnected');
       Alert.alert('Erro', 'Não foi possível conectar à sala');
     }
@@ -255,7 +255,7 @@ const SocialRoomScreen: React.FC<Props> = ({ navigation, route }) => {
         setUserBalance(bettingService.getUserBalance());
       }
     } catch (error) {
-      console.error('Erro ao resolver aposta:', error);
+      // console.error('Erro ao resolver aposta:', error);
     }
   };
 
@@ -294,7 +294,7 @@ const SocialRoomScreen: React.FC<Props> = ({ navigation, route }) => {
     try {
       await sharedRoomService.addReaction(type, position);
     } catch (error) {
-      console.error('Erro ao enviar reação:', error);
+      // console.error('Erro ao enviar reação:', error);
     }
   }, [isConnected]);
 
@@ -311,7 +311,7 @@ const SocialRoomScreen: React.FC<Props> = ({ navigation, route }) => {
       
       advancedHapticService.playGestureFeedback('tap');
     } catch (error) {
-      console.error('Erro ao alterar estado:', error);
+      // console.error('Erro ao alterar estado:', error);
     }
   }, [isConnected, userReady]);
 
@@ -323,7 +323,7 @@ const SocialRoomScreen: React.FC<Props> = ({ navigation, route }) => {
       await sharedRoomService.leaveRoom();
       navigation.goBack();
     } catch (error) {
-      console.error('Erro ao sair da sala:', error);
+      // console.error('Erro ao sair da sala:', error);
       navigation.goBack();
     }
   }, [navigation]);
@@ -336,7 +336,10 @@ const SocialRoomScreen: React.FC<Props> = ({ navigation, route }) => {
       if (countdownTimer.current) {
         clearInterval(countdownTimer.current);
       }
-      sharedRoomService.leaveRoom().catch(console.error);
+      sharedRoomService.leaveRoom().catch((error) => {
+        // TODO: Handle error properly
+        console.error('Error leaving room:', error);
+      });
     };
   }, [connectToRoom]);
 

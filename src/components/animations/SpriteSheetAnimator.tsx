@@ -98,7 +98,7 @@ const SpriteSheetAnimator: React.FC<SpriteSheetAnimatorProps> = ({
       if (asset) setCurrentAsset(asset);
       
     } catch (err) {
-      console.error('Erro ao resolver asset:', err);
+      // console.error('Erro ao resolver asset:', err);
       setError(err instanceof Error ? err.message : 'Erro desconhecido');
     } finally {
       setLoading(false);

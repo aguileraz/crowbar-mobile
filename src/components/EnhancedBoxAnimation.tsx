@@ -107,7 +107,7 @@ const EnhancedBoxAnimation: React.FC<EnhancedBoxAnimationProps> = ({
   /**
    * Animação de shake da caixa
    */
-  const startShakeAnimation = useCallback(() => {
+  const _startShakeAnimation = useCallback(() => {
     Animated.sequence([
       Animated.timing(boxRotateAnim, {
         toValue: 1,

@@ -3,7 +3,7 @@
  * Define tipos para sistemas de IA, recomendação e personalização
  */
 
-import { GameThemeType, EmojiReactionType } from './animations';
+import {GameThemeType} from './animations';
 
 // Tipos de dados de comportamento do usuário
 export interface UserBehavior {

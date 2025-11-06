@@ -228,14 +228,14 @@ const animationFrameMap: Record<AnimationType, () => any[]> = {
 export function loadAnimationFrames(type: AnimationType): any[] {
   const loader = animationFrameMap[type];
   if (!loader) {
-    console.warn(`Animation type '${type}' not found`);
+    // console.warn(`Animation type '${type}' not found`);
     return [];
   }
   
   try {
     return loader();
   } catch (error) {
-    console.error(`Error loading animation frames for '${type}':`, error);
+    // console.error(`Error loading animation frames for '${type}':`, error);
     return [];
   }
 }
@@ -258,7 +258,7 @@ export async function preloadAnimationFrames(types: AnimationType[]): Promise<vo
   try {
     await Promise.all(promises);
   } catch (error) {
-    console.warn('Some animation frames failed to preload:', error);
+    // console.warn('Some animation frames failed to preload:', error);
   }
 }
 
@@ -288,7 +288,7 @@ export function getAnimationInfo(type: AnimationType): {
 export function getAnimationFrame(type: AnimationType, frameIndex: number): any {
   const frames = loadAnimationFrames(type);
   if (frameIndex < 0 || frameIndex >= frames.length) {
-    console.warn(`Frame index ${frameIndex} out of bounds for animation '${type}'`);
+    // console.warn(`Frame index ${frameIndex} out of bounds for animation '${type}'`);
     return null;
   }
   return frames[frameIndex];

@@ -1,4 +1,4 @@
-import messaging, { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
+
 import notifee, { 
   AndroidImportance, 
   AndroidStyle,
@@ -528,7 +528,7 @@ class GamifiedNotificationService {
       
       await AsyncStorage.setItem('@notification_history', JSON.stringify(notifications));
     } catch (error) {
-      console.error('Erro ao salvar histórico de notificações:', error);
+      // console.error('Erro ao salvar histórico de notificações:', error);
     }
   }
 
@@ -544,7 +544,7 @@ class GamifiedNotificationService {
         }
       }
     } catch (error) {
-      console.error('Erro ao marcar notificação como lida:', error);
+      // console.error('Erro ao marcar notificação como lida:', error);
     }
   }
 
@@ -553,7 +553,7 @@ class GamifiedNotificationService {
       const history = await AsyncStorage.getItem('@notification_history');
       return history ? JSON.parse(history) : [];
     } catch (error) {
-      console.error('Erro ao obter histórico de notificações:', error);
+      // console.error('Erro ao obter histórico de notificações:', error);
       return [];
     }
   }
@@ -562,7 +562,7 @@ class GamifiedNotificationService {
     try {
       await AsyncStorage.removeItem('@notification_history');
     } catch (error) {
-      console.error('Erro ao limpar histórico de notificações:', error);
+      // console.error('Erro ao limpar histórico de notificações:', error);
     }
   }
 }

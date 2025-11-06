@@ -16,7 +16,7 @@ export class CartService {
    */
   async getCart(): Promise<Cart> {
     const _response = await apiClient.get<Cart>('/cart');
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -27,7 +27,7 @@ export class CartService {
       mystery_box_id: boxId,
       quantity,
     });
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -35,7 +35,7 @@ export class CartService {
    */
   async updateCartItem(itemId: string, quantity: number): Promise<Cart> {
     const _response = await apiClient.put<Cart>(`/cart/items/${itemId}`, { quantity });
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -43,7 +43,7 @@ export class CartService {
    */
   async removeFromCart(itemId: string): Promise<Cart> {
     const _response = await apiClient.delete<Cart>(`/cart/items/${itemId}`);
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -58,7 +58,7 @@ export class CartService {
    */
   async applyCoupon(code: string): Promise<Cart> {
     const _response = await apiClient.post<Cart>('/cart/coupon', { code });
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -66,7 +66,7 @@ export class CartService {
    */
   async removeCoupon(): Promise<Cart> {
     const _response = await apiClient.delete<Cart>('/cart/coupon');
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -79,7 +79,7 @@ export class CartService {
     message?: string;
   }> {
     const _response = await apiClient.post(`/cart/validate-coupon`, { code });
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -95,7 +95,7 @@ export class CartService {
     }>;
   }> {
     const _response = await apiClient.post('/cart/shipping', { address_id: addressId });
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -111,7 +111,7 @@ export class CartService {
     }>;
   }> {
     const _response = await apiClient.post('/cart/shipping/zip', { zip_code: zipCode });
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -125,7 +125,7 @@ export class CartService {
     notes?: string;
   }): Promise<Order> {
     const _response = await apiClient.post<Order>('/orders', data);
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -149,7 +149,7 @@ export class CartService {
     message?: string;
   }> {
     const _response = await apiClient.post(`/orders/${orderId}/payment`, paymentData);
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -161,7 +161,7 @@ export class CartService {
     updated_at: string;
   }> {
     const _response = await apiClient.get(`/orders/${orderId}/payment/_status`);
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -184,7 +184,7 @@ export class CartService {
     };
   }> {
     const _response = await apiClient.get('/payment/methods');
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -197,7 +197,7 @@ export class CartService {
     interest_rate: number;
   }>> {
     const _response = await apiClient.get(`/payment/installments?amount=${amount}`);
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -205,7 +205,7 @@ export class CartService {
    */
   async saveForLater(): Promise<{ saved_at: string }> {
     const _response = await apiClient.post('/cart/save');
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -213,7 +213,7 @@ export class CartService {
    */
   async restoreSavedCart(): Promise<Cart> {
     const _response = await apiClient.post<Cart>('/cart/restore');
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -221,7 +221,7 @@ export class CartService {
    */
   async hasSavedCart(): Promise<{ has_saved_cart: boolean; saved_at?: string }> {
     const _response = await apiClient.get('/cart/saved');
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -229,7 +229,7 @@ export class CartService {
    */
   async shareCart(): Promise<{ share_url: string; expires_at: string }> {
     const _response = await apiClient.post('/cart/share');
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -237,7 +237,7 @@ export class CartService {
    */
   async importSharedCart(shareToken: string): Promise<Cart> {
     const _response = await apiClient.post<Cart>('/cart/import', { share_token: shareToken });
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -249,7 +249,7 @@ export class CartService {
     estimated_date: string;
   }> {
     const _response = await apiClient.get(`/cart/delivery-estimate?address_id=${addressId}`);
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -265,7 +265,7 @@ export class CartService {
     }>;
   }> {
     const _response = await apiClient.get('/cart/availability');
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -285,7 +285,7 @@ export class CartService {
     estimated_delivery: string;
   }> {
     const _response = await apiClient.post('/cart/summary', data);
-    return response.data;
+    return _response.data;
   }
 }
 

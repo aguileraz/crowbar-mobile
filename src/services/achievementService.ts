@@ -85,7 +85,7 @@ class AchievementService {
       this.userProgress = progressData ? JSON.parse(progressData) : this.userProgress;
 
     } catch (error) {
-      console.error('Erro ao carregar dados de conquistas:', error);
+      // console.error('Erro ao carregar dados de conquistas:', error);
     }
   }
 
@@ -102,7 +102,7 @@ class AchievementService {
         AsyncStorage.setItem(`progress_${this.userId}`, JSON.stringify(this.userProgress)),
       ]);
     } catch (error) {
-      console.error('Erro ao salvar dados de conquistas:', error);
+      // console.error('Erro ao salvar dados de conquistas:', error);
     }
   }
 
@@ -302,7 +302,7 @@ class AchievementService {
         }
       );
     } catch (error) {
-      console.error('Erro ao notificar conquista:', error);
+      // console.error('Erro ao notificar conquista:', error);
     }
   }
 

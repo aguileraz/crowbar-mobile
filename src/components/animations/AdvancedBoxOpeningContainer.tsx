@@ -17,7 +17,6 @@ import Animated, {
   interpolate,
 } from 'react-native-reanimated';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../../store';
 
 // Componentes de animação
 import SpriteSheetAnimator from './SpriteSheetAnimator';
@@ -44,7 +43,6 @@ import {
 
 // Services
 import { animationManager, ThemeType } from '../../services/animationManager';
-import { AnimationState } from '../../types/animations';
 
 // Theme e utils
 import { theme as appTheme, getSpacing, getBorderRadius } from '../../theme';
@@ -122,7 +120,7 @@ const AdvancedBoxOpeningContainer: React.FC<AdvancedBoxOpeningContainerProps> = 
           );
         }
       } catch (error) {
-        console.warn('Erro ao verificar configurações de acessibilidade:', error);
+        // console.warn('Erro ao verificar configurações de acessibilidade:', error);
       }
     };
 
@@ -166,7 +164,7 @@ const AdvancedBoxOpeningContainer: React.FC<AdvancedBoxOpeningContainerProps> = 
           data: { systemInfo: 'Initialization completed' },
         }));
       } catch (error: any) {
-        console.error('Erro na inicialização:', error);
+        // console.error('Erro na inicialização:', error);
         if (onError) {
           onError(error.message || 'Erro na inicialização do sistema');
         }
@@ -228,7 +226,7 @@ const AdvancedBoxOpeningContainer: React.FC<AdvancedBoxOpeningContainerProps> = 
       }));
 
     } catch (error: any) {
-      console.error('Erro ao abrir caixa:', error);
+      // console.error('Erro ao abrir caixa:', error);
       
       dispatch(recordAnimationEvent({
         type: 'error',
@@ -381,8 +379,8 @@ const AdvancedBoxOpeningContainer: React.FC<AdvancedBoxOpeningContainerProps> = 
   return (
     <AnimationErrorBoundary
       showErrorDetails={enableDebugMode}
-      onError={(error, errorInfo) => {
-        console.error('Animation container error:', error, errorInfo);
+      onError={(error, _errorInfo) => {
+        // console.error('Animation container error:', error, errorInfo);
         dispatch(recordAnimationEvent({
           type: 'error',
           timestamp: Date.now(),

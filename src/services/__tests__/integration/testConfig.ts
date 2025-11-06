@@ -10,7 +10,8 @@ import logger from '../../loggerService';
 
 // Mock URLs para diferentes ambientes
 export const TEST_URLS = {
-  API_BASE: 'https://test-api.crowbar.com/api/v1',
+  // Backend Docker local (Sprint 8 Week 1) - porta 3000
+  API_BASE: process.env.TEST_API_URL || 'http://localhost:3000/api/v1',
   STAGING_API: 'https://crowbar-backend-staging.azurewebsites.net/api/v1',
   MOCK_SERVER: 'http://localhost:3001/api/v1',
 };

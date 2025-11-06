@@ -1,0 +1,33 @@
+# Build outputs
+node_modules/
+dist/
+build/
+coverage/
+.expo/
+.expo-shared/
+
+# Generated files
+android/
+ios/
+*.log
+
+# Scripts (utility files, not app code)
+scripts/
+eslint-no-console-fix.js
+fix-eslint-properly.js
+simple-console-cleanup.sh
+fix-unused-imports.js
+fix-unused-vars-auto.sh
+fix-unused-vars-final.js
+fix-unused-vars-improved.js
+
+# Docker and E2E (development tools)
+docker/
+e2e/
+
+# Environment files
+.env
+.env.*
+
+# Cache
+.eslintcache

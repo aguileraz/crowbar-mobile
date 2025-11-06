@@ -21,7 +21,7 @@ jest.mock('react-native-device-info', () => ({
 }));
 
 describe('Gamification Performance Tests', () => {
-  let reports: PerformanceReport[] = [];
+  const reports: PerformanceReport[] = [];
 
   beforeAll(async () => {
     // Inicializa gerenciadores

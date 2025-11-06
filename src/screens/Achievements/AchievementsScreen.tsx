@@ -3,7 +3,7 @@
  * Tela principal para visualizar conquistas e badges
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, {useState, useCallback} from 'react';
 import {
   View,
   StyleSheet,
@@ -49,7 +49,7 @@ interface Props {
   navigation: AchievementsScreenNavigationProp;
 }
 
-const AchievementsScreen: React.FC<Props> = ({ navigation }) => {
+const AchievementsScreen: React.FC<Props> = ({ _navigation }) => {
   const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = useState<TabType>('achievements');
   const [selectedCategory, setSelectedCategory] = useState<AchievementCategory | 'all'>('all');
@@ -72,7 +72,7 @@ const AchievementsScreen: React.FC<Props> = ({ navigation }) => {
       setUserBadges(badges);
       setAchievementStats(stats);
     } catch (error) {
-      console.error('Erro ao carregar conquistas:', error);
+      // console.error('Erro ao carregar conquistas:', error);
     }
   };
 
@@ -87,7 +87,7 @@ const AchievementsScreen: React.FC<Props> = ({ navigation }) => {
       await achievementService.equipBadge(badge.id);
       await loadData(); // Recarrega para mostrar badge equipado
     } catch (error) {
-      console.error('Erro ao equipar badge:', error);
+      // console.error('Erro ao equipar badge:', error);
     }
   };
 

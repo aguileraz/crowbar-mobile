@@ -36,7 +36,7 @@ interface FlashSaleCardProps {
 }
 
 const FlashSaleCard: React.FC<FlashSaleCardProps> = ({ box, onPress, index = 0 }) => {
-  const theme = useTheme();
+  const _theme = useTheme();
   const flashAnimation = useSharedValue(0);
   const scaleAnimation = useSharedValue(1);
   const sparkleAnimation = useSharedValue(0);

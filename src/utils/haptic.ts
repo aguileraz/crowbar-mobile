@@ -14,7 +14,7 @@ export const hapticFeedback = (type: string = 'impactLight') => {
       ReactNativeHapticFeedback.trigger(type);
     } catch (error) {
       // Haptic library not available
-      console.warn('Haptic feedback not available');
+      // console.warn('Haptic feedback not available');
     }
   } else if (Platform.OS === 'android') {
     // Android haptic feedback
@@ -23,7 +23,7 @@ export const hapticFeedback = (type: string = 'impactLight') => {
       Vibration.vibrate(10);
     } catch (error) {
       // Vibration not available
-      console.warn('Vibration not available');
+      // console.warn('Vibration not available');
     }
   }
 };

@@ -236,7 +236,7 @@ class AIRecommendationService {
       .sort((a, b) => b[1] - a[1])
       .slice(0, 3)
       .map(([period, frequency]) => ({
-        hourRange: [parseInt(period) * 4, (parseInt(period) + 1) * 4],
+        hourRange: [parseInt(period, 10) * 4, (parseInt(period, 10) + 1) * 4],
         dayOfWeek: [0, 1, 2, 3, 4, 5, 6], // Simplificado
         frequency,
         avgSessionLength: 15, // Minutos - simplificado
@@ -807,7 +807,7 @@ class AIRecommendationService {
         this.recommendations.set(userId, JSON.parse(recommendationsData));
       }
     } catch (error) {
-      console.error('Erro ao carregar dados de IA:', error);
+      // console.error('Erro ao carregar dados de IA:', error);
     }
   }
 
@@ -831,7 +831,7 @@ class AIRecommendationService {
         ),
       ]);
     } catch (error) {
-      console.error('Erro ao salvar dados de IA:', error);
+      // console.error('Erro ao salvar dados de IA:', error);
     }
   }
 

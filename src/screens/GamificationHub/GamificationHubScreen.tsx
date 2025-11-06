@@ -54,7 +54,7 @@ interface Props {
  */
 const GamificationHubScreen: React.FC<Props> = ({ navigation }) => {
   const theme = useTheme();
-  const dispatch = useAppDispatch();
+  const _dispatch = useAppDispatch();
   const user = useAppSelector(state => state.auth.user);
   
   // Estados
@@ -90,7 +90,7 @@ const GamificationHubScreen: React.FC<Props> = ({ navigation }) => {
       // const response = await api.getGamificationData();
       // setStats(response.data);
     } catch (error) {
-      console.error('Erro ao carregar dados de gamificação:', error);
+      // console.error('Erro ao carregar dados de gamificação:', error);
     }
   };
 
@@ -316,10 +316,10 @@ const GamificationHubScreen: React.FC<Props> = ({ navigation }) => {
         <Animated.View entering={FadeInUp.delay(400)}>
           <Text style={styles.sectionTitle}>Desafios do Dia</Text>
           <DailyChallenges
-            onChallengePress={(challenge) => {
+            onChallengePress={(_challenge) => {
               hapticFeedback('impactLight');
             }}
-            onClaimReward={(challenge) => {
+            onClaimReward={(_challenge) => {
               addEmojiReaction('fire');
             }}
           />

@@ -44,7 +44,7 @@ export class BoxService {
    */
   async getFeaturedBoxes(limit: number = 10): Promise<MysteryBox[]> {
     const _response = await apiClient.get<MysteryBox[]>(`/boxes/featured?limit=${limit}`);
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -52,7 +52,7 @@ export class BoxService {
    */
   async getPopularBoxes(limit: number = 10): Promise<MysteryBox[]> {
     const _response = await apiClient.get<MysteryBox[]>(`/boxes/popular?limit=${limit}`);
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -60,7 +60,7 @@ export class BoxService {
    */
   async getNewBoxes(limit: number = 10): Promise<MysteryBox[]> {
     const _response = await apiClient.get<MysteryBox[]>(`/boxes/new?limit=${limit}`);
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -68,7 +68,7 @@ export class BoxService {
    */
   async getBoxById(id: string): Promise<MysteryBox> {
     const _response = await apiClient.get<MysteryBox>(`/boxes/${id}`);
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -77,7 +77,7 @@ export class BoxService {
   async searchBoxes(query: string, filters: Omit<SearchFilters, 'query'> = {}): Promise<SearchResult> {
     const searchFilters = { ...filters, query };
     const _response = await apiClient.post<SearchResult>('/boxes/search', searchFilters);
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -85,7 +85,7 @@ export class BoxService {
    */
   async getSearchSuggestions(query: string): Promise<string[]> {
     const _response = await apiClient.get<string[]>(`/boxes/search/suggestions?q=${encodeURIComponent(query)}`);
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -93,7 +93,7 @@ export class BoxService {
    */
   async getCategories(): Promise<Category[]> {
     const _response = await apiClient.get<Category[]>('/categories');
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -101,7 +101,7 @@ export class BoxService {
    */
   async getCategoryById(id: string): Promise<Category> {
     const _response = await apiClient.get<Category>(`/categories/${id}`);
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -117,7 +117,7 @@ export class BoxService {
    */
   async getBoxReviews(boxId: string, page: number = 1, perPage: number = 10): Promise<PaginatedResponse<Review>> {
     const _response = await apiClient.get<Review[]>(`/boxes/${boxId}/reviews?page=${page}&per_page=${perPage}`);
-    return response;
+    return _response;
   }
 
   /**
@@ -129,7 +129,7 @@ export class BoxService {
     images?: string[];
   }): Promise<Review> {
     const _response = await apiClient.post<Review>(`/boxes/${boxId}/reviews`, review);
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -150,7 +150,7 @@ export class BoxService {
     recent_openings: BoxOpenedEvent[];
   }> {
     const _response = await apiClient.get(`/boxes/${boxId}/stats`);
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -162,7 +162,7 @@ export class BoxService {
     max_per_user?: number;
   }> {
     const _response = await apiClient.get(`/boxes/${boxId}/stock?quantity=${quantity}`);
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -170,7 +170,7 @@ export class BoxService {
    */
   async getRelatedBoxes(boxId: string, limit: number = 6): Promise<MysteryBox[]> {
     const _response = await apiClient.get<MysteryBox[]>(`/boxes/${boxId}/related?limit=${limit}`);
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -181,7 +181,7 @@ export class BoxService {
     price: number;
   }[]> {
     const _response = await apiClient.get(`/boxes/${boxId}/price-history?days=${days}`);
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -202,7 +202,7 @@ export class BoxService {
     count: number;
   }[]> {
     const _response = await apiClient.get(`/tags/popular?limit=${limit}`);
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -215,7 +215,7 @@ export class BoxService {
     tags: string[];
   }> {
     const _response = await apiClient.get('/boxes/filters');
-    return response.data;
+    return _response.data;
   }
 }
 

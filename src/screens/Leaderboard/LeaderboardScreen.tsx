@@ -33,7 +33,6 @@ import LinearGradient from 'react-native-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppSelector } from '../../store/hooks';
 import { hapticFeedback } from '../../utils/haptic';
-import AnimatedEmoji from '../../components/AnimatedEmoji';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -55,7 +54,7 @@ type TimeFrame = 'daily' | 'weekly' | 'monthly' | 'allTime';
 type Category = 'score' | 'boxes' | 'spending' | 'streaks';
 
 const LeaderboardScreen: React.FC = () => {
-  const theme = useTheme();
+  const _theme = useTheme();
   const currentUser = useAppSelector(state => state.auth.user);
   
   const [timeframe, setTimeframe] = useState<TimeFrame>('weekly');
@@ -142,6 +141,32 @@ const LeaderboardScreen: React.FC = () => {
     );
   }, []);
 
+  // Estilos animados do pódio
+  const animatedPodiumStyle = useAnimatedStyle(() => ({
+    transform: [
+      {
+        translateY: interpolate(
+          podiumAnimation.value,
+          [0, 1],
+          [200, 0]
+        ),
+      },
+    ],
+    opacity: podiumAnimation.value,
+  }));
+
+  const animatedCrownStyle = useAnimatedStyle(() => ({
+    transform: [
+      {
+        rotate: interpolate(
+          crownAnimation.value,
+          [0, 1],
+          [-5, 5],
+        ) + 'deg',
+      },
+    ],
+  }));
+
   const handleRefresh = () => {
     setRefreshing(true);
     hapticFeedback('impactLight');
@@ -201,6 +226,8 @@ const LeaderboardScreen: React.FC = () => {
     const medals = ['🥈', '🥇', '🥉'];
     const positions = [2, 1, 3];
 
+    // Usa os estilos animados declarados no nível do componente
+
     return (
       <Card style={styles.podiumCard}>
         <LinearGradient
@@ -208,35 +235,10 @@ const LeaderboardScreen: React.FC = () => {
           style={styles.podiumGradient}
         >
           <Text style={styles.podiumTitle}>🏆 Top 3 {getCategoryLabel()}</Text>
-          
+
           <View style={styles.podiumContainer}>
             {podiumOrder.map((user, index) => {
               if (!user) return null;
-              
-              const animatedPodiumStyle = useAnimatedStyle(() => ({
-                transform: [
-                  {
-                    translateY: interpolate(
-                      podiumAnimation.value,
-                      [0, 1],
-                      [200, 0]
-                    ),
-                  },
-                ],
-                opacity: podiumAnimation.value,
-              }));
-
-              const animatedCrownStyle = useAnimatedStyle(() => ({
-                transform: [
-                  {
-                    rotate: interpolate(
-                      crownAnimation.value,
-                      [0, 1],
-                      [-5, 5],
-                    ) + 'deg',
-                  },
-                ],
-              }));
 
               return (
                 <Animated.View

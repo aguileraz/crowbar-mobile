@@ -293,7 +293,7 @@ class PersonalizationService {
         this.userProfiles.set(this.userId, newProfile);
       }
     } catch (error) {
-      console.error('Erro ao carregar perfil de personalização:', error);
+      // console.error('Erro ao carregar perfil de personalização:', error);
     }
   }
 
@@ -363,7 +363,7 @@ class PersonalizationService {
    */
   private async collectUserData(): Promise<Record<string, any>> {
     // Integra com outros serviços para coletar dados
-    const recommendations = aiRecommendationService.getRecommendations(this.userId!);
+    const _recommendations = aiRecommendationService.getRecommendations(this.userId!);
     const qualityProfile = qualityOptimizationService.getCurrentProfile();
     
     // Simula coleta de dados (em produção, buscar de APIs/banco)
@@ -594,7 +594,7 @@ class PersonalizationService {
     if (!profile) return null;
     
     // Busca conteúdo específico para os segmentos do usuário
-    const userSegmentIds = profile.segments.map(s => s.segmentId);
+    const _userSegmentIds = profile.segments.map(s => s.segmentId);
     const contents = this.dynamicContents.get(contentId) || [];
     
     // Filtra conteúdos aplicáveis
@@ -718,7 +718,7 @@ class PersonalizationService {
         JSON.stringify(profile)
       );
     } catch (error) {
-      console.error('Erro ao salvar perfil de personalização:', error);
+      // console.error('Erro ao salvar perfil de personalização:', error);
     }
   }
 

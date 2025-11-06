@@ -10,7 +10,8 @@ import logger from '../../services/loggerService';
 
 // Test configuration
 export const TEST_CONFIG = {
-  API_BASE_URL: process.env.TEST_API_URL || 'https://crowbar-backend-staging.azurewebsites.net/api',
+  // Backend Docker local (Sprint 8 Week 1) - porta 3000
+  API_BASE_URL: process.env.TEST_API_URL || 'http://localhost:3000/api/v1',
   TEST_USER_EMAIL: 'test@crowbar.com',
   TEST_USER_PASSWORD: 'testpassword123',
   TIMEOUT: 10000,

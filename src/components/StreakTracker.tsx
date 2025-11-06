@@ -72,7 +72,7 @@ const StreakTracker: React.FC<StreakTrackerProps> = ({
   onRewardClaim,
   compact = false,
 }) => {
-  const theme = useTheme();
+  const _theme = useTheme();
   const [streakData, setStreakData] = useState<StreakData>({
     currentStreak: 0,
     longestStreak: 0,
@@ -160,7 +160,7 @@ const StreakTracker: React.FC<StreakTrackerProps> = ({
         }
       }
     } catch (error) {
-      console.error('Erro ao carregar streak:', error);
+      // console.error('Erro ao carregar streak:', error);
     }
   };
 
@@ -168,7 +168,7 @@ const StreakTracker: React.FC<StreakTrackerProps> = ({
     try {
       await AsyncStorage.setItem('@streak_data', JSON.stringify(data));
     } catch (error) {
-      console.error('Erro ao salvar streak:', error);
+      // console.error('Erro ao salvar streak:', error);
     }
   };
 

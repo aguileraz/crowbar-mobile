@@ -23,7 +23,6 @@ import Animated, {
 import LinearGradient from 'react-native-linear-gradient';
 import CountdownTimer from './CountdownTimer';
 import { hapticFeedback } from '../utils/haptic';
-import { useAppDispatch, useAppSelector } from '../store/hooks';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 

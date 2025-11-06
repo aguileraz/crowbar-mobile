@@ -80,7 +80,7 @@ class QualityOptimizationService {
         this.currentProfile = JSON.parse(savedProfile);
       }
     } catch (error) {
-      console.error('Erro ao carregar perfil de otimização:', error);
+      // console.error('Erro ao carregar perfil de otimização:', error);
     }
   }
 
@@ -96,7 +96,7 @@ class QualityOptimizationService {
         JSON.stringify(this.currentProfile)
       );
     } catch (error) {
-      console.error('Erro ao salvar perfil de otimização:', error);
+      // console.error('Erro ao salvar perfil de otimização:', error);
     }
   }
 
@@ -146,7 +146,7 @@ class QualityOptimizationService {
     const usedMemory = await DeviceInfo.getUsedMemory();
     const batteryLevel = await DeviceInfo.getBatteryLevel();
     const isCharging = await DeviceInfo.isBatteryCharging();
-    const totalDiskSpace = await DeviceInfo.getTotalDiskCapacity();
+    const _totalDiskSpace = await DeviceInfo.getTotalDiskCapacity();
     const freeDiskSpace = await DeviceInfo.getFreeDiskStorage();
     
     // Simula scores de CPU/GPU baseado no modelo do dispositivo
@@ -305,7 +305,7 @@ class QualityOptimizationService {
     }
     
     // Verifica versão do sistema
-    const majorVersion = parseInt(systemVersion.split('.')[0]);
+    const majorVersion = parseInt(systemVersion.split('.')[0], 10);
     if (majorVersion >= 14) {
       capabilities.push('advanced_animations');
       capabilities.push('particle_effects');
@@ -605,7 +605,7 @@ class QualityOptimizationService {
         return JSON.parse(userData).id;
       }
     } catch (error) {
-      console.error('Erro ao obter ID do usuário:', error);
+      // console.error('Erro ao obter ID do usuário:', error);
     }
     return 'unknown';
   }

@@ -1,6 +1,6 @@
 import { Platform, DeviceInfo } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
-import { AnimationTheme, PerformanceConfig } from '../types/animations';
+import {AnimationTheme} from '../types/animations';
 import { animationManager } from '../services/animationManager';
 
 /**
@@ -134,7 +134,7 @@ class PerformanceOptimizer {
       this.applyDeviceOptimizations();
       
     } catch (error) {
-      console.error('❌ Erro na inicialização do Performance Optimizer:', error);
+      // console.error('❌ Erro na inicialização do Performance Optimizer:', error);
       
       // Fallback para dispositivo de baixa performance
       this.deviceCapabilities = {
@@ -289,7 +289,7 @@ class PerformanceOptimizer {
    */
   private shouldAdapt(performance: 'low' | 'medium' | 'high'): boolean {
     // Lógica para evitar mudanças muito frequentes
-    const lastAdaptation = this.performanceHistory[this.performanceHistory.length - 1];
+    const _lastAdaptation = this.performanceHistory[this.performanceHistory.length - 1];
     
     // Só adaptar se a mudança for significativa
     return performance === 'low' || 
@@ -410,7 +410,7 @@ class PerformanceOptimizer {
       try {
         callback(this.adaptiveSettings);
       } catch (error) {
-        console.error('Erro ao notificar listener de performance:', error);
+        // console.error('Erro ao notificar listener de performance:', error);
       }
     });
   }
@@ -454,7 +454,7 @@ class PerformanceOptimizer {
    * Modo de emergência - configurações mínimas
    */
   enableEmergencyMode(): void {
-    console.warn('🚨 Modo de emergência ativado - configurações mínimas');
+    // console.warn('🚨 Modo de emergência ativado - configurações mínimas');
     
     this.adaptiveSettings = {
       targetFPS: 15,

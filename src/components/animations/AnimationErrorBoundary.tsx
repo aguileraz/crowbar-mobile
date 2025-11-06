@@ -5,7 +5,7 @@
 
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Card } from 'react-native-paper';
 
 interface Props {
@@ -45,7 +45,7 @@ export class AnimationErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     // Log erro para serviço de analytics
-    console.error('Animation Error Boundary caught:', error, errorInfo);
+    // console.error('Animation Error Boundary caught:', error, errorInfo);
     
     // Callback customizado
     if (this.props.onError) {
@@ -73,7 +73,7 @@ export class AnimationErrorBoundary extends Component<Props, State> {
 
   renderErrorFallback = () => {
     const { fallback, showErrorDetails } = this.props;
-    const { error, retryCount } = this.state;
+    const { error, retryCount, errorInfo } = this.state;
 
     // Se tem fallback customizado, usar
     if (fallback) {
@@ -104,6 +104,11 @@ export class AnimationErrorBoundary extends Component<Props, State> {
               <Text style={styles.errorDetailsText}>
                 {error.toString()}
               </Text>
+              {errorInfo && (
+                <Text style={[styles.errorDetailsText, { marginTop: 8, fontSize: 10 }]}>
+                  {errorInfo.componentStack}
+                </Text>
+              )}
             </View>
           )}
 
@@ -216,13 +221,13 @@ const styles = StyleSheet.create({
  * HOC para adicionar error boundary a componentes de animação
  */
 export function withAnimationErrorBoundary<P extends object>(
-  Component: React.ComponentType<P>,
+  WrappedComponent: React.ComponentType<P>,
   fallback?: ReactNode,
   onError?: (error: Error, errorInfo: ErrorInfo) => void
 ) {
   return (props: P) => (
     <AnimationErrorBoundary fallback={fallback} onError={onError}>
-      <Component {...props} />
+      <WrappedComponent {...props} />
     </AnimationErrorBoundary>
   );
 }

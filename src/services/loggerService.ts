@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+ 
 /**
  * Logger Service para Crowbar Mobile
  * Centraliza todos os logs da aplicação com níveis e controle de ambiente
@@ -24,7 +24,7 @@ class LoggerService {
    */
   debug(message: string, context?: string, extra?: any) {
     if (this.isDev) {
-      console.debug(`🐛 ${context ? `[${context}] ` : ''}${message}`, extra ? extra : '');
+      // console.debug(`🐛 ${context ? `[${context}] ` : ''}${message}`, extra ? extra : '');
     }
     this.addLog('debug', message, context, extra);
   }
@@ -34,7 +34,7 @@ class LoggerService {
    */
   info(message: string, context?: string, extra?: any) {
     if (this.isDev) {
-      console.info(`ℹ️ ${context ? `[${context}] ` : ''}${message}`, extra ? extra : '');
+      // console.info(`ℹ️ ${context ? `[${context}] ` : ''}${message}`, extra ? extra : '');
     }
     this.addLog('info', message, context, extra);
   }
@@ -44,7 +44,7 @@ class LoggerService {
    */
   warn(message: string, context?: string, extra?: any) {
     if (this.isDev) {
-      console.warn(`⚠️ ${context ? `[${context}] ` : ''}${message}`, extra ? extra : '');
+      // console.warn(`⚠️ ${context ? `[${context}] ` : ''}${message}`, extra ? extra : '');
     }
     this.addLog('warn', message, context, extra);
   }
@@ -53,7 +53,7 @@ class LoggerService {
    * Log de erro - sempre mostrado
    */
   error(message: string, context?: string, error?: any) {
-    console.error(`❌ ${context ? `[${context}] ` : ''}${message}`, error ? error : '');
+    // console.error(`❌ ${context ? `[${context}] ` : ''}${message}`, error ? error : '');
     this.addLog('error', message, context, error);
     
     // Em produção, enviar erros para serviço de monitoramento
@@ -67,7 +67,7 @@ class LoggerService {
    */
   performance(operation: string, duration: number) {
     if (this.isDev && duration > 100) {
-      console.warn(`⏱️ Performance: ${operation} took ${duration}ms`);
+      // console.warn(`⏱️ Performance: ${operation} took ${duration}ms`);
     }
     this.addLog('info', `Performance: ${operation}`, 'PERF', { duration });
   }
@@ -77,8 +77,8 @@ class LoggerService {
    */
   api(method: string, url: string, _status?: number, duration?: number) {
     if (this.isDev) {
-      const statusEmoji = _status ? (_status < 400 ? '✅' : '❌') : '🔄';
-      console.log(`${statusEmoji} ${method} ${url}${duration ? ` (${duration}ms)` : ''}`);
+      const _statusEmoji = _status ? (_status < 400 ? '✅' : '❌') : '🔄';
+      // console.log(`${statusEmoji} ${method} ${url}${duration ? ` (${duration}ms)` : ''}`);
     }
     this.addLog('info', `${method} ${url}`, 'API', { _status, duration });
   }
@@ -88,7 +88,7 @@ class LoggerService {
    */
   navigation(from: string, to: string) {
     if (this.isDev) {
-      console.log(`🧭 Navigation: ${from} → ${to}`);
+      // console.log(`🧭 Navigation: ${from} → ${to}`);
     }
     this.addLog('info', `Navigation: ${from} → ${to}`, 'NAV');
   }

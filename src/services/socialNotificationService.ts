@@ -174,7 +174,7 @@ class SocialNotificationService {
         this.settings = { ...this.settings, ...JSON.parse(settings) };
       }
     } catch (error) {
-      console.warn('Erro ao carregar configurações:', error);
+      // console.warn('Erro ao carregar configurações:', error);
     }
   }
 
@@ -185,7 +185,7 @@ class SocialNotificationService {
     try {
       await AsyncStorage.setItem('social_settings', JSON.stringify(this.settings));
     } catch (error) {
-      console.warn('Erro ao salvar configurações:', error);
+      // console.warn('Erro ao salvar configurações:', error);
     }
   }
 
@@ -199,7 +199,7 @@ class SocialNotificationService {
         this.currentUser = JSON.parse(userData);
       }
     } catch (error) {
-      console.warn('Erro ao carregar usuário:', error);
+      // console.warn('Erro ao carregar usuário:', error);
     }
   }
 
@@ -280,7 +280,7 @@ class SocialNotificationService {
     try {
       // Em produção, enviar token para o servidor
     } catch (error) {
-      console.warn('Erro ao registrar token:', error);
+      // console.warn('Erro ao registrar token:', error);
     }
   }
 
@@ -370,7 +370,7 @@ class SocialNotificationService {
 
     const template = this.notificationTemplates.find(t => t.type === config.type);
     if (!template) {
-      console.warn(`Template não encontrado para tipo: ${config.type}`);
+      // console.warn(`Template não encontrado para tipo: ${config.type}`);
       return;
     }
 
@@ -523,7 +523,7 @@ class SocialNotificationService {
       const data = Object.fromEntries(this.notifications);
       await AsyncStorage.setItem('social_notifications', JSON.stringify(data));
     } catch (error) {
-      console.warn('Erro ao salvar notificações:', error);
+      // console.warn('Erro ao salvar notificações:', error);
     }
   }
 
@@ -540,7 +540,7 @@ class SocialNotificationService {
         }
       }
     } catch (error) {
-      console.warn('Erro ao carregar notificações:', error);
+      // console.warn('Erro ao carregar notificações:', error);
     }
   }
 

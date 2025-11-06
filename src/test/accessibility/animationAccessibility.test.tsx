@@ -59,14 +59,14 @@ describe('Animation Accessibility Tests', () => {
       const { getByTestId, getByLabelText } = render(
         React.createElement(BoxOpeningAnimation, {
           box: mockBox,
-          animationState="idle"
-          fadeAnim={{ setValue: jest.fn() } as any}
-          scaleAnim={{ setValue: jest.fn() } as any}
-          rotateAnim={{ setValue: jest.fn() } as any}
-          onOpenPress={() => {}}
-          canOpen={true}
-          isLoading={false}
-        />
+          animationState: "idle",
+          fadeAnim: { setValue: jest.fn() } as any,
+          scaleAnim: { setValue: jest.fn() } as any,
+          rotateAnim: { setValue: jest.fn() } as any,
+          onOpenPress: () => {},
+          canOpen: true,
+          isLoading: false,
+        })
       );
 
       // Verify accessibility labels for key elements

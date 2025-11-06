@@ -96,13 +96,13 @@ class ApiClient {
    */
   private formatError(error: any): ApiError {
     const _response = error.response;
-    
-    if (response) {
+
+    if (_response) {
       return {
-        status: response.status,
-        message: response.data?.message || 'Erro na requisição',
-        errors: response.data?.errors || {},
-        data: response.data,
+        status: _response.status,
+        message: _response.data?.message || 'Erro na requisição',
+        errors: _response.data?.errors || {},
+        data: _response.data,
       };
     }
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   StyleSheet,
@@ -37,7 +37,7 @@ import CountdownTimer from './CountdownTimer';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-const AnimatedSvg = Animated.createAnimatedComponent(Svg);
+const _AnimatedSvg = Animated.createAnimatedComponent(Svg);
 
 interface WheelSegment {
   id: string;
@@ -150,7 +150,7 @@ const DailySpinWheel: React.FC<DailySpinWheelProps> = ({
   onRewardWon,
   maxDailySpins = 3,
 }) => {
-  const theme = useTheme();
+  const _theme = useTheme();
   const [isSpinning, setIsSpinning] = useState(false);
   const [selectedSegment, setSelectedSegment] = useState<WheelSegment | null>(null);
   const [spinData, setSpinData] = useState<SpinData>({
@@ -198,7 +198,7 @@ const DailySpinWheel: React.FC<DailySpinWheelProps> = ({
         setSpinData(data);
       }
     } catch (error) {
-      console.error('Error loading spin data:', error);
+      // console.error('Error loading spin data:', error);
     }
   };
 
@@ -206,7 +206,7 @@ const DailySpinWheel: React.FC<DailySpinWheelProps> = ({
     try {
       await AsyncStorage.setItem('@spin_wheel_data', JSON.stringify(data));
     } catch (error) {
-      console.error('Error saving spin data:', error);
+      // console.error('Error saving spin data:', error);
     }
   };
 

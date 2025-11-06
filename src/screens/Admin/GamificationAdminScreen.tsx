@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState} from 'react';
 import {
   View,
   ScrollView,
@@ -414,7 +414,7 @@ const GamificationAdminScreen: React.FC = () => {
                   </View>
                   <Switch
                     value={challenge.active}
-                    onValueChange={(value) => {
+                    onValueChange={(_value) => {
                       // Toggle challenge
                     }}
                   />
@@ -458,7 +458,7 @@ const GamificationAdminScreen: React.FC = () => {
               value={config.dailySpinsLimit.toString()}
               onChangeText={(text) => setConfig({
                 ...config,
-                dailySpinsLimit: parseInt(text) || 0
+                dailySpinsLimit: parseInt(text, 10) || 0
               })}
               keyboardType="numeric"
               style={styles.configInput}
@@ -468,7 +468,7 @@ const GamificationAdminScreen: React.FC = () => {
               value={config.xpPerLevel.toString()}
               onChangeText={(text) => setConfig({
                 ...config,
-                xpPerLevel: parseInt(text) || 0
+                xpPerLevel: parseInt(text, 10) || 0
               })}
               keyboardType="numeric"
               style={styles.configInput}
@@ -478,7 +478,7 @@ const GamificationAdminScreen: React.FC = () => {
               value={config.pointsPerPurchase.toString()}
               onChangeText={(text) => setConfig({
                 ...config,
-                pointsPerPurchase: parseInt(text) || 0
+                pointsPerPurchase: parseInt(text, 10) || 0
               })}
               keyboardType="numeric"
               style={styles.configInput}

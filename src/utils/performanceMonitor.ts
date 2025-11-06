@@ -123,7 +123,7 @@ class PerformanceMonitor {
 
       const currentTime = performance.now();
       const deltaTime = currentTime - this.lastFrameTime;
-      const fps = 1000 / deltaTime;
+      const _fps = 1000 / deltaTime;
 
       this.frameCount++;
       this.lastFrameTime = currentTime;

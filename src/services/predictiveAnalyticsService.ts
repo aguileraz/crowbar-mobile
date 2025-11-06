@@ -12,9 +12,8 @@ import {
   PredictionResult,
   MLEvent,
 } from '../types/ai';
-import aiRecommendationService from './aiRecommendationService';
+
 import personalizationService from './personalizationService';
-import { analyticsService } from './analyticsService';
 
 interface TimeSeriesData {
   timestamp: string;
@@ -134,7 +133,7 @@ class PredictiveAnalyticsService {
         this.predictiveMetrics.set(this.userId, metrics);
       }
     } catch (error) {
-      console.error('Erro ao carregar dados de analytics:', error);
+      // console.error('Erro ao carregar dados de analytics:', error);
     }
   }
 
@@ -442,7 +441,7 @@ class PredictiveAnalyticsService {
     const opportunities: Opportunity[] = [];
     
     // Analisa padrões de uso
-    const usagePatterns = await this.analyzeUsagePatterns();
+    const _usagePatterns = await this.analyzeUsagePatterns();
     
     // Oportunidade de upsell
     const purchaseHistory = this.timeSeriesData.get('purchase_completed') || [];
@@ -842,7 +841,7 @@ class PredictiveAnalyticsService {
         metrics && AsyncStorage.setItem(`predictive_metrics_${this.userId}`, JSON.stringify(metrics)),
       ]);
     } catch (error) {
-      console.error('Erro ao salvar dados de analytics:', error);
+      // console.error('Erro ao salvar dados de analytics:', error);
     }
   }
 

@@ -19,7 +19,7 @@ export class UserService {
    */
   async getProfile(): Promise<User> {
     const _response = await apiClient.get<User>('/user/profile');
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -27,7 +27,7 @@ export class UserService {
    */
   async updateProfile(data: Partial<Pick<User, 'name' | 'phone' | 'birth_date' | 'gender'>>): Promise<User> {
     const _response = await apiClient.put<User>('/user/profile', data);
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -35,7 +35,7 @@ export class UserService {
    */
   async updateAvatar(imageFile: FormData): Promise<{ avatar_url: string }> {
     const _response = await apiClient.upload<{ avatar_url: string }>('/user/avatar', imageFile);
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -43,7 +43,7 @@ export class UserService {
    */
   async getAddresses(): Promise<Address[]> {
     const _response = await apiClient.get<Address[]>('/user/addresses');
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -51,7 +51,7 @@ export class UserService {
    */
   async addAddress(address: Omit<Address, 'id'>): Promise<Address> {
     const _response = await apiClient.post<Address>('/user/addresses', address);
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -59,7 +59,7 @@ export class UserService {
    */
   async updateAddress(addressId: string, address: Partial<Address>): Promise<Address> {
     const _response = await apiClient.put<Address>(`/user/addresses/${addressId}`, address);
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -81,7 +81,7 @@ export class UserService {
    */
   async getPreferences(): Promise<UserPreferences> {
     const _response = await apiClient.get<UserPreferences>('/user/preferences');
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -89,7 +89,7 @@ export class UserService {
    */
   async updatePreferences(preferences: Partial<UserPreferences>): Promise<UserPreferences> {
     const _response = await apiClient.put<UserPreferences>('/user/preferences', preferences);
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -97,7 +97,7 @@ export class UserService {
    */
   async getStats(): Promise<UserStats> {
     const _response = await apiClient.get<UserStats>('/user/stats');
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -113,7 +113,7 @@ export class UserService {
    */
   async addToFavorites(boxId: string): Promise<Favorite> {
     const _response = await apiClient.post<Favorite>('/user/favorites', { mystery_box_id: boxId });
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -148,7 +148,7 @@ export class UserService {
    */
   async getOrderById(orderId: string): Promise<Order> {
     const _response = await apiClient.get<Order>(`/user/orders/${orderId}`);
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -225,7 +225,7 @@ export class UserService {
    */
   async exportUserData(): Promise<{ download_url: string; expires_at: string }> {
     const _response = await apiClient.post<{ download_url: string; expires_at: string }>('/user/export-data');
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -259,7 +259,7 @@ export class UserService {
    */
   async checkEmailAvailability(email: string): Promise<{ available: boolean }> {
     const _response = await apiClient.get<{ available: boolean }>(`/user/check-email?email=${encodeURIComponent(email)}`);
-    return response.data;
+    return _response.data;
   }
 
   /**

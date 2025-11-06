@@ -146,13 +146,12 @@ class AccessibilityManager {
       this.initialized = true;
       this.notifyListeners();
 
-
       // Configurar listeners para mudanças
       this.setupChangeListeners();
 
       return this.config;
     } catch (error) {
-      console.error('❌ Erro ao detectar configurações de acessibilidade:', error);
+      // console.error('❌ Erro ao detectar configurações de acessibilidade:', error);
       return this.config;
     }
   }
@@ -225,7 +224,7 @@ class AccessibilityManager {
         Vibration.vibrate(pattern.pattern);
       }
     } catch (error) {
-      console.warn('⚠️ Erro ao executar haptic feedback:', error);
+      // console.warn('⚠️ Erro ao executar haptic feedback:', error);
     }
   }
 
@@ -243,7 +242,7 @@ class AccessibilityManager {
     const message = customMessage || description?.announcement;
 
     if (message) {
-      const options = Platform.OS === 'ios' 
+      const _options = Platform.OS === 'ios' 
         ? { announcement: message, priority } 
         : { announcement: message };
       
@@ -369,7 +368,7 @@ class AccessibilityManager {
       try {
         callback(this.config);
       } catch (error) {
-        console.error('Erro ao notificar listener de acessibilidade:', error);
+        // console.error('Erro ao notificar listener de acessibilidade:', error);
       }
     });
   }
@@ -427,7 +426,7 @@ class AccessibilityManager {
             break;
         }
       } catch (error) {
-        console.warn('Erro na sequência de haptic:', error);
+        // console.warn('Erro na sequência de haptic:', error);
       }
     }
   }

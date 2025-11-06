@@ -3,14 +3,14 @@
  * Sistema de reações com emojis animados e integração com sprites
  */
 
-import React, { useCallback, useState, useRef, useEffect } from 'react';
+import React, {useCallback} from 'react';
 import {
   View,
   StyleSheet,
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
-import { Text, IconButton } from 'react-native-paper';
+import {Text} from 'react-native-paper';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -22,11 +22,9 @@ import Animated, {
   interpolate,
   Easing,
 } from 'react-native-reanimated';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
-import SpriteSheetAnimator from './SpriteSheetAnimator';
 import { EmojiReaction, EmojiReactionType } from '../../types/animations';
-import { hapticFeedback } from '../../utils/haptic';
+
 import { theme, getSpacing } from '../../theme';
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -69,10 +67,50 @@ const EmojiReactionSystem: React.FC<EmojiReactionSystemProps> = ({
   onReaction,
   selectedReaction,
 }) => {
-  // Animation values para cada emoji
-  const scales = reactions.map(() => useSharedValue(0));
-  const rotations = reactions.map(() => useSharedValue(0));
-  
+  // Animation values para cada emoji (declarados individualmente para evitar hooks em callbacks)
+  const scale0 = useSharedValue(0);
+  const scale1 = useSharedValue(0);
+  const scale2 = useSharedValue(0);
+  const scale3 = useSharedValue(0);
+  const scales = React.useMemo(() => [scale0, scale1, scale2, scale3], [scale0, scale1, scale2, scale3]);
+
+  const rotation0 = useSharedValue(0);
+  const rotation1 = useSharedValue(0);
+  const rotation2 = useSharedValue(0);
+  const rotation3 = useSharedValue(0);
+  const rotations = React.useMemo(() => [rotation0, rotation1, rotation2, rotation3], [rotation0, rotation1, rotation2, rotation3]);
+
+  // Estilos animados para cada emoji (declarados no nível do componente)
+  const animatedStyle0 = useAnimatedStyle(() => ({
+    transform: [
+      { scale: scale0.value },
+      { rotate: `${rotation0.value}deg` },
+    ],
+  }));
+
+  const animatedStyle1 = useAnimatedStyle(() => ({
+    transform: [
+      { scale: scale1.value },
+      { rotate: `${rotation1.value}deg` },
+    ],
+  }));
+
+  const animatedStyle2 = useAnimatedStyle(() => ({
+    transform: [
+      { scale: scale2.value },
+      { rotate: `${rotation2.value}deg` },
+    ],
+  }));
+
+  const animatedStyle3 = useAnimatedStyle(() => ({
+    transform: [
+      { scale: scale3.value },
+      { rotate: `${rotation3.value}deg` },
+    ],
+  }));
+
+  const animatedStyles = [animatedStyle0, animatedStyle1, animatedStyle2, animatedStyle3];
+
   // Anima entrada dos emojis
   React.useEffect(() => {
     scales.forEach((scale, index) => {
@@ -84,8 +122,8 @@ const EmojiReactionSystem: React.FC<EmojiReactionSystemProps> = ({
         })
       );
     });
-  }, []);
-  
+  }, [scales]);
+
   // Lida com seleção de reação
   const handleReactionPress = useCallback((reaction: ReactionOption, index: number) => {
     // Anima o emoji selecionado
@@ -93,62 +131,53 @@ const EmojiReactionSystem: React.FC<EmojiReactionSystemProps> = ({
       withSpring(1.5),
       withSpring(1)
     );
-    
+
     rotations[index].value = withSequence(
       withSpring(15),
       withSpring(-15),
       withSpring(0)
     );
-    
+
     // Callback para parent
     onReaction(reaction.type);
   }, [onReaction, scales, rotations]);
-  
-  // Renderiza opção de reação
-  const renderReactionOption = (reaction: ReactionOption, index: number) => {
-    const animatedStyle = useAnimatedStyle(() => ({
-      transform: [
-        { scale: scales[index].value },
-        { rotate: `${rotations[index].value}deg` },
-      ],
-    }));
-    
-    const isSelected = selectedReaction === reaction.type;
-    
-    return (
-      <TouchableOpacity
-        key={reaction.type}
-        onPress={() => handleReactionPress(reaction, index)}
-        style={styles.reactionContainer}
-        disabled={selectedReaction !== null}
-      >
-        <Animated.View
-          style={[
-            styles.reactionButton,
-            isSelected && styles.selectedReaction,
-            isSelected && { borderColor: reaction.color },
-            animatedStyle,
-          ]}
-        >
-          <Text style={styles.reactionEmoji}>{reaction.emoji}</Text>
-        </Animated.View>
-        <Text
-          style={[
-            styles.reactionLabel,
-            isSelected && { color: reaction.color },
-          ]}
-        >
-          {reaction.label}
-        </Text>
-      </TouchableOpacity>
-    );
-  };
-  
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Como você se sentiu?</Text>
       <View style={styles.reactionsRow}>
-        {reactions.map((reaction, index) => renderReactionOption(reaction, index))}
+        {reactions.map((reaction, index) => {
+          const animatedStyle = animatedStyles[index];
+          const isSelected = selectedReaction === reaction.type;
+
+          return (
+            <TouchableOpacity
+              key={reaction.type}
+              onPress={() => handleReactionPress(reaction, index)}
+              style={styles.reactionContainer}
+              disabled={selectedReaction !== null}
+            >
+              <Animated.View
+                style={[
+                  styles.reactionButton,
+                  isSelected && styles.selectedReaction,
+                  isSelected && { borderColor: reaction.color },
+                  animatedStyle,
+                ]}
+              >
+                <Text style={styles.reactionEmoji}>{reaction.emoji}</Text>
+              </Animated.View>
+              <Text
+                style={[
+                  styles.reactionLabel,
+                  isSelected && { color: reaction.color },
+                ]}
+              >
+                {reaction.label}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
       </View>
       {selectedReaction && (
         <Animated.View style={styles.feedbackContainer}>

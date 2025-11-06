@@ -3,6 +3,41 @@
  * Global mocks and configurations for testing
  */
 
+// ===================================
+// API CLIENT MOCKS
+// ===================================
+
+// Mock API Client (usado por boxService, cartService, userService)
+jest.mock('./src/services/api', () => ({
+  apiClient: {
+    get: jest.fn().mockResolvedValue({ data: {} }),
+    post: jest.fn().mockResolvedValue({ data: {} }),
+    put: jest.fn().mockResolvedValue({ data: {} }),
+    patch: jest.fn().mockResolvedValue({ data: {} }),
+    delete: jest.fn().mockResolvedValue({ data: {} }),
+    upload: jest.fn().mockResolvedValue({ data: {} }),
+    setAuthToken: jest.fn(),
+    getAuthToken: jest.fn(() => null),
+    clearAuthToken: jest.fn(),
+  },
+}));
+
+// Mock HTTP Client (usado por serviços legados)
+jest.mock('./src/services/httpClient', () => ({
+  httpClient: {
+    get: jest.fn(),
+    post: jest.fn(),
+    put: jest.fn(),
+    patch: jest.fn(),
+    delete: jest.fn(),
+    setAuthToken: jest.fn(),
+  },
+}));
+
+// ===================================
+// REACT NATIVE MOCKS
+// ===================================
+
 // Mock react-native-reanimated
 jest.mock('react-native-reanimated', () => {
   return {
@@ -109,12 +144,137 @@ jest.mock('react-native-reanimated', () => {
   };
 });
 
+// Mock I18nManager
+jest.mock('react-native/Libraries/ReactNative/I18nManager', () => ({
+  getConstants: jest.fn(() => ({
+    isRTL: false,
+    doLeftAndRightSwapInRTL: true,
+    localeIdentifier: 'pt_BR',
+  })),
+  allowRTL: jest.fn(),
+  forceRTL: jest.fn(),
+  swapLeftAndRightInRTL: jest.fn(),
+  isRTL: false,
+}));
+
+// Mock NativeModules antes de tudo
+jest.mock('react-native/Libraries/BatchedBridge/NativeModules', () => ({
+  DevSettings: {
+    addMenuItem: jest.fn(),
+    reload: jest.fn(),
+  },
+  DeviceInfo: {
+    getConstants: () => ({
+      Dimensions: {
+        window: { width: 375, height: 812, scale: 2, fontScale: 1 },
+        screen: { width: 375, height: 812, scale: 2, fontScale: 1 },
+      },
+    }),
+  },
+  PlatformConstants: {
+    getConstants: () => ({
+      isTesting: true,
+      reactNativeVersion: { major: 0, minor: 80, patch: 1 },
+    }),
+  },
+  StatusBarManager: {
+    getHeight: jest.fn(() => 20),
+    setHidden: jest.fn(),
+    setStyle: jest.fn(),
+    setNetworkActivityIndicatorVisible: jest.fn(),
+  },
+  UIManager: {
+    getViewManagerConfig: jest.fn(() => ({ Commands: {} })),
+    getConstants: () => ({}),
+    createView: jest.fn(),
+    updateView: jest.fn(),
+    manageChildren: jest.fn(),
+    measure: jest.fn(),
+    measureInWindow: jest.fn(),
+    measureLayout: jest.fn(),
+    setChildren: jest.fn(),
+  },
+  Networking: {
+    sendRequest: jest.fn(),
+    abortRequest: jest.fn(),
+    clearCookies: jest.fn(),
+  },
+  Clipboard: {
+    getString: jest.fn(() => Promise.resolve('')),
+    setString: jest.fn(),
+  },
+  AlertManager: {
+    alertWithArgs: jest.fn(),
+  },
+}));
+
+// Mock TurboModuleRegistry para evitar erros
+jest.mock('react-native/Libraries/TurboModule/TurboModuleRegistry', () => ({
+  getEnforcing: jest.fn((name) => {
+    const mocks = {
+      DevSettings: {
+        addMenuItem: jest.fn(),
+        reload: jest.fn(),
+      },
+      DevMenu: {
+        show: jest.fn(),
+        dismiss: jest.fn(),
+      },
+      PlatformConstants: {
+        getConstants: () => ({
+          isTesting: true,
+          reactNativeVersion: { major: 0, minor: 80, patch: 1 },
+        }),
+      },
+      DeviceInfo: {
+        getConstants: () => ({
+          Dimensions: {
+            window: { width: 375, height: 812, scale: 2, fontScale: 1 },
+            screen: { width: 375, height: 812, scale: 2, fontScale: 1 },
+          },
+        }),
+      },
+    };
+    return mocks[name] || {};
+  }),
+  get: jest.fn((name) => {
+    const mocks = {
+      ReactNativeFeatureFlags: null,
+      PlatformConstants: {
+        getConstants: () => ({
+          isTesting: true,
+          reactNativeVersion: { major: 0, minor: 80, patch: 1 },
+        }),
+      },
+    };
+    return mocks[name] || null;
+  }),
+}));
+
 // Mock react-native Platform and other core modules
 jest.mock('react-native', () => {
-  const RN = jest.requireActual('react-native');
-  
+  const React = require('react');
+
   return {
-    ...RN,
+    // View components
+    View: 'View',
+    Text: 'Text',
+    TextInput: 'TextInput',
+    ScrollView: 'ScrollView',
+    FlatList: 'FlatList',
+    SectionList: 'SectionList',
+    Image: 'Image',
+    TouchableOpacity: 'TouchableOpacity',
+    TouchableHighlight: 'TouchableHighlight',
+    TouchableWithoutFeedback: 'TouchableWithoutFeedback',
+    ActivityIndicator: 'ActivityIndicator',
+    Button: 'Button',
+    Switch: 'Switch',
+    Modal: 'Modal',
+    RefreshControl: 'RefreshControl',
+    Pressable: 'Pressable',
+
+    // Platform
     Platform: {
       OS: 'ios',
       Version: '14.0',
@@ -124,16 +284,207 @@ jest.mock('react-native', () => {
         return config.ios || config.default || config.native || Object.values(config)[0];
       }),
     },
+
+    // Dimensions
     Dimensions: {
       get: jest.fn().mockReturnValue({ width: 375, height: 812 }),
       addEventListener: jest.fn(),
       removeEventListener: jest.fn(),
     },
+
+    // PixelRatio
     PixelRatio: {
       get: jest.fn(() => 2),
       getFontScale: jest.fn(() => 1),
       getPixelSizeForLayoutSize: jest.fn(size => size * 2),
       roundToNearestPixel: jest.fn(size => size),
+    },
+
+    // StyleSheet
+    StyleSheet: {
+      create: (styles) => styles,
+      flatten: (style) => style,
+      compose: (a, b) => [a, b],
+      hairlineWidth: 1,
+      absoluteFill: { position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 },
+    },
+
+    // Alert
+    Alert: {
+      alert: jest.fn(),
+      prompt: jest.fn(),
+    },
+
+    // Keyboard
+    Keyboard: {
+      addListener: jest.fn(() => ({ remove: jest.fn() })),
+      removeListener: jest.fn(),
+      dismiss: jest.fn(),
+    },
+
+    // AppState
+    AppState: {
+      currentState: 'active',
+      addEventListener: jest.fn(() => ({ remove: jest.fn() })),
+      removeEventListener: jest.fn(),
+    },
+
+    // Linking
+    Linking: {
+      openURL: jest.fn(),
+      canOpenURL: jest.fn(() => Promise.resolve(true)),
+      addEventListener: jest.fn(),
+      removeEventListener: jest.fn(),
+      getInitialURL: jest.fn(() => Promise.resolve(null)),
+    },
+
+    // Animated
+    Animated: {
+      View: 'Animated.View',
+      Text: 'Animated.Text',
+      Image: 'Animated.Image',
+      ScrollView: 'Animated.ScrollView',
+      FlatList: 'Animated.FlatList',
+      Value: jest.fn(() => ({
+        setValue: jest.fn(),
+        addListener: jest.fn(),
+        removeListener: jest.fn(),
+        removeAllListeners: jest.fn(),
+        interpolate: jest.fn(() => ({ setValue: jest.fn() })),
+      })),
+      ValueXY: jest.fn(() => ({
+        setValue: jest.fn(),
+        x: { setValue: jest.fn() },
+        y: { setValue: jest.fn() },
+      })),
+      timing: jest.fn(() => ({
+        start: jest.fn(callback => callback && callback({ finished: true })),
+        stop: jest.fn(),
+        reset: jest.fn(),
+      })),
+      spring: jest.fn(() => ({
+        start: jest.fn(callback => callback && callback({ finished: true })),
+        stop: jest.fn(),
+        reset: jest.fn(),
+      })),
+      decay: jest.fn(() => ({
+        start: jest.fn(callback => callback && callback({ finished: true })),
+        stop: jest.fn(),
+        reset: jest.fn(),
+      })),
+      parallel: jest.fn((animations) => ({
+        start: jest.fn(callback => callback && callback({ finished: true })),
+      })),
+      sequence: jest.fn((animations) => ({
+        start: jest.fn(callback => callback && callback({ finished: true })),
+      })),
+      stagger: jest.fn((time, animations) => ({
+        start: jest.fn(callback => callback && callback({ finished: true })),
+      })),
+      loop: jest.fn((animation) => ({
+        start: jest.fn(callback => callback && callback({ finished: true })),
+      })),
+      event: jest.fn(),
+      createAnimatedComponent: (Component) => Component,
+      add: jest.fn(),
+      subtract: jest.fn(),
+      multiply: jest.fn(),
+      divide: jest.fn(),
+      modulo: jest.fn(),
+      diffClamp: jest.fn(),
+    },
+
+    // Easing
+    Easing: {
+      linear: jest.fn(),
+      ease: jest.fn(),
+      quad: jest.fn(),
+      cubic: jest.fn(),
+      poly: jest.fn(),
+      sin: jest.fn(),
+      circle: jest.fn(),
+      exp: jest.fn(),
+      elastic: jest.fn(),
+      back: jest.fn(),
+      bounce: jest.fn(),
+      bezier: jest.fn(),
+      in: jest.fn(),
+      out: jest.fn(),
+      inOut: jest.fn(),
+    },
+
+    // NativeModules
+    NativeModules: {
+      DevSettings: {
+        addMenuItem: jest.fn(),
+        reload: jest.fn(),
+      },
+      PlatformConstants: {
+        getConstants: () => ({
+          isTesting: true,
+          reactNativeVersion: { major: 0, minor: 80, patch: 1 },
+        }),
+      },
+      UIManager: {
+        getViewManagerConfig: jest.fn(() => ({ Commands: {} })),
+      },
+    },
+
+    // NativeEventEmitter
+    NativeEventEmitter: jest.fn(() => ({
+      addListener: jest.fn(() => ({ remove: jest.fn() })),
+      removeListener: jest.fn(),
+      removeAllListeners: jest.fn(),
+    })),
+
+    // DeviceEventEmitter
+    DeviceEventEmitter: {
+      addListener: jest.fn(() => ({ remove: jest.fn() })),
+      removeListener: jest.fn(),
+      removeAllListeners: jest.fn(),
+    },
+
+    // I18nManager
+    I18nManager: {
+      isRTL: false,
+      doLeftAndRightSwapInRTL: true,
+      allowRTL: jest.fn(),
+      forceRTL: jest.fn(),
+    },
+
+    // BackHandler
+    BackHandler: {
+      addEventListener: jest.fn(() => ({ remove: jest.fn() })),
+      removeEventListener: jest.fn(),
+    },
+
+    // PermissionsAndroid
+    PermissionsAndroid: {
+      check: jest.fn(() => Promise.resolve(true)),
+      request: jest.fn(() => Promise.resolve('granted')),
+      PERMISSIONS: {},
+      RESULTS: {
+        GRANTED: 'granted',
+        DENIED: 'denied',
+        NEVER_ASK_AGAIN: 'never_ask_again',
+      },
+    },
+
+    // Share
+    Share: {
+      share: jest.fn(() => Promise.resolve({ action: 'sharedAction' })),
+    },
+
+    // Vibration
+    Vibration: {
+      vibrate: jest.fn(),
+      cancel: jest.fn(),
+    },
+
+    // LogBox
+    LogBox: {
+      ignoreLogs: jest.fn(),
+      ignoreAllLogs: jest.fn(),
     },
   };
 });
@@ -144,6 +495,32 @@ jest.mock('react-native-safe-area-context', () => ({
   SafeAreaView: ({ children }) => children,
   useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
 }));
+
+// Mock @react-navigation/native
+jest.mock('@react-navigation/native', () => {
+  return {
+    useNavigation: () => ({
+      navigate: jest.fn(),
+      goBack: jest.fn(),
+      addListener: jest.fn(() => jest.fn()),
+      removeListener: jest.fn(),
+      reset: jest.fn(),
+      setParams: jest.fn(),
+      dispatch: jest.fn(),
+    }),
+    useRoute: () => ({
+      params: {},
+      key: 'test-route',
+      name: 'Test',
+    }),
+    useFocusEffect: jest.fn((callback) => callback()),
+    useIsFocused: () => true,
+    NavigationContainer: ({ children }) => children,
+    createNavigationContainerRef: () => ({
+      current: null,
+    }),
+  };
+});
 
 // Mock AsyncStorage
 jest.mock('@react-native-async-storage/async-storage', () => ({
@@ -164,93 +541,94 @@ jest.mock('react-native-keychain', () => ({
   resetInternetCredentials: jest.fn(() => Promise.resolve()),
 }));
 
-// Mock Firebase
-jest.mock('@react-native-firebase/app', () => ({
-  __esModule: true,
-  default: {
-    apps: [],
-    initializeApp: jest.fn(),
-    app: jest.fn(() => ({
-      name: 'default',
-      options: {},
-    })),
-  },
-}));
-
-jest.mock('@react-native-firebase/auth', () => ({
-  __esModule: true,
-  default: jest.fn(() => ({
-    currentUser: null,
-    signInWithEmailAndPassword: jest.fn(),
-    createUserWithEmailAndPassword: jest.fn(),
-    signOut: jest.fn(),
-    onAuthStateChanged: jest.fn(),
-    sendPasswordResetEmail: jest.fn(),
-  })),
-}));
-
-jest.mock('@react-native-firebase/firestore', () => ({
-  __esModule: true,
-  default: jest.fn(() => ({
-    collection: jest.fn(() => ({
-      doc: jest.fn(() => ({
-        set: jest.fn(),
-        get: jest.fn(),
-        update: jest.fn(),
-        delete: jest.fn(),
-        onSnapshot: jest.fn(),
-      })),
-      add: jest.fn(),
-      get: jest.fn(),
-      where: jest.fn(() => ({
-        where: jest.fn(),
-        orderBy: jest.fn(),
-        limit: jest.fn(),
-        get: jest.fn(),
-      })),
-      orderBy: jest.fn(() => ({
-        where: jest.fn(),
-        orderBy: jest.fn(),
-        limit: jest.fn(),
-        get: jest.fn(),
-      })),
-      limit: jest.fn(() => ({
-        get: jest.fn(),
-      })),
-      onSnapshot: jest.fn(),
-    })),
-    batch: jest.fn(() => ({
-      set: jest.fn(),
-      update: jest.fn(),
-      delete: jest.fn(),
-      commit: jest.fn(),
-    })),
-  })),
-}));
-
-jest.mock('@react-native-firebase/messaging', () => ({
-  __esModule: true,
-  default: jest.fn(() => ({
-    requestPermission: jest.fn(),
-    getToken: jest.fn(),
-    onMessage: jest.fn(),
-    onNotificationOpenedApp: jest.fn(),
-    getInitialNotification: jest.fn(),
-    onTokenRefresh: jest.fn(),
-    subscribeToTopic: jest.fn(),
-    unsubscribeFromTopic: jest.fn(),
-  })),
-}));
-
-jest.mock('@react-native-firebase/analytics', () => ({
-  __esModule: true,
-  default: jest.fn(() => ({
-    logEvent: jest.fn(),
-    setUserId: jest.fn(),
-    setUserProperty: jest.fn(),
-    setCurrentScreen: jest.fn(),
-  })),
-}));
+// Mock Firebase (commented out - migrating to Keycloak)
+// Firebase packages removed during Keycloak migration
+// jest.mock('@react-native-firebase/app', () => ({
+//   __esModule: true,
+//   default: {
+//     apps: [],
+//     initializeApp: jest.fn(),
+//     app: jest.fn(() => ({
+//       name: 'default',
+//       options: {},
+//     })),
+//   },
+// }));
+// 
+// jest.mock('@react-native-firebase/auth', () => ({
+//   __esModule: true,
+//   default: jest.fn(() => ({
+//     currentUser: null,
+//     signInWithEmailAndPassword: jest.fn(),
+//     createUserWithEmailAndPassword: jest.fn(),
+//     signOut: jest.fn(),
+//     onAuthStateChanged: jest.fn(),
+//     sendPasswordResetEmail: jest.fn(),
+//   })),
+// }));
+// 
+// jest.mock('@react-native-firebase/firestore', () => ({
+//   __esModule: true,
+//   default: jest.fn(() => ({
+//     collection: jest.fn(() => ({
+//       doc: jest.fn(() => ({
+//         set: jest.fn(),
+//         get: jest.fn(),
+//         update: jest.fn(),
+//         delete: jest.fn(),
+//         onSnapshot: jest.fn(),
+//       })),
+//       add: jest.fn(),
+//       get: jest.fn(),
+//       where: jest.fn(() => ({
+//         where: jest.fn(),
+//         orderBy: jest.fn(),
+//         limit: jest.fn(),
+//         get: jest.fn(),
+//       })),
+//       orderBy: jest.fn(() => ({
+//         where: jest.fn(),
+//         orderBy: jest.fn(),
+//         limit: jest.fn(),
+//         get: jest.fn(),
+//       })),
+//       limit: jest.fn(() => ({
+//         get: jest.fn(),
+//       })),
+//       onSnapshot: jest.fn(),
+//     })),
+//     batch: jest.fn(() => ({
+//       set: jest.fn(),
+//       update: jest.fn(),
+//       delete: jest.fn(),
+//       commit: jest.fn(),
+//     })),
+//   })),
+// }));
+// 
+// jest.mock('@react-native-firebase/messaging', () => ({
+//   __esModule: true,
+//   default: jest.fn(() => ({
+//     requestPermission: jest.fn(),
+//     getToken: jest.fn(),
+//     onMessage: jest.fn(),
+//     onNotificationOpenedApp: jest.fn(),
+//     getInitialNotification: jest.fn(),
+//     onTokenRefresh: jest.fn(),
+//     subscribeToTopic: jest.fn(),
+//     unsubscribeFromTopic: jest.fn(),
+//   })),
+// }));
+// 
+// jest.mock('@react-native-firebase/analytics', () => ({
+//   __esModule: true,
+//   default: jest.fn(() => ({
+//     logEvent: jest.fn(),
+//     setUserId: jest.fn(),
+//     setUserProperty: jest.fn(),
+//     setCurrentScreen: jest.fn(),
+//   })),
+// }));
 
 
 // Mock WebSocket
@@ -401,3 +779,14 @@ jest.mock('@notifee/react-native', () => ({
 
 // Mock global DEV
 global.__DEV__ = true;
+
+// ===================================
+// Enhanced API Mocks for Integration Tests
+// ===================================
+
+// Import mock data handlers
+// Using direct apiClient mocks instead of MSW due to ESM compatibility issues
+// See src/test/mocks/handlers.ts for available mock endpoints
+//
+// Note: MSW 2.x has extensive ESM dependencies (until-async, strict-event-emitter, etc.)
+// that cause issues with Jest/Babel transformation. Using simpler mock approach instead.

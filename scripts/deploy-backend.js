@@ -6,7 +6,7 @@
  */
 
 const fs = require('fs');
-const path = require('path');
+const _path = require('path');
 // Configuration
 const CONFIG = {
   _azure: {

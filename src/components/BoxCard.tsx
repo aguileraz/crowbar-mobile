@@ -18,7 +18,6 @@ import { MysteryBox } from '../types/api';
 import { theme, getSpacing, getBorderRadius } from '../theme';
 import FavoriteButton from './FavoriteButton';
 import CountdownTimer from './CountdownTimer';
-import { getUrgencyLevel } from '../hooks/useCountdown';
 
 /**
  * Componente de Card para Caixas Misteriosas

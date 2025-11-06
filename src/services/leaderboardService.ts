@@ -91,7 +91,7 @@ class LeaderboardService {
         this.currentUser = JSON.parse(userData);
       }
     } catch (error) {
-      console.warn('Erro ao carregar dados do usuário:', error);
+      // console.warn('Erro ao carregar dados do usuário:', error);
     }
   }
 
@@ -186,7 +186,7 @@ class LeaderboardService {
         }
       }
     } catch (error) {
-      console.warn('Erro ao carregar leaderboards:', error);
+      // console.warn('Erro ao carregar leaderboards:', error);
     }
   }
 
@@ -198,7 +198,7 @@ class LeaderboardService {
       const data = Object.fromEntries(this.leaderboards);
       await AsyncStorage.setItem('leaderboards', JSON.stringify(data));
     } catch (error) {
-      console.warn('Erro ao salvar leaderboards:', error);
+      // console.warn('Erro ao salvar leaderboards:', error);
     }
   }
 

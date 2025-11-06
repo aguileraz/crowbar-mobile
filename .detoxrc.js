@@ -52,6 +52,12 @@ module.exports = {
       device: {
         avdName: 'Pixel_3a_API_30_x86'
       }
+    },
+    'docker-emulator': {
+      type: 'android.emulator',
+      device: {
+        adbName: 'localhost:5555'
+      }
     }
   },
   configurations: {
@@ -77,6 +83,14 @@ module.exports = {
     },
     'android.emu.release': {
       device: 'emulator',
+      app: 'android.release'
+    },
+    'android.docker.debug': {
+      device: 'docker-emulator',
+      app: 'android.debug'
+    },
+    'android.docker.release': {
+      device: 'docker-emulator',
       app: 'android.release'
     }
   }

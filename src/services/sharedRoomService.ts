@@ -60,7 +60,7 @@ class SharedRoomService {
         this.currentUser = JSON.parse(userData);
       }
     } catch (error) {
-      console.warn('Erro ao carregar dados do usuário:', error);
+      // console.warn('Erro ao carregar dados do usuário:', error);
     }
   }
 
@@ -97,7 +97,7 @@ class SharedRoomService {
         });
 
         this.socket!.on('connect_error', (error) => {
-          console.error('❌ Erro de conexão:', error);
+          // console.error('❌ Erro de conexão:', error);
           this.isConnecting = false;
           reject(error);
         });

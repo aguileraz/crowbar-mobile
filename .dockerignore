@@ -1,0 +1,49 @@
+# Dependencies
+node_modules
+package-lock.json
+
+# iOS
+ios/Pods
+ios/build
+*.xcworkspace
+*.xcodeproj
+
+# Android
+android/.gradle
+android/app/build
+*.apk
+*.aab
+
+# Testing
+coverage
+__tests__
+*.test.*
+*.spec.*
+
+# Development
+.env
+.env.*
+!.env.example
+
+# Metro
+.metro
+
+# Git
+.git
+.gitignore
+
+# Documentation
+docs/
+ai-docs/
+*.md
+!README.md
+
+# IDE
+.vscode
+.idea
+
+# OS
+.DS_Store
+
+# Logs
+*.log

@@ -108,7 +108,7 @@ class ABTestingService {
         });
       }
     } catch (error) {
-      console.error('Erro ao carregar dados de A/B testing:', error);
+      // console.error('Erro ao carregar dados de A/B testing:', error);
     }
   }
 
@@ -131,7 +131,7 @@ class ABTestingService {
         AsyncStorage.setItem(`ab_metrics_${this.userId}`, JSON.stringify(allMetrics)),
       ]);
     } catch (error) {
-      console.error('Erro ao salvar dados de A/B testing:', error);
+      // console.error('Erro ao salvar dados de A/B testing:', error);
     }
   }
 
@@ -401,7 +401,7 @@ class ABTestingService {
    */
   private async getUserPreferences(): Promise<any> {
     // Integra com AI service
-    const recommendations = aiRecommendationService.getRecommendations(this.userId!);
+    const _recommendations = aiRecommendationService.getRecommendations(this.userId!);
     // Simplificado - retorna mock
     return {
       engagementLevel: 'regular',

@@ -12,7 +12,7 @@ import {
   SocialUser,
   BET_LIMITS,
 } from '../types/social';
-import { GameThemeType } from '../types/animations';
+
 import { analyticsService } from './analyticsService';
 import advancedHapticService from './advancedHapticService';
 
@@ -126,7 +126,7 @@ class BettingService {
         this.currentUser = JSON.parse(userData);
       }
     } catch (error) {
-      console.warn('Erro ao carregar dados do usuário:', error);
+      // console.warn('Erro ao carregar dados do usuário:', error);
     }
   }
 
@@ -144,7 +144,7 @@ class BettingService {
         await this.saveUserBalance();
       }
     } catch (error) {
-      console.warn('Erro ao carregar saldo:', error);
+      // console.warn('Erro ao carregar saldo:', error);
     }
   }
 
@@ -159,7 +159,7 @@ class BettingService {
         'mixed'
       );
     } catch (error) {
-      console.warn('Erro ao salvar saldo:', error);
+      // console.warn('Erro ao salvar saldo:', error);
     }
   }
 
@@ -173,7 +173,7 @@ class BettingService {
         this.betHistory = JSON.parse(historyData);
       }
     } catch (error) {
-      console.warn('Erro ao carregar histórico de apostas:', error);
+      // console.warn('Erro ao carregar histórico de apostas:', error);
     }
   }
 
@@ -184,7 +184,7 @@ class BettingService {
     try {
       await AsyncStorage.setItem('bet_history', JSON.stringify(this.betHistory));
     } catch (error) {
-      console.warn('Erro ao salvar histórico de apostas:', error);
+      // console.warn('Erro ao salvar histórico de apostas:', error);
     }
   }
 

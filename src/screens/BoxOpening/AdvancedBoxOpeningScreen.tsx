@@ -3,7 +3,7 @@
  * Tela com sistema completo de animações gamificadas
  */
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {
   View,
   StyleSheet,
@@ -60,7 +60,7 @@ import {
 } from '../../store/slices/boxOpeningSlice';
 
 // Types
-import { MysteryBox } from '../../types/api';
+
 import { RootStackParamList } from '../../navigation/AppNavigator';
 
 // Theme
@@ -110,13 +110,13 @@ const AdvancedBoxOpeningScreen: React.FC<Props> = ({ navigation, route }) => {
   }, [route.params.box, dispatch]);
   
   // Pré-carrega assets ao selecionar tema
-  const handleThemeSelect = async (theme: 'fire' | 'ice' | 'meteor') => {
-    setSelectedTheme(theme);
+  const handleThemeSelect = async (themeType: 'fire' | 'ice' | 'meteor') => {
+    setSelectedTheme(themeType);
     setIsPreloading(true);
-    
+
     try {
-      await animationAssetManager.preloadAnimationAssets(theme);
-      animationSequences.current = animationAssetManager.getAnimationSequences(theme);
+      await animationAssetManager.preloadAnimationAssets(themeType);
+      animationSequences.current = animationAssetManager.getAnimationSequences(themeType);
       setShowThemeSelector(false);
     } catch (error) {
       Alert.alert('Erro', 'Falha ao carregar animações');
@@ -403,7 +403,7 @@ const AdvancedBoxOpeningScreen: React.FC<Props> = ({ navigation, route }) => {
           {animationState === 'revealing' && openingResult && (
             <View style={styles.revealContainer}>
               <Text style={styles.revealTitle}>🎉 Parabéns! Você ganhou:</Text>
-              {openingResult.items.map((item, index) => (
+              {openingResult.items.map((item, _index) => (
                 <View key={item.id} style={styles.itemCard}>
                   <Text style={styles.itemName}>{item.name}</Text>
                   <Text style={styles.itemRarity}>{item.rarity}</Text>

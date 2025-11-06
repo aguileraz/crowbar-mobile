@@ -1,0 +1,77 @@
+# ============================================================================
+# CROWBAR MOBILE - DOCKERFILE (DEVELOPMENT)
+# ============================================================================
+# React Native 0.80.1 + TypeScript + Metro Bundler
+# ============================================================================
+
+FROM node:18-alpine
+
+# Metadados
+LABEL maintainer="Crowbar DevOps <devops@crowbar.com.br>"
+LABEL description="Crowbar Mobile Development Environment"
+LABEL version="1.0.0"
+
+# Instalar dependências do sistema
+RUN apk add --no-cache \
+    curl \
+    git \
+    bash \
+    python3 \
+    make \
+    g++ \
+    openjdk11 \
+    android-tools \
+    watchman
+
+# Criar diretório da aplicação
+WORKDIR /app
+
+# Criar usuário não-root
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001
+
+# Copiar package.json e package-lock.json
+COPY package*.json ./
+
+# Instalar dependências
+RUN npm ci && \
+    npm cache clean --force
+
+# Copiar código fonte
+COPY --chown=nodejs:nodejs . .
+
+# Criar diretórios necessários
+RUN mkdir -p \
+    android/app/build \
+    ios/build \
+    .gradle \
+    node_modules
+
+# Configurar permissões
+RUN chown -R nodejs:nodejs /app
+
+# Trocar para usuário não-root
+USER nodejs
+
+# Expor portas do Metro Bundler
+EXPOSE 8081 19000 19001 19002
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:8081/status || exit 1
+
+# Comando padrão: iniciar Metro Bundler
+CMD ["npm", "start", "--", "--reset-cache"]
+
+# ============================================================================
+# BUILD INSTRUCTIONS:
+# ============================================================================
+# Build:
+#   docker build -f Dockerfile.dev -t crowbar-mobile:dev .
+#
+# Run:
+#   docker run -p 8081:8081 -p 19000:19000 -v $(pwd):/app crowbar-mobile:dev
+#
+# Run with docker-compose:
+#   docker compose up mobile
+# ============================================================================

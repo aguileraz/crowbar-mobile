@@ -46,7 +46,7 @@ import ShareResultModal from '../../components/ShareResultModal';
 import ErrorMessage from '../../components/ErrorMessage';
 
 // Types
-import { MysteryBox } from '../../types/api';
+
 import { RootStackParamList } from '../../navigation/AppNavigator';
 
 // Theme

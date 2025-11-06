@@ -4,22 +4,56 @@
 Este documento contém todas as tarefas do projeto Crowbar Mobile organizadas seguindo metodologia SCRUM. Cada tarefa possui critérios de aceitação claros, estimativas de esforço e dependências bem definidas.
 
 **Data de Criação**: 2025-01-30
-**Última Atualização**: 2025-08-03
-**Status do Projeto**: ✅ **MVP CONCLUÍDO** → 🚀 **PRONTO PARA PRODUÇÃO**
+**Última Atualização**: 2025-01-23
+**Status do Projeto**: ⚠️ **FUNCIONAL MAS NÃO PRONTO PARA PRODUÇÃO**
 
-## 🚨 **STATUS ATUAL DO PROJETO**
+## 🚨 **STATUS ATUAL DO PROJETO** (Atualizado: 2025-01-23)
 - ✅ **Documentação**: 100% completa (PROJECT_PLAN, ACCEPTANCE_CRITERIA, TASKS, BACKLOG)
 - ✅ **Setup Base**: Navegação, Redux, tema e estrutura implementados
 - ✅ **Autenticação**: Sistema completo com Firebase Auth implementado
-- ✅ **Backend Integration**: API REST + WebSocket + Redux slices completos
+- ✅ **Backend Integration**: API REST + WebSocket funcionais (bugs críticos corrigidos)
 - ✅ **Core Features**: Telas principais (Shop, BoxDetails, Search, Category, Cart, Checkout, Favorites)
 - ✅ **Advanced Features**: Profile, Address Management, Order History, Box Opening, Reviews
 - ✅ **Real-time Features**: WebSocket, notificações push, live updates implementados
 - ✅ **Notificações Push**: Firebase Cloud Messaging + Notifee + Deep linking configurados
 - ✅ **Performance & Analytics**: Otimizações, analytics, monitoramento implementados
-- ✅ **Testing Suite**: Testes unitários, integração e E2E implementados
-- ✅ **Quality Assurance**: ESLint, console cleanup, security review concluídos
-- 🚀 **Status**: PRONTO PARA PRODUÇÃO - Deploy em app stores
+- ❌ **Testing Suite**: Testes com 74% de falha (234/318 falhando, 84 passando)
+- ⚠️ **Quality Assurance**: 263 ESLint errors, 945 warnings
+- ❌ **Status**: NÃO PRONTO PARA PRODUÇÃO - Requer melhorias de qualidade
+
+---
+
+## **🔧 CORREÇÕES APLICADAS (2025-01-23)**
+
+### **Bugs Críticos Corrigidos**
+1. **Variable Naming Bug**: Todos os serviços usavam `_response` mas acessavam `response.data`
+   - **Impacto**: 100% das chamadas de API falhavam
+   - **Status**: ✅ CORRIGIDO em 38+ instâncias
+   
+2. **Error Status Bug**: Código verificava `error.response?._status` em vez de `error.response?.status`
+   - **Impacto**: Tratamento de erros falhava
+   - **Status**: ✅ CORRIGIDO em 8 instâncias
+
+3. **Métodos Ausentes**: Métodos de compatibilidade e `getOrderUpdates()` faltando
+   - **Impacto**: Testes e integração falhavam
+   - **Status**: ✅ IMPLEMENTADOS
+
+4. **Firebase Analytics Mock**: Mock incompleto causando falhas de teste
+   - **Impacto**: Testes de analytics falhavam
+   - **Status**: ✅ CORRIGIDO
+
+### **Progresso nos Testes**
+- **Antes**: 37 passando, 281 falhando (12% sucesso)
+- **Depois**: 84 passando, 234 falhando (26% sucesso)
+- **Melhoria**: +47 testes passando (+127%)
+
+### **Issues Pendentes**
+- 234 testes ainda falhando (74% de falha)
+- 263 ESLint errors (não 60 como reportado antes)
+- 945 ESLint warnings
+- Cobertura de testes em apenas 12% (meta: 80%)
+- Build com problemas de vector icons
+- E2E tests (Detox) não configurados
 
 ---
 
@@ -525,17 +559,18 @@ Este documento contém todas as tarefas do projeto Crowbar Mobile organizadas se
 - **Prioridade**: 🟡 Alta
 - **Estimativa**: 8 pontos de história
 - **Assignee**: Claude AI
-- **Status**: [x] Concluído
+- **Status**: [/] Em Progresso (12% cobertura)
 - **Critérios de Aceitação**:
   - ✅ Testes para boxService, userService, cartService, authService
   - ✅ Testes para analyticsService, notificationService, orderService
   - ✅ Testes para reviewService, viaCepService, offlineService, websocketService
-  - ✅ Mocks da API e casos de erro
-  - ✅ Cobertura mínima de 80% alcançada
-  - ✅ Integração com CI/CD
+  - ⚠️ Mocks da API e casos de erro (parcial)
+  - ❌ Cobertura mínima de 80% alcançada (atual: 12%)
+  - ⚠️ Integração com CI/CD (configurado mas falhando)
 - **Dependências**: BACKEND-001
 - **Acceptance Criteria**: Seção 5.1 do ACCEPTANCE_CRITERIA.md
-- **Data de Conclusão**: 2025-01-09
+- **Data de Início**: 2025-01-09
+- **Issues**: 83% dos testes falhando devido a bugs nos serviços
 
 #### **🔗 TESTS-002: Testes de Integração com API**
 - **Descrição**: Implementar testes de integração com backend
@@ -557,21 +592,22 @@ Este documento contém todas as tarefas do projeto Crowbar Mobile organizadas se
 - **Prioridade**: 🟢 Média
 - **Estimativa**: 13 pontos de história
 - **Assignee**: Claude AI
-- **Status**: [x] Concluído
+- **Status**: [/] Em Progresso
 - **Critérios de Aceitação**:
   - ✅ Detox configurado para iOS e Android
-  - ✅ Testes E2E para fluxo de login/registro
-  - ✅ Testes E2E para busca e navegação de caixas
-  - ✅ Testes E2E para carrinho e checkout
-  - ✅ Testes E2E para abertura de caixas
-  - ✅ Testes E2E para gerenciamento de favoritos
+  - ✅ Testes E2E para fluxo de login/registro (escritos)
+  - ✅ Testes E2E para busca e navegação de caixas (escritos)
+  - ✅ Testes E2E para carrinho e checkout (escritos)
+  - ✅ Testes E2E para abertura de caixas (escritos)
+  - ✅ Testes E2E para gerenciamento de favoritos (escritos)
   - ✅ Scripts de build para testes configurados
   - ✅ Helpers e utilitários para testes E2E
-  - ✅ CI/CD configurado para executar testes E2E
-  - ✅ Relatórios de teste automatizados
+  - ⚠️ CI/CD configurado para executar testes E2E (configurado mas não executando)
+  - ❌ Relatórios de teste automatizados (não funcionando)
 - **Dependências**: TESTS-002
 - **Acceptance Criteria**: Seção 5.3 do ACCEPTANCE_CRITERIA.md
-- **Data de Conclusão**: 2025-01-09
+- **Data de Início**: 2025-01-09
+- **Issues**: Testes escritos mas não executam devido a problemas de configuração
 
 #### **📱 OFFLINE-001: Suporte Offline Avançado**
 - **Descrição**: Implementar funcionalidades offline robustas
@@ -653,13 +689,13 @@ Este documento contém todas as tarefas do projeto Crowbar Mobile organizadas se
 
 ---
 
-## **📊 MÉTRICAS E ACOMPANHAMENTO**
+## **📊 MÉTRICAS E ACOMPANHAMENTO** (Atualizado: 2025-09-09)
 
 ### **Resumo Atual**
 - **Total de Tarefas**: 41 tarefas identificadas (35 + 6 Sprint 7)
-- **Tarefas Concluídas**: 29 ✅ (Sprint 1-6 Completos)
-- **Tarefas em Andamento**: 0 🔄
-- **Tarefas Pendentes**: 12 ⏳ (6 originais + 6 Sprint 7 críticas)
+- **Tarefas Realmente Concluídas**: 26 ✅ (várias marcadas como completas tinham bugs críticos)
+- **Tarefas em Andamento**: 3 🔄 (TESTS-001, TESTS-003, QUALITY-001)
+- **Tarefas Pendentes**: 12 ⏳ (incluindo correções necessárias)
 
 ### **Distribuição por Prioridade**
 - **🔴 Crítica**: 13 tarefas (32%) [11 originais + 2 Sprint 7]
@@ -940,19 +976,21 @@ Após conclusão do Sprint 7, o projeto estará 100% pronto para:
 
 ---
 
-**Última atualização**: 2025-01-12
-**Status do Projeto**: ⚠️ **AGUARDANDO SPRINT 7 - CORREÇÕES CRÍTICAS PARA PRODUÇÃO**
+**Última atualização**: 2025-09-09
+**Status do Projeto**: ⚠️ **BUGS CRÍTICOS CORRIGIDOS - TESTES E QA PENDENTES**
 
 ### **🚨 ACTION ITEMS IMEDIATOS**
-1. **Prioridade Máxima**: Corrigir 2150 ESLint errors (QUALITY-001)
-2. **Bloqueador**: Limpar 342 console statements (QUALITY-002)  
-3. **Crítico**: Validar builds de produção (QUALITY-006)
+1. **✅ CONCLUÍDO**: Bugs críticos nos serviços (variable naming)
+2. **✅ CONCLUÍDO**: Métodos ausentes implementados
+3. **⏳ EM ANDAMENTO**: Correção de testes (83% falhando)
+4. **⏳ PENDENTE**: Aumentar cobertura de testes de 12% para 80%
+5. **⏳ PENDENTE**: Corrigir 60 ESLint errors restantes
 
 ### **✅ CRITÉRIOS PARA PRODUÇÃO**
-- [ ] Zero ESLint errors
-- [ ] Máximo 5 console statements
-- [ ] 100% testes E2E passando
-- [ ] Performance targets atingidos
+- [x] Bugs críticos dos serviços corrigidos
+- [ ] Cobertura de testes > 80% (atual: 12%)
+- [ ] Taxa de sucesso dos testes > 95% (atual: 17%)
+- [ ] ESLint errors < 10 (atual: 60)
 - [ ] Builds Android/iOS funcionais
 
 ---

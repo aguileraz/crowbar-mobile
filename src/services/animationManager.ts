@@ -1,5 +1,5 @@
 import { Image, ImageRequireSource } from 'react-native';
-import { AnimationTheme, SpriteSheetConfig } from '../components/animations/SpriteSheetAnimator';
+import {AnimationTheme} from '../components/animations/SpriteSheetAnimator';
 
 /**
  * Interface para configuração de preload
@@ -211,7 +211,6 @@ class AnimationManager {
   ): Promise<void> {
     const { priority = 'medium', maxConcurrentLoads = 2, timeout = 10000 } = config;
 
-
     const loadPromises: Promise<void>[] = [];
     const semaphore = new Semaphore(maxConcurrentLoads);
 
@@ -229,7 +228,7 @@ class AnimationManager {
     try {
       await Promise.all(loadPromises);
     } catch (error) {
-      console.error('❌ Erro durante preload:', error);
+      // console.error('❌ Erro durante preload:', error);
       throw error;
     }
   }
@@ -267,7 +266,7 @@ class AnimationManager {
       };
 
     } catch (error) {
-      console.error(`❌ Erro ao carregar tema ${themeType}:`, error);
+      // console.error(`❌ Erro ao carregar tema ${themeType}:`, error);
       throw error;
     } finally {
       this.loadingQueue.delete(cacheKey);
@@ -348,7 +347,7 @@ class AnimationManager {
     }
 
     // Fallback para tema clássico
-    console.warn(`⚠️ Tema ${themeType} não encontrado, usando fallback clássico`);
+    // console.warn(`⚠️ Tema ${themeType} não encontrado, usando fallback clássico`);
     return this.themeConfigs.classic;
   }
 
@@ -402,7 +401,7 @@ class AnimationManager {
    * Forçar limpeza de memória
    */
   forceMemoryCleanup(): void {
-    const before = Object.keys(this.cache).length;
+    const _before = Object.keys(this.cache).length;
     this.cache = {};
     this.loadingQueue.clear();
     

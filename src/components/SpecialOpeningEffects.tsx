@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Dimensions, Image } from 'react-native';
+import {View, StyleSheet, Dimensions} from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -15,7 +15,7 @@ import Animated, {
   FadeOut,
   ZoomIn,
 } from 'react-native-reanimated';
-import { Canvas, Path, Skia, BlurMask } from '@shopify/react-native-skia';
+
 import { hapticFeedback } from '../utils/haptic';
 import Sound from 'react-native-sound';
 

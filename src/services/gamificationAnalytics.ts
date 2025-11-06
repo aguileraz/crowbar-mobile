@@ -155,7 +155,7 @@ class GamificationAnalytics {
     try {
       this.userId = await AsyncStorage.getItem('@user_id');
     } catch (error) {
-      console.error('Error initializing user:', error);
+      // console.error('Error initializing user:', error);
     }
   }
 
@@ -219,7 +219,7 @@ class GamificationAnalytics {
 
       await AsyncStorage.setItem('@analytics_events', JSON.stringify(eventList));
     } catch (error) {
-      console.error('Error saving local event:', error);
+      // console.error('Error saving local event:', error);
     }
   }
 
@@ -443,7 +443,7 @@ class GamificationAnalytics {
 
       return summary;
     } catch (error) {
-      console.error('Error getting analytics summary:', error);
+      // console.error('Error getting analytics summary:', error);
       return null;
     }
   }

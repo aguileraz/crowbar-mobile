@@ -91,7 +91,7 @@ class AdvancedHapticService {
       //   this.config = { ...this.config, ...JSON.parse(preferences) };
       // }
     } catch (error) {
-      console.warn('Erro ao carregar preferências hápticas:', error);
+      // console.warn('Erro ao carregar preferências hápticas:', error);
     }
   }
 
@@ -103,7 +103,7 @@ class AdvancedHapticService {
 
     const pattern = HAPTIC_PATTERNS[patternName];
     if (!pattern) {
-      console.warn(`Padrão háptico não encontrado: ${patternName}`);
+      // console.warn(`Padrão háptico não encontrado: ${patternName}`);
       return;
     }
 
@@ -247,7 +247,7 @@ class AdvancedHapticService {
         await this.playAndroidHaptic(adaptedPattern);
       }
     } catch (error) {
-      console.warn('Erro ao executar feedback háptico:', error);
+      // console.warn('Erro ao executar feedback háptico:', error);
     }
   }
 

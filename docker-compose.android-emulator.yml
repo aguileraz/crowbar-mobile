@@ -1,0 +1,156 @@
+# Docker Compose - Android Emulator para Crowbar Mobile
+# Versão: 1.0.0
+# Data: 2025-11-06
+#
+# Uso:
+#   docker-compose -f docker-compose.android-emulator.yml up -d
+#   docker-compose -f docker-compose.android-emulator.yml down
+
+version: '3.8'
+
+services:
+  # === ANDROID EMULATOR (budtmo/docker-android) ===
+  android-emulator:
+    # IMPORTANTE: Esta configuração requer aceleração de hardware KVM
+    # Não funciona em ambientes de nested virtualization (Proxmox VM)
+    # Ver DOCKER-EMULATOR-TEST-REPORT.md para detalhes e soluções alternativas
+    image: budtmo/docker-android:emulator_13.0
+    privileged: true
+    container_name: crowbar-android-emulator
+
+    environment:
+      # === CONFIGURAÇÃO DO DISPOSITIVO ===
+      # Simula Samsung Galaxy S10 (dispositivo comum no Brasil)
+      - DEVICE=Samsung Galaxy S10
+      - SKIN=1080x2280
+
+      # === CONFIGURAÇÃO DO EMULADOR ===
+      # Timeout de inicialização: 5 minutos
+      - EMULATOR_TIMEOUT=300
+
+      # Argumentos do emulador
+      # -no-snapshot: Não usar snapshots (mais confiável para CI/CD)
+      # -gpu swiftshader_indirect: Renderização GPU via software (compatível com Docker)
+      - EMULATOR_ARGS=-no-snapshot-load -no-snapshot-save -gpu swiftshader_indirect -no-boot-anim
+
+      # === RECURSOS DO SISTEMA ===
+      # Partição de dados: 4GB (suficiente para Crowbar + dados de teste)
+      - DATAPARTITION=4g
+
+      # RAM: 4GB (recomendado para React Native apps)
+      - RAM=4096
+
+      # === REDE ===
+      # Segurança relaxada para facilitar desenvolvimento
+      - RELAXED_SECURITY=true
+
+      # Sem proxy
+      - PROXY_ENABLED=false
+
+      # === DEBUGGING E LOGGING ===
+      # Habilitar gravação de vídeo para debugging
+      - ENABLE_VIDEO_RECORD=true
+
+      # Nível de log: INFO
+      - LOG_LEVEL=INFO
+
+      # === LOCALIZAÇÃO (BRASIL) ===
+      # Timezone: Brasília
+      - TZ=America/Sao_Paulo
+
+      # Locale: Português do Brasil
+      - LANGUAGE=pt_BR
+
+    ports:
+      # ADB (Android Debug Bridge)
+      - "5555:5555"
+
+      # noVNC Web UI
+      # Acesso: http://localhost:6080
+      - "6080:6080"
+
+      # VNC Viewer
+      # Acesso: vncviewer localhost:5900
+      - "5900:5900"
+
+      # Chrome DevTools (para debug web)
+      # Acesso: chrome://inspect
+      - "9222:9222"
+
+      # Appium Server (opcional - para testes com Appium)
+      # - "4723:4723"
+
+    devices:
+      # KVM para aceleração de hardware (OBRIGATÓRIO para x86_64)
+      # Requer: /dev/kvm disponível no host E nested virtualization funcional
+      - /dev/kvm
+
+    volumes:
+      # === DADOS PERSISTENTES ===
+      # Dados do emulador (apps instalados, configurações, etc.)
+      - android-emulator-data:/data
+
+      # === GRAVAÇÕES DE VÍDEO ===
+      # Salvar gravações de tela em ./videos
+      - ./videos:/tmp/video
+
+      # === APKs PARA INSTALAR ===
+      # Colocar APKs em ./apks para instalar automaticamente
+      # Exemplo: ./apks/crowbar-debug.apk
+      - ./apks:/apks:ro
+
+      # === LOGS ===
+      # Salvar logs do emulador em ./logs
+      - ./logs/emulator:/var/log/supervisor
+
+    networks:
+      - crowbar-network
+
+    restart: unless-stopped
+
+    # === HEALTH CHECK ===
+    # Verifica se ADB está respondendo
+    healthcheck:
+      test: ["CMD", "adb", "devices"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s  # 2 minutos para boot inicial
+
+    # === LIMITES DE RECURSOS ===
+    deploy:
+      resources:
+        # Limites máximos
+        limits:
+          cpus: '4'      # Máximo 4 CPUs
+          memory: 8G     # Máximo 8GB RAM
+
+        # Recursos reservados (garantidos)
+        reservations:
+          cpus: '2'      # Mínimo 2 CPUs
+          memory: 4G     # Mínimo 4GB RAM
+
+    # === LABELS (para organização) ===
+    labels:
+      - "com.crowbar.service=android-emulator"
+      - "com.crowbar.environment=testing"
+      - "com.crowbar.version=1.0.0"
+
+# === VOLUMES ===
+volumes:
+  # Volume para dados persistentes do emulador
+  # Para resetar: docker-compose down -v
+  android-emulator-data:
+    driver: local
+    labels:
+      - "com.crowbar.volume=emulator-data"
+
+# === NETWORKS ===
+networks:
+  crowbar-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
+    labels:
+      - "com.crowbar.network=testing"

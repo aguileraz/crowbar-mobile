@@ -5,7 +5,6 @@ import Animated, {
   useAnimatedStyle,
   withTiming,
   withSequence,
-  withDelay,
   FadeIn,
   FadeOut,
   ZoomIn,
@@ -19,7 +18,7 @@ import {
   preloadAnimationFrames
 } from '../utils/animationLoader';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const { width: _SCREEN_WIDTH } = Dimensions.get('window');
 
 export type EmojiType = 'beijo' | 'bravo' | 'cool' | 'lingua' | 'fire' | 'ice' | 'meteor';
 export type EmojiSize = 'small' | 'medium' | 'large' | 'xlarge';
@@ -81,12 +80,12 @@ const AnimatedEmoji: React.FC<AnimatedEmojiProps> = ({
   const scaleAnimation = useSharedValue(1);
   const rotationAnimation = useSharedValue(0);
   const opacityAnimation = useSharedValue(1);
-  const [isPlaying, setIsPlaying] = useState(autoPlay);
-  
+  const [isPlaying, _setIsPlaying] = useState(autoPlay);
+
   // Cache de frames carregados
   const animationType = emojiToAnimationMap[type];
   const frames = useMemo(() => loadAnimationFrames(animationType), [animationType]);
-  const animationInfo = useMemo(() => getAnimationInfo(animationType), [animationType]);
+  const _animationInfo = useMemo(() => getAnimationInfo(animationType), [animationType]);
   
   // Estado do frame atual
   const [currentFrame, setCurrentFrame] = useState(0);
@@ -112,8 +111,8 @@ const AnimatedEmoji: React.FC<AnimatedEmojiProps> = ({
 
   // Pré-carregar frames na montagem
   useEffect(() => {
-    preloadAnimationFrames([animationType]).catch(error => {
-      console.warn('Failed to preload animation frames:', error);
+    preloadAnimationFrames([animationType]).catch(_error => {
+      // console.warn('Failed to preload animation frames:', _error);
     });
   }, [animationType]);
 

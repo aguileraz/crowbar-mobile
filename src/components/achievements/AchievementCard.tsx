@@ -5,7 +5,7 @@
 
 import React, { useEffect } from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
-import { Card, Text, ProgressBar, Button, IconButton } from 'react-native-paper';
+import {Card, Text, ProgressBar, Button} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Animated, {
   useAnimatedStyle,

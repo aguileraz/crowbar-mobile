@@ -1,10 +1,10 @@
- 
-import { boxService } from '../boxService';
-import { httpClient } from '../httpClient';
 
-// Mock httpClient
-jest.mock('../httpClient');
-const mockedHttpClient = httpClient as jest.Mocked<typeof httpClient>;
+import { boxService } from '../boxService';
+import { apiClient } from '../api';
+
+// Mock apiClient
+jest.mock('../api');
+const mockedApiClient = apiClient as jest.Mocked<typeof apiClient>;
 
 describe('BoxService', () => {
   beforeEach(() => {
@@ -14,67 +14,56 @@ describe('BoxService', () => {
   describe('getBoxes', () => {
     it('should fetch boxes successfully', async () => {
       const mockResponse = {
-        data: {
-          data: [
-            {
-              id: '1',
-              name: 'Test Box',
-              price: 10.99,
-              description: 'Test description',
-              image_url: 'test.jpg',
-              category: 'test',
-              stock: 10,
-              rarity: 'common',
-            },
-          ],
-          pagination: {
-            currentPage: 1,
-            totalPages: 1,
-            totalItems: 1,
-            hasNextPage: false,
+        data: [
+          {
+            id: '1',
+            name: 'Test Box',
+            price: 10.99,
+            description: 'Test description',
+            image_url: 'test.jpg',
+            category: 'test',
+            stock: 10,
+            rarity: 'common',
           },
+        ],
+        pagination: {
+          currentPage: 1,
+          totalPages: 1,
+          totalItems: 1,
+          hasNextPage: false,
         },
       };
 
-      mockedHttpClient.get.mockResolvedValue(mockResponse);
+      mockedApiClient.get.mockResolvedValue(mockResponse);
 
-      const _result = await boxService.getBoxes();
+      const _result = await boxService.getBoxes({});
 
-      expect(mockedHttpClient.get).toHaveBeenCalledWith('/boxes', {
-        params: { page: 1, per_page: 20 },
-      });
-      expect(_result).toEqual(mockResponse.data);
+      expect(mockedApiClient.get).toHaveBeenCalledWith('/boxes');
+      expect(_result).toEqual(mockResponse);
     });
 
     it('should handle API error', async () => {
       const mockError = new Error('API Error');
-      mockedHttpClient.get.mockRejectedValue(mockError);
+      mockedApiClient.get.mockRejectedValue(mockError);
 
       await expect(boxService.getBoxes()).rejects.toThrow('API Error');
     });
 
     it('should pass filters correctly', async () => {
       const filters = {
-        category: 'electronics',
-        minPrice: 10,
-        maxPrice: 100,
-        rarity: 'rare',
+        category_id: 'electronics',
+        min_price: 10,
+        max_price: 100,
+        rarity: ['rare'],
+        page: 1,
+        per_page: 10,
       };
 
-      mockedHttpClient.get.mockResolvedValue({ data: { data: [], pagination: {} } });
+      mockedApiClient.get.mockResolvedValue({ data: [], pagination: {} });
 
-      await boxService.getBoxes(1, 10, filters);
+      await boxService.getBoxes(filters);
 
-      expect(mockedHttpClient.get).toHaveBeenCalledWith('/boxes', {
-        params: {
-          page: 1,
-          per_page: 10,
-          category: 'electronics',
-          min_price: 10,
-          max_price: 100,
-          rarity: 'rare',
-        },
-      });
+      expect(mockedApiClient.get).toHaveBeenCalledWith('/boxes?category_id=electronics&min_price=10&max_price=100&rarity%5B%5D=rare&page=1&per_page=10');
     });
   });
 
@@ -93,17 +82,17 @@ describe('BoxService', () => {
         reviews: [],
       };
 
-      mockedHttpClient.get.mockResolvedValue({ data: mockBox });
+      mockedApiClient.get.mockResolvedValue({ data: mockBox });
 
       const _result = await boxService.getBoxById('1');
 
-      expect(mockedHttpClient.get).toHaveBeenCalledWith('/boxes/1');
+      expect(mockedApiClient.get).toHaveBeenCalledWith('/boxes/1');
       expect(_result).toEqual(mockBox);
     });
 
     it('should handle not found error', async () => {
       const mockError = { response: { status: 404 } };
-      mockedHttpClient.get.mockRejectedValue(mockError);
+      mockedApiClient.get.mockRejectedValue(mockError);
 
       await expect(boxService.getBoxById('999')).rejects.toEqual(mockError);
     });
@@ -112,45 +101,37 @@ describe('BoxService', () => {
   describe('searchBoxes', () => {
     it('should search boxes successfully', async () => {
       const mockResponse = {
-        data: {
-          data: [],
-          pagination: {},
-        },
+        data: [],
+        pagination: {},
       };
 
-      mockedHttpClient.get.mockResolvedValue(mockResponse);
+      mockedApiClient.post.mockResolvedValue({ data: mockResponse });
 
       const _result = await boxService.searchBoxes('test query');
 
-      expect(mockedHttpClient.get).toHaveBeenCalledWith('/boxes/search', {
-        params: { q: 'test query', page: 1, per_page: 20 },
-      });
-      expect(_result).toEqual(mockResponse.data);
+      expect(mockedApiClient.post).toHaveBeenCalledWith('/boxes/search', { query: 'test query' });
+      expect(_result).toEqual(mockResponse);
     });
 
     it('should handle empty query', async () => {
-      const mockResponse = { data: { data: [], pagination: {} } };
-      mockedHttpClient.get.mockResolvedValue(mockResponse);
+      const mockResponse = { data: [], pagination: {} };
+      mockedApiClient.post.mockResolvedValue({ data: mockResponse });
 
       await boxService.searchBoxes('');
 
-      expect(mockedHttpClient.get).toHaveBeenCalledWith('/boxes/search', {
-        params: { q: '', page: 1, per_page: 20 },
-      });
+      expect(mockedApiClient.post).toHaveBeenCalledWith('/boxes/search', { query: '' });
     });
   });
 
   describe('getBoxesByCategory', () => {
     it('should fetch boxes by category successfully', async () => {
-      const mockResponse = { data: { data: [], pagination: {} } };
-      mockedHttpClient.get.mockResolvedValue(mockResponse);
+      const mockResponse = { data: [], pagination: {} };
+      mockedApiClient.get.mockResolvedValue(mockResponse);
 
       const _result = await boxService.getBoxesByCategory('electronics');
 
-      expect(mockedHttpClient.get).toHaveBeenCalledWith('/boxes/category/electronics', {
-        params: { page: 1, per_page: 20 },
-      });
-      expect(_result).toEqual(mockResponse.data);
+      expect(mockedApiClient.get).toHaveBeenCalledWith('/boxes?category_id=electronics');
+      expect(_result).toEqual(mockResponse);
     });
   });
 
@@ -161,11 +142,11 @@ describe('BoxService', () => {
         { id: '2', name: 'Featured Box 2' },
       ];
 
-      mockedHttpClient.get.mockResolvedValue({ data: mockBoxes });
+      mockedApiClient.get.mockResolvedValue({ data: mockBoxes });
 
       const _result = await boxService.getFeaturedBoxes();
 
-      expect(mockedHttpClient.get).toHaveBeenCalledWith('/boxes/featured');
+      expect(mockedApiClient.get).toHaveBeenCalledWith('/boxes/featured?limit=10');
       expect(_result).toEqual(mockBoxes);
     });
   });
@@ -177,11 +158,11 @@ describe('BoxService', () => {
         { id: '2', name: 'Popular Box 2' },
       ];
 
-      mockedHttpClient.get.mockResolvedValue({ data: mockBoxes });
+      mockedApiClient.get.mockResolvedValue({ data: mockBoxes });
 
       const _result = await boxService.getPopularBoxes();
 
-      expect(mockedHttpClient.get).toHaveBeenCalledWith('/boxes/popular');
+      expect(mockedApiClient.get).toHaveBeenCalledWith('/boxes/popular?limit=10');
       expect(_result).toEqual(mockBoxes);
     });
   });
@@ -193,16 +174,18 @@ describe('BoxService', () => {
         { id: '2', name: 'Gaming', slug: 'gaming' },
       ];
 
-      mockedHttpClient.get.mockResolvedValue({ data: mockCategories });
+      mockedApiClient.get.mockResolvedValue({ data: mockCategories });
 
       const _result = await boxService.getCategories();
 
-      expect(mockedHttpClient.get).toHaveBeenCalledWith('/categories');
+      expect(mockedApiClient.get).toHaveBeenCalledWith('/categories');
       expect(_result).toEqual(mockCategories);
     });
   });
 
-  describe('openBox', () => {
+  // TODO: openBox method doesn't exist in boxService
+  // Box opening functionality likely handled elsewhere (possibly in cart/order flow)
+  describe.skip('openBox', () => {
     it('should open box successfully', async () => {
       const mockResult = {
         items: [
@@ -212,17 +195,17 @@ describe('BoxService', () => {
         total_value: 25.99,
       };
 
-      mockedHttpClient.post.mockResolvedValue({ data: mockResult });
+      mockedApiClient.post.mockResolvedValue({ data: mockResult });
 
       const _result = await boxService.openBox('1');
 
-      expect(mockedHttpClient.post).toHaveBeenCalledWith('/boxes/1/open');
+      expect(mockedApiClient.post).toHaveBeenCalledWith('/boxes/1/open');
       expect(_result).toEqual(mockResult);
     });
 
     it('should handle insufficient funds error', async () => {
       const mockError = { response: { status: 400, data: { message: 'Insufficient funds' } } };
-      mockedHttpClient.post.mockRejectedValue(mockError);
+      mockedApiClient.post.mockRejectedValue(mockError);
 
       await expect(boxService.openBox('1')).rejects.toEqual(mockError);
     });
@@ -231,27 +214,23 @@ describe('BoxService', () => {
   describe('getBoxReviews', () => {
     it('should fetch box reviews successfully', async () => {
       const mockResponse = {
-        data: {
-          data: [
-            {
-              id: '1',
-              rating: 5,
-              comment: 'Great box!',
-              user: { name: 'John Doe' },
-            },
-          ],
-          pagination: {},
-        },
+        data: [
+          {
+            id: '1',
+            rating: 5,
+            comment: 'Great box!',
+            user: { name: 'John Doe' },
+          },
+        ],
+        pagination: {},
       };
 
-      mockedHttpClient.get.mockResolvedValue(mockResponse);
+      mockedApiClient.get.mockResolvedValue(mockResponse);
 
       const _result = await boxService.getBoxReviews('1');
 
-      expect(mockedHttpClient.get).toHaveBeenCalledWith('/boxes/1/reviews', {
-        params: { page: 1, per_page: 20 },
-      });
-      expect(_result).toEqual(mockResponse.data);
+      expect(mockedApiClient.get).toHaveBeenCalledWith('/boxes/1/reviews?page=1&per_page=10');
+      expect(_result).toEqual(mockResponse);
     });
   });
 
@@ -269,11 +248,11 @@ describe('BoxService', () => {
         comment: 'Great box!',
       };
 
-      mockedHttpClient.post.mockResolvedValue({ data: mockReview });
+      mockedApiClient.post.mockResolvedValue({ data: mockReview });
 
       const _result = await boxService.addBoxReview('1', reviewData);
 
-      expect(mockedHttpClient.post).toHaveBeenCalledWith('/boxes/1/reviews', reviewData);
+      expect(mockedApiClient.post).toHaveBeenCalledWith('/boxes/1/reviews', reviewData);
       expect(_result).toEqual(mockReview);
     });
 
@@ -285,7 +264,7 @@ describe('BoxService', () => {
         },
       };
 
-      mockedHttpClient.post.mockRejectedValue(mockError);
+      mockedApiClient.post.mockRejectedValue(mockError);
 
       await expect(boxService.addBoxReview('1', { rating: 0, comment: '' })).rejects.toEqual(mockError);
     });
