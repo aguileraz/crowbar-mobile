@@ -114,7 +114,7 @@ export const fetchBoxes = createAsyncThunk(
   async (filters: SearchFilters = {}, { rejectWithValue }) => {
     try {
       const _response = await boxService.getBoxes(filters);
-      return response;
+      return _response;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Erro ao buscar caixas');
     }

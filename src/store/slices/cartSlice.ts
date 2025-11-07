@@ -154,7 +154,7 @@ export const calculateShipping = createAsyncThunk(
   async (addressId: string, { rejectWithValue }) => {
     try {
       const _response = await cartService.calculateShipping(addressId);
-      return response.options;
+      return _response.options;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Erro ao calcular frete');
     }
@@ -169,7 +169,7 @@ export const calculateShippingByZip = createAsyncThunk(
   async (zipCode: string, { rejectWithValue }) => {
     try {
       const _response = await cartService.calculateShippingByZip(zipCode);
-      return response.options;
+      return _response.options;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Erro ao calcular frete');
     }
@@ -184,7 +184,7 @@ export const validateCoupon = createAsyncThunk(
   async (code: string, { rejectWithValue }) => {
     try {
       const _result = await cartService.validateCoupon(code);
-      return result;
+      return _result;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Erro ao validar cupom');
     }
