@@ -452,6 +452,12 @@ jest.mock('react-native', () => {
       doLeftAndRightSwapInRTL: true,
       allowRTL: jest.fn(),
       forceRTL: jest.fn(),
+      swapLeftAndRightInRTL: jest.fn(),
+      getConstants: jest.fn(() => ({
+        isRTL: false,
+        doLeftAndRightSwapInRTL: true,
+        localeIdentifier: 'pt_BR',
+      })),
     },
 
     // BackHandler

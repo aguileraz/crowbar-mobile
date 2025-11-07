@@ -32,6 +32,7 @@ module.exports = {
     '^@/(.*)$': '<rootDir>/src/$1',
     '@react-native/js-polyfills/error-guard': '<rootDir>/jest-mocks/error-guard.js',
     '@react-native-firebase/messaging': '<rootDir>/jest-mocks/firebase-messaging.js',
+    '@react-native-firebase/analytics': '<rootDir>/jest-mocks/firebase-analytics.js',
     'react-native-app-auth': '<rootDir>/jest-mocks/react-native-app-auth.js',
   },
   testTimeout: 10000,
