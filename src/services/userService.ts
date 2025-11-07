@@ -105,7 +105,7 @@ export class UserService {
    */
   async getFavorites(page: number = 1, perPage: number = 20): Promise<PaginatedResponse<Favorite>> {
     const _response = await apiClient.get<Favorite[]>(`/user/favorites?page=${page}&per_page=${perPage}`);
-    return response;
+    return _response;
   }
 
   /**
@@ -129,7 +129,7 @@ export class UserService {
   async isFavorite(boxId: string): Promise<boolean> {
     try {
       const _response = await apiClient.get<{ is_favorite: boolean }>(`/user/favorites/${boxId}/check`);
-      return response.data.is_favorite;
+      return _response.data.is_favorite;
     } catch (error) {
       return false;
     }
@@ -140,7 +140,7 @@ export class UserService {
    */
   async getOrders(page: number = 1, perPage: number = 10): Promise<PaginatedResponse<Order>> {
     const _response = await apiClient.get<Order[]>(`/user/orders?page=${page}&per_page=${perPage}`);
-    return response;
+    return _response;
   }
 
   /**
@@ -163,7 +163,7 @@ export class UserService {
    */
   async getNotifications(page: number = 1, perPage: number = 20): Promise<PaginatedResponse<Notification>> {
     const _response = await apiClient.get<Notification[]>(`/user/notifications?page=${page}&per_page=${perPage}`);
-    return response;
+    return _response;
   }
 
   /**
@@ -192,7 +192,7 @@ export class UserService {
    */
   async getUnreadNotificationsCount(): Promise<number> {
     const _response = await apiClient.get<{ count: number }>('/user/notifications/unread-count');
-    return response.data.count;
+    return _response.data.count;
   }
 
   /**
@@ -251,7 +251,7 @@ export class UserService {
     created_at: string;
   }>> {
     const _response = await apiClient.get(`/user/activity?page=${page}&per_page=${perPage}`);
-    return response;
+    return _response;
   }
 
   /**
