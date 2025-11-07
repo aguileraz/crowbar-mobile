@@ -34,7 +34,7 @@ class SecureStorageService {
       );
       
       logger.debug('Auth token stored securely', 'SecureStorage');
-      return result !== false;
+      return _result !== false;
     } catch (error) {
       logger.error('Failed to store auth token', 'SecureStorage', error);
       return false;
@@ -74,7 +74,7 @@ class SecureStorageService {
       );
       
       logger.debug('Refresh token stored securely', 'SecureStorage');
-      return result !== false;
+      return _result !== false;
     } catch (error) {
       logger.error('Failed to store refresh token', 'SecureStorage', error);
       return false;
@@ -114,7 +114,7 @@ class SecureStorageService {
       );
       
       logger.debug('User credentials stored securely', 'SecureStorage');
-      return result !== false;
+      return _result !== false;
     } catch (error) {
       logger.error('Failed to store user credentials', 'SecureStorage', error);
       return false;
@@ -157,7 +157,7 @@ class SecureStorageService {
       );
       
       logger.debug(`Secure data stored for key: ${key}`, 'SecureStorage');
-      return result !== false;
+      return _result !== false;
     } catch (error) {
       logger.error(`Failed to store secure data for key: ${key}`, 'SecureStorage', error);
       return false;
