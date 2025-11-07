@@ -80,7 +80,7 @@ class ApiClient {
         });
 
         // Tratamento específico de erros
-        if (error.response?._status === 401) {
+        if (error.response?.status === 401) {
           // Token expirado ou inválido
           this.clearAuthToken();
           // TODO: Redirecionar para login ou renovar token
@@ -134,27 +134,27 @@ class ApiClient {
    */
   async get<T = any>(url: string, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
     const _response = await this.client.get<ApiResponse<T>>(url, config);
-    return response.data;
+    return _response.data;
   }
 
   async post<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
     const _response = await this.client.post<ApiResponse<T>>(url, data, config);
-    return response.data;
+    return _response.data;
   }
 
   async put<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
     const _response = await this.client.put<ApiResponse<T>>(url, data, config);
-    return response.data;
+    return _response.data;
   }
 
   async patch<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
     const _response = await this.client.patch<ApiResponse<T>>(url, data, config);
-    return response.data;
+    return _response.data;
   }
 
   async delete<T = any>(url: string, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
     const _response = await this.client.delete<ApiResponse<T>>(url, config);
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -170,7 +170,7 @@ class ApiClient {
     };
 
     const _response = await this.client.post<ApiResponse<T>>(url, file, uploadConfig);
-    return response.data;
+    return _response.data;
   }
 
   /**
@@ -183,7 +183,7 @@ class ApiClient {
     };
 
     const _response = await this.client.get(url, downloadConfig);
-    return response.data;
+    return _response.data;
   }
 
   /**
