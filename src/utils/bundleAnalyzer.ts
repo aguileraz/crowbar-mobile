@@ -334,9 +334,9 @@ export function measurePerformance(target: any, propertyName: string, descriptor
     bundleAnalyzer.startMeasurement(measurementName);
     
     const _result = method.apply(this, args);
-    
+
     if (_result instanceof Promise) {
-      return result.finally(() => {
+      return _result.finally(() => {
         const duration = bundleAnalyzer.endMeasurement(measurementName);
         logger.debug(`${measurementName} took ${duration}ms`);
       });

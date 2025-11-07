@@ -32,7 +32,7 @@ export const useOffline = () => {
     async (force = false) => {
       try {
         const _result = await dispatch(syncOfflineData(force)).unwrap();
-        return result;
+        return _result;
       } catch (error) {
         logger.error('Erro ao sincronizar:', error);
         throw error;
@@ -130,9 +130,9 @@ export const useOfflineCache = <T>(
         strategy,
         fetcher
       );
-      
+
       setData(_result);
-      return result;
+      return _result;
     } catch (err) {
       setError(err as Error);
       throw err;
@@ -259,7 +259,7 @@ export const useOfflineAction = <T = any>(
           // Executar ação imediatamente
           const _result = await executor(data);
           if (onSuccess) onSuccess(_result);
-          return result;
+          return _result;
         } else {
           // Adicionar à fila offline
           await dispatch(
