@@ -345,9 +345,7 @@ export const useOfflineBoxes = () => {
   const {data, loading, error: _error, fetch} = useOfflineCache(
     'offline_boxes',
     async () => {
-      // Simular chamada para API
-      // const _response = await boxService.getBoxes();
-      // return response.data;
+      // Simular chamada para API (commented out for testing)
       return [];
     },
     {

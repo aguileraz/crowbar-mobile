@@ -138,11 +138,11 @@ export const createTestUser = async () => {
       password: TEST_CREDENTIALS.password,
       password_confirmation: TEST_CREDENTIALS.password,
     });
-    
-    return response.data;
+
+    return _response.data;
   } catch (error: any) {
     // If user already exists, that's fine for testing
-    if (error.response?._status === 422) {
+    if (error.response?.status === 422) {
       return null;
     }
     throw error;
@@ -154,12 +154,12 @@ export const createTestUser = async () => {
  */
 export const _loginTestUser = async () => {
   const _response = await httpClient.post('/auth/login', TEST_CREDENTIALS);
-  
+
   // Set auth token for subsequent requests
-  const token = response.data.token;
+  const token = _response.data.token;
   httpClient.defaults.headers.common.Authorization = `Bearer ${token}`;
-  
-  return response.data;
+
+  return _response.data;
 };
 
 /**
