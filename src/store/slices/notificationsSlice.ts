@@ -57,7 +57,7 @@ export const initializeNotifications = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const _result = await notificationService.initialize();
-      return result;
+      return _result;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Erro ao inicializar notificações');
     }

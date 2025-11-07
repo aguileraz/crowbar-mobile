@@ -343,7 +343,7 @@ export function measurePerformance(target: any, propertyName: string, descriptor
     } else {
       const duration = bundleAnalyzer.endMeasurement(measurementName);
       logger.debug(`${measurementName} took ${duration}ms`);
-      return result;
+      return _result;
     }
   };
 

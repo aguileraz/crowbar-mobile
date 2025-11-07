@@ -711,7 +711,7 @@ class OfflineService {
         CacheStrategy.NETWORK_FIRST,
         async () => {
           const _response = await boxService.getBoxes();
-          return response.data;
+          return _response.data;
         }
       );
       
