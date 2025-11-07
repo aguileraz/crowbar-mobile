@@ -227,7 +227,7 @@ class OfflineService {
       };
       
       // Armazenar dados comprimidos
-      await AsyncStorage.setItem(_key, compressed);
+      await AsyncStorage.setItem(key, compressed);
       
       // Armazenar metadados
       await AsyncStorage.setItem(
