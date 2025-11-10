@@ -1,23 +1,26 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import analytics from '@react-native-firebase/analytics';
 import { store } from '../store';
 import logger from './loggerService';
-import { 
-  recordApiResponseTime, 
-  recordError, 
+import {
+  recordApiResponseTime,
+  recordError,
   addPendingEvent,
-  recordConversion 
+  recordConversion
 } from '../store/slices/analyticsSlice';
 
 /**
  * Serviço de Analytics
- * Integração com Firebase Analytics e métricas customizadas
- * 
+ *
+ * ⚠️ MIGRATION NOTICE:
+ * Firebase Analytics foi REMOVIDO. Analytics agora é baseado em Redux + backend API.
+ *
  * Eventos customizados do Crowbar:
  * - E-commerce: view_item, add_to_cart, purchase, remove_from_cart
  * - Caixas Mistério: box_viewed, box_opened, box_shared, box_favorited
  * - Engajamento: user_engagement, social_share, review_submitted
  * - Performance: api_latency, screen_load_time, app_performance
+ *
+ * Eventos são armazenados localmente via Redux e enviados ao backend em lote.
  */
 
 class AnalyticsService {
@@ -66,23 +69,22 @@ class AnalyticsService {
   }
 
   /**
-   * Initialize Firebase Analytics
+   * Initialize Analytics (Redux-based, não Firebase)
    */
   private async initializeFirebaseAnalytics(): Promise<void> {
     try {
-      // Habilitar coleta de analytics
-      await analytics().setAnalyticsCollectionEnabled(true);
-      
-      // Configurar propriedades padrão do usuário
-      await analytics().setUserProperties({
+      // Firebase Analytics foi REMOVIDO
+      // Analytics agora é baseado em Redux + backend API
+      logger.debug('Analytics Redux inicializado com sucesso');
+
+      // Configurar propriedades locais do usuário
+      await AsyncStorage.setItem('analytics_user_properties', JSON.stringify({
         app_version: '1.0.0',
         platform: 'mobile',
         last_login: new Date().toISOString(),
-      });
-      
-      logger.debug('Firebase Analytics inicializado com sucesso');
+      }));
     } catch (error) {
-      logger.error('Erro ao inicializar Firebase Analytics:', error);
+      logger.error('Erro ao inicializar Analytics:', error);
       throw error;
     }
   }
@@ -98,20 +100,18 @@ class AnalyticsService {
         return;
       }
 
-      // Sanitize parameters for Firebase
+      // Sanitize parameters
       const sanitizedParams = this.sanitizeParameters(parameters);
-      
-      // Enviar evento para Firebase Analytics
-      await analytics().logEvent(name, sanitizedParams);
-      
+
+      // Armazenar evento localmente (Redux-based analytics)
+      await this.storeEventLocally(name, sanitizedParams);
+
       if (__DEV__) {
         logger.debug('Analytics Event:', name, sanitizedParams);
       }
-      
-      // Store locally for debugging
-      if (__DEV__) {
-        await this.storeEventLocally(name, sanitizedParams);
-      }
+
+      // TODO: Enviar eventos em lote para backend API
+      // Implementar batch upload de eventos analytics
     } catch (error) {
       logger.error('Error logging event:', error);
       // Store as pending event for retry
@@ -125,19 +125,18 @@ class AnalyticsService {
   async setUserProperties(properties: Record<string, any>): Promise<void> {
     try {
       const sanitizedProps = this.sanitizeParameters(properties);
-      
-      // Definir propriedades do usuário no Firebase
-      await analytics().setUserProperties(sanitizedProps);
-      
+
       if (__DEV__) {
         logger.debug('Analytics User Properties:', sanitizedProps);
       }
-      
-      // Store locally
+
+      // Store locally (Firebase não está mais em uso)
       await AsyncStorage.setItem(
         this.STORAGE_KEYS.USER_PROPERTIES,
         JSON.stringify(sanitizedProps)
       );
+
+      // TODO: Enviar propriedades do usuário para backend API
     } catch (error) {
       logger.error('Error setting user properties:', error);
       throw error;
@@ -150,16 +149,15 @@ class AnalyticsService {
   async setUserId(userId: string | null): Promise<void> {
     try {
       this.userId = userId;
-      
+
       if (userId) {
         await AsyncStorage.setItem(this.STORAGE_KEYS.USER_ID, userId);
-        
-        // Definir ID do usuário no Firebase
-        await analytics().setUserId(userId);
-        
+
         if (__DEV__) {
           logger.debug('Analytics User ID definido:', userId);
         }
+
+        // TODO: Enviar user ID para backend API
       } else {
         await AsyncStorage.removeItem(this.STORAGE_KEYS.USER_ID);
       }
@@ -593,16 +591,17 @@ class AnalyticsService {
    * Privacy Controls e LGPD Compliance
    */
   
-  // Definir consentimento do usuário
+  // Definir consentimento do usuário (LGPD compliance)
   async setAnalyticsConsent(consented: boolean): Promise<void> {
     try {
-      await analytics().setAnalyticsCollectionEnabled(consented);
       await AsyncStorage.setItem('analytics_consent', consented.toString());
-      
+
       await this.logEvent('analytics_consent_updated', {
         consented,
         update_time: Date.now(),
       });
+
+      // TODO: Enviar consentimento para backend API
     } catch (error) {
       logger.error('Erro ao definir consentimento:', error);
     }
@@ -691,18 +690,18 @@ class AnalyticsService {
   }
 
   /**
-   * Sanitize parameters for Firebase
+   * Sanitize parameters para analytics (anteriormente para Firebase)
    */
   private sanitizeParameters(parameters?: Record<string, any>): Record<string, any> {
     if (!parameters) return {};
-    
+
     const sanitized: Record<string, any> = {};
-    
+
     Object.entries(parameters).forEach(([key, value]) => {
-      // Firebase parameter name restrictions
+      // Parameter name sanitization
       const sanitizedKey = key.replace(/[^a-zA-Z0-9_]/g, '_').substring(0, 40);
-      
-      // Firebase parameter value restrictions
+
+      // Parameter value sanitization
       if (typeof value === 'string') {
         sanitized[sanitizedKey] = value.substring(0, 100);
       } else if (typeof value === 'number') {
@@ -715,7 +714,7 @@ class AnalyticsService {
         sanitized[sanitizedKey] = JSON.stringify(value).substring(0, 100);
       }
     });
-    
+
     return sanitized;
   }
 

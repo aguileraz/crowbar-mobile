@@ -1,9 +1,19 @@
-import { FirebaseAuthTypes } from '@react-native-firebase/auth';
-import { firebaseAuth } from '../config/firebase';
+import keycloakService from './keycloakService';
+import logger from './loggerService';
 
 /**
  * Serviço de Autenticação
- * Wrapper para operações do Firebase Auth
+ *
+ * ⚠️ MIGRATION NOTICE:
+ * Este serviço foi migrado de Firebase Auth para Keycloak OAuth2.
+ * Métodos legados do Firebase foram marcados como DEPRECATED e lançam erros.
+ *
+ * Use keycloakService diretamente para novas implementações:
+ * - keycloakService.login() - OAuth2 flow
+ * - keycloakService.logout() - Revoke tokens
+ * - keycloakService.getAccessToken() - Get valid token
+ * - keycloakService.isAuthenticated() - Check auth status
+ * - keycloakService.getUserInfo() - Get user claims from ID token
  */
 
 export interface RegisterInput {
@@ -28,138 +38,116 @@ export interface AuthUser {
 class AuthService {
   /**
    * Registrar novo usuário
+   *
+   * @deprecated Firebase Auth não está mais em uso.
+   * Registro de usuários deve ser feito através do Keycloak Admin Console
+   * ou API de registro customizada no backend.
    */
-  async register(input: RegisterInput): Promise<{ user: AuthUser; token: string }> {
-    try {
-      // Criar usuário no Firebase Auth
-      const userCredential = await firebaseAuth().createUserWithEmailAndPassword(
-        input.email,
-        input.password
-      );
-
-      // Atualizar perfil com nome
-      if (userCredential.user) {
-        await userCredential.user.updateProfile({
-          displayName: input.name,
-        });
-      }
-
-      // Obter token
-      const token = await userCredential.user.getIdToken();
-
-      return {
-        user: this.mapFirebaseUser(userCredential.user),
-        token,
-      };
-    } catch (error: any) {
-      throw this.handleAuthError(error);
-    }
+  async register(_input: RegisterInput): Promise<{ user: AuthUser; token: string }> {
+    const error = new Error(
+      'DEPRECATED: Firebase Auth não está disponível. Use Keycloak para registro de usuários.'
+    );
+    logger.error(error.message);
+    throw error;
   }
 
   /**
    * Login com email e senha
+   *
+   * @deprecated Firebase Auth não está mais em uso.
+   * Use keycloakService.login() para autenticação OAuth2.
    */
-  async login(input: LoginInput): Promise<{ user: AuthUser; token: string }> {
-    try {
-      const userCredential = await firebaseAuth().signInWithEmailAndPassword(
-        input.email,
-        input.password
-      );
-
-      const token = await userCredential.user.getIdToken();
-
-      return {
-        user: this.mapFirebaseUser(userCredential.user),
-        token,
-      };
-    } catch (error: any) {
-      throw this.handleAuthError(error);
-    }
+  async login(_input: LoginInput): Promise<{ user: AuthUser; token: string }> {
+    const error = new Error(
+      'DEPRECATED: Firebase Auth não está disponível. Use keycloakService.login() para OAuth2.'
+    );
+    logger.error(error.message);
+    throw error;
   }
 
   /**
    * Logout
+   *
+   * @deprecated Use keycloakService.logout() para revogar tokens OAuth2.
    */
   async logout(): Promise<void> {
+    logger.warn('DEPRECATED: Use keycloakService.logout() em vez de authService.logout()');
     try {
-      await firebaseAuth().signOut();
+      await keycloakService.logout();
     } catch (error: any) {
-      throw this.handleAuthError(error);
+      logger.error('Erro no logout Keycloak:', error);
+      throw error;
     }
   }
 
   /**
    * Resetar senha
+   *
+   * @deprecated Firebase Auth não está mais em uso.
+   * Reset de senha deve ser feito através do Keycloak.
    */
-  async resetPassword(email: string): Promise<void> {
-    try {
-      await firebaseAuth().sendPasswordResetEmail(email);
-    } catch (error: any) {
-      throw this.handleAuthError(error);
-    }
+  async resetPassword(_email: string): Promise<void> {
+    const error = new Error(
+      'DEPRECATED: Reset de senha deve ser feito através do Keycloak, não Firebase.'
+    );
+    logger.error(error.message);
+    throw error;
   }
 
   /**
    * Obter usuário atual
+   *
+   * @deprecated Use keycloakService.getUserInfo() para obter claims do usuário.
    */
   getCurrentUser(): AuthUser | null {
-    const user = firebaseAuth().currentUser;
-    return user ? this.mapFirebaseUser(user) : null;
+    logger.warn('DEPRECATED: Use keycloakService.getUserInfo() para obter informações do usuário');
+    return null;
   }
 
   /**
    * Verificar se está autenticado
+   *
+   * Wrapper para keycloakService.isAuthenticated()
    */
-  isAuthenticated(): boolean {
-    return !!firebaseAuth().currentUser;
+  async isAuthenticated(): Promise<boolean> {
+    return await keycloakService.isAuthenticated();
   }
 
   /**
    * Obter token atual
+   *
+   * Wrapper para keycloakService.getAccessToken()
    */
   async getToken(): Promise<string | null> {
-    const user = firebaseAuth().currentUser;
-    if (!user) return null;
-    
     try {
-      return await user.getIdToken();
+      return await keycloakService.getAccessToken();
     } catch (error) {
+      logger.error('Erro ao obter access token:', error);
       return null;
     }
   }
 
   /**
-   * Mapear usuário do Firebase
+   * Obter informações do usuário (novo método Keycloak)
    */
-  private mapFirebaseUser(firebaseUser: FirebaseAuthTypes.User): AuthUser {
-    return {
-      id: firebaseUser.uid,
-      email: firebaseUser.email,
-      name: firebaseUser.displayName,
-      photoURL: firebaseUser.photoURL,
-      emailVerified: firebaseUser.emailVerified,
-    };
+  async getUserInfo(): Promise<any | null> {
+    try {
+      return await keycloakService.getUserInfo();
+    } catch (error) {
+      logger.error('Erro ao obter informações do usuário:', error);
+      return null;
+    }
   }
 
   /**
-   * Tratar erros do Firebase Auth
+   * Fazer login OAuth2 (novo método Keycloak)
    */
-  private handleAuthError(error: any): Error {
-    switch (error.code) {
-      case 'auth/email-already-in-use':
-        return new Error('Email já está em uso');
-      case 'auth/invalid-email':
-        return new Error('Email inválido');
-      case 'auth/weak-password':
-        return new Error('Senha muito fraca');
-      case 'auth/user-not-found':
-        return new Error('Usuário não encontrado');
-      case 'auth/wrong-password':
-        return new Error('Senha incorreta');
-      case 'auth/network-request-failed':
-        return new Error('Erro de conexão de rede');
-      default:
-        return new Error(error.message || 'Erro de autenticação');
+  async loginOAuth(): Promise<any> {
+    try {
+      return await keycloakService.login();
+    } catch (error) {
+      logger.error('Erro no login OAuth2:', error);
+      throw error;
     }
   }
 }

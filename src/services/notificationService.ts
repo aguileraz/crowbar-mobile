@@ -1,44 +1,48 @@
-import messaging, { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
 // eslint-disable-next-line react-native/split-platform-components
 import { PermissionsAndroid, Platform, Alert, Linking } from 'react-native';
 import { httpClient } from './httpClient';
 import { Notification, NotificationSettings, PaginatedResponse } from '../types/api';
-import notifee, { AndroidImportance } from '@notifee/react-native';
+import notifee, { AndroidImportance, EventType } from '@notifee/react-native';
 import { navigationService } from './navigationService';
 import logger from './loggerService';
 
 /**
  * Serviço para gerenciamento de notificações push
+ *
+ * ⚠️ MIGRATION NOTICE:
+ * Firebase Cloud Messaging foi REMOVIDO. Notificações agora usam @notifee/react-native.
+ *
+ * @notifee fornece:
+ * - Notificações locais avançadas (Android/iOS)
+ * - Canais de notificação (Android)
+ * - Rich notifications (imagens, ações)
+ * - Scheduled notifications
+ *
+ * Para push notifications remotas, integrar com serviço de push próprio ou APNs/FCM direto.
  */
 
 class NotificationService {
   private baseURL = '/notifications';
-  private fcmToken: string | null = null;
 
   /**
-   * Inicializar serviço de notificações
+   * Inicializar serviço de notificações (@notifee)
    */
   async initialize(): Promise<{ token: string | null; permissionStatus: string }> {
     try {
       // Verificar e solicitar permissões
       const permissionStatus = await this.requestPermissions();
-      
+
       if (permissionStatus === 'granted') {
-        // Obter token FCM
-        const token = await this.getFCMToken();
-        this.fcmToken = token;
-        
-        // Registrar token no backend
-        if (token) {
-          await this.registerToken(token);
-        }
-        
-        // Configurar listeners
-        this.setupMessageListeners();
-        
-        return { token, permissionStatus };
+        // Criar canais de notificação (Android)
+        await this.createNotificationChannel();
+
+        // Configurar handlers do @notifee
+        await this.setupNotifeeHandlers();
+
+        logger.debug('Notificações inicializadas com @notifee');
+        return { token: null, permissionStatus };
       }
-      
+
       return { token: null, permissionStatus };
     } catch (error) {
       logger.error('Error initializing notifications:', error);
@@ -47,7 +51,7 @@ class NotificationService {
   }
 
   /**
-   * Solicitar permissões de notificação
+   * Solicitar permissões de notificação (@notifee)
    */
   async requestPermissions(): Promise<'granted' | 'denied' | 'not-determined'> {
     try {
@@ -57,21 +61,23 @@ class NotificationService {
           const granted = await PermissionsAndroid.request(
             PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
           );
-          
-          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-            const authStatus = await messaging().requestPermission();
-            return this.getPermissionStatus(authStatus);
-          } else {
-            return 'denied';
-          }
+
+          return granted === PermissionsAndroid.RESULTS.GRANTED ? 'granted' : 'denied';
         } else {
-          const authStatus = await messaging().requestPermission();
-          return this.getPermissionStatus(authStatus);
+          // Versões anteriores do Android concedem permissão automaticamente
+          return 'granted';
         }
       } else {
-        // iOS
-        const authStatus = await messaging().requestPermission();
-        return this.getPermissionStatus(authStatus);
+        // iOS - solicitar permissão via @notifee
+        const settings = await notifee.requestPermission();
+
+        if (settings.authorizationStatus === 1) { // AUTHORIZED
+          return 'granted';
+        } else if (settings.authorizationStatus === 2) { // DENIED
+          return 'denied';
+        } else {
+          return 'not-determined';
+        }
       }
     } catch (error) {
       logger.error('Error requesting permissions:', error);
@@ -80,92 +86,9 @@ class NotificationService {
   }
 
   /**
-   * Converter status de autorização
-   */
-  private getPermissionStatus(authStatus: number): 'granted' | 'denied' | 'not-determined' {
-    switch (authStatus) {
-      case messaging.AuthorizationStatus.AUTHORIZED:
-      case messaging.AuthorizationStatus.PROVISIONAL:
-        return 'granted';
-      case messaging.AuthorizationStatus.DENIED:
-        return 'denied';
-      default:
-        return 'not-determined';
-    }
-  }
-
-  /**
-   * Obter token FCM
-   */
-  async getFCMToken(): Promise<string | null> {
-    try {
-      const token = await messaging().getToken();
-      return token;
-    } catch (error) {
-      logger.error('Error getting FCM token:', error);
-      return null;
-    }
-  }
-
-  /**
-   * Configurar listeners de mensagens
-   */
-  private setupMessageListeners(): void {
-    // Mensagem recebida quando app está em foreground
-    messaging().onMessage(async remoteMessage => {
-      logger.debug('Foreground message:', remoteMessage);
-      this.handleForegroundMessage(remoteMessage);
-    });
-
-    // Mensagem que abriu o app (background/quit state)
-    messaging().onNotificationOpenedApp(remoteMessage => {
-      logger.debug('Notification opened app:', remoteMessage);
-      this.handleNotificationOpen(remoteMessage);
-    });
-
-    // Verificar se app foi aberto por notificação (quit state)
-    messaging()
-      .getInitialNotification()
-      .then(remoteMessage => {
-        if (remoteMessage) {
-          logger.debug('App opened by notification:', remoteMessage);
-          this.handleNotificationOpen(remoteMessage);
-        }
-      });
-
-    // Token refresh
-    messaging().onTokenRefresh(token => {
-      logger.debug('FCM token refreshed:', token);
-      this.fcmToken = token;
-      this.registerToken(token);
-    });
-  }
-
-  /**
-   * Tratar mensagem em foreground
-   */
-  private handleForegroundMessage(remoteMessage: any): void {
-    if (remoteMessage.notification) {
-      // Mostrar notificação local ou atualizar UI
-      Alert.alert(
-        remoteMessage.notification.title || 'Nova notificação',
-        remoteMessage.notification.body || '',
-        [{ text: 'OK' }]
-      );
-    }
-  }
-
-  /**
-   * Tratar abertura por notificação
-   */
-  handleNotificationOpen(remoteMessage: any): void {
-    // Navegar para tela específica baseada no tipo de notificação
-    const { data } = remoteMessage;
-    navigationService.navigateFromNotification(data);
-  }
-
-  /**
-   * Registrar token no backend
+   * Registrar device token no backend (para push notifications remotas)
+   *
+   * Nota: FCM token não é mais usado. Implementar APNs/FCM direto se necessário.
    */
   async registerToken(token: string): Promise<void> {
     try {
@@ -174,7 +97,7 @@ class NotificationService {
         platform: Platform.OS,
       });
     } catch (error) {
-      logger.error('Error registering FCM token:', error);
+      logger.error('Error registering device token:', error);
       throw error;
     }
   }
@@ -284,12 +207,19 @@ class NotificationService {
   }
 
   /**
-   * Verificar status de permissão
+   * Verificar status de permissão (@notifee)
    */
   async checkPermission(): Promise<'granted' | 'denied' | 'not-determined'> {
     try {
-      const authStatus = await messaging().hasPermission();
-      return this.getPermissionStatus(authStatus);
+      const settings = await notifee.getNotificationSettings();
+
+      if (settings.authorizationStatus === 1) { // AUTHORIZED
+        return 'granted';
+      } else if (settings.authorizationStatus === 2) { // DENIED
+        return 'denied';
+      } else {
+        return 'not-determined';
+      }
     } catch (error) {
       logger.error('Error checking permission:', error);
       return 'denied';
@@ -376,43 +306,29 @@ class NotificationService {
   }
 
   /**
-   * Listeners de mensagens (retornam funções de cleanup)
+   * Obter notificação inicial (app aberto por notificação) - @notifee
    */
-  onMessage(handler: (message: FirebaseMessagingTypes.RemoteMessage) => void): () => void {
-    return messaging().onMessage(handler);
-  }
-
-  onBackgroundMessage(handler: (message: FirebaseMessagingTypes.RemoteMessage) => void): () => void {
-    messaging().setBackgroundMessageHandler(handler);
-    return () => {}; // Firebase não fornece cleanup para background handler
-  }
-
-  onTokenRefresh(handler: (token: string) => void): () => void {
-    return messaging().onTokenRefresh(handler);
-  }
-
-  onNotificationOpenedApp(handler: (message: FirebaseMessagingTypes.RemoteMessage) => void): () => void {
-    return messaging().onNotificationOpenedApp(handler);
-  }
-
-  /**
-   * Obter notificação inicial (app aberto por notificação)
-   */
-  async getInitialNotification(): Promise<FirebaseMessagingTypes.RemoteMessage | null> {
-    return messaging().getInitialNotification();
+  async getInitialNotification(): Promise<any | null> {
+    try {
+      const initialNotification = await notifee.getInitialNotification();
+      return initialNotification;
+    } catch (error) {
+      logger.error('Error getting initial notification:', error);
+      return null;
+    }
   }
 
   /**
    * Configurar manipuladores de interação com notifee
    */
   async setupNotifeeHandlers(): Promise<void> {
-    // Evento quando usuário interage com notificação
+    // Evento quando usuário interage com notificação (foreground)
     notifee.onForegroundEvent(({ type, detail }) => {
       switch (type) {
-        case 1: // EventType.DISMISSED
+        case EventType.DISMISSED:
           logger.debug('Notificação dispensada');
           break;
-        case 7: // EventType.PRESS
+        case EventType.PRESS:
           logger.debug('Notificação pressionada', detail.notification);
           // Navegar baseado nos dados da notificação
           if (detail.notification?.data) {
@@ -424,8 +340,13 @@ class NotificationService {
 
     // Background event handler
     notifee.onBackgroundEvent(async ({ type, detail }) => {
-      if (type === 7) { // EventType.PRESS
+      if (type === EventType.PRESS) {
         logger.debug('Background notification pressed', detail.notification);
+
+        // Navegar baseado nos dados da notificação
+        if (detail.notification?.data) {
+          navigationService.navigateFromNotification(detail.notification.data);
+        }
       }
     });
   }

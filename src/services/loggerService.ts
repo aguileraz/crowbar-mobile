@@ -129,12 +129,15 @@ class LoggerService {
   }
 
   /**
-   * Reportar erro para Crashlytics em produção
+   * Reportar erro para serviço de crash reporting em produção
+   *
+   * ⚠️ Firebase Crashlytics foi REMOVIDO.
+   * TODO: Implementar integração com Sentry ou outro serviço de crash reporting
    */
   private reportToCrashlytics(_message: string, _context?: string, _error?: any) {
-    // TODO: Implementar integração com Firebase Crashlytics
-    // import crashlytics from '@react-native-firebase/crashlytics';
-    // crashlytics().recordError(error, message);
+    // TODO: Integrar com Sentry
+    // import * as Sentry from '@sentry/react-native';
+    // Sentry.captureException(error, { tags: { context } });
   }
 }
 

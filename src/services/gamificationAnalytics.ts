@@ -1,10 +1,17 @@
-import analytics from '@react-native-firebase/analytics';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { MysteryBox } from '../types/api';
+import analyticsService from './analyticsService';
 
 /**
  * Serviço de Analytics para Gamificação
- * Rastreia todos os eventos importantes do sistema de gamificação
+ *
+ * ⚠️ MIGRATION NOTICE:
+ * Firebase Analytics foi REMOVIDO. Agora usa analyticsService (Redux-based).
+ *
+ * Rastreia todos os eventos importantes do sistema de gamificação:
+ * - Timer/Urgency, Challenges, Streaks
+ * - Leaderboard, Spin Wheel, Achievements
+ * - Level/XP, Special Effects
  */
 
 // Tipos de eventos
@@ -195,8 +202,9 @@ class GamificationAnalytics {
       app_version: '1.0.0', // Get from app config
     };
 
-    await analytics().logEvent(eventType, enrichedProperties);
-    
+    // Use analyticsService (Redux-based) em vez de Firebase
+    await analyticsService.logEvent(eventType, enrichedProperties);
+
     // Also save to local storage for offline analytics
     await this.saveLocalEvent(eventType, enrichedProperties);
   }
@@ -383,30 +391,25 @@ class GamificationAnalytics {
     });
   }
 
-  // Screen tracking
+  // Screen tracking (usando analyticsService)
   async trackScreenView(screenName: string) {
-    await analytics().logScreenView({
-      screen_name: screenName,
-      screen_class: screenName,
-    });
+    await analyticsService.logScreenView(screenName, screenName);
   }
 
-  // User properties
+  // User properties (usando analyticsService)
   async setUserProperties(properties: Record<string, any>) {
-    for (const [key, value] of Object.entries(properties)) {
-      await analytics().setUserProperty(key, value.toString());
-    }
+    await analyticsService.setUserProperties(properties);
   }
 
   async setUserId(userId: string) {
     this.userId = userId;
     await AsyncStorage.setItem('@user_id', userId);
-    await analytics().setUserId(userId);
+    await analyticsService.setUserId(userId);
   }
 
-  // Conversion tracking
+  // Conversion tracking (usando analyticsService)
   async trackConversion(conversionType: string, value: number, currency: string = 'BRL') {
-    await analytics().logEvent('conversion', {
+    await analyticsService.logEvent('conversion', {
       conversion_type: conversionType,
       value,
       currency,

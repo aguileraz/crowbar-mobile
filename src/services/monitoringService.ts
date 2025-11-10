@@ -1,11 +1,20 @@
 /**
  * Crowbar Mobile - Production Monitoring Service
- * Integrates Crashlytics, Performance Monitoring, and custom analytics
+ *
+ * ⚠️ MIGRATION NOTICE:
+ * Firebase Crashlytics e Performance Monitoring foram REMOVIDOS.
+ *
+ * Monitoring agora usa:
+ * - Logging local via loggerService
+ * - Performance metrics armazenados em memória
+ * - Envio de métricas para backend API (TODO: implementar)
+ *
+ * Para produção, considerar integração com:
+ * - Sentry (crash reporting)
+ * - Datadog / New Relic (APM)
+ * - Custom backend analytics API
  */
 
-import crashlytics from '@react-native-firebase/crashlytics';
-import perf from '@react-native-firebase/perf';
-import analytics from '@react-native-firebase/analytics';
 import { Platform } from 'react-native';
 import config from '../../config/environments';
 import logger from './loggerService';
@@ -77,99 +86,83 @@ class MonitoringService {
   }
 
   /**
-   * Initialize Crashlytics
+   * Initialize Crashlytics (STUB - Firebase removido)
    */
   private async initializeCrashlytics(): Promise<void> {
     try {
-      // Enable Crashlytics collection
-      await crashlytics().setCrashlyticsCollectionEnabled(true);
+      logger.debug('📊 Monitoring initialized (local logging only)');
+      logger.debug('Environment:', config.ENVIRONMENT);
+      logger.debug('App Version:', config.APP_CONFIG.VERSION || '1.0.0');
+      logger.debug('Platform:', Platform.OS);
 
-      // Set custom keys
-      await crashlytics().setAttributes({
-        environment: config.ENVIRONMENT,
-        appVersion: config.APP_CONFIG.VERSION || '1.0.0',
-        platform: Platform.OS,
-      });
-
-      logger.debug('📊 Crashlytics initialized');
+      // TODO: Integrar com Sentry ou serviço de crash reporting
     } catch (error) {
-      logger.error('Failed to initialize Crashlytics:', error);
+      logger.error('Failed to initialize monitoring:', error);
     }
   }
 
   /**
-   * Initialize Performance Monitoring
+   * Initialize Performance Monitoring (STUB - Firebase removido)
    */
   private async initializePerformanceMonitoring(): Promise<void> {
     try {
-      // Enable Performance Monitoring
-      await perf().setPerformanceCollectionEnabled(true);
+      // Performance monitoring local (in-memory)
+      const appStartTime = Date.now();
 
-      // Start app start trace
-      const appStartTrace = perf().newTrace('app_start');
-      await appStartTrace.start();
+      // Simular trace de app start
+      setTimeout(() => {
+        const appStartDuration = Date.now() - appStartTime;
+        logger.debug(`⚡ App started in ${appStartDuration}ms`);
 
-      // Stop after a delay (app is considered started)
-      setTimeout(async () => {
-        await appStartTrace.stop();
+        this.recordMetric({
+          name: 'app_start',
+          value: appStartDuration,
+          unit: 'ms',
+        });
       }, 3000);
 
-      logger.debug('⚡ Performance Monitoring initialized');
+      logger.debug('⚡ Performance Monitoring initialized (local)');
     } catch (error) {
       logger.error('Failed to initialize Performance Monitoring:', error);
     }
   }
 
   /**
-   * Initialize Analytics
+   * Initialize Analytics (STUB - Firebase removido, usar analyticsService)
    */
   private async initializeAnalytics(): Promise<void> {
     try {
-      // Enable Analytics collection
-      await analytics().setAnalyticsCollectionEnabled(true);
+      logger.debug('📈 Analytics initialized (use analyticsService)');
+      logger.debug('Environment:', config.ENVIRONMENT);
+      logger.debug('App Version:', config.APP_CONFIG.VERSION || '1.0.0');
+      logger.debug('Platform:', Platform.OS);
 
-      // Set default parameters
-      await analytics().setDefaultEventParameters({
-        environment: config.ENVIRONMENT,
-        app_version: config.APP_CONFIG.VERSION || '1.0.0',
-        platform: Platform.OS,
-      });
-
-      logger.debug('📈 Analytics initialized');
+      // Analytics real está em src/services/analyticsService.ts
     } catch (error) {
       logger.error('Failed to initialize Analytics:', error);
     }
   }
 
   /**
-   * Log error to Crashlytics
+   * Log error (local logging, sem Crashlytics)
    */
   logError(error: Error, context?: ErrorContext): void {
     if (!config.FEATURES.CRASHLYTICS_ENABLED) return;
 
     try {
-      // Set context attributes
-      if (context) {
-        crashlytics().setAttributes({
-          screen: context.screen || 'unknown',
-          action: context.action || 'unknown',
-          userId: context.userId || 'anonymous',
-        });
+      const errorData = {
+        message: error.message,
+        stack: error.stack,
+        name: error.name,
+        context: context || {},
+        timestamp: new Date().toISOString(),
+      };
 
-        // Set additional data
-        if (context.additionalData) {
-          Object.entries(context.additionalData).forEach(([key, value]) => {
-            crashlytics().setAttribute(key, String(value));
-          });
-        }
-      }
+      logger.error('🚨 Error logged:', errorData);
 
-      // Log the error
-      crashlytics().recordError(error);
-
-      logger.error('🚨 Error logged to Crashlytics:', error.message);
+      // TODO: Enviar erro para backend API ou Sentry
     } catch (logError) {
-      logger.error('Failed to log error to Crashlytics:', logError);
+      logger.error('Failed to log error:', logError);
     }
   }
 
@@ -190,71 +183,44 @@ class MonitoringService {
   }
 
   /**
-   * Set user identifier
+   * Set user identifier (local logging)
    */
   async setUserId(userId: string): Promise<void> {
     try {
-      if (config.FEATURES.CRASHLYTICS_ENABLED) {
-        await crashlytics().setUserId(userId);
-      }
+      logger.debug('👤 User ID set for monitoring:', userId);
 
-      if (config.FEATURES.ANALYTICS_ENABLED) {
-        await analytics().setUserId(userId);
-      }
-
-      logger.debug('👤 User ID set for monitoring');
+      // TODO: Enviar user ID para backend API ou Sentry
     } catch (error) {
       logger.error('Failed to set user ID:', error);
     }
   }
 
   /**
-   * Set user properties
+   * Set user properties (local logging)
    */
   async setUserProperties(properties: UserProperties): Promise<void> {
     try {
-      if (config.FEATURES.CRASHLYTICS_ENABLED) {
-        await crashlytics().setAttributes({
-          userType: properties.userType || 'free',
-          appVersion: properties.appVersion || '1.0.0',
-          platform: properties.platform || Platform.OS,
-          deviceModel: properties.deviceModel || 'unknown',
-        });
-      }
+      logger.debug('👤 User properties set:', properties);
 
-      if (config.FEATURES.ANALYTICS_ENABLED) {
-        await analytics().setUserProperties({
-          user_type: properties.userType || 'free',
-          app_version: properties.appVersion || '1.0.0',
-          platform: properties.platform || Platform.OS,
-          device_model: properties.deviceModel || 'unknown',
-        });
-      }
-
-      logger.debug('👤 User properties set for monitoring');
+      // TODO: Enviar propriedades para backend API ou Sentry
     } catch (error) {
       logger.error('Failed to set user properties:', error);
     }
   }
 
   /**
-   * Start performance trace
+   * Start performance trace (local timing)
    */
   async startTrace(traceName: string, attributes?: Record<string, string>): Promise<void> {
     if (!config.FEATURES.PERFORMANCE_MONITORING) return;
 
     try {
-      const trace = perf().newTrace(traceName);
-      
-      if (attributes) {
-        Object.entries(attributes).forEach(([key, value]) => {
-          trace.putAttribute(key, value);
-        });
-      }
+      const trace = {
+        startTime: Date.now(),
+        attributes: attributes || {},
+      };
 
-      await trace.start();
       this.activeTraces.set(traceName, trace);
-
       logger.debug(`⏱️ Started trace: ${traceName}`);
     } catch (error) {
       logger.error(`Failed to start trace ${traceName}:`, error);
@@ -262,7 +228,7 @@ class MonitoringService {
   }
 
   /**
-   * Stop performance trace
+   * Stop performance trace (local timing)
    */
   async stopTrace(traceName: string): Promise<void> {
     if (!config.FEATURES.PERFORMANCE_MONITORING) return;
@@ -270,9 +236,17 @@ class MonitoringService {
     try {
       const trace = this.activeTraces.get(traceName);
       if (trace) {
-        await trace.stop();
+        const duration = Date.now() - trace.startTime;
+
+        this.recordMetric({
+          name: traceName,
+          value: duration,
+          unit: 'ms',
+          attributes: trace.attributes,
+        });
+
         this.activeTraces.delete(traceName);
-        logger.debug(`⏹️ Stopped trace: ${traceName}`);
+        logger.debug(`⏹️ Stopped trace: ${traceName} (${duration}ms)`);
       }
     } catch (error) {
       logger.error(`Failed to stop trace ${traceName}:`, error);
@@ -301,52 +275,52 @@ class MonitoringService {
   }
 
   /**
-   * Track screen view
+   * Track screen view (local logging, usar analyticsService)
    */
   async trackScreenView(screenName: string, screenClass?: string): Promise<void> {
     if (!config.FEATURES.ANALYTICS_ENABLED) return;
 
     try {
-      await analytics().logScreenView({
-        screen_name: screenName,
-        screen_class: screenClass || screenName,
-      });
-
       logger.debug(`📱 Screen view tracked: ${screenName}`);
+
+      // Use analyticsService.logScreenView() para analytics real
     } catch (error) {
       logger.error('Failed to track screen view:', error);
     }
   }
 
   /**
-   * Track custom event
+   * Track custom event (local logging, usar analyticsService)
    */
   async trackEvent(eventName: string, parameters?: Record<string, any>): Promise<void> {
     if (!config.FEATURES.ANALYTICS_ENABLED) return;
 
     try {
-      await analytics().logEvent(eventName, parameters);
+      logger.debug(`📈 Event tracked: ${eventName}`, parameters);
 
-      logger.debug(`📈 Event tracked: ${eventName}`);
+      // Use analyticsService.logEvent() para analytics real
     } catch (error) {
       logger.error('Failed to track event:', error);
     }
   }
 
   /**
-   * Track app crash
+   * Track app crash (local logging)
    */
   trackCrash(error: Error, isFatal: boolean = true): void {
     if (!config.FEATURES.CRASHLYTICS_ENABLED) return;
 
     try {
-      if (isFatal) {
-        crashlytics().crash();
-      } else {
-        crashlytics().recordError(error);
-      }
+      const crashData = {
+        message: error.message,
+        stack: error.stack,
+        isFatal,
+        timestamp: new Date().toISOString(),
+      };
 
-      logger.debug(`💥 Crash tracked: ${error.message}`);
+      logger.error(`💥 Crash tracked:`, crashData);
+
+      // TODO: Enviar crash report para backend API ou Sentry
     } catch (logError) {
       logger.error('Failed to track crash:', logError);
     }
@@ -390,8 +364,9 @@ class MonitoringService {
       return;
     }
 
-    logger.debug('🧪 Testing crash reporting...');
-    crashlytics().crash();
+    logger.debug('🧪 Testing crash reporting (simulated)...');
+    const testError = new Error('Test crash - Firebase Crashlytics removido');
+    this.trackCrash(testError, true);
   }
 
   /**

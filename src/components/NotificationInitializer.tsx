@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { Platform as _Platform } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import messaging from '@react-native-firebase/messaging';
 import notifee from '@notifee/react-native';
 import logger from '../services/loggerService';
 
@@ -15,8 +14,15 @@ import gotifyService, { GotifyMessage } from '../services/gotifyService';
 
 /**
  * Componente para inicializar notificações push
- * Suporta tanto Firebase (legacy) quanto Gotify (novo sistema)
- * Não renderiza nada, apenas configura os listeners
+ *
+ * ⚠️ MIGRATION NOTICE:
+ * Firebase Cloud Messaging foi REMOVIDO. Agora usa @notifee + Gotify WebSocket.
+ *
+ * Sistemas de notificação:
+ * - @notifee/react-native: Notificações locais (Android/iOS)
+ * - Gotify: Push notifications via WebSocket
+ *
+ * Não renderiza nada, apenas configura os listeners.
  */
 
 const NotificationInitializer = () => {
@@ -63,26 +69,8 @@ const NotificationInitializer = () => {
           logger.debug('⚠️  No Gotify token available, skipping Gotify connection');
         }
 
-        // 5. FIREBASE (Legacy): Configurar handler de mensagem em background
-        messaging().setBackgroundMessageHandler(async remoteMessage => {
-          logger.debug('Background message received:', remoteMessage);
-
-          // Exibir notificação local quando app está em background
-          if (remoteMessage.notification) {
-            await notifee.displayNotification({
-              title: remoteMessage.notification.title || 'Nova notificação',
-              body: remoteMessage.notification.body || '',
-              data: remoteMessage.data,
-              android: {
-                channelId: remoteMessage.data?.channelId || 'default',
-                smallIcon: 'ic_notification',
-                pressAction: {
-                  id: 'default',
-                },
-              },
-            });
-          }
-        });
+        // 5. Background notifications via Gotify (Firebase removido)
+        // Background handler é gerenciado pelo Gotify WebSocket listener
 
         // 6. Verificar se app foi aberto por notificação
         const initialNotification = await notificationService.getInitialNotification();
