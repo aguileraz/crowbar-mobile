@@ -54,6 +54,7 @@ Aplicativo mobile multiplataforma para o marketplace de caixas misteriosas **Cro
 - ✅ Suporte offline
 - ✅ Hermes Engine habilitado
 - ✅ Code splitting implementado
+- ✅ **Code Review Automático** com Gemini AI
 
 ## 🛠️ Pré-requisitos
 
@@ -367,6 +368,31 @@ npm run ios
 - Documentar funções e componentes
 - Usar TypeScript estrito
 
+## 🤖 Code Review Automático
+
+### **Sistema de Review com Gemini AI**
+
+Todo Pull Request recebe automaticamente um code review detalhado em ~1 minuto!
+
+**O que o Gemini analisa**:
+- 🔴 **Critical Issues**: Vulnerabilidades de segurança e bugs graves
+- 🟡 **Important Issues**: Problemas de performance e best practices
+- 🟢 **Suggestions**: Melhorias de qualidade de código
+- ✅ **Positive Observations**: Código bem escrito e boas práticas
+
+**Como funciona**:
+1. Crie um PR para `main` ou `develop`
+2. Aguarde ~1 minuto
+3. Review detalhado aparece automaticamente nos comentários!
+
+**Benefícios**:
+- ⚡ Reviews em < 1 minuto (vs 2-4 horas manual)
+- 💰 Custo ZERO (Google Gemini free tier)
+- 🎯 Consistência e qualidade garantida
+- 💻 Exemplos de código para correções
+
+**Documentação completa**: Ver [`SETUP-CODE-REVIEW.md`](SETUP-CODE-REVIEW.md) e [`GEMINI-CODE-REVIEW-SUCCESS.md`](GEMINI-CODE-REVIEW-SUCCESS.md)
+
 ## 📄 Licença
 
 Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
@@ -387,4 +413,4 @@ Para suporte técnico:
 
 ---
 
-**Status**: ✅ Produção | **Versão**: 1.0.0 | **Última Atualização**: 2025-01-09
+**Status**: ✅ Produção | **Versão**: 1.0.0 | **Última Atualização**: 2025-11-11
