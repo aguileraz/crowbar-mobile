@@ -36,6 +36,10 @@ jobs:
             **/*.tsx
             **/*.js
             **/*.jsx
+            **/package.json
+            **/pnpm-lock.yaml
+            **/yarn.lock
+            **/package-lock.json
           files_ignore: |
             **/*.test.ts
             **/*.test.tsx
@@ -127,8 +131,74 @@ jobs:
               console.log('No TypeScript issues found');
             }
 
-            // Prepare prompt for Claude
-            const reviewPrompt = `You are an expert code reviewer for a React Native TypeScript project called Crowbar.
+            // Check if this is a dependency update (only package.json or lock files changed)
+            const isDependencyUpdate = changedFiles.every(file =>
+              file.includes('package.json') ||
+              file.includes('package-lock.json') ||
+              file.includes('yarn.lock') ||
+              file.includes('pnpm-lock.yaml')
+            );
+
+            // Prepare prompt for Gemini
+            let reviewPrompt = '';
+
+            if (isDependencyUpdate) {
+              // Special prompt for dependency updates
+              reviewPrompt = `You are an expert dependency auditor for a React Native TypeScript project called Crowbar.
+
+            Project Context:
+            - React Native 0.80.1 with TypeScript 5.0.4
+            - State Management: Redux Toolkit 2.8.2
+            - UI: React Native Paper 5.14.5
+            - Testing: Jest 29.6.3
+            - Brazilian project requiring stability
+
+            This is a DEPENDENCY UPDATE. Please analyze the changes to package.json and provide feedback on:
+            1. **Breaking Changes**: Check release notes for breaking changes
+            2. **Compatibility**: Ensure versions are compatible with React Native 0.80.1
+            3. **Security**: Check for known vulnerabilities in new versions
+            4. **Testing**: Recommend which areas need regression testing
+            5. **Migration**: Identify if migration steps are needed
+
+            Changed Files:
+            ${Object.entries(fileContents).map(([file, content]) => `
+            File: ${file}
+            \`\`\`json
+            ${content.substring(0, 5000)}
+            \`\`\`
+            `).join('\n\n')}
+
+            Provide your review in the following format:
+
+            ## Dependency Update Review
+
+            ### Critical Issues (🔴 High Priority)
+            - List breaking changes that MUST be addressed before merge
+            - Security vulnerabilities in dependencies
+            - Incompatible versions
+
+            ### Important Issues (🟡 Medium Priority)
+            - Potential compatibility issues
+            - Deprecation warnings
+            - Performance concerns with new versions
+
+            ### Testing Recommendations (🧪 Required)
+            - Specific areas that need regression testing
+            - New features to test from updated dependencies
+
+            ### Migration Steps (📋 If Needed)
+            - Code changes required for breaking changes
+            - Configuration updates needed
+
+            ### Positive Observations (✅)
+            - Security fixes included
+            - Performance improvements
+            - New features available
+
+            Be specific about version numbers and provide links to changelogs when possible.`;
+            } else {
+              // Standard code review prompt
+              reviewPrompt = `You are an expert code reviewer for a React Native TypeScript project called Crowbar.
 
             Project Context:
             - React Native 0.80.1 with TypeScript
@@ -180,6 +250,7 @@ jobs:
             - Acknowledge good practices and well-written code
 
             Be specific, reference line numbers, and provide code examples for fixes when possible.`;
+            }
 
             // Call Gemini API
             const apiKey = process.env.GEMINI_API_KEY;
