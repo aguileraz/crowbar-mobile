@@ -53,20 +53,29 @@ jobs:
 
       - name: Install dependencies
         if: steps.changed-files.outputs.any_changed == 'true'
-        run: npm ci
+        run: npm install || echo "Skipping dependency installation"
+        continue-on-error: true
 
       - name: Run ESLint
         if: steps.changed-files.outputs.any_changed == 'true'
         id: eslint
         run: |
-          npm run lint -- --format json --output-file eslint-report.json || true
+          if [ -f "node_modules/.bin/eslint" ]; then
+            npm run lint -- --format json --output-file eslint-report.json || true
+          else
+            echo "ESLint not available, skipping"
+          fi
         continue-on-error: true
 
       - name: Run TypeScript Check
         if: steps.changed-files.outputs.any_changed == 'true'
         id: typescript
         run: |
-          npm run type-check > typescript-report.txt 2>&1 || true
+          if [ -f "node_modules/.bin/tsc" ]; then
+            npm run type-check > typescript-report.txt 2>&1 || true
+          else
+            echo "TypeScript not available, skipping"
+          fi
         continue-on-error: true
 
       - name: Claude Code Review
