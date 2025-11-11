@@ -94,7 +94,7 @@
     "dashboard:open": "make -f Makefile.docker dashboard"
   },
   "dependencies": {
-    "@notifee/react-native": "^7.8.0",
+    "@notifee/react-native": "^9.1.8",
     "@react-native-async-storage/async-storage": "^2.2.0",
     "@react-native-community/netinfo": "^11.4.1",
     "@react-native/new-app-screen": "0.80.1",
