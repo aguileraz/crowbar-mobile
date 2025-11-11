@@ -176,7 +176,7 @@ jobs:
     
     steps:
       - name: 📥 Download all artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v6
         with:
           path: test-results
 
