@@ -183,7 +183,8 @@ describe('AuthService - Keycloak OAuth2 Migration', () => {
         password: 'password123',
       };
 
-      await expect(authService.login(loginInput)).rejects.toThrow(
+      // Updated to call loginDeprecated() after Bug #1 fix (method renamed to avoid shadowing)
+      await expect(authService.loginDeprecated(loginInput)).rejects.toThrow(
         'DEPRECATED: Firebase Auth não está disponível. Use keycloakService.login() para OAuth2.'
       );
 
@@ -1596,10 +1597,9 @@ describe('AuthService - Keycloak OAuth2 Migration', () => {
   // ==================== MULTI-DEVICE SESSIONS (NEW) ====================
   // Phase 2: 5 critical Multi-Device tests written from scratch
 
-  describe.skip('✅ TEST 61: Multi-Device Login - should allow login on multiple devices', () => {
-    // SKIPPED: loginOnDevice() calls deprecated this.login() method (line 2334) instead of OAuth2 login (line 72)
-    // This causes "DEPRECATED: Firebase Auth não está disponível" error
-    // TODO: Fix authService.ts to use correct login method or create separate OAuth2 login method
+  describe('✅ TEST 61: Multi-Device Login - should allow login on multiple devices', () => {
+    // BUG #1 FIXED: Renamed deprecated login() method to loginDeprecated() in authService.ts
+    // This test should now pass as loginOnDevice() will call the correct OAuth2 login() method
     it('deve fazer login em dispositivo específico', async () => {
       // Arrange
       setupAuthenticatedUserMFA('default');
@@ -1639,10 +1639,9 @@ describe('AuthService - Keycloak OAuth2 Migration', () => {
       }
     });
 
-    it.skip('deve retornar array vazio se usuário não autenticado', async () => {
-      // SKIPPED: listActiveDevices() implementation always returns mock data (line 2148-2150)
-      // even after early return check (line 2138-2142). Implementation issue, not test issue.
-      // TODO: Fix authService.ts listActiveDevices() to actually return [] when not authenticated
+    it('deve retornar array vazio se usuário não autenticado', async () => {
+      // BUG #2 FIXED: clearTokens() now properly clears this.currentTokens
+      // This test should now pass as listActiveDevices() will correctly detect unauthenticated state
 
       // Arrange - Clear authentication by logging out first
       mockedRevoke.mockResolvedValue(undefined);
