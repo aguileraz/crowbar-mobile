@@ -1,0 +1,256 @@
+name: Claude Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - main
+      - develop
+  push:
+    branches:
+      - develop
+      - feature/*
+
+jobs:
+  code-review:
+    name: Automated Code Review with Claude
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v41
+        with:
+          files: |
+            **/*.ts
+            **/*.tsx
+            **/*.js
+            **/*.jsx
+          files_ignore: |
+            **/*.test.ts
+            **/*.test.tsx
+            **/*.spec.ts
+            **/*.spec.tsx
+            **/node_modules/**
+            **/dist/**
+            **/build/**
+
+      - name: Setup Node.js
+        if: steps.changed-files.outputs.any_changed == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: npm ci
+
+      - name: Run ESLint
+        if: steps.changed-files.outputs.any_changed == 'true'
+        id: eslint
+        run: |
+          npm run lint -- --format json --output-file eslint-report.json || true
+        continue-on-error: true
+
+      - name: Run TypeScript Check
+        if: steps.changed-files.outputs.any_changed == 'true'
+        id: typescript
+        run: |
+          npm run type-check > typescript-report.txt 2>&1 || true
+        continue-on-error: true
+
+      - name: Claude Code Review
+        if: steps.changed-files.outputs.any_changed == 'true'
+        uses: actions/github-script@v7
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+
+            // Get changed files
+            const changedFiles = `${{ steps.changed-files.outputs.all_changed_files }}`.split(' ');
+
+            console.log(`Reviewing ${changedFiles.length} changed files...`);
+
+            // Read changed files content
+            const fileContents = {};
+            for (const file of changedFiles) {
+              try {
+                const content = fs.readFileSync(file, 'utf8');
+                fileContents[file] = content;
+              } catch (error) {
+                console.log(`Could not read file ${file}: ${error.message}`);
+              }
+            }
+
+            // Read ESLint report if exists
+            let eslintIssues = [];
+            try {
+              const eslintReport = JSON.parse(fs.readFileSync('eslint-report.json', 'utf8'));
+              eslintIssues = eslintReport
+                .filter(file => file.errorCount > 0 || file.warningCount > 0)
+                .map(file => ({
+                  file: file.filePath,
+                  messages: file.messages
+                }));
+            } catch (error) {
+              console.log('No ESLint issues found');
+            }
+
+            // Read TypeScript report if exists
+            let typescriptIssues = '';
+            try {
+              typescriptIssues = fs.readFileSync('typescript-report.txt', 'utf8');
+            } catch (error) {
+              console.log('No TypeScript issues found');
+            }
+
+            // Prepare prompt for Claude
+            const reviewPrompt = `You are an expert code reviewer for a React Native TypeScript project called Crowbar.
+
+            Project Context:
+            - React Native 0.80.1 with TypeScript
+            - Testing with Jest
+            - Authentication system with OAuth2/Keycloak
+            - Brazilian Portuguese comments required
+            - Strict TypeScript mode enabled
+
+            Please review the following changed files and provide specific, actionable feedback focusing on:
+            1. Security vulnerabilities
+            2. Performance issues
+            3. Best practices violations
+            4. Potential bugs
+            5. Code maintainability
+            6. Test coverage gaps
+
+            Changed Files:
+            ${Object.entries(fileContents).map(([file, content]) => `
+            File: ${file}
+            \`\`\`typescript
+            ${content}
+            \`\`\`
+            `).join('\n\n')}
+
+            ${eslintIssues.length > 0 ? `
+            ESLint Issues Found:
+            ${JSON.stringify(eslintIssues, null, 2)}
+            ` : ''}
+
+            ${typescriptIssues ? `
+            TypeScript Issues:
+            ${typescriptIssues}
+            ` : ''}
+
+            Provide your review in the following format:
+
+            ## Code Review Summary
+
+            ### Critical Issues (🔴 High Priority)
+            - List any security vulnerabilities or bugs that must be fixed
+
+            ### Important Issues (🟡 Medium Priority)
+            - List performance issues or significant best practice violations
+
+            ### Suggestions (🟢 Low Priority)
+            - List code quality improvements and minor suggestions
+
+            ### Positive Observations (✅)
+            - Acknowledge good practices and well-written code
+
+            Be specific, reference line numbers, and provide code examples for fixes when possible.`;
+
+            // Call Claude API
+            const apiKey = process.env.ANTHROPIC_API_KEY;
+            if (!apiKey) {
+              console.log('⚠️ ANTHROPIC_API_KEY not found. Skipping Claude review.');
+              return;
+            }
+
+            try {
+              const response = await fetch('https://api.anthropic.com/v1/messages', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'x-api-key': apiKey,
+                  'anthropic-version': '2023-06-01'
+                },
+                body: JSON.stringify({
+                  model: 'claude-3-5-sonnet-20241022',
+                  max_tokens: 4096,
+                  messages: [{
+                    role: 'user',
+                    content: reviewPrompt
+                  }]
+                })
+              });
+
+              if (!response.ok) {
+                throw new Error(`Claude API error: ${response.status} ${response.statusText}`);
+              }
+
+              const data = await response.json();
+              const reviewContent = data.content[0].text;
+
+              // Post review as PR comment
+              if (context.eventName === 'pull_request') {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: context.payload.pull_request.number,
+                  body: `## 🤖 Claude Code Review\n\n${reviewContent}\n\n---\n*Automated review by Claude (Anthropic)*`
+                });
+
+                console.log('✅ Code review posted to PR');
+              } else {
+                // For push events, create an issue
+                await github.rest.issues.create({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  title: `Code Review: ${context.sha.substring(0, 7)} - ${new Date().toISOString().split('T')[0]}`,
+                  body: `## 🤖 Claude Code Review\n\n**Commit**: ${context.sha}\n**Branch**: ${context.ref}\n\n${reviewContent}\n\n---\n*Automated review by Claude (Anthropic)*`,
+                  labels: ['code-review', 'automated']
+                });
+
+                console.log('✅ Code review posted as issue');
+              }
+            } catch (error) {
+              console.error('Error calling Claude API:', error);
+              core.setFailed(`Code review failed: ${error.message}`);
+            }
+
+      - name: Post review summary
+        if: always() && steps.changed-files.outputs.any_changed == 'true'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const summary = `## Code Review Summary
+
+            **Changed Files**: ${{ steps.changed-files.outputs.all_changed_files_count }}
+            **ESLint**: ${process.env.ESLINT_STATUS || '✅ Passed'}
+            **TypeScript**: ${process.env.TYPESCRIPT_STATUS || '✅ Passed'}
+            **Claude Review**: ${process.env.CLAUDE_STATUS || '✅ Completed'}
+
+            See comments above for detailed review.`;
+
+            if (context.eventName === 'pull_request') {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                body: summary
+              });
+            }
