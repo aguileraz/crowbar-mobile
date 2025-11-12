@@ -1,0 +1,13 @@
+# pnpm configuration for React Native
+# Required to fix @react-native/gradle-plugin missing issue
+
+# Hoist React Native packages to root node_modules
+public-hoist-pattern[]=*react-native*
+public-hoist-pattern[]=*@react-native*
+public-hoist-pattern[]=*@react-native-community*
+
+# Enable shamefully-hoist as fallback
+shamefully-hoist=true
+
+# Use strict peer dependencies
+strict-peer-dependencies=false

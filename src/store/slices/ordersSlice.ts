@@ -54,7 +54,7 @@ export const fetchOrders = createAsyncThunk(
   async (params: { page?: number; filters?: any } = {}, { rejectWithValue }) => {
     try {
       const { page = 1, filters = {} } = params;
-      const _response = await orderService.getOrders(page, 20, filters);
+      const response = await orderService.getOrders(page, 20, filters);
       return {
         orders: response.data,
         pagination: response.pagination,
@@ -204,11 +204,11 @@ const ordersSlice = createSlice({
       .addCase(fetchOrderDetails.fulfilled, (state, action) => {
         state.isLoading = false;
         state.currentOrder = action.payload;
-        
+
         // Update order in list if exists
-        const _index = state.orders.findIndex(order => order.id === action.payload.id);
-        if (_index !== -1) {
-          state.orders[0] = action.payload;
+        const index = state.orders.findIndex(order => order.id === action.payload.id);
+        if (index !== -1) {
+          state.orders[index] = action.payload;
         }
       })
       .addCase(fetchOrderDetails.rejected, (state, action) => {
@@ -224,13 +224,13 @@ const ordersSlice = createSlice({
       })
       .addCase(cancelOrder.fulfilled, (state, action) => {
         state.isUpdating = false;
-        
+
         // Update order in list
-        const _index = state.orders.findIndex(order => order.id === action.payload.id);
-        if (_index !== -1) {
-          state.orders[0] = action.payload;
+        const index = state.orders.findIndex(order => order.id === action.payload.id);
+        if (index !== -1) {
+          state.orders[index] = action.payload;
         }
-        
+
         // Update current order if it's the same
         if (state.currentOrder?.id === action.payload.id) {
           state.currentOrder = action.payload;
@@ -259,11 +259,11 @@ const ordersSlice = createSlice({
     builder
       .addCase(trackOrder.fulfilled, (state, action) => {
         // Update order tracking info
-        const _index = state.orders.findIndex(order => order.id === action.payload.orderId);
-        if (_index !== -1) {
-          state.orders[0].tracking = action.payload.tracking;
+        const index = state.orders.findIndex(order => order.id === action.payload.orderId);
+        if (index !== -1) {
+          state.orders[index].tracking = action.payload.tracking;
         }
-        
+
         if (state.currentOrder?.id === action.payload.orderId) {
           state.currentOrder.tracking = action.payload.tracking;
         }
@@ -277,13 +277,13 @@ const ordersSlice = createSlice({
       })
       .addCase(rateOrder.fulfilled, (state, action) => {
         state.isUpdating = false;
-        
+
         // Update order in list
-        const _index = state.orders.findIndex(order => order.id === action.payload.id);
-        if (_index !== -1) {
-          state.orders[0] = action.payload;
+        const index = state.orders.findIndex(order => order.id === action.payload.id);
+        if (index !== -1) {
+          state.orders[index] = action.payload;
         }
-        
+
         // Update current order if it's the same
         if (state.currentOrder?.id === action.payload.id) {
           state.currentOrder = action.payload;

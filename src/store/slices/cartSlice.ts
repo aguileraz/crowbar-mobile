@@ -338,14 +338,20 @@ const cartSlice = createSlice({
       .addCase(calculateShipping.fulfilled, (state, action) => {
         state.shippingOptions = action.payload;
       })
+      .addCase(calculateShipping.rejected, (state, action) => {
+        state.error = action.payload as string;
+      })
       .addCase(calculateShippingByZip.fulfilled, (state, action) => {
         state.shippingOptions = action.payload;
+      })
+      .addCase(calculateShippingByZip.rejected, (state, action) => {
+        state.error = action.payload as string;
       });
   },
 });
 
 // Actions
-export const { setSelectedShippingOption, clearShippingOptions, resetCart,  } = cartSlice.actions;
+export const { clearError, setSelectedShippingOption, clearShippingOptions, resetCart } = cartSlice.actions;
 
 // Selectors
 export const selectCart = (state: { cart: CartState }) => state.cart.cart;
