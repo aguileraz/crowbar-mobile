@@ -23,8 +23,8 @@ importers:
         specifier: ^11.4.1
         version: 11.4.1(react-native@0.80.1(@babel/core@7.28.5)(@react-native-community/cli@19.0.0(typescript@5.0.4))(@types/react@19.2.2)(react@19.1.0))
       '@react-native/new-app-screen':
-        specifier: 0.80.1
-        version: 0.80.1(@types/react@19.2.2)(react-native@0.80.1(@babel/core@7.28.5)(@react-native-community/cli@19.0.0(typescript@5.0.4))(@types/react@19.2.2)(react@19.1.0))(react@19.1.0)
+        specifier: 0.82.1
+        version: 0.82.1(@types/react@19.2.2)(react-native@0.80.1(@babel/core@7.28.5)(@react-native-community/cli@19.0.0(typescript@5.0.4))(@types/react@19.2.2)(react@19.1.0))(react@19.1.0)
       '@react-navigation/bottom-tabs':
         specifier: ^7.4.2
         version: 7.7.3(@react-navigation/native@7.1.19(react-native@0.80.1(@babel/core@7.28.5)(@react-native-community/cli@19.0.0(typescript@5.0.4))(@types/react@19.2.2)(react@19.1.0))(react@19.1.0))(react-native-safe-area-context@5.6.2(react-native@0.80.1(@babel/core@7.28.5)(@react-native-community/cli@19.0.0(typescript@5.0.4))(@types/react@19.2.2)(react@19.1.0))(react@19.1.0))(react-native-screens@4.18.0(react-native@0.80.1(@babel/core@7.28.5)(@react-native-community/cli@19.0.0(typescript@5.0.4))(@types/react@19.2.2)(react@19.1.0))(react@19.1.0))(react-native@0.80.1(@babel/core@7.28.5)(@react-native-community/cli@19.0.0(typescript@5.0.4))(@types/react@19.2.2)(react@19.1.0))(react@19.1.0)
@@ -1307,11 +1307,11 @@ packages:
     resolution: {integrity: sha512-VLfHJ1G/lHvpE0YzxPal3sslfr5e5RNQVFeVebMwS3zSf57ZiZbfAevWJJT+7/gfGADMIoiX7AUteCVlbxMu/g==}
     engines: {node: '>=18'}
 
-  '@react-native/new-app-screen@0.80.1':
-    resolution: {integrity: sha512-i1dqF76zBBoyg9D2+8nN+eD4ikSnEFd0HKCTfmG6LO+NAuCBdxWzPhe2HJytlSsfV+3uNP+P/JfduBnY/+/Tcw==}
-    engines: {node: '>=18'}
+  '@react-native/new-app-screen@0.82.1':
+    resolution: {integrity: sha512-cViiTco2ukQVd683tGk+7bwf8WMS6A9hg5HUB3LjFli4pzOinuDlC5jzym6RiROhS5B3NmQ3CTccJmWgsJQL1w==}
+    engines: {node: '>= 20.19.4'}
     peerDependencies:
-      '@types/react': ^19.0.0
+      '@types/react': ^19.1.0
       react: '*'
       react-native: '*'
     peerDependenciesMeta:
@@ -6635,11 +6635,9 @@ snapshots:
       metro-runtime: 0.82.5
     transitivePeerDependencies:
       - '@babel/core'
-      - bufferutil
       - supports-color
-      - utf-8-validate
 
-  '@react-native/new-app-screen@0.80.1(@types/react@19.2.2)(react-native@0.80.1(@babel/core@7.28.5)(@react-native-community/cli@19.0.0(typescript@5.0.4))(@types/react@19.2.2)(react@19.1.0))(react@19.1.0)':
+  '@react-native/new-app-screen@0.82.1(@types/react@19.2.2)(react-native@0.80.1(@babel/core@7.28.5)(@react-native-community/cli@19.0.0(typescript@5.0.4))(@types/react@19.2.2)(react@19.1.0))(react@19.1.0)':
     dependencies:
       react: 19.1.0
       react-native: 0.80.1(@babel/core@7.28.5)(@react-native-community/cli@19.0.0(typescript@5.0.4))(@types/react@19.2.2)(react@19.1.0)
