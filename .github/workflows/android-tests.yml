@@ -158,7 +158,7 @@ jobs:
           
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: test-results-${{ github.sha }}
           path: |
@@ -167,7 +167,7 @@ jobs:
           
       - name: Upload screenshots
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: test-screenshots-${{ github.sha }}
           path: |
@@ -176,7 +176,7 @@ jobs:
           
       - name: Upload logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: test-logs-${{ github.sha }}
           path: |

@@ -141,7 +141,7 @@ jobs:
 
       - name: 📤 Upload test results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v5
         with:
           name: test-results-api-${{ matrix.api-level }}
           path: |
@@ -151,7 +151,7 @@ jobs:
 
       - name: 📸 Upload screenshots
         if: failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v5
         with:
           name: failure-screenshots-api-${{ matrix.api-level }}
           path: test-results/api-${{ matrix.api-level }}/screenshots/
