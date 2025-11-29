@@ -124,7 +124,7 @@ jobs:
       # === INSTALAÇÃO ===
       - name: 📦 Install Dependencies
         run: |
-          pnpm install --frozen-lockfile
+          pnpm install
           # Verificar se o gradle-plugin existe
           ls -la node_modules/@react-native/gradle-plugin/ || echo "Gradle plugin não encontrado"
 
@@ -213,7 +213,7 @@ jobs:
 
       - name: 📦 Install Dependencies
         run: |
-          pnpm install --frozen-lockfile
+          pnpm install
           ls -la node_modules/@react-native/gradle-plugin/ || echo "Gradle plugin não encontrado"
 
       - name: 🔨 Build Android
