@@ -97,10 +97,10 @@ jobs:
         with:
           path: |
             node_modules
-            */node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+            ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-pnpm-
 
       - name: 💾 Cache Gradle
         uses: actions/cache@v4
@@ -123,13 +123,16 @@ jobs:
 
       # === INSTALAÇÃO ===
       - name: 📦 Install Dependencies
-        run: pnpm install
+        run: |
+          pnpm install --frozen-lockfile
+          # Verificar se o gradle-plugin existe
+          ls -la node_modules/@react-native/gradle-plugin/ || echo "Gradle plugin não encontrado"
 
       # === BUILD ===
       - name: 🔨 Build Android Debug APK
         run: |
           cd android
-          ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug
+          ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug --no-daemon
         env:
           JAVA_HOME: ${{ env.JAVA_HOME_17_X64 }}
 
@@ -209,10 +212,12 @@ jobs:
           java-version: '17'
 
       - name: 📦 Install Dependencies
-        run: pnpm install
+        run: |
+          pnpm install --frozen-lockfile
+          ls -la node_modules/@react-native/gradle-plugin/ || echo "Gradle plugin não encontrado"
 
       - name: 🔨 Build Android
-        run: cd android && ./gradlew assembleDebug
+        run: cd android && ./gradlew assembleDebug --no-daemon
 
       - name: 🧪 Run Smoke Tests
         uses: reactivecircus/android-emulator-runner@v2
