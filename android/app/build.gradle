@@ -115,17 +115,9 @@ android {
     apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
 }
 
-// WORKAROUND: Skip broken autolinking tasks (RN 0.80.x + pnpm bug)
-// These tasks fail because react-native config doesn't detect android.packageName with pnpm
-// Autolinking will work via autolinkLibrariesWithApp() in react {} block instead
-afterEvaluate {
-    tasks.named("generateAutolinkingPackageList").configure {
-        enabled = false
-    }
-    tasks.named("generateReactNativeEntryPoint").configure {
-        enabled = false
-    }
-}
+// NOTE: With node-linker=hoisted and shamefully-hoist=true in .npmrc,
+// the autolinking tasks should work correctly with pnpm.
+// If issues persist, add workarounds here.
 
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
