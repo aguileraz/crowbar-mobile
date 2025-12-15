@@ -16,6 +16,7 @@ describe('OrderService', () => {
     it('deve buscar pedidos com paginação padrão', async () => {
       // Mock de resposta
       const mockResponse: PaginatedResponse<Order> = {
+        success: true,
         data: [
           {
             id: '1',
@@ -27,9 +28,20 @@ describe('OrderService', () => {
             updatedAt: '2025-01-01T00:00:00Z'
           } as Order,
         ],
-        total: 1,
-        page: 1,
-        totalPages: 1,
+        meta: {
+          current_page: 1,
+          last_page: 1,
+          per_page: 20,
+          total: 1,
+          from: 1,
+          to: 1,
+        },
+        links: {
+          first: '/orders?page=1',
+          last: '/orders?page=1',
+          prev: null,
+          next: null,
+        },
       };
 
       (httpClient.get as jest.Mock).mockResolvedValue({ data: mockResponse });
@@ -49,10 +61,22 @@ describe('OrderService', () => {
 
     it('deve buscar pedidos com filtros personalizados', async () => {
       const mockResponse: PaginatedResponse<Order> = {
+        success: true,
         data: [],
-        total: 0,
-        page: 1,
-        totalPages: 0,
+        meta: {
+          current_page: 2,
+          last_page: 0,
+          per_page: 10,
+          total: 0,
+          from: 0,
+          to: 0,
+        },
+        links: {
+          first: '/orders?page=1',
+          last: '/orders?page=1',
+          prev: '/orders?page=1',
+          next: null,
+        },
       };
 
       (httpClient.get as jest.Mock).mockResolvedValue({ data: mockResponse });
@@ -430,6 +454,141 @@ describe('OrderService', () => {
         type: 'wrong_item',
         description: 'Recebi produto errado',
         images: attachments,
+      });
+    });
+  });
+
+  describe('getDeliveryStatus', () => {
+    it('deve buscar status de entrega', async () => {
+      const mockDeliveryStatus = {
+        orderId: 'order-123',
+        status: 'in_transit',
+        estimatedDelivery: '2025-01-15T10:00:00Z',
+        carrier: 'Correios',
+        trackingCode: 'BR123456789BR',
+      };
+
+      (httpClient.get as jest.Mock).mockResolvedValue({ data: mockDeliveryStatus });
+
+      const _result = await orderService.getDeliveryStatus('order-123');
+
+      expect(_result).toEqual(mockDeliveryStatus);
+      expect(httpClient.get).toHaveBeenCalledWith('/orders/order-123/delivery-_status');
+    });
+  });
+
+  describe('confirmDelivery', () => {
+    it('deve confirmar recebimento do pedido', async () => {
+      const mockConfirmedOrder: Order = {
+        id: 'order-123',
+        status: 'delivered',
+      } as Order;
+
+      (httpClient.post as jest.Mock).mockResolvedValue({ data: mockConfirmedOrder });
+
+      const _result = await orderService.confirmDelivery('order-123');
+
+      expect(_result).toEqual(mockConfirmedOrder);
+      expect(httpClient.post).toHaveBeenCalledWith('/orders/order-123/confirm-delivery');
+    });
+  });
+
+  describe('requestReturn', () => {
+    it('deve solicitar devolução de pedido', async () => {
+      const mockReturnResponse = {
+        success: true,
+        returnId: 'RET-001',
+        message: 'Devolução solicitada com sucesso',
+      };
+
+      const returnData = {
+        reason: 'defective',
+        description: 'Produto com defeito',
+        items: [
+          {
+            item_id: 'item-1',
+            quantity: 1,
+            reason: 'defective',
+          },
+        ],
+      };
+
+      (httpClient.post as jest.Mock).mockResolvedValue({ data: mockReturnResponse });
+
+      const _result = await orderService.requestReturn('order-123', returnData);
+
+      expect(_result).toEqual(mockReturnResponse);
+      expect(httpClient.post).toHaveBeenCalledWith('/orders/order-123/return', returnData);
+    });
+  });
+
+  describe('getStatusHistory', () => {
+    it('deve buscar histórico de status do pedido', async () => {
+      const mockHistory = [
+        {
+          status: 'pending',
+          date: '2025-01-10T10:00:00Z',
+          description: 'Pedido criado',
+        },
+        {
+          status: 'processing',
+          date: '2025-01-11T10:00:00Z',
+          description: 'Pedido em processamento',
+        },
+        {
+          status: 'shipped',
+          date: '2025-01-12T10:00:00Z',
+          description: 'Pedido enviado',
+        },
+      ];
+
+      (httpClient.get as jest.Mock).mockResolvedValue({ data: mockHistory });
+
+      const _result = await orderService.getStatusHistory('order-123');
+
+      expect(_result).toEqual(mockHistory);
+      expect(httpClient.get).toHaveBeenCalledWith('/orders/order-123/_status-history');
+    });
+  });
+
+  describe('updateDeliveryAddress', () => {
+    it('deve atualizar endereço de entrega', async () => {
+      const mockUpdatedOrder: Order = {
+        id: 'order-123',
+        shippingAddress: {
+          street: 'Nova Rua',
+          number: '456',
+          city: 'Rio de Janeiro',
+          state: 'RJ',
+          zipCode: '20000-000',
+        },
+      } as Order;
+
+      (httpClient.patch as jest.Mock).mockResolvedValue({ data: mockUpdatedOrder });
+
+      const _result = await orderService.updateDeliveryAddress('order-123', 'address-456');
+
+      expect(_result).toEqual(mockUpdatedOrder);
+      expect(httpClient.patch).toHaveBeenCalledWith('/orders/order-123/delivery-address', {
+        address_id: 'address-456',
+      });
+    });
+  });
+
+  describe('rescheduleDelivery', () => {
+    it('deve reagendar entrega', async () => {
+      const mockRescheduledOrder: Order = {
+        id: 'order-123',
+        estimatedDelivery: '2025-01-20T10:00:00Z',
+      } as Order;
+
+      (httpClient.post as jest.Mock).mockResolvedValue({ data: mockRescheduledOrder });
+
+      const _result = await orderService.rescheduleDelivery('order-123', '2025-01-20T10:00:00Z');
+
+      expect(_result).toEqual(mockRescheduledOrder);
+      expect(httpClient.post).toHaveBeenCalledWith('/orders/order-123/reschedule', {
+        delivery_date: '2025-01-20T10:00:00Z',
       });
     });
   });

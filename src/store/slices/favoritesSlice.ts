@@ -47,10 +47,15 @@ export const fetchFavorites = createAsyncThunk(
   'favorites/fetchFavorites',
   async (page: number = 1, { rejectWithValue }) => {
     try {
-      const _response = await userService.getFavorites(page, 20);
+      const response = await userService.getFavorites(page, 20);
       return {
         favorites: response.data,
-        pagination: response.pagination,
+        pagination: {
+          currentPage: response.meta?.current_page || page,
+          totalPages: response.meta?.last_page || 1,
+          totalItems: response.meta?.total || 0,
+          hasNextPage: (response.meta?.current_page || page) < (response.meta?.last_page || 1),
+        },
       };
     } catch (error: any) {
       return rejectWithValue(error.message || 'Erro ao buscar favoritos');

@@ -16,6 +16,7 @@ import notificationsReducer from './slices/notificationsSlice';
 import realtimeReducer from './slices/realtimeSlice';
 import offlineReducer from './slices/offlineSlice';
 import analyticsReducer from './slices/analyticsSlice';
+import paymentReducer from './slices/paymentSlice';
 
 /**
  * Redux store configuration with persistence
@@ -42,6 +43,7 @@ const rootReducer = combineReducers({
   realtime: realtimeReducer,
   offline: offlineReducer,
   analytics: analyticsReducer,
+  payment: paymentReducer,
   // Add other reducers here
 });
 

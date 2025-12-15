@@ -20,6 +20,8 @@ jest.mock('../api', () => ({
   apiClient: {
     post: jest.fn(),
     get: jest.fn(),
+    put: jest.fn(),
+    delete: jest.fn(),
   },
 }));
 
@@ -396,6 +398,7 @@ describe('Payment Service Tests', () => {
       // Assert
       expect(apiClient.get).toHaveBeenCalledWith(`/orders/${orderId}/payment/_status`);
       expect(result).toEqual(mockResponse);
+      expect(result.status).toBe('pending');
       expect(result.status).toBe('pending');
     });
 

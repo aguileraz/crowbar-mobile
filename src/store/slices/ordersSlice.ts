@@ -57,7 +57,12 @@ export const fetchOrders = createAsyncThunk(
       const response = await orderService.getOrders(page, 20, filters);
       return {
         orders: response.data,
-        pagination: response.pagination,
+        pagination: {
+          currentPage: response.meta?.current_page || page,
+          totalPages: response.meta?.last_page || 1,
+          totalItems: response.meta?.total || 0,
+          hasNextPage: (response.meta?.current_page || page) < (response.meta?.last_page || 1),
+        },
         page,
       };
     } catch (error: any) {
