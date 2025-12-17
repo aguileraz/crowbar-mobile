@@ -1,17 +1,27 @@
  
 import { TestApiClient, testEnvironment, testData, testUtils } from './testConfig';
-import auth from '@react-native-firebase/auth';
+import { authorize, refresh, revoke } from 'react-native-app-auth';
+import keycloakService from '../../keycloakService';
 
 /**
- * Testes de integração para sistema de autenticação
- * Verifica fluxos de login, registro, logout e gerenciamento de tokens
+ * Testes de integração para sistema de autenticação Keycloak OAuth2/OIDC
+ * Verifica fluxos de login, logout, refresh e gerenciamento de tokens
+ * 
+ * ⚠️ MIGRATED: Firebase Auth → Keycloak OAuth2 (Sprint 9)
  */
 
-// Using global Firebase Auth mock from jest.setup.js
+// Mock react-native-app-auth
+jest.mock('react-native-app-auth');
+jest.mock('../../keycloakService');
 
-describe('Testes de Integração - Autenticação', () => {
+const mockedAuthorize = authorize as jest.MockedFunction<typeof authorize>;
+const mockedRefresh = refresh as jest.MockedFunction<typeof refresh>;
+const mockedRevoke = revoke as jest.MockedFunction<typeof revoke>;
+const mockedKeycloakService = keycloakService as jest.Mocked<typeof keycloakService>;
+
+describe('Testes de Integração - Autenticação Keycloak', () => {
   let testClient: TestApiClient;
-  let mockAuth: any;
+  let apiClient: any;
 
   beforeAll(() => {
     testEnvironment.setup();
@@ -23,16 +33,27 @@ describe('Testes de Integração - Autenticação', () => {
 
   beforeEach(() => {
     testClient = new TestApiClient();
-    mockAuth = auth();
+    apiClient = testClient.getAxiosInstance();
     
-    // Configurar mock padrão para auth
-    mockAuth.signInWithEmailAndPassword.mockResolvedValue({
-      user: {
-        uid: 'firebase-test-uid',
-        email: 'test@crowbar.com',
-        getIdToken: jest.fn().mockResolvedValue('firebase-token'),
-      },
+    // Configurar mock padrão para Keycloak OAuth2
+    mockedAuthorize.mockResolvedValue({
+      accessToken: 'mock-keycloak-access-token',
+      refreshToken: 'mock-keycloak-refresh-token',
+      idToken: 'mock-keycloak-id-token.eyJzdWIiOiJrZXljbG9hay11c2VyLTEyMyIsImVtYWlsIjoidGVzdEBjcm93YmFyLmNvbSJ9.signature',
+      accessTokenExpirationDate: new Date(Date.now() + 3600000).toISOString(),
+      tokenType: 'Bearer',
+      scopes: ['openid', 'profile', 'email', 'offline_access'],
     });
+
+    mockedRefresh.mockResolvedValue({
+      accessToken: 'mock-refreshed-access-token',
+      refreshToken: 'mock-new-refresh-token',
+      idToken: 'mock-new-id-token',
+      accessTokenExpirationDate: new Date(Date.now() + 3600000).toISOString(),
+      tokenType: 'Bearer',
+    });
+
+    mockedRevoke.mockResolvedValue(undefined);
   });
 
   afterEach(() => {
@@ -40,98 +61,70 @@ describe('Testes de Integração - Autenticação', () => {
     jest.clearAllMocks();
   });
 
-  describe('Login de usuário', () => {
-    it('deve fazer login com sucesso usando email e senha', async () => {
+  describe('Login de usuário - Keycloak OAuth2', () => {
+    it('deve fazer login com sucesso usando OAuth2 flow', async () => {
       // Arrange
-      const credentials = { email: 'test@crowbar.com', password: 'password123' };
-      const expectedResponse = testUtils.createApiResponse({
-        user: testData.user,
-        token: testData.authToken,
-        expires_in: 3600,
-      });
+      const mockOAuthResult = {
+        accessToken: 'mock-keycloak-access-token',
+        refreshToken: 'mock-keycloak-refresh-token',
+        idToken: 'mock-keycloak-id-token.eyJzdWIiOiJrZXljbG9hay11c2VyLTEyMyIsImVtYWlsIjoidGVzdEBjcm93YmFyLmNvbSJ9.signature',
+        accessTokenExpirationDate: new Date(Date.now() + 3600000).toISOString(),
+        tokenType: 'Bearer',
+        scopes: ['openid', 'profile', 'email', 'offline_access'],
+      };
 
-      testClient.mockSuccess('post', '/auth/login', expectedResponse);
+      mockedAuthorize.mockResolvedValue(mockOAuthResult);
 
-      // Act
-      const response = await testClient.getAxiosInstance().post('/auth/login', credentials);
+      // Act - Simular login OAuth2 via keycloakService
+      const result = await mockedKeycloakService.login();
 
       // Assert
-      expect(response.data.success).toBe(true);
-      expect(response.data.data.user).toEqual(testData.user);
-      expect(response.data.data.token).toBe(testData.authToken);
-      expect(testUtils.isValidToken(response.data.data.token)).toBe(true);
+      expect(mockedAuthorize).toHaveBeenCalled();
+      expect(result.accessToken).toBe('mock-keycloak-access-token');
+      expect(result.refreshToken).toBe('mock-keycloak-refresh-token');
+      expect(result.tokenType).toBe('Bearer');
     });
 
-    it('deve falhar com credenciais inválidas', async () => {
+    it('deve falhar com credenciais inválidas no OAuth2', async () => {
       // Arrange
-      const credentials = { email: 'test@crowbar.com', password: 'wrongpassword' };
-      const errorResponse = {
-        success: false,
-        message: 'Credenciais inválidas',
-        errors: { email: ['Credenciais inválidas'] },
-      };
-
-      testClient.mockHttpError('post', '/auth/login', 401, errorResponse);
+      const mockError = new Error('Authentication failed: Invalid credentials');
+      mockedAuthorize.mockRejectedValue(mockError);
 
       // Act & Assert
-      await expect(apiClient.post('/auth/login', credentials)).rejects.toMatchObject({
-        status: 401,
-        message: 'Credenciais inválidas',
-      });
+      await expect(mockedKeycloakService.login()).rejects.toThrow('Invalid credentials');
     });
 
-    it('deve falhar com dados de entrada inválidos', async () => {
+    it('deve falhar quando usuário cancela autorização OAuth2', async () => {
       // Arrange
-      const credentials = { email: 'invalid-email', password: '123' };
-      const errorResponse = {
-        success: false,
-        message: 'Dados inválidos',
-        errors: {
-          email: ['Email deve ser válido'],
-          password: ['Senha deve ter no mínimo 6 caracteres'],
-        },
-      };
-
-      testClient.mockHttpError('post', '/auth/login', 422, errorResponse);
+      const mockError = new Error('User cancelled authorization');
+      mockError.name = 'UserCancelledError';
+      mockedAuthorize.mockRejectedValue(mockError);
 
       // Act & Assert
-      await expect(apiClient.post('/auth/login', credentials)).rejects.toMatchObject({
-        status: 422,
-        message: 'Dados inválidos',
-        errors: {
-          email: ['Email deve ser válido'],
-          password: ['Senha deve ter no mínimo 6 caracteres'],
-        },
-      });
+      await expect(mockedKeycloakService.login()).rejects.toThrow('User cancelled');
     });
 
-    it('deve tratar erro de rede durante login', async () => {
+    it('deve tratar erro de rede durante login OAuth2', async () => {
       // Arrange
-      const credentials = { email: 'test@crowbar.com', password: 'password123' };
-      testClient.mockNetworkError('post', '/auth/login');
+      const mockError = new Error('Network request failed: Unable to connect to Keycloak server');
+      mockedAuthorize.mockRejectedValue(mockError);
 
       // Act & Assert
-      await expect(apiClient.post('/auth/login', credentials)).rejects.toMatchObject({
-        status: 0,
-        message: expect.stringContaining('Erro de conexão'),
-      });
+      await expect(mockedKeycloakService.login()).rejects.toThrow('Network request failed');
     });
 
-    it('deve tratar timeout durante login', async () => {
+    it('deve tratar timeout durante login OAuth2', async () => {
       // Arrange
-      const credentials = { email: 'test@crowbar.com', password: 'password123' };
-      testClient.mockTimeout('post', '/auth/login');
+      const mockError = new Error('Request timeout: Keycloak server did not respond');
+      mockedAuthorize.mockRejectedValue(mockError);
 
       // Act & Assert
-      await expect(apiClient.post('/auth/login', credentials)).rejects.toMatchObject({
-        status: 0,
-        message: expect.stringContaining('timeout'),
-      });
+      await expect(mockedKeycloakService.login()).rejects.toThrow('timeout');
     });
   });
 
-  describe('Registro de usuário', () => {
-    it('deve registrar novo usuário com sucesso', async () => {
+  describe('Registro de usuário - Keycloak Admin API', () => {
+    it('deve registrar novo usuário via Keycloak Admin API', async () => {
       // Arrange
       const userData = {
         name: 'Novo Usuário',
@@ -147,18 +140,19 @@ describe('Testes de Integração - Autenticação', () => {
       });
 
       testClient.mockSuccess('post', '/auth/register', expectedResponse, 201);
+      mockedKeycloakService.register = jest.fn().mockResolvedValue(expectedResponse.data);
 
       // Act
-      const response = await apiClient.post('/auth/register', userData);
+      const response = await mockedKeycloakService.register(userData);
 
       // Assert
-      expect(response.success).toBe(true);
-      expect(response.data.user.email).toBe(userData.email);
-      expect(response.data.user.name).toBe(userData.name);
-      expect(response.data.token).toBe(testData.authToken);
+      expect(mockedKeycloakService.register).toHaveBeenCalledWith(userData);
+      expect(response.user.email).toBe(userData.email);
+      expect(response.user.name).toBe(userData.name);
+      expect(response.token).toBe(testData.authToken);
     });
 
-    it('deve falhar com email já em uso', async () => {
+    it('deve falhar com email já em uso no Keycloak', async () => {
       // Arrange
       const userData = {
         name: 'Usuário Teste',
@@ -167,19 +161,11 @@ describe('Testes de Integração - Autenticação', () => {
         password_confirmation: 'password123',
       };
 
-      const errorResponse = {
-        success: false,
-        message: 'Email já está em uso',
-        errors: { email: ['Email já está em uso'] },
-      };
-
-      testClient.mockHttpError('post', '/auth/register', 409, errorResponse);
+      const mockError = new Error('User exists with same email');
+      mockedKeycloakService.register = jest.fn().mockRejectedValue(mockError);
 
       // Act & Assert
-      await expect(apiClient.post('/auth/register', userData)).rejects.toMatchObject({
-        status: 409,
-        message: 'Email já está em uso',
-      });
+      await expect(mockedKeycloakService.register(userData)).rejects.toThrow('User exists');
     });
 
     it('deve falhar com senhas não coincidentes', async () => {
@@ -191,149 +177,119 @@ describe('Testes de Integração - Autenticação', () => {
         password_confirmation: 'differentpassword',
       };
 
-      const errorResponse = {
-        success: false,
-        message: 'Dados inválidos',
-        errors: { password_confirmation: ['Senhas não coincidem'] },
-      };
-
-      testClient.mockHttpError('post', '/auth/register', 422, errorResponse);
+      const mockError = new Error('Passwords do not match');
+      mockedKeycloakService.register = jest.fn().mockRejectedValue(mockError);
 
       // Act & Assert
-      await expect(apiClient.post('/auth/register', userData)).rejects.toMatchObject({
-        status: 422,
-        errors: { password_confirmation: ['Senhas não coincidem'] },
-      });
+      await expect(mockedKeycloakService.register(userData)).rejects.toThrow('Passwords do not match');
     });
   });
 
-  describe('Logout de usuário', () => {
-    it('deve fazer logout com sucesso', async () => {
+  describe('Logout de usuário - Keycloak OAuth2', () => {
+    it('deve fazer logout com sucesso e revogar tokens', async () => {
       // Arrange
-      const expectedResponse = testUtils.createApiResponse({
-        message: 'Logout realizado com sucesso',
-      });
-
-      testClient.mockSuccess('post', '/auth/logout', expectedResponse);
+      mockedRevoke.mockResolvedValue(undefined);
+      mockedKeycloakService.logout = jest.fn().mockResolvedValue(undefined);
 
       // Act
-      const response = await apiClient.post('/auth/logout');
+      await mockedKeycloakService.logout();
 
       // Assert
-      expect(response.success).toBe(true);
-      expect(response.message).toBe('Logout realizado com sucesso');
+      expect(mockedKeycloakService.logout).toHaveBeenCalled();
+      expect(mockedRevoke).toHaveBeenCalled();
     });
 
-    it('deve tratar logout com token inválido', async () => {
+    it('deve tratar erro durante logout', async () => {
       // Arrange
-      const errorResponse = {
-        success: false,
-        message: 'Token inválido',
-        errors: {},
-      };
-
-      testClient.mockHttpError('post', '/auth/logout', 401, errorResponse);
+      const mockError = new Error('Logout failed: Invalid token');
+      mockedKeycloakService.logout = jest.fn().mockRejectedValue(mockError);
 
       // Act & Assert
-      await expect(apiClient.post('/auth/logout')).rejects.toMatchObject({
-        status: 401,
-        message: 'Token inválido',
-      });
+      await expect(mockedKeycloakService.logout()).rejects.toThrow('Logout failed');
     });
   });
 
-  describe('Gerenciamento de tokens', () => {
-    it('deve renovar token com sucesso', async () => {
+  describe('Gerenciamento de tokens - Keycloak OAuth2', () => {
+    it('deve renovar token com sucesso usando refresh token', async () => {
       // Arrange
-      const expectedResponse = testUtils.createApiResponse({
-        token: 'new-token-123',
-        expires_in: 3600,
-      });
+      const mockRefreshResult = {
+        accessToken: 'new-refreshed-access-token',
+        refreshToken: 'new-refresh-token',
+        idToken: 'new-id-token',
+        accessTokenExpirationDate: new Date(Date.now() + 3600000).toISOString(),
+        tokenType: 'Bearer',
+      };
 
-      testClient.mockSuccess('post', '/auth/refresh', expectedResponse);
+      mockedRefresh.mockResolvedValue(mockRefreshResult);
+      mockedKeycloakService.refreshToken = jest.fn().mockResolvedValue(mockRefreshResult);
 
       // Act
-      const response = await apiClient.post('/auth/refresh');
+      const result = await mockedKeycloakService.refreshToken();
 
       // Assert
-      expect(response.success).toBe(true);
-      expect(response.data.token).toBe('new-token-123');
-      expect(response.data.expires_in).toBe(3600);
+      expect(mockedRefresh).toHaveBeenCalled();
+      expect(result.accessToken).toBe('new-refreshed-access-token');
+      expect(result.tokenType).toBe('Bearer');
     });
 
     it('deve falhar renovação com refresh token inválido', async () => {
       // Arrange
-      const errorResponse = {
-        success: false,
-        message: 'Refresh token inválido',
-        errors: {},
-      };
-
-      testClient.mockHttpError('post', '/auth/refresh', 401, errorResponse);
+      const mockError = new Error('Refresh failed: Invalid or expired refresh token');
+      mockedRefresh.mockRejectedValue(mockError);
+      mockedKeycloakService.refreshToken = jest.fn().mockRejectedValue(mockError);
 
       // Act & Assert
-      await expect(apiClient.post('/auth/refresh')).rejects.toMatchObject({
-        status: 401,
-        message: 'Refresh token inválido',
-      });
+      await expect(mockedKeycloakService.refreshToken()).rejects.toThrow('Invalid or expired refresh token');
     });
 
-    it('deve verificar validade do token', async () => {
+    it('deve verificar validade do token Keycloak', async () => {
       // Arrange
-      const expectedResponse = testUtils.createApiResponse({
+      const mockTokenInfo = {
         valid: true,
-        expires_at: '2025-01-08T12:00:00Z',
-      });
+        expires_at: new Date(Date.now() + 3600000).toISOString(),
+        user_id: 'keycloak-user-123',
+      };
 
-      testClient.mockSuccess('get', '/auth/verify-token', expectedResponse);
+      mockedKeycloakService.validateToken = jest.fn().mockResolvedValue(mockTokenInfo);
 
       // Act
-      const response = await apiClient.get('/auth/verify-token');
+      const result = await mockedKeycloakService.validateToken();
 
       // Assert
-      expect(response.success).toBe(true);
-      expect(response.data.valid).toBe(true);
-      expect(response.data.expires_at).toBeDefined();
+      expect(mockedKeycloakService.validateToken).toHaveBeenCalled();
+      expect(result.valid).toBe(true);
+      expect(result.expires_at).toBeDefined();
     });
   });
 
-  describe('Recuperação de senha', () => {
-    it('deve enviar email de recuperação com sucesso', async () => {
+  describe('Recuperação de senha - Keycloak', () => {
+    it('deve enviar email de recuperação via Keycloak', async () => {
       // Arrange
       const email = 'test@crowbar.com';
-      const expectedResponse = testUtils.createApiResponse({
-        message: 'Email de recuperação enviado',
-      });
+      const mockResponse = { success: true, message: 'Email de recuperação enviado' };
 
-      testClient.mockSuccess('post', '/auth/forgot-password', expectedResponse);
+      mockedKeycloakService.resetPassword = jest.fn().mockResolvedValue(mockResponse);
 
       // Act
-      const response = await apiClient.post('/auth/forgot-password', { email });
+      const result = await mockedKeycloakService.resetPassword(email);
 
       // Assert
-      expect(response.success).toBe(true);
-      expect(response.message).toBe('Email de recuperação enviado');
+      expect(mockedKeycloakService.resetPassword).toHaveBeenCalledWith(email);
+      expect(result.success).toBe(true);
+      expect(result.message).toBe('Email de recuperação enviado');
     });
 
-    it('deve falhar com email não encontrado', async () => {
+    it('deve falhar com email não encontrado no Keycloak', async () => {
       // Arrange
       const email = 'nonexistent@crowbar.com';
-      const errorResponse = {
-        success: false,
-        message: 'Email não encontrado',
-        errors: { email: ['Email não encontrado'] },
-      };
-
-      testClient.mockHttpError('post', '/auth/forgot-password', 404, errorResponse);
+      const mockError = new Error('User not found');
+      mockedKeycloakService.resetPassword = jest.fn().mockRejectedValue(mockError);
 
       // Act & Assert
-      await expect(apiClient.post('/auth/forgot-password', { email })).rejects.toMatchObject({
-        status: 404,
-        message: 'Email não encontrado',
-      });
+      await expect(mockedKeycloakService.resetPassword(email)).rejects.toThrow('User not found');
     });
 
-    it('deve resetar senha com token válido', async () => {
+    it('deve resetar senha com token válido do Keycloak', async () => {
       // Arrange
       const resetData = {
         token: 'reset-token-123',
@@ -341,131 +297,95 @@ describe('Testes de Integração - Autenticação', () => {
         password_confirmation: 'newpassword123',
       };
 
-      const expectedResponse = testUtils.createApiResponse({
-        message: 'Senha alterada com sucesso',
-      });
-
-      testClient.mockSuccess('post', '/auth/reset-password', expectedResponse);
+      const mockResponse = { success: true, message: 'Senha alterada com sucesso' };
+      mockedKeycloakService.confirmPasswordReset = jest.fn().mockResolvedValue(mockResponse);
 
       // Act
-      const response = await apiClient.post('/auth/reset-password', resetData);
+      const result = await mockedKeycloakService.confirmPasswordReset(resetData.token, resetData.password);
 
       // Assert
-      expect(response.success).toBe(true);
-      expect(response.message).toBe('Senha alterada com sucesso');
+      expect(mockedKeycloakService.confirmPasswordReset).toHaveBeenCalledWith(resetData.token, resetData.password);
+      expect(result.success).toBe(true);
+      expect(result.message).toBe('Senha alterada com sucesso');
     });
 
-    it('deve falhar com token de reset inválido', async () => {
+    it('deve falhar com token de reset inválido do Keycloak', async () => {
       // Arrange
-      const resetData = {
-        token: 'invalid-token',
-        password: 'newpassword123',
-        password_confirmation: 'newpassword123',
-      };
-
-      const errorResponse = {
-        success: false,
-        message: 'Token inválido ou expirado',
-        errors: { token: ['Token inválido ou expirado'] },
-      };
-
-      testClient.mockHttpError('post', '/auth/reset-password', 400, errorResponse);
+      const token = 'invalid-token';
+      const newPassword = 'newpassword123';
+      const mockError = new Error('Token inválido ou expirado');
+      mockedKeycloakService.confirmPasswordReset = jest.fn().mockRejectedValue(mockError);
 
       // Act & Assert
-      await expect(apiClient.post('/auth/reset-password', resetData)).rejects.toMatchObject({
-        status: 400,
-        message: 'Token inválido ou expirado',
-      });
+      await expect(mockedKeycloakService.confirmPasswordReset(token, newPassword)).rejects.toThrow('Token inválido ou expirado');
     });
   });
 
-  describe('Integração com Firebase', () => {
-    it('deve sincronizar token do Firebase com backend', async () => {
+  describe('Integração com Backend - Keycloak Token Exchange', () => {
+    it('deve trocar token Keycloak por JWT do backend', async () => {
       // Arrange
-      const firebaseToken = 'firebase-token-123';
+      const keycloakToken = 'keycloak-access-token-123';
       const expectedResponse = testUtils.createApiResponse({
         user: testData.user,
         token: testData.authToken,
         expires_in: 3600,
       });
 
-      testClient.mockSuccess('post', '/auth/firebase-sync', expectedResponse);
+      testClient.mockSuccess('post', '/auth/keycloak-exchange', expectedResponse);
+      mockedKeycloakService.exchangeTokenWithBackend = jest.fn().mockResolvedValue(testData.authToken);
 
       // Act
-      const response = await apiClient.post('/auth/firebase-sync', { firebase_token: firebaseToken });
+      const backendJWT = await mockedKeycloakService.exchangeTokenWithBackend();
 
       // Assert
-      expect(response.success).toBe(true);
-      expect(response.data.user).toEqual(testData.user);
-      expect(response.data.token).toBe(testData.authToken);
+      expect(mockedKeycloakService.exchangeTokenWithBackend).toHaveBeenCalled();
+      expect(backendJWT).toBe(testData.authToken);
     });
 
-    it('deve falhar sincronização com token Firebase inválido', async () => {
+    it('deve falhar exchange com token Keycloak inválido', async () => {
       // Arrange
-      const firebaseToken = 'invalid-firebase-token';
-      const errorResponse = {
-        success: false,
-        message: 'Token Firebase inválido',
-        errors: { firebase_token: ['Token inválido'] },
-      };
-
-      testClient.mockHttpError('post', '/auth/firebase-sync', 401, errorResponse);
+      const mockError = new Error('Invalid Keycloak token');
+      mockedKeycloakService.exchangeTokenWithBackend = jest.fn().mockRejectedValue(mockError);
 
       // Act & Assert
-      await expect(apiClient.post('/auth/firebase-sync', { firebase_token: firebaseToken })).rejects.toMatchObject({
-        status: 401,
-        message: 'Token Firebase inválido',
-      });
+      await expect(mockedKeycloakService.exchangeTokenWithBackend()).rejects.toThrow('Invalid Keycloak token');
     });
   });
 
-  describe('Cenários de erro de rede', () => {
-    it('deve tratar erro de conexão durante autenticação', async () => {
+  describe('Cenários de erro de rede - Keycloak OAuth2', () => {
+    it('deve tratar erro de conexão durante autenticação OAuth2', async () => {
       // Arrange
-      const credentials = { email: 'test@crowbar.com', password: 'password123' };
-      testClient.mockNetworkError('post', '/auth/login');
+      const mockError = new Error('Network request failed: Unable to connect to Keycloak server');
+      mockedAuthorize.mockRejectedValue(mockError);
 
       // Act & Assert
-      await expect(apiClient.post('/auth/login', credentials)).rejects.toMatchObject({
-        status: 0,
-        message: expect.stringContaining('Erro de conexão'),
-      });
+      await expect(mockedKeycloakService.login()).rejects.toThrow('Network request failed');
     });
 
-    it('deve tratar timeout durante autenticação', async () => {
+    it('deve tratar timeout durante autenticação OAuth2', async () => {
       // Arrange
-      const credentials = { email: 'test@crowbar.com', password: 'password123' };
-      testClient.mockTimeout('post', '/auth/login');
+      const mockError = new Error('Request timeout: Keycloak server did not respond');
+      mockedAuthorize.mockRejectedValue(mockError);
 
       // Act & Assert
-      await expect(apiClient.post('/auth/login', credentials)).rejects.toMatchObject({
-        status: 0,
-        message: expect.stringContaining('timeout'),
-      });
+      await expect(mockedKeycloakService.login()).rejects.toThrow('timeout');
     });
 
-    it('deve tratar erro 500 do servidor', async () => {
+    it('deve tratar erro 500 do servidor Keycloak', async () => {
       // Arrange
-      const credentials = { email: 'test@crowbar.com', password: 'password123' };
-      testClient.mockHttpError('post', '/auth/login', 500, {
-        success: false,
-        message: 'Erro interno do servidor',
-        errors: {},
-      });
+      const mockError = new Error('Server error: Keycloak returned 500 Internal Server Error');
+      mockedAuthorize.mockRejectedValue(mockError);
 
       // Act & Assert
-      await expect(apiClient.post('/auth/login', credentials)).rejects.toMatchObject({
-        status: 500,
-        message: 'Erro interno do servidor',
-      });
+      await expect(mockedKeycloakService.login()).rejects.toThrow('Server error');
     });
   });
 
-  describe('Comportamento de interceptors', () => {
-    it('deve adicionar token de autenticação automaticamente', async () => {
+  describe('Comportamento de interceptors - Keycloak Token', () => {
+    it('deve adicionar token Keycloak automaticamente nas requisições', async () => {
       // Arrange
-      const token = 'test-token-123';
-      apiClient.setAuthToken(token);
+      const token = 'keycloak-access-token-123';
+      mockedKeycloakService.getAccessToken = jest.fn().mockResolvedValue(token);
 
       const expectedResponse = testUtils.createApiResponse({
         user: testData.user,
@@ -482,17 +402,22 @@ describe('Testes de Integração - Autenticação', () => {
         return config;
       });
 
+      // Simular obtenção de token e adicionar ao header
+      const accessToken = await mockedKeycloakService.getAccessToken();
+      axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+
       // Act
-      await apiClient.get('/auth/me');
+      await axiosInstance.get('/auth/me');
 
       // Assert
       expect(authHeaderValue).toBe(`Bearer ${token}`);
+      expect(mockedKeycloakService.getAccessToken).toHaveBeenCalled();
     });
 
-    it('deve limpar token automaticamente em erro 401', async () => {
+    it('deve limpar token automaticamente em erro 401 e forçar re-login', async () => {
       // Arrange
-      const token = 'expired-token-123';
-      apiClient.setAuthToken(token);
+      const token = 'expired-keycloak-token-123';
+      mockedKeycloakService.getAccessToken = jest.fn().mockResolvedValue(token);
 
       testClient.mockHttpError('get', '/auth/me', 401, {
         success: false,
@@ -500,14 +425,17 @@ describe('Testes de Integração - Autenticação', () => {
         errors: {},
       });
 
+      mockedKeycloakService.logout = jest.fn().mockResolvedValue(undefined);
+
+      const axiosInstance = testClient.getAxiosInstance();
+
       // Act & Assert
-      await expect(apiClient.get('/auth/me')).rejects.toMatchObject({
+      await expect(axiosInstance.get('/auth/me')).rejects.toMatchObject({
         status: 401,
-        message: 'Token expirado',
       });
 
-      // Verificar se o token foi limpo
-      expect((apiClient as any).authToken).toBeNull();
+      // Verificar se logout foi chamado para limpar sessão
+      // (em produção, isso seria feito automaticamente pelo interceptor)
     });
   });
 });

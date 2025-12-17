@@ -123,31 +123,47 @@ const CartItemCard: React.FC<CartItemCardProps> = ({
         {/* Controles */}
         <View style={styles.controls}>
           {/* Remover */}
-          <IconButton
-            icon="delete-outline"
-            size={20}
-            onPress={onRemove}
-            disabled={disabled}
-            style={styles.removeButton}
-          />
-          
+          <View testID="delete-button-container">
+            <IconButton
+              icon="delete-outline"
+              size={20}
+              onPress={onRemove}
+              disabled={disabled}
+              style={styles.removeButton}
+            />
+          </View>
+
           {/* Quantidade */}
           <View style={styles.quantityContainer}>
-            <IconButton
-              icon="minus"
-              size={16}
-              onPress={() => onUpdateQuantity(item.quantity - 1)}
-              disabled={disabled || item.quantity <= 1}
-              style={styles.quantityButton}
-            />
+            <View testID="minus-button-container">
+              <IconButton
+                icon="minus"
+                size={16}
+                onPress={() => {
+                  // Apenas atualiza se quantidade for maior que 1
+                  if (item.quantity > 1) {
+                    onUpdateQuantity(item.quantity - 1);
+                  }
+                }}
+                disabled={disabled || item.quantity <= 1}
+                style={styles.quantityButton}
+              />
+            </View>
             <Text style={styles.quantity}>{item.quantity}</Text>
-            <IconButton
-              icon="plus"
-              size={16}
-              onPress={() => onUpdateQuantity(item.quantity + 1)}
-              disabled={disabled || item.quantity >= item.box.stock}
-              style={styles.quantityButton}
-            />
+            <View testID="plus-button-container">
+              <IconButton
+                icon="plus"
+                size={16}
+                onPress={() => {
+                  // Apenas atualiza se não atingiu o estoque
+                  if (item.quantity < item.box.stock) {
+                    onUpdateQuantity(item.quantity + 1);
+                  }
+                }}
+                disabled={disabled || item.quantity >= item.box.stock}
+                style={styles.quantityButton}
+              />
+            </View>
           </View>
         </View>
       </View>

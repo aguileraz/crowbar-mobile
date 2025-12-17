@@ -59,5 +59,17 @@
 		<string>MaterialCommunityIcons.ttf</string>
 		<string>MaterialIcons.ttf</string>
 	</array>
+	<!-- Deep Link para OAuth2 callback do Keycloak -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>crowbar</string>
+			</array>
+			<key>CFBundleURLName</key>
+			<string>com.crowbarmobile</string>
+		</dict>
+	</array>
 </dict>
 </plist>

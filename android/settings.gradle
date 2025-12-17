@@ -1,6 +1,7 @@
 pluginManagement { includeBuild("../node_modules/@react-native/gradle-plugin") }
 plugins { id("com.facebook.react.settings") }
-extensions.configure(com.facebook.react.ReactSettingsExtension){ ex -> ex.autolinkLibrariesFromCommand() }
+// WORKAROUND: Disable CLI-based autolinking (broken with pnpm) - autolinking will happen via react {} block in app/build.gradle
+// extensions.configure(com.facebook.react.ReactSettingsExtension){ ex -> ex.autolinkLibrariesFromCommand() }
 rootProject.name = 'CrowbarMobile'
 include ':app'
 includeBuild('../node_modules/@react-native/gradle-plugin')

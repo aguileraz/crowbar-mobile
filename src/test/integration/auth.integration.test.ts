@@ -229,7 +229,7 @@ describe('Authentication Integration Tests', () => {
 
       // At least one should succeed
       const successfulLogins = results.filter(
-        result => result.status === 'fulfilled' && 
+      _result => result.status === 'fulfilled' && 
         (_result.value as any).type === 'auth/login/fulfilled'
       );
 

@@ -9,7 +9,7 @@ import {
   LeaderboardEntry,
   LeaderboardFilter,
   SocialUser,
-  LEADERBOARD_CATEGORIES,
+  _LEADERBOARD_CATEGORIES,
 } from '../types/social';
 import { GameThemeType } from '../types/animations';
 import { analyticsService } from './analyticsService';
@@ -349,7 +349,7 @@ class LeaderboardService {
       previousPosition: oldPosition > 0 ? oldPosition : undefined,
       user: userData,
       score,
-      additionalStats: this.getAdditionalStats(leaderboard.category, userId),
+      additionalStats: this.getAdditionalStats(leaderboard.category, _userId),
       trend: 'stable',
     };
 
@@ -535,7 +535,7 @@ class LeaderboardService {
   /**
    * Verifica se usuário é amigo (mock)
    */
-  private isUserFriend(userId: string): boolean {
+  private isUserFriend(_userId: string): boolean {
     // Implementar lógica real de amizade
     return Math.random() > 0.5;
   }

@@ -28,9 +28,9 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
   withSequence,
-  withDelay,
+  // withDelay,
   withTiming,
-  runOnJS,
+  // runOnJS,
 } from 'react-native-reanimated';
 
 // Componentes aprimorados
@@ -45,7 +45,7 @@ import { analyticsService } from '../../services/analyticsService';
 // Redux
 import { AppDispatch } from '../../store';
 import {
-  openMysteryBox,
+  _openMysteryBox,
   setCurrentBox,
   selectCurrentBox,
   selectOpeningResult,
@@ -60,7 +60,7 @@ import { RootStackParamList } from '../../navigation/AppNavigator';
 // Theme
 import {getSpacing} from '../../theme';
 
-const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+const { width: screenWidth, height: _screenHeight } = Dimensions.get('window');
 
 type EnhancedBoxOpeningScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'EnhancedBoxOpening'>;
 type EnhancedBoxOpeningScreenRouteProp = RouteProp<RootStackParamList, 'EnhancedBoxOpening'>;
@@ -220,7 +220,7 @@ const EnhancedBoxOpeningScreen: React.FC<Props> = ({ navigation, route }) => {
   const [preloadProgress, setPreloadProgress] = useState(0);
   const [showEmojiReactions, setShowEmojiReactions] = useState(false);
   const [openingStarted, setOpeningStarted] = useState(false);
-  const [phaseProgress, setPhaseProgress] = useState(0);
+  const [_phaseProgress, setPhaseProgress] = useState(0);
   
   // Animation values
   const containerOpacity = useSharedValue(1);
@@ -427,7 +427,7 @@ const EnhancedBoxOpeningScreen: React.FC<Props> = ({ navigation, route }) => {
   /**
    * Manipula reação emoji
    */
-  const handleEmojiReaction = useCallback((type: EmojiReactionType, position: { x: number; y: number }) => {
+  const handleEmojiReaction = useCallback((type: EmojiReactionType, _position: { x: number; y: number }) => {
     // Feedback háptico para reação
     advancedHapticService.playGestureFeedback('tap');
     

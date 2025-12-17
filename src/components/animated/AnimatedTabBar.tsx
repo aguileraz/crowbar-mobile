@@ -150,7 +150,7 @@ interface TabItemProps {
 
 const TabItem: React.FC<TabItemProps> = ({
   tab,
-  index,
+  _index,
   isSelected,
   onPress,
   showLabels,

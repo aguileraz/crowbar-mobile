@@ -9,18 +9,18 @@ import { View, Image, StyleSheet, Dimensions } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
-  withTiming,
-  withSequence,
-  withDelay,
-  runOnJS,
-  interpolate,
-  Easing,
+  // withTiming,
+  // withSequence,
+  // withDelay,
+  // runOnJS,
+  // interpolate,
+  // Easing,
   cancelAnimation,
 } from 'react-native-reanimated';
 import { GameAsset, EmojiReactionType, GameThemeType } from '../../types/animations';
 import gamificationAssetManager from '../../services/gamificationAssetManager';
 
-const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+const { width: _screenWidth, height: _screenHeight } = Dimensions.get('window');
 
 interface SpriteSheetAnimatorProps {
   // Opção 1: Usar asset diretamente
@@ -50,15 +50,15 @@ const SpriteSheetAnimator: React.FC<SpriteSheetAnimatorProps> = ({
   theme,
   effectType,
   onComplete,
-  onStart,
-  onFrameChange,
+  _onStart,
+  _onFrameChange,
   loop = false,
   autoPlay = true,
   scale = 1,
   style,
-  quality = 'high',
-  preload = false,
-  cacheFrames = true,
+  _quality = 'high',
+  _preload = false,
+  _cacheFrames = true,
 }) => {
   const [frames, setFrames] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);

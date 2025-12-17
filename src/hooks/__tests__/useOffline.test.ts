@@ -50,8 +50,8 @@ const createMockStore = (initialState = {}) => {
   });
 };
 
-const wrapper = ({ children, store = createMockStore() }: any) => {
-  return React.createElement(Provider, { store }, children);
+const wrapper = ({ children, _store = createMockStore() }: any) => {
+  return React.createElement(Provider, { store: _store }, children);
 };
 
 describe('useOffline', () => {
@@ -63,11 +63,11 @@ describe('useOffline', () => {
     it('deve retornar estado offline correto', () => {
       const { result } = renderHook(() => useOffline(), { wrapper });
 
-      expect(_result.current.isOnline).toBe(true);
-      expect(_result.current.syncStatus).toBe('idle');
-      expect(_result.current.pendingActions).toEqual([]);
-      expect(_result.current.cacheStatus).toBeDefined();
-      expect(_result.current.canSync).toBe(true);
+      expect(result.current.isOnline).toBe(true);
+      expect(result.current.syncStatus).toBe('idle');
+      expect(result.current.pendingActions).toEqual([]);
+      expect(result.current.cacheStatus).toBeDefined();
+      expect(result.current.canSync).toBe(true);
     });
 
     it('deve sincronizar dados', async () => {
@@ -94,13 +94,13 @@ describe('useOffline', () => {
       });
 
       // Verificar se a ação foi adicionada
-      expect(_result.current.pendingActions).toHaveLength(1);
+      expect(result.current.pendingActions).toHaveLength(1);
     });
 
     it('deve verificar se está no modo offline', () => {
       mockOfflineService.isOfflineMode.mockReturnValue(true);
 
-      const { result } = renderHook(() => useOffline(), { wrapper });
+      const { _result } = renderHook(() => useOffline(), { wrapper });
 
       expect(_result.current.isOfflineMode()).toBe(true);
     });
@@ -121,7 +121,7 @@ describe('useOffline', () => {
         pendingActions: [{ id: '1', type: 'TEST' }],
       });
 
-      const { result } = renderHook(() => useOffline(), { 
+      const { _result } = renderHook(() => useOffline(), { 
         wrapper: ({ children }: any) => React.createElement(Provider, { store }, children)
       });
 
@@ -138,7 +138,7 @@ describe('useOffline', () => {
       
       mockOfflineService.getCachedData.mockResolvedValue(mockData);
 
-      const { result } = renderHook(() => 
+      const { _result } = renderHook(() => 
         useOfflineCache('test_key', mockFetcher, {
           strategy: CacheStrategy.CACHE_FIRST,
           priority: SyncPriority.NORMAL,
@@ -185,7 +185,7 @@ describe('useOffline', () => {
       
       mockOfflineService.getCachedData.mockRejectedValue(mockError);
 
-      const { result } = renderHook(() => 
+      const { _result } = renderHook(() => 
         useOfflineCache('test_key', mockFetcher), 
         { wrapper }
       );
@@ -238,7 +238,7 @@ describe('useOffline', () => {
       
       mockOfflineService.cacheImage.mockResolvedValue(cachedUrl);
 
-      const { result } = renderHook(() => 
+      const { _result } = renderHook(() => 
         useOfflineImage(imageUrl, SyncPriority.LOW), 
         { wrapper }
       );
@@ -258,7 +258,7 @@ describe('useOffline', () => {
       
       mockOfflineService.cacheImage.mockRejectedValue(mockError);
 
-      const { result } = renderHook(() => 
+      const { _result } = renderHook(() => 
         useOfflineImage(imageUrl), 
         { wrapper }
       );
@@ -272,7 +272,7 @@ describe('useOffline', () => {
     });
 
     it('deve retornar null para URL null', () => {
-      const { result } = renderHook(() => 
+      const { _result } = renderHook(() => 
         useOfflineImage(null), 
         { wrapper }
       );

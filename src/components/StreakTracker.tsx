@@ -16,13 +16,13 @@ import Animated, {
   withTiming,
   withSequence,
   interpolate,
-  FadeIn,
+  _FadeIn,
   ZoomIn,
 } from 'react-native-reanimated';
 import LinearGradient from 'react-native-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { hapticFeedback } from '../utils/haptic';
-import AnimatedEmoji, { FloatingEmojiReaction } from './AnimatedEmoji';
+import _AnimatedEmoji, { FloatingEmojiReaction } from './AnimatedEmoji';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -83,7 +83,7 @@ const StreakTracker: React.FC<StreakTrackerProps> = ({
     milestones: {},
   });
   
-  const [showRewardAnimation, setShowRewardAnimation] = useState(false);
+  const [_showRewardAnimation, setShowRewardAnimation] = useState(false);
   const [emojiReactions, setEmojiReactions] = useState<Array<{
     id: string;
     type: 'fire' | 'ice' | 'cool';

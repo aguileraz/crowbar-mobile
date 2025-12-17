@@ -7,49 +7,49 @@
 
 const mockAnalytics = {
   // Métodos principais
-  logEvent: jest.fn((eventName, params) => Promise.resolve()),
+  logEvent: jest.fn((_eventName, _params) => Promise.resolve()),
 
   logAppOpen: jest.fn(() => Promise.resolve()),
 
-  logLogin: jest.fn((method) => Promise.resolve()),
+  logLogin: jest.fn((_method) => Promise.resolve()),
 
-  logScreenView: jest.fn((params) => Promise.resolve()),
+  logScreenView: jest.fn((_params) => Promise.resolve()),
 
-  logSignUp: jest.fn((method) => Promise.resolve()),
+  logSignUp: jest.fn((_method) => Promise.resolve()),
 
-  logPurchase: jest.fn((params) => Promise.resolve()),
+  logPurchase: jest.fn((_params) => Promise.resolve()),
 
-  logBeginCheckout: jest.fn((params) => Promise.resolve()),
+  logBeginCheckout: jest.fn((_params) => Promise.resolve()),
 
-  logAddToCart: jest.fn((params) => Promise.resolve()),
+  logAddToCart: jest.fn((_params) => Promise.resolve()),
 
-  logRemoveFromCart: jest.fn((params) => Promise.resolve()),
+  logRemoveFromCart: jest.fn((_params) => Promise.resolve()),
 
-  logSearch: jest.fn((searchTerm) => Promise.resolve()),
+  logSearch: jest.fn((_searchTerm) => Promise.resolve()),
 
-  logShare: jest.fn((params) => Promise.resolve()),
+  logShare: jest.fn((_params) => Promise.resolve()),
 
-  logSelectContent: jest.fn((params) => Promise.resolve()),
+  logSelectContent: jest.fn((_params) => Promise.resolve()),
 
-  logViewItem: jest.fn((params) => Promise.resolve()),
+  logViewItem: jest.fn((_params) => Promise.resolve()),
 
-  logViewItemList: jest.fn((params) => Promise.resolve()),
+  logViewItemList: jest.fn((_params) => Promise.resolve()),
 
-  logAddPaymentInfo: jest.fn((params) => Promise.resolve()),
+  logAddPaymentInfo: jest.fn((_params) => Promise.resolve()),
 
-  logAddShippingInfo: jest.fn((params) => Promise.resolve()),
+  logAddShippingInfo: jest.fn((_params) => Promise.resolve()),
 
   // User properties
-  setUserId: jest.fn((userId) => Promise.resolve()),
+  setUserId: jest.fn((_userId) => Promise.resolve()),
 
-  setUserProperty: jest.fn((name, value) => Promise.resolve()),
+  setUserProperty: jest.fn((_name, _value) => Promise.resolve()),
 
-  setUserProperties: jest.fn((properties) => Promise.resolve()),
+  setUserProperties: jest.fn((_properties) => Promise.resolve()),
 
   // Analytics settings
-  setAnalyticsCollectionEnabled: jest.fn((enabled) => Promise.resolve()),
+  setAnalyticsCollectionEnabled: jest.fn((_enabled) => Promise.resolve()),
 
-  setSessionTimeoutDuration: jest.fn((milliseconds) => Promise.resolve()),
+  setSessionTimeoutDuration: jest.fn((_milliseconds) => Promise.resolve()),
 
   resetAnalyticsData: jest.fn(() => Promise.resolve()),
 

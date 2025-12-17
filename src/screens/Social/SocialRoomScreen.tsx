@@ -19,10 +19,10 @@ import {
   Avatar,
   Chip,
   Badge,
-  Portal,
-  Dialog,
+  // Portal,
+  // Dialog,
   Surface,
-  ProgressBar,
+  // ProgressBar,
 } from 'react-native-paper';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
@@ -31,7 +31,7 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
-  withTiming,
+  // withTiming,
   FadeInDown,
   FadeInUp,
 } from 'react-native-reanimated';
@@ -49,9 +49,9 @@ import EmojiReactionSystem from '../../components/animations/EmojiReactionSystem
 // Types
 import {
   SharedRoom,
-  RoomParticipant,
+  // RoomParticipant,
   Bet,
-  SocialUser,
+  // SocialUser,
   ParticipantReaction,
 } from '../../types/social';
 import {EmojiReactionType} from '../../types/animations';
@@ -60,7 +60,7 @@ import { RootStackParamList } from '../../navigation/AppNavigator';
 // Theme
 import {getSpacing} from '../../theme';
 
-const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+const { width: _screenWidth, height: _screenHeight } = Dimensions.get('window');
 
 type SocialRoomScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'SocialRoom'>;
 type SocialRoomScreenRouteProp = RouteProp<RootStackParamList, 'SocialRoom'>;
@@ -79,14 +79,14 @@ const SocialRoomScreen: React.FC<Props> = ({ navigation, route }) => {
   const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'disconnected'>('connecting');
   
   // State da interface
-  const [showBettingDialog, setShowBettingDialog] = useState(false);
-  const [showParticipants, setShowParticipants] = useState(false);
+  const [_showBettingDialog, setShowBettingDialog] = useState(false);
+  const [_showParticipants, setShowParticipants] = useState(false);
   const [countdown, setCountdown] = useState<number | null>(null);
   const [userReady, setUserReady] = useState(false);
-  
+
   // State das apostas
   const [roomBets, setRoomBets] = useState<Bet[]>([]);
-  const [userBalance, setUserBalance] = useState({ coins: 0, points: 0, real: 0 });
+  const [_userBalance, setUserBalance] = useState({ coins: 0, points: 0, real: 0 });
   
   // Reações flutuantes
   const [floatingReactions, setFloatingReactions] = useState<ParticipantReaction[]>([]);
@@ -114,13 +114,13 @@ const SocialRoomScreen: React.FC<Props> = ({ navigation, route }) => {
           setRoom(updatedRoom);
           roomOpacity.value = withSpring(1);
         },
-        onParticipantJoin: (_participant) => {
+        onParticipantJoin: () => {
           advancedHapticService.playGestureFeedback('tap');
           participantScale.value = withSpring(1.1, {}, () => {
             participantScale.value = withSpring(1);
           });
         },
-        onParticipantLeave: (_userId) => {
+        onParticipantLeave: () => {
         },
         onReactionAdd: (reaction) => {
           addFloatingReaction(reaction);
@@ -203,9 +203,9 @@ const SocialRoomScreen: React.FC<Props> = ({ navigation, route }) => {
   /**
    * Manipula abertura de caixa
    */
-  const handleBoxOpened = useCallback((userId: string, result: any) => {
+  const handleBoxOpened = useCallback((_userId: string, result: any) => {
     advancedHapticService.playBoxOpeningFeedback(result.rarity || 'common');
-    
+
     // Resolver apostas relacionadas
     roomBets.forEach(bet => {
       if (bet.status === 'open' && shouldResolveBet(bet, result)) {
@@ -262,7 +262,7 @@ const SocialRoomScreen: React.FC<Props> = ({ navigation, route }) => {
   /**
    * Determina vencedor por valor
    */
-  const determineValueWinner = (bet: Bet, value: number): string => {
+  const determineValueWinner = (bet: Bet, _value: number): string => {
     // Lógica para determinar qual opção corresponde ao valor
     return bet.options[0].id; // Placeholder
   };

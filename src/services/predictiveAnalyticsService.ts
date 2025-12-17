@@ -8,7 +8,7 @@ import {
   PredictiveMetrics,
   RiskFactor,
   Opportunity,
-  UserBehavior,
+  _UserBehavior,
   PredictionResult,
   MLEvent,
 } from '../types/ai';
@@ -162,7 +162,7 @@ class PredictiveAnalyticsService {
       series.sort((a, b) => 
         new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
       );
-      this.timeSeriesData.set(key, series);
+      this.timeSeriesData.set(key, _series);
     });
   }
 
@@ -588,7 +588,7 @@ class PredictiveAnalyticsService {
       cohortId,
       cohortDate,
       metrics: {
-        retention: this.calculateCohortRetention(cohortDate),
+        retention: this.calculateCohortRetention(_cohortDate),
         ltv: await this.predictLTV(),
         churnRate: await this.predictChurn(),
         avgEngagement: Math.random() * 100,
@@ -603,7 +603,7 @@ class PredictiveAnalyticsService {
   /**
    * Calcula retenção de coorte
    */
-  private calculateCohortRetention(cohortDate: string): number[] {
+  private calculateCohortRetention(_cohortDate: string): number[] {
     // Simula curva de retenção típica
     const baseRetention = [100, 70, 50, 40, 35, 30, 28, 25];
     const variation = Math.random() * 0.2 - 0.1; // ±10% variação
@@ -697,7 +697,7 @@ class PredictiveAnalyticsService {
     return series.length / Math.max(1, months);
   }
 
-  private detectSeasonality(series: TimeSeriesData[]): number {
+  private detectSeasonality(_series: TimeSeriesData[]): number {
     // Simplificado - retorna fator de ajuste sazonal
     const month = new Date().getMonth();
     const seasonalFactors = [0.8, 0.85, 0.9, 0.95, 1.0, 1.05, 1.1, 1.05, 1.0, 0.95, 0.9, 1.2];
@@ -744,12 +744,12 @@ class PredictiveAnalyticsService {
     return variances.length > 0 ? 1 - (Math.min(...variances) / Math.max(...variances)) : 0;
   }
 
-  private checkWeeklyPattern(series: TimeSeriesData[]): number {
+  private checkWeeklyPattern(_series: TimeSeriesData[]): number {
     // Similar ao hourly mas por dia da semana
     return Math.random() * 0.5; // Simplificado
   }
 
-  private checkMonthlyPattern(series: TimeSeriesData[]): number {
+  private checkMonthlyPattern(_series: TimeSeriesData[]): number {
     // Similar ao hourly mas por dia do mês
     return Math.random() * 0.3; // Simplificado
   }

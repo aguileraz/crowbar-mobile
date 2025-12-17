@@ -131,14 +131,14 @@ jest.mock('react-native-reanimated', () => {
         ease: jest.fn((t) => t),
         quad: jest.fn((t) => t * t),
         cubic: jest.fn((t) => t * t * t),
-        poly: jest.fn((n) => (t) => Math.pow(t, n)),
+        poly: jest.fn((_n) => (t) => Math.pow(t, _n)),
         sin: jest.fn((t) => 1 - Math.cos((t * Math.PI) / 2)),
         circle: jest.fn((t) => 1 - Math.sqrt(1 - t * t)),
         exp: jest.fn((t) => Math.pow(2, 10 * (t - 1))),
-        elastic: jest.fn((bounciness) => (t) => t),
-        back: jest.fn((s) => (t) => t),
+        elastic: jest.fn((_bounciness) => (t) => t),
+        back: jest.fn((_s) => (t) => t),
         bounce: jest.fn((t) => t),
-        bezier: jest.fn((x1, y1, x2, y2) => (t) => t),
+        bezier: jest.fn((_x1, _y1, _x2, _y2) => (t) => t),
         in: jest.fn((easing) => (t) => easing(t)),
         out: jest.fn((easing) => (t) => 1 - easing(1 - t)),
         inOut: jest.fn((easing) => (t) => t < 0.5 ? easing(t * 2) / 2 : 1 - easing((1 - t) * 2) / 2),
@@ -256,7 +256,7 @@ jest.mock('react-native/Libraries/TurboModule/TurboModuleRegistry', () => ({
 
 // Mock react-native Platform and other core modules
 jest.mock('react-native', () => {
-  const React = require('react');
+  const _React = require('react');
 
   return {
     // View components
@@ -375,16 +375,16 @@ jest.mock('react-native', () => {
         stop: jest.fn(),
         reset: jest.fn(),
       })),
-      parallel: jest.fn((animations) => ({
+      parallel: jest.fn((_animations) => ({
         start: jest.fn(callback => callback && callback({ finished: true })),
       })),
-      sequence: jest.fn((animations) => ({
+      sequence: jest.fn((_animations) => ({
         start: jest.fn(callback => callback && callback({ finished: true })),
       })),
-      stagger: jest.fn((time, animations) => ({
+      stagger: jest.fn((_time, _animations) => ({
         start: jest.fn(callback => callback && callback({ finished: true })),
       })),
-      loop: jest.fn((animation) => ({
+      loop: jest.fn((_animation) => ({
         start: jest.fn(callback => callback && callback({ finished: true })),
       })),
       event: jest.fn(),
@@ -403,14 +403,14 @@ jest.mock('react-native', () => {
       ease: jest.fn((t) => t),
       quad: jest.fn((t) => t * t),
       cubic: jest.fn((t) => t * t * t),
-      poly: jest.fn((n) => (t) => Math.pow(t, n)),
+      poly: jest.fn((_n) => (t) => Math.pow(t, _n)),
       sin: jest.fn((t) => 1 - Math.cos((t * Math.PI) / 2)),
       circle: jest.fn((t) => 1 - Math.sqrt(1 - t * t)),
       exp: jest.fn((t) => Math.pow(2, 10 * (t - 1))),
-      elastic: jest.fn((bounciness) => (t) => t),
-      back: jest.fn((s) => (t) => t),
+      elastic: jest.fn((_bounciness) => (t) => t),
+      back: jest.fn((_s) => (t) => t),
       bounce: jest.fn((t) => t),
-      bezier: jest.fn((x1, y1, x2, y2) => (t) => t),
+      bezier: jest.fn((_x1, _y1, _x2, _y2) => (t) => t),
       in: jest.fn((easing) => (t) => easing(t)),
       out: jest.fn((easing) => (t) => 1 - easing(1 - t)),
       inOut: jest.fn((easing) => (t) => t < 0.5 ? easing(t * 2) / 2 : 1 - easing((1 - t) * 2) / 2),
@@ -733,6 +733,101 @@ jest.mock('lz-string', () => ({
 // Mock react-native-vector-icons
 jest.mock('react-native-vector-icons/MaterialCommunityIcons', () => 'Icon');
 
+// Mock react-native-paper
+jest.mock('react-native-paper', () => {
+  const _React = require('react');
+
+  // Mock Card component com subcomponentes (Card.Content, Card.Cover, etc.)
+  const Card = ({ children, onPress, ...props }) => {
+    const element = _React.createElement('View', props, children);
+    return onPress ? _React.createElement('TouchableOpacity', { onPress }, element) : element;
+  };
+
+  // Adiciona subcomponentes ao Card
+  Card.Content = ({ children, ...props }) => _React.createElement('View', props, children);
+  Card.Cover = ({ source, ...props }) => _React.createElement('Image', { ...props, source }, null);
+  Card.Title = ({ title, subtitle, ...props }) => _React.createElement('View', props,
+    _React.createElement('Text', null, title),
+    subtitle ? _React.createElement('Text', null, subtitle) : null
+  );
+  Card.Actions = ({ children, ...props }) => _React.createElement('View', props, children);
+
+  return {
+    Provider: ({ children }) => children,
+    DefaultTheme: {
+      colors: {
+        primary: '#6200ee',
+        accent: '#03dac4',
+        background: '#f6f6f6',
+        surface: '#ffffff',
+        error: '#b00020',
+        text: '#000000',
+        onSurface: '#000000',
+        onSurfaceVariant: '#5f6368',
+        disabled: '#00000061',
+        placeholder: '#00000061',
+        backdrop: '#0000004d',
+      },
+    },
+    Card,
+    Text: ({ children, ...props }) => _React.createElement('Text', props, children),
+    Title: ({ children, ...props }) => _React.createElement('Text', props, children),
+    Paragraph: ({ children, ...props }) => _React.createElement('Text', props, children),
+    Button: ({ children, ...props }) => _React.createElement('View', props, _React.createElement('Text', null, children)),
+    IconButton: ({ children, icon, ...props }) => _React.createElement('View', { ...props, testID: 'IconButton', icon }, children),
+    Chip: ({ children, ...props }) => _React.createElement('View', props, _React.createElement('Text', null, children)),
+    Badge: ({ children, ...props }) => _React.createElement('View', props, _React.createElement('Text', null, children)),
+    Divider: (props) => _React.createElement('View', props),
+    Surface: ({ children, ...props }) => _React.createElement('View', props, children),
+    Portal: ({ children }) => children,
+    Modal: ({ children, visible, ...props }) => visible ? _React.createElement('View', props, children) : null,
+  };
+});
+
+// Mock theme module
+jest.mock('./src/theme', () => ({
+  theme: {
+    colors: {
+      primary: '#6200ee',
+      accent: '#03dac4',
+      background: '#f6f6f6',
+      surface: '#ffffff',
+      error: '#b00020',
+      success: '#4caf50',
+      warning: '#ff9800',
+      text: '#000000',
+      onSurface: '#000000',
+      onSurfaceVariant: '#5f6368',
+      outline: '#79747e',
+      surfaceVariant: '#e7e0ec',
+      errorContainer: '#ffebe9',
+      disabled: '#00000061',
+      placeholder: '#00000061',
+      backdrop: '#0000004d',
+    },
+    spacing: {
+      xs: 4,
+      sm: 8,
+      md: 16,
+      lg: 24,
+      xl: 32,
+    },
+    borderRadius: {
+      sm: 4,
+      md: 8,
+      lg: 12,
+    },
+  },
+  getSpacing: (size) => {
+    const spacingMap = { xs: 4, sm: 8, md: 16, lg: 24, xl: 32 };
+    return spacingMap[size] || 16;
+  },
+  getBorderRadius: (size) => {
+    const radiusMap = { sm: 4, md: 8, lg: 12 };
+    return radiusMap[size] || 8;
+  },
+}));
+
 // Mock react-native-config
 jest.mock('react-native-config', () => ({
   NODE_ENV: 'test',
@@ -810,3 +905,61 @@ global.__DEV__ = true;
 //
 //   // Simular erro
 //   mockApiError(apiClient, 'get', '/cart', 500, 'Server Error');
+
+// ===================================
+// COMPONENT MOCKS
+// ===================================
+
+// Mock FavoriteButton - Componente de botão de favorito
+jest.mock('./src/components/FavoriteButton', () => {
+  const _React = require('react');
+
+  const FavoriteButton = ({ isFavorite, _size = 24, testID, boxId, ...props }) => {
+    return _React.createElement(
+      'View',
+      {
+        testID: testID || 'FavoriteButton',
+        boxId,
+        ...props,
+      },
+      _React.createElement('Text', null, isFavorite ? '❤️' : '🤍')
+    );
+  };
+
+  // Retorna como default export E named export
+  FavoriteButton.displayName = 'FavoriteButton';
+  return { __esModule: true, default: FavoriteButton };
+});
+
+// Mock CountdownTimer - Componente de contador regressivo
+jest.mock('./src/components/CountdownTimer', () => {
+  const _React = require('react');
+
+  const CountdownTimer = ({ endDate, onEnd, _format = 'HH:mm:ss', testID, ...props }) => {
+    // Mock simples que exibe o endDate formatado
+    const mockTimeRemaining = '02:30:15'; // Mock de tempo restante
+
+    // Simula callback onEnd se endDate já passou
+    _React.useEffect(() => {
+      if (onEnd && endDate && new Date(endDate) < new Date()) {
+        onEnd();
+      }
+    }, [endDate, onEnd]);
+
+    return _React.createElement(
+      'View',
+      { testID: testID || 'CountdownTimer', ...props },
+      _React.createElement('Text', null, mockTimeRemaining)
+    );
+  };
+
+  // Retorna como default export E named export
+  CountdownTimer.displayName = 'CountdownTimer';
+  return { __esModule: true, default: CountdownTimer };
+});
+
+// ===================================
+// React Test Renderer Mock (for React Native Testing Library compatibility)
+// ===================================
+// REMOVED: This mock was interfering with @testing-library/react-native
+// Let react-test-renderer work normally

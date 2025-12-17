@@ -9,8 +9,8 @@ import {
   ABTestConfig,
   TestVariant,
   TestResult,
-  TestMetric,
-  AudienceFilter,
+  _TestMetric,
+  _AudienceFilter,
   ActiveExperiment,
 } from '../types/ai';
 import { analyticsService } from './analyticsService';
@@ -458,7 +458,7 @@ class ABTestingService {
     experimentId: string,
     metricName: string,
     value: number,
-    metadata?: Record<string, any>
+    _metadata?: Record<string, any>
   ): Promise<void> {
     if (!this.userId) return;
     

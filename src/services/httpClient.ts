@@ -95,7 +95,7 @@ class HttpClient {
         }
         
         // Tratar erros de autenticação
-        if (error.response?._status === 401) {
+        if (error.response?.status === 401) {
           this.authToken = null;
           // Aqui poderia disparar um evento para logout
         }

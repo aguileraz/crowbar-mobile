@@ -56,7 +56,7 @@ describe('Animation Accessibility Tests', () => {
 
   describe('Screen Reader Support', () => {
     it('should provide meaningful accessibility labels for all elements', async () => {
-      const { getByTestId, getByLabelText } = render(
+      const { _getByTestId, getByLabelText } = render(
         React.createElement(BoxOpeningAnimation, {
           box: mockBox,
           animationState: "idle",
@@ -187,7 +187,7 @@ describe('Animation Accessibility Tests', () => {
         getByTestId('open-box-button'),
       ];
 
-      elements.forEach((element, index) => {
+      elements.forEach((element, _index) => {
         expect(element.props.accessibilityElementsHidden).toBeFalsy();
         expect(element.props.importantForAccessibility).not.toBe('no');
       });

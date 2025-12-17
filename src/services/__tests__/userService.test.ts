@@ -23,7 +23,12 @@ describe('UserService', () => {
         balance: 100.50,
       };
 
-      mockedApiClient.get.mockResolvedValue({ data: mockProfile });
+      const mockResponse = {
+        success: true,
+        data: mockProfile,
+      };
+
+      mockedApiClient.get.mockResolvedValue(mockResponse);
 
       const _result = await userService.getProfile();
 
@@ -55,7 +60,12 @@ describe('UserService', () => {
         balance: 100.50,
       };
 
-      mockedApiClient.put.mockResolvedValue({ data: mockUpdatedProfile });
+      const mockResponse = {
+        success: true,
+        data: mockUpdatedProfile,
+      };
+
+      mockedApiClient.put.mockResolvedValue(mockResponse);
 
       const _result = await userService.updateProfile(updateData);
 
@@ -79,19 +89,24 @@ describe('UserService', () => {
 
   describe('updateAvatar', () => {
     it('should upload avatar successfully', async () => {
-      const mockResponse = {
+      const mockResponseData = {
         avatar_url: 'https://example.com/new-avatar.jpg',
+      };
+
+      const mockResponse = {
+        success: true,
+        data: mockResponseData,
       };
 
       const formData = new FormData();
       formData.append('avatar', { uri: 'file://avatar.jpg' } as any);
 
-      mockedApiClient.upload.mockResolvedValue({ data: mockResponse });
+      mockedApiClient.upload.mockResolvedValue(mockResponse);
 
       const _result = await userService.updateAvatar(formData);
 
       expect(mockedApiClient.upload).toHaveBeenCalledWith('/user/avatar', formData);
-      expect(_result).toEqual(mockResponse);
+      expect(_result).toEqual(mockResponseData);
     });
 
     it('should handle file _size error', async () => {

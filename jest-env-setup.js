@@ -3,6 +3,9 @@
  * Configurações para evitar conflitos com react-native
  */
 
+// Configure NODE_ENV para garantir que React use build de desenvolvimento
+process.env.NODE_ENV = 'test';
+
 // Prevenir redefinição de propriedades globais
 if (typeof window !== 'undefined') {
   Object.defineProperty(window, 'window', {

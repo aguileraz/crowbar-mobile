@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { render, fireEvent, _waitFor } from '@testing-library/react-native';
 import { Animated } from 'react-native';
 import BoxOpeningAnimation from '../BoxOpeningAnimation';
 import { MysteryBox } from '../../types/api';

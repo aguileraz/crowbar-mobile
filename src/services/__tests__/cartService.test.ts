@@ -37,7 +37,12 @@ describe('CartService', () => {
         total: 26.98,
       };
 
-      mockedApiClient.get.mockResolvedValue({ data: mockCart });
+      const mockResponse = {
+        success: true,
+        data: mockCart,
+      };
+
+      mockedApiClient.get.mockResolvedValue(mockResponse);
 
       const _result = await cartService.getCart();
 
@@ -56,7 +61,12 @@ describe('CartService', () => {
         total: 0,
       };
 
-      mockedApiClient.get.mockResolvedValue({ data: mockEmptyCart });
+      const mockResponse = {
+        success: true,
+        data: mockEmptyCart,
+      };
+
+      mockedApiClient.get.mockResolvedValue(mockResponse);
 
       const _result = await cartService.getCart();
 
@@ -80,7 +90,12 @@ describe('CartService', () => {
         total_price: 10.99,
       };
 
-      mockedApiClient.post.mockResolvedValue({ data: mockCartItem });
+      const mockResponse = {
+        success: true,
+        data: mockCartItem,
+      };
+
+      mockedApiClient.post.mockResolvedValue(mockResponse);
 
       const _result = await cartService.addToCart('box1', 1);
 
@@ -105,7 +120,12 @@ describe('CartService', () => {
     });
 
     it('should default quantity to 1', async () => {
-      mockedApiClient.post.mockResolvedValue({ data: {} });
+      const mockResponse = {
+        success: true,
+        data: {},
+      };
+
+      mockedApiClient.post.mockResolvedValue(mockResponse);
 
       await cartService.addToCart('box1');
 
@@ -126,7 +146,12 @@ describe('CartService', () => {
         total_price: 32.97,
       };
 
-      mockedApiClient.put.mockResolvedValue({ data: mockUpdatedItem });
+      const mockResponse = {
+        success: true,
+        data: mockUpdatedItem,
+      };
+
+      mockedApiClient.put.mockResolvedValue(mockResponse);
 
       const _result = await cartService.updateCartItem('1', 3);
 
@@ -152,7 +177,12 @@ describe('CartService', () => {
 
   describe('removeFromCart', () => {
     it('should remove item from cart successfully', async () => {
-      mockedApiClient.delete.mockResolvedValue({ data: {} });
+      const mockResponse = {
+        success: true,
+        data: {},
+      };
+
+      mockedApiClient.delete.mockResolvedValue(mockResponse);
 
       await cartService.removeFromCart('1');
 
@@ -169,7 +199,12 @@ describe('CartService', () => {
 
   describe('clearCart', () => {
     it('should clear cart successfully', async () => {
-      mockedApiClient.delete.mockResolvedValue({ data: {} });
+      const mockResponse = {
+        success: true,
+        data: {},
+      };
+
+      mockedApiClient.delete.mockResolvedValue(mockResponse);
 
       await cartService.clearCart();
 
@@ -194,7 +229,12 @@ describe('CartService', () => {
         },
       };
 
-      mockedApiClient.post.mockResolvedValue({ data: mockCart });
+      const mockResponse = {
+        success: true,
+        data: mockCart,
+      };
+
+      mockedApiClient.post.mockResolvedValue(mockResponse);
 
       const _result = await cartService.applyCoupon('SAVE5');
 
@@ -231,7 +271,12 @@ describe('CartService', () => {
         coupon: null,
       };
 
-      mockedApiClient.delete.mockResolvedValue({ data: mockCart });
+      const mockResponse = {
+        success: true,
+        data: mockCart,
+      };
+
+      mockedApiClient.delete.mockResolvedValue(mockResponse);
 
       const _result = await cartService.removeCoupon();
 
@@ -259,7 +304,12 @@ describe('CartService', () => {
         ],
       };
 
-      mockedApiClient.post.mockResolvedValue({ data: mockShipping });
+      const mockResponse = {
+        success: true,
+        data: mockShipping,
+      };
+
+      mockedApiClient.post.mockResolvedValue(mockResponse);
 
       const _result = await cartService.calculateShipping('01234-567');
 

@@ -5,7 +5,7 @@ import {
   StyleSheet,
   RefreshControl,
   Dimensions,
-  TouchableOpacity,
+  _TouchableOpacity,
 } from 'react-native';
 import {
   Text,
@@ -13,7 +13,7 @@ import {
   Button,
   DataTable,
   Chip,
-  ProgressBar,
+  _ProgressBar,
   SegmentedButtons,
   Surface,
   IconButton,
@@ -26,15 +26,15 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, {
-  FadeInDown,
+  _FadeInDown,
   FadeInUp,
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
+  _useSharedValue,
+  _useAnimatedStyle,
+  _withSpring,
 } from 'react-native-reanimated';
 import { LineChart, BarChart, PieChart } from 'react-native-chart-kit';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const { width: _SCREEN_WIDTH } = Dimensions.get('window');
 
 /**
  * Dashboard Administrativo para Sistema de Gamificação
@@ -59,10 +59,10 @@ interface ChartData {
 }
 
 const GamificationAdminScreen: React.FC = () => {
-  const theme = useTheme();
+  const _theme = useTheme();
   const [refreshing, setRefreshing] = useState(false);
   const [selectedPeriod, setSelectedPeriod] = useState('today');
-  const [selectedMetric, setSelectedMetric] = useState('engagement');
+  const [_selectedMetric, _setSelectedMetric] = useState('engagement');
   const [showConfigDialog, setShowConfigDialog] = useState(false);
   const [showUserDialog, setShowUserDialog] = useState(false);
   const [selectedUser, setSelectedUser] = useState<any>(null);
@@ -78,7 +78,7 @@ const GamificationAdminScreen: React.FC = () => {
   });
 
   // Mock de dados (substituir por API real)
-  const [metrics, setMetrics] = useState<MetricCard[]>([
+  const [metrics, _setMetrics] = useState<MetricCard[]>([
     {
       title: 'Usuários Ativos',
       value: '12,543',
@@ -213,7 +213,7 @@ const GamificationAdminScreen: React.FC = () => {
     setShowConfigDialog(false);
   };
 
-  const handleUserAction = (action: string, userId: string) => {
+  const handleUserAction = (_action: string, _userId: string) => {
     // Implementar ações do usuário
   };
 

@@ -14,27 +14,27 @@ import {Text} from 'react-native-paper';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
-  withSpring,
-  withSequence,
-  withDelay,
-  withTiming,
-  runOnJS,
-  interpolate,
-  Easing,
+  // withSpring,
+  // withSequence,
+  // withDelay,
+  // withTiming,
+  // runOnJS,
+  // interpolate,
+  // Easing,
 } from 'react-native-reanimated';
 
 import { EmojiReaction, EmojiReactionType } from '../../types/animations';
 
 import { theme, getSpacing } from '../../theme';
 
-const { width: screenWidth } = Dimensions.get('window');
+const { width: _screenWidth } = Dimensions.get('window');
 
 interface EmojiReactionSystemProps {
   onReaction?: (type: EmojiReactionType, position: { x: number; y: number }) => void;
   selectedReaction?: EmojiReactionType | null;
   showControls?: boolean;
   enabled?: boolean;
-  maxFloatingReactions?: number;
+  max_FloatingReactions?: number;
   style?: any;
   // Modo de exibição
   mode?: 'selector' | 'floating' | 'both';
@@ -48,7 +48,7 @@ interface ReactionOption {
   spriteAnimation: boolean;
 }
 
-interface FloatingReaction extends EmojiReaction {
+interface _FloatingReaction extends EmojiReaction {
   animatedX: Animated.SharedValue<number>;
   animatedY: Animated.SharedValue<number>;
   animatedOpacity: Animated.SharedValue<number>;
@@ -113,7 +113,7 @@ const EmojiReactionSystem: React.FC<EmojiReactionSystemProps> = ({
 
   // Anima entrada dos emojis
   React.useEffect(() => {
-    scales.forEach((scale, index) => {
+    scales.forEach((scale, _index) => {
       scale.value = withDelay(
         index * 100,
         withSpring(1, {
@@ -146,14 +146,14 @@ const EmojiReactionSystem: React.FC<EmojiReactionSystemProps> = ({
     <View style={styles.container}>
       <Text style={styles.title}>Como você se sentiu?</Text>
       <View style={styles.reactionsRow}>
-        {reactions.map((reaction, index) => {
+        {reactions.map((reaction, _index) => {
           const animatedStyle = animatedStyles[index];
           const isSelected = selectedReaction === reaction.type;
 
           return (
             <TouchableOpacity
               key={reaction.type}
-              onPress={() => handleReactionPress(reaction, index)}
+              onPress={() => handleReactionPress(reaction, _index)}
               style={styles.reactionContainer}
               disabled={selectedReaction !== null}
             >

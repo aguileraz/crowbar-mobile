@@ -7,6 +7,8 @@ import {
 } from 'react-native';
 import { List, Switch, Button, Card, Title } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { env } from '../config/env';
 import { logout, selectUser, selectIsLoading } from '../store/slices/authSlice';
 import { AppDispatch } from '../store';
@@ -15,8 +17,11 @@ import { AppDispatch } from '../store';
  * Settings Screen - App configuration and preferences
  */
 
+type SettingsScreenNavigationProp = NativeStackNavigationProp<any, 'Settings'>;
+
 const SettingsScreen: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const navigation = useNavigation<SettingsScreenNavigationProp>();
   const user = useSelector(selectUser);
   const isLoading = useSelector(selectIsLoading);
 
@@ -164,9 +169,9 @@ const SettingsScreen: React.FC = () => {
               left={props => <List.Icon {...props} icon="api" />}
             />
             <List.Item
-              title="Firebase Project"
-              description={env.FIREBASE_PROJECT_ID}
-              left={props => <List.Icon {...props} icon="firebase" />}
+              title="Keycloak Realm"
+              description="crowbar"
+              left={props => <List.Icon {...props} icon="shield-account" />}
             />
           </Card.Content>
         </Card>
@@ -190,6 +195,13 @@ const SettingsScreen: React.FC = () => {
                 title="Email Verificado"
                 description={user.emailVerified ? 'Sim' : 'Não'}
                 left={props => <List.Icon {...props} icon="email-check" />}
+              />
+              <List.Item
+                title="Autenticação de Dois Fatores (MFA)"
+                description={user.mfaEnabled ? 'Habilitado' : 'Desabilitado'}
+                left={props => <List.Icon {...props} icon="shield-check" />}
+                right={props => <List.Icon {...props} icon="chevron-right" />}
+                onPress={() => navigation.navigate('MFASetup' as never)}
               />
             </Card.Content>
           </Card>

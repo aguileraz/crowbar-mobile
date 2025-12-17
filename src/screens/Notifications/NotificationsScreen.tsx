@@ -16,7 +16,7 @@ import {
   FAB,
   Badge,
 } from 'react-native-paper';
-import { _useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -43,7 +43,7 @@ import ErrorMessage from '../../components/ErrorMessage';
 import { Notification } from '../../types/api';
 
 // Theme
-import { _theme, getSpacing } from '../../theme';
+import { theme, getSpacing } from '../../theme';
 
 /**
  * Tela de Notificações
@@ -82,7 +82,7 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ navigation })
   );
 
   // Apply filters when they change
-  useEffect(() => {
+  React.useEffect(() => {
     applyFilters();
   }, [typeFilter, readFilter]);
 
@@ -93,7 +93,7 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ navigation })
     try {
       await dispatch(fetchNotifications({ page: 1, filters })).unwrap();
     } catch (err) {
-      logger.error('Error loading notifications:', _err);
+      logger.error('Error loading notifications:', err);
     }
   };
 
@@ -136,7 +136,7 @@ const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ navigation })
           filters 
         })).unwrap();
       } catch (err) {
-        logger.error('Error loading more notifications:', _err);
+        logger.error('Error loading more notifications:', err);
       } finally {
         setLoadingMore(false);
       }

@@ -47,7 +47,7 @@ interface LoginScreenProps {
   navigation: LoginScreenNavigationProp;
 }
 
-const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
+const LoginScreen: React.FC<LoginScreenProps> = ({ _navigation }) => {
   const dispatch = useDispatch<AppDispatch>();
   const isLoading = useSelector(selectIsLoading);
   const authError = useSelector(selectAuthError);

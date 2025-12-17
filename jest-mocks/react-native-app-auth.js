@@ -1,5 +1,5 @@
 // Mock for react-native-app-auth
-const mockAuthConfig = {
+const _mockAuthConfig = {
   issuer: 'https://test-issuer.com',
   clientId: 'test-client-id',
   redirectUrl: 'com.crowbar.mobile://oauth',
@@ -16,7 +16,7 @@ const mockAuthorizeResult = {
 
 export const authorize = jest.fn(() => Promise.resolve(mockAuthorizeResult));
 
-export const refresh = jest.fn((config, { refreshToken }) => 
+export const refresh = jest.fn((_config, { _refreshToken }) => 
   Promise.resolve({
     ...mockAuthorizeResult,
     accessToken: 'mock-refreshed-access-token',

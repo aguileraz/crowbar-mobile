@@ -16,7 +16,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import FastImage from 'react-native-fast-image';
 import CountdownTimer from './CountdownTimer';
 import { hapticFeedback } from '../utils/haptic';
-import { theme as appTheme } from '../theme';
+import { theme as _appTheme } from '../theme';
 import { MysteryBox } from '../types/api';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');

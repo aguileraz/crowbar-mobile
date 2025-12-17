@@ -142,24 +142,20 @@ export const useRealtime = (options: UseRealtimeOptions = {}) => {
     isConnected,
     connectionStatus,
     error,
-    
+
     // Connection methods
     connect,
     disconnect,
-    
+
     // Subscription methods
     subscribeBox,
     subscribeOrder,
-    
-    // Data getters
-    getBoxStock,
-    getOrderStatus,
-    
+
     // Live data
     liveEvents,
     onlineUsers,
     liveStats,
-    
+
     // Utility methods
     isReady: isConnected && connectionStatus === 'connected',
     hasError: !!error,
@@ -170,7 +166,7 @@ export const useRealtime = (options: UseRealtimeOptions = {}) => {
  * Hook específico para atualizações de caixa
  */
 export const useBoxRealtime = (boxId: string) => {
-  const { subscribeBox, getBoxStock: _getBoxStock, isConnected } = useRealtime();
+  const { subscribeBox, isConnected } = useRealtime();
   const boxStock = useSelector(selectBoxStock(boxId));
 
   useEffect(() => {
@@ -191,7 +187,7 @@ export const useBoxRealtime = (boxId: string) => {
  * Hook específico para atualizações de pedido
  */
 export const useOrderRealtime = (orderId: string) => {
-  const { subscribeOrder, getOrderStatus: _getOrderStatus, isConnected } = useRealtime();
+  const { subscribeOrder, isConnected } = useRealtime();
   const orderStatus = useSelector(selectOrderStatus(orderId));
 
   useEffect(() => {

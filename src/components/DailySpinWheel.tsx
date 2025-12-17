@@ -3,7 +3,7 @@ import {
   View,
   StyleSheet,
   Dimensions,
-  TouchableOpacity,
+  _TouchableOpacity,
   Modal,
 } from 'react-native';
 import {
@@ -21,10 +21,10 @@ import Animated, {
   withSequence,
   withDelay,
   withSpring,
-  interpolate,
+  _interpolate,
   runOnJS,
   Easing,
-  FadeIn,
+  // FadeIn,
   FadeOut,
   ZoomIn,
 } from 'react-native-reanimated';
@@ -32,7 +32,7 @@ import Svg, { G, Path, Text as SvgText, Circle } from 'react-native-svg';
 import LinearGradient from 'react-native-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { hapticFeedback } from '../utils/haptic';
-import AnimatedEmoji, { FloatingEmojiReaction } from './AnimatedEmoji';
+import _AnimatedEmoji, { FloatingEmojiReaction } from './AnimatedEmoji';
 import CountdownTimer from './CountdownTimer';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');

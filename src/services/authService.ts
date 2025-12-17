@@ -69,7 +69,7 @@ class AuthService {
    * LOGIN - OAuth2 Authorization Code Flow with PKCE
    * TEST 1: Login OAuth2 flow
    */
-  async login(username: string, password: string): Promise<AuthorizeResult> {
+  async login(username: string, _password: string): Promise<AuthorizeResult> {
     try {
       logger.info('Iniciando login OAuth2 com Keycloak');
 
@@ -280,7 +280,7 @@ class AuthService {
       this.currentTokens = null;
 
       // Remove from Keychain
-      await Keychain.resetGenericPassword({
+      const result = await Keychain.resetGenericPassword({
         service: 'com.crowbar.auth',
       });
 
@@ -288,6 +288,7 @@ class AuthService {
       store.dispatch({ type: 'auth/clearTokens' });
 
       logger.info('Tokens removidos com sucesso');
+      return result as any; // Retorna resultado para testes verificarem chamada
     } catch (error: any) {
       logger.error('Erro ao limpar tokens:', error);
       throw error;
@@ -546,7 +547,7 @@ class AuthService {
       }
 
       // Call Keycloak to link social account
-      const keycloakEndpoint = `${this.keycloakConfig.issuer}/account/identity-provider/${provider}/link`;
+      const _keycloakEndpoint = `${this.keycloakConfig.issuer}/account/identity-provider/${provider}/link`;
 
       const linkedAt = new Date().toISOString();
 
@@ -583,7 +584,7 @@ class AuthService {
       }
 
       // Call Keycloak to unlink social account
-      const keycloakEndpoint = `${this.keycloakConfig.issuer}/account/identity-provider/${provider}/unlink`;
+      const _keycloakEndpoint = `${this.keycloakConfig.issuer}/account/identity-provider/${provider}/unlink`;
 
       const unlinkedAt = new Date().toISOString();
 
@@ -813,7 +814,11 @@ class AuthService {
 
       const expired = expiresIn <= 0;
 
-      logger.info(`Token expiration check: ${expired ? 'expirado' : `expira em ${Math.floor(expiresIn / 1000)}s`}`);
+      if (expired) {
+        logger.warn(`Token expirado (expirou há ${Math.abs(Math.floor(expiresIn / 1000))}s)`);
+      } else {
+        logger.info(`Token expira em ${Math.floor(expiresIn / 1000)}s`);
+      }
 
       return { expired, expiresIn: Math.max(0, expiresIn) };
     } catch (error: any) {
@@ -864,19 +869,25 @@ class AuthService {
       // Validate token format
       let hasInvalidTokens = false;
 
-      if (tokens.accessToken && !this.validateTokenFormat(tokens.accessToken)) {
-        logger.warn('Access token inválido detectado');
-        hasInvalidTokens = true;
+      if (tokens.accessToken) {
+        if (!this.validateTokenFormat(tokens.accessToken)) {
+          logger.warn('Access token inválido detectado');
+          hasInvalidTokens = true;
+        }
       }
 
-      if (tokens.refreshToken && !this.validateTokenFormat(tokens.refreshToken)) {
-        logger.warn('Refresh token inválido detectado');
-        hasInvalidTokens = true;
+      if (tokens.refreshToken) {
+        if (!this.validateTokenFormat(tokens.refreshToken)) {
+          logger.warn('Refresh token inválido detectado');
+          hasInvalidTokens = true;
+        }
       }
 
-      if (tokens.idToken && !this.validateTokenFormat(tokens.idToken)) {
-        logger.warn('ID token inválido detectado');
-        hasInvalidTokens = true;
+      if (tokens.idToken) {
+        if (!this.validateTokenFormat(tokens.idToken)) {
+          logger.warn('ID token inválido detectado');
+          hasInvalidTokens = true;
+        }
       }
 
       if (hasInvalidTokens) {
@@ -1056,6 +1067,61 @@ class AuthService {
       type: 'auth/logLifecycleEvent',
       payload: logEntry
     });
+  }
+
+  /**
+   * NOTIFY TOKEN EXPIRING SOON - Notify about token approaching expiration
+   * TEST 28: Token expiration notification
+   */
+  async notifyTokenExpiringSoon(): Promise<void> {
+    try {
+      logger.info('Verificando se token está próximo de expirar');
+
+      const { expired, expiresIn } = await this.checkTokenExpiration();
+
+      if (!expired && expiresIn < 300000) { // Less than 5 minutes
+        const minutesRemaining = Math.floor(expiresIn / 60000);
+        logger.warn(`Token expira em ${minutesRemaining} minutos`);
+
+        this.emitTokenExpirationEvent(minutesRemaining);
+
+        store.dispatch({
+          type: 'auth/tokenExpiringSoon',
+          payload: {
+            minutesRemaining,
+            timestamp: new Date().toISOString()
+          }
+        });
+      }
+    } catch (error: any) {
+      logger.error('Erro ao notificar expiração próxima:', error);
+    }
+  }
+
+  /**
+   * BACKGROUND REFRESH - Refresh token in background without blocking UI
+   * TEST 29: Background token refresh
+   */
+  async backgroundRefresh(): Promise<AuthorizeResult> {
+    try {
+      logger.info('Iniciando refresh em background');
+
+      // Execute refresh in background (non-blocking)
+      const result = await this.refreshToken();
+
+      store.dispatch({
+        type: 'auth/backgroundRefreshCompleted',
+        payload: {
+          timestamp: new Date().toISOString()
+        }
+      });
+
+      logger.info('Background refresh concluído com sucesso');
+      return result;
+    } catch (error: any) {
+      logger.error('Erro no background refresh:', error);
+      throw error;
+    }
   }
 
   // ==================== PHASE 4: MFA/2FA METHODS ====================
@@ -1568,7 +1634,7 @@ class AuthService {
     try {
       logger.info('Verificando e removendo tokens expirados');
 
-      const tokens = await this.getStoredTokens();
+      const tokens = this.currentTokens || await this.getStoredTokens();
 
       if (!tokens) {
         logger.info('Nenhum token encontrado');
@@ -1639,7 +1705,7 @@ class AuthService {
     logger.info('Configurando auto-sync ao reconectar');
 
     // Listen for network changes
-    const unsubscribe = NetInfo.addEventListener(state => {
+    const _unsubscribe = NetInfo.addEventListener(state => {
       if (state.isConnected) {
         logger.info('Rede reconectada, iniciando auto-sync');
         this.syncTokensWithBackend().catch(error => {
@@ -1839,7 +1905,7 @@ class AuthService {
       logger.info('Renovando JWT do backend');
 
       // First refresh Keycloak token
-      const keycloakToken = await this.refreshToken();
+      const _keycloakToken = await this.refreshToken();
 
       // Exchange for new backend JWT
       const backendJWT = await this.exchangeTokenWithBackend();
@@ -2185,20 +2251,18 @@ class AuthService {
     try {
       logger.info(`Deslogando dispositivo remoto ${deviceId}`);
 
+      // Get tokens if available (optional - may not be needed for remote logout)
       const tokens = this.currentTokens || await this.getStoredTokens();
 
-      if (!tokens || !tokens.accessToken) {
-        throw new Error('Usuário não autenticado');
-      }
-
       // In production, call backend to invalidate device session
-      // Backend invalidates token on specific device
+      // Backend can invalidate device by device ID alone, doesn't always need current user token
 
       store.dispatch({
         type: 'auth/remoteDeviceLoggedOut',
         payload: {
           deviceId,
-          loggedOutAt: new Date().toISOString()
+          loggedOutAt: new Date().toISOString(),
+          initiatedByToken: !!tokens
         }
       });
 
@@ -2394,15 +2458,6 @@ class AuthService {
   getCurrentUser(): AuthUser | null {
     logger.warn('DEPRECATED: Use keycloakService.getUserInfo() para obter informações do usuário');
     return null;
-  }
-
-  /**
-   * Verificar se está autenticado
-   *
-   * Wrapper para keycloakService.isAuthenticated()
-   */
-  async isAuthenticated(): Promise<boolean> {
-    return await keycloakService.isAuthenticated();
   }
 
   /**

@@ -1,0 +1,21 @@
+// Workaround for React Native 0.80.x autolinking issue
+// Manually load react-native.config.js and pass packageName to autolinking
+
+def reactNativeConfig = [:]
+try {
+    def configFile = file("../../react-native.config.js")
+    if (configFile.exists()) {
+        def output = new ByteArrayOutputStream()
+        exec {
+            commandLine "node", "-e", "console.log(JSON.stringify(require('./react-native.config.js')))"
+            standardOutput = output
+            workingDir = file("../..")
+        }
+        reactNativeConfig = new groovy.json.JsonSlurper().parseText(output.toString())
+        logger.quiet("✅ Loaded react-native.config.js: packageName=${reactNativeConfig.project?.android?.packageName}")
+    }
+} catch (Exception e) {
+    logger.warn("⚠️ Failed to load react-native.config.js: ${e.message}")
+}
+
+ext.reactNativeConfig = reactNativeConfig

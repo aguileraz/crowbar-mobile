@@ -276,7 +276,7 @@ class SocialNotificationService {
   /**
    * Registra token no servidor
    */
-  private async registerTokenOnServer(token: string): Promise<void> {
+  private async registerTokenOnServer(_token: string): Promise<void> {
     try {
       // Em produção, enviar token para o servidor
     } catch (error) {

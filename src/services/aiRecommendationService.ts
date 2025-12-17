@@ -5,7 +5,7 @@
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
-  UserBehavior,
+  _UserBehavior,
   UserPreferences,
   Recommendation,
   ThemeRecommendation,
@@ -560,7 +560,7 @@ class AIRecommendationService {
    */
   private generateBoxRecommendation(
     preferences: UserPreferences,
-    behaviors: UserBehavior[]
+    _behaviors: UserBehavior[]
   ): BoxRecommendation | null {
     // Simula recomendação baseada em preferências
     const mockBoxes = [

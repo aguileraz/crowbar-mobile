@@ -29,6 +29,7 @@ const NotificationsScreen = lazyWithPreload(() => import('../screens/Notificatio
 const NotificationSettingsScreen = lazyWithPreload(() => import('../screens/Notifications/NotificationSettingsScreen'));
 const AnalyticsScreen = lazyWithPreload(() => import('../screens/Analytics/AnalyticsScreen'));
 const PrivacyControlsScreen = lazyWithPreload(() => import('../screens/Privacy/PrivacyControlsScreen'));
+const MFASetupScreen = lazyWithPreload(() => import('../screens/Settings/MFASetupScreen'));
 
 // Import navigators
 import AuthNavigator from './AuthNavigator';
@@ -71,6 +72,7 @@ export type RootStackParamList = {
   NotificationSettings: undefined;
   BoxDetails: { boxId: string };
   Settings: undefined;
+  MFASetup: undefined;
   Achievements: undefined;
   GamificationHub: undefined;
   SocialRoom: { roomId: string };
@@ -224,6 +226,9 @@ const AppNavigator = () => {
             </Stack.Screen>
             <Stack.Screen name="PrivacyControls">
               {(props) => <LazyScreen component={PrivacyControlsScreen} {...props} />}
+            </Stack.Screen>
+            <Stack.Screen name="MFASetup">
+              {(props) => <LazyScreen component={MFASetupScreen} {...props} />}
             </Stack.Screen>
           </>
         ) : (

@@ -1,5 +1,6 @@
 import httpClient from './httpClient';
 import keycloakService from './keycloakService';
+import logger from './loggerService';
 
 /**
  * MFA (Multi-Factor Authentication) Service
@@ -37,7 +38,7 @@ class MFAService {
 
       return response.data;
     } catch (error) {
-      console.error('❌ Error getting MFA status:', error);
+      logger.error('Error getting MFA status:', error);
       throw error;
     }
   }
@@ -66,7 +67,7 @@ class MFAService {
 
       return response.data;
     } catch (error) {
-      console.error('❌ Error enabling MFA:', error);
+      logger.error('Error enabling MFA:', error);
       throw error;
     }
   }
@@ -94,7 +95,7 @@ class MFAService {
 
       return response.data;
     } catch (error) {
-      console.error('❌ Error disabling MFA:', error);
+      logger.error('Error disabling MFA:', error);
       throw error;
     }
   }
@@ -107,7 +108,7 @@ class MFAService {
       const status = await this.getStatus();
       return !status.mfaEnabled;
     } catch (error) {
-      console.error('❌ Error checking MFA setup:', error);
+      logger.error('Error checking MFA setup:', error);
       return false;
     }
   }

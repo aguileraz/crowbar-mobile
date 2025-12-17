@@ -8,7 +8,7 @@ import {
   markAsRead,
   markAllAsRead,
   deleteNotification,
-  updateSettings,
+  updateNotificationSettings,
   requestPermission,
   addNotification,
   selectNotifications,
@@ -107,9 +107,9 @@ export const useNotifications = (options: UseNotificationsOptions = {}) => {
   /**
    * Update notification settings
    */
-  const updateNotificationSettings = useCallback(async (newSettings: any) => {
+  const updateSettings = useCallback(async (newSettings: any) => {
     try {
-      await dispatch(updateSettings(newSettings)).unwrap();
+      await dispatch(updateNotificationSettings(newSettings)).unwrap();
     } catch (err) {
       logger.error('Failed to update notification settings:', err);
     }
@@ -120,8 +120,8 @@ export const useNotifications = (options: UseNotificationsOptions = {}) => {
    */
   const requestNotificationPermission = useCallback(async () => {
     try {
-      const _result = await dispatch(requestPermission()).unwrap();
-      return _result;
+      const result = await dispatch(requestPermission()).unwrap();
+      return result;
     } catch (err) {
       logger.error('Failed to request notification permission:', err);
       return { granted: false };
@@ -214,17 +214,17 @@ export const useNotifications = (options: UseNotificationsOptions = {}) => {
     isLoading,
     error,
     isInitialized,
-    
+
     // Actions
     initialize,
     loadNotifications,
     markNotificationAsRead,
     markAllNotificationsAsRead,
     deleteNotificationById,
-    updateNotificationSettings,
+    updateNotificationSettings: updateSettings,
     requestNotificationPermission,
     addNewNotification,
-    
+
     // Utilities
     hasUnreadNotifications: unreadCount > 0,
     isReady: isInitialized && isPermissionGranted,
@@ -249,27 +249,27 @@ export const useNotificationBadge = () => {
  * Hook específico para configurações de notificação
  */
 export const useNotificationSettings = () => {
-  const { settings, updateNotificationSettings, isLoading } = useNotifications();
+  const { settings, updateNotificationSettings: updateNotifSettings, isLoading } = useNotifications();
   
   const updateSetting = useCallback(async (key: string, value: any) => {
     if (!settings) return;
-    
+
     const updates = { [key]: value };
-    await updateNotificationSettings(updates);
-  }, [settings, updateNotificationSettings]);
+    await updateNotifSettings(updates);
+  }, [settings, updateNotifSettings]);
   
   const updateQuietHours = useCallback(async (field: string, value: any) => {
     if (!settings) return;
-    
+
     const updates = {
       quietHours: {
         ...settings.quietHours,
         [field]: value,
       },
     };
-    
-    await updateNotificationSettings(updates);
-  }, [settings, updateNotificationSettings]);
+
+    await updateNotifSettings(updates);
+  }, [settings, updateNotifSettings]);
   
   return {
     settings,

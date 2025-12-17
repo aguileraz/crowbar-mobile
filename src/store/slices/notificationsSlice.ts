@@ -174,6 +174,21 @@ export const registerFCMToken = createAsyncThunk(
   }
 );
 
+/**
+ * Solicitar permissão de notificações
+ */
+export const requestPermission = createAsyncThunk(
+  'notifications/requestPermission',
+  async (_, { rejectWithValue }) => {
+    try {
+      const result = await notificationService.requestPermissions();
+      return result;
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Erro ao solicitar permissão');
+    }
+  }
+);
+
 // Slice
 const notificationsSlice = createSlice({
   name: 'notifications',
@@ -315,6 +330,22 @@ const notificationsSlice = createSlice({
       .addCase(registerFCMToken.fulfilled, (state, action) => {
         state.fcmToken = action.payload;
       });
+
+    // Request Permission
+    builder
+      .addCase(requestPermission.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(requestPermission.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.permissionStatus = action.payload.granted ? 'granted' : 'denied';
+      })
+      .addCase(requestPermission.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+        state.permissionStatus = 'denied';
+      });
   },
 });
 
@@ -337,7 +368,10 @@ export const selectNotificationsLoading = (state: { notifications: Notifications
 export const selectNotificationsUpdating = (state: { notifications: NotificationsState }) => state.notifications.isUpdating;
 export const selectNotificationsError = (state: { notifications: NotificationsState }) => state.notifications.error;
 export const selectFCMToken = (state: { notifications: NotificationsState }) => state.notifications.fcmToken;
+export const selectFcmToken = selectFCMToken; // Alias for camelCase consistency
 export const selectPermissionStatus = (state: { notifications: NotificationsState }) => state.notifications.permissionStatus;
+export const selectIsPermissionGranted = (state: { notifications: NotificationsState }) => state.notifications.permissionStatus === 'granted';
+export const selectIsNotificationsInitialized = (state: { notifications: NotificationsState }) => state.notifications.fcmToken !== null || state.notifications.permissionStatus !== 'not-determined';
 export const selectNotificationFilters = (state: { notifications: NotificationsState }) => state.notifications.filters;
 export const selectNotificationsPagination = (state: { notifications: NotificationsState }) => state.notifications.pagination;
 

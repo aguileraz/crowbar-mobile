@@ -1,35 +1,17 @@
 /* eslint-disable no-console */
-import messaging from '@react-native-firebase/messaging';
-import { Platform, Alert, Linking } from 'react-native';
+import { Platform, Alert, Linking, PermissionsAndroid } from 'react-native';
 import notifee from '@notifee/react-native';
 import { notificationService } from '../notificationService';
 import { httpClient } from '../httpClient';
 import { navigationService } from '../navigationService';
+import logger from '../loggerService';
 
 // Mock das dependências
-jest.mock('@react-native-firebase/messaging', () => ({
-  __esModule: true,
-  default: jest.fn(() => ({
-    requestPermission: jest.fn(),
-    getToken: jest.fn(),
-    onMessage: jest.fn(),
-    onNotificationOpenedApp: jest.fn(),
-    getInitialNotification: jest.fn(),
-    onTokenRefresh: jest.fn(),
-    deleteToken: jest.fn(),
-    hasPermission: jest.fn(),
-  })),
-  AuthorizationStatus: {
-    AUTHORIZED: 1,
-    PROVISIONAL: 2,
-    DENIED: -1,
-    NOT_DETERMINED: 0,
-  },
-}));
-
 jest.mock('@notifee/react-native', () => ({
   __esModule: true,
   default: {
+    requestPermission: jest.fn(),
+    getNotificationSettings: jest.fn(),
     createChannel: jest.fn(),
     displayNotification: jest.fn(),
     cancelNotification: jest.fn(),
@@ -40,10 +22,17 @@ jest.mock('@notifee/react-native', () => ({
     setBadgeCount: jest.fn(),
     incrementBadgeCount: jest.fn(),
     decrementBadgeCount: jest.fn(),
+    getInitialNotification: jest.fn(),
+    onForegroundEvent: jest.fn(),
+    onBackgroundEvent: jest.fn(),
   },
   AndroidImportance: {
     HIGH: 4,
     DEFAULT: 3,
+  },
+  EventType: {
+    PRESS: 1,
+    DISMISSED: 2,
   },
 }));
 
@@ -67,22 +56,24 @@ jest.mock('react-native', () => ({
   },
   Linking: {
     openSettings: jest.fn(),
+    openURL: jest.fn(),
   },
 }));
 
 jest.mock('../httpClient');
 jest.mock('../navigationService');
+jest.mock('../loggerService', () => ({
+  debug: jest.fn(),
+  info: jest.fn(),
+  warn: jest.fn(),
+  error: jest.fn(),
+}));
 
 describe('NotificationService', () => {
-  const mockMessaging = messaging as jest.MockedFunction<typeof messaging>;
-  
   beforeEach(() => {
     jest.clearAllMocks();
     jest.spyOn(console, 'log').mockImplementation();
     jest.spyOn(console, 'error').mockImplementation();
-    
-    // Reset do token FCM
-    (notificationService as any).fcmToken = null;
   });
 
   afterEach(() => {
@@ -92,68 +83,54 @@ describe('NotificationService', () => {
   describe('initialize', () => {
     it('deve inicializar com sucesso quando permissões são concedidas', async () => {
       // Mocks
-      const mockToken = 'fcm-token-123';
-      const mockRequestPermission = jest.fn().mockResolvedValue(messaging.AuthorizationStatus.AUTHORIZED);
-      const mockGetToken = jest.fn().mockResolvedValue(mockToken);
-      const mockRegisterToken = jest.spyOn(notificationService as any, 'registerToken').mockResolvedValue(undefined);
-      
-      mockMessaging.mockReturnValue({
-        requestPermission: mockRequestPermission,
-        getToken: mockGetToken,
-        onMessage: jest.fn(),
-        onNotificationOpenedApp: jest.fn(),
-        getInitialNotification: jest.fn().mockResolvedValue(null),
-        onTokenRefresh: jest.fn(),
-      } as any);
+      (PermissionsAndroid.request as jest.Mock).mockResolvedValue(PermissionsAndroid.RESULTS.GRANTED);
+      (notifee.createChannel as jest.Mock).mockResolvedValue(undefined);
+      (notifee.onForegroundEvent as jest.Mock).mockImplementation(() => {});
+      (notifee.onBackgroundEvent as jest.Mock).mockImplementation(() => {});
 
       // Executar
-      const _result = await notificationService.initialize();
+      const result = await notificationService.initialize();
 
       // Verificar
-      expect(_result).toEqual({
-        token: mockToken,
+      expect(result).toEqual({
+        token: null,
         permissionStatus: 'granted',
       });
-      expect(mockGetToken).toHaveBeenCalled();
-      expect(mockRegisterToken).toHaveBeenCalledWith(mockToken);
-      expect((notificationService as any).fcmToken).toBe(mockToken);
+      expect(notifee.createChannel).toHaveBeenCalled();
+      expect(notifee.onForegroundEvent).toHaveBeenCalled();
+      expect(notifee.onBackgroundEvent).toHaveBeenCalled();
+      expect(logger.debug).toHaveBeenCalledWith('Notificações inicializadas com @notifee');
     });
 
-    it('deve retornar null quando permissões são negadas', async () => {
+    it('deve retornar denied quando permissões são negadas', async () => {
       // Mocks
-      const mockRequestPermission = jest.fn().mockResolvedValue(messaging.AuthorizationStatus.DENIED);
-      
-      mockMessaging.mockReturnValue({
-        requestPermission: mockRequestPermission,
-      } as any);
+      (PermissionsAndroid.request as jest.Mock).mockResolvedValue(PermissionsAndroid.RESULTS.DENIED);
 
       // Executar
-      const _result = await notificationService.initialize();
+      const result = await notificationService.initialize();
 
       // Verificar
-      expect(_result).toEqual({
+      expect(result).toEqual({
         token: null,
         permissionStatus: 'denied',
       });
-      expect((notificationService as any).fcmToken).toBeNull();
+      expect(notifee.createChannel).not.toHaveBeenCalled();
     });
 
     it('deve tratar erros na inicialização', async () => {
       // Mock de erro
       const mockError = new Error('Initialization error');
-      mockMessaging.mockImplementation(() => {
-        throw mockError;
-      });
+      (PermissionsAndroid.request as jest.Mock).mockRejectedValue(mockError);
 
       // Executar
-      const _result = await notificationService.initialize();
+      const result = await notificationService.initialize();
 
       // Verificar
-      expect(_result).toEqual({
+      expect(result).toEqual({
         token: null,
         permissionStatus: 'denied',
       });
-      expect(console.error).toHaveBeenCalledWith('Error initializing notifications:', mockError);
+      expect(logger.error).toHaveBeenCalledWith('Error initializing notifications:', mockError);
     });
   });
 
@@ -162,186 +139,73 @@ describe('NotificationService', () => {
       // Mock Android 13+
       (Platform.Version as any) = 33;
       (PermissionsAndroid.request as jest.Mock).mockResolvedValue(PermissionsAndroid.RESULTS.GRANTED);
-      
-      const mockRequestPermission = jest.fn().mockResolvedValue(messaging.AuthorizationStatus.AUTHORIZED);
-      mockMessaging.mockReturnValue({
-        requestPermission: mockRequestPermission,
-      } as any);
 
       // Executar
-      const _result = await notificationService.requestPermissions();
+      const result = await notificationService.requestPermissions();
 
       // Verificar
-      expect(_result).toBe('granted');
+      expect(result).toBe('granted');
       expect(PermissionsAndroid.request).toHaveBeenCalledWith(
         PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
       );
-      expect(mockRequestPermission).toHaveBeenCalled();
     });
 
     it('deve solicitar permissões no Android < 13', async () => {
       // Mock Android < 13
       (Platform.Version as any) = 30;
-      
-      const mockRequestPermission = jest.fn().mockResolvedValue(messaging.AuthorizationStatus.AUTHORIZED);
-      mockMessaging.mockReturnValue({
-        requestPermission: mockRequestPermission,
-      } as any);
 
       // Executar
-      const _result = await notificationService.requestPermissions();
+      const result = await notificationService.requestPermissions();
 
       // Verificar
-      expect(_result).toBe('granted');
+      expect(result).toBe('granted');
       expect(PermissionsAndroid.request).not.toHaveBeenCalled();
-      expect(mockRequestPermission).toHaveBeenCalled();
     });
 
     it('deve solicitar permissões no iOS', async () => {
       // Mock iOS
       (Platform.OS as any) = 'ios';
-      
-      const mockRequestPermission = jest.fn().mockResolvedValue(messaging.AuthorizationStatus.AUTHORIZED);
-      mockMessaging.mockReturnValue({
-        requestPermission: mockRequestPermission,
-      } as any);
+      (notifee.requestPermission as jest.Mock).mockResolvedValue({
+        authorizationStatus: 1, // AUTHORIZED
+      });
 
       // Executar
-      const _result = await notificationService.requestPermissions();
+      const result = await notificationService.requestPermissions();
 
       // Verificar
-      expect(_result).toBe('granted');
-      expect(mockRequestPermission).toHaveBeenCalled();
-      
+      expect(result).toBe('granted');
+      expect(notifee.requestPermission).toHaveBeenCalled();
+
       // Restaurar
       (Platform.OS as any) = 'android';
     });
 
     it('deve retornar denied quando permissão é negada', async () => {
-      const mockRequestPermission = jest.fn().mockResolvedValue(messaging.AuthorizationStatus.DENIED);
-      mockMessaging.mockReturnValue({
-        requestPermission: mockRequestPermission,
-      } as any);
+      (Platform.Version as any) = 33;
+      (PermissionsAndroid.request as jest.Mock).mockResolvedValue(PermissionsAndroid.RESULTS.DENIED);
 
-      const _result = await notificationService.requestPermissions();
-      expect(_result).toBe('denied');
+      const result = await notificationService.requestPermissions();
+      expect(result).toBe('denied');
     });
 
     it('deve tratar erros na solicitação de permissões', async () => {
       const mockError = new Error('Permission error');
-      const mockRequestPermission = jest.fn().mockRejectedValue(mockError);
-      mockMessaging.mockReturnValue({
-        requestPermission: mockRequestPermission,
-      } as any);
+      (Platform.Version as any) = 33;
+      (PermissionsAndroid.request as jest.Mock).mockRejectedValue(mockError);
 
-      const _result = await notificationService.requestPermissions();
-      expect(_result).toBe('denied');
-      expect(console.error).toHaveBeenCalledWith('Error requesting permissions:', mockError);
+      const result = await notificationService.requestPermissions();
+      expect(result).toBe('denied');
+      expect(logger.error).toHaveBeenCalledWith('Error requesting permissions:', mockError);
     });
   });
 
-  describe('getFCMToken', () => {
-    it('deve obter token FCM com sucesso', async () => {
-      const mockToken = 'fcm-token-456';
-      const mockGetToken = jest.fn().mockResolvedValue(mockToken);
-      mockMessaging.mockReturnValue({
-        getToken: mockGetToken,
-      } as any);
-
-      const token = await notificationService.getFCMToken();
-      
-      expect(token).toBe(mockToken);
-      expect(mockGetToken).toHaveBeenCalled();
-    });
-
-    it('deve retornar null em caso de erro', async () => {
-      const mockError = new Error('Token error');
-      const mockGetToken = jest.fn().mockRejectedValue(mockError);
-      mockMessaging.mockReturnValue({
-        getToken: mockGetToken,
-      } as any);
-
-      const token = await notificationService.getFCMToken();
-      
-      expect(token).toBeNull();
-      expect(console.error).toHaveBeenCalledWith('Error getting FCM token:', mockError);
-    });
-  });
-
-  describe('Message Listeners', () => {
-    it('deve configurar listeners de mensagem', async () => {
-      const mockOnMessage = jest.fn();
-      const mockOnNotificationOpenedApp = jest.fn();
-      const mockGetInitialNotification = jest.fn().mockResolvedValue(null);
-      const mockOnTokenRefresh = jest.fn();
-      
-      mockMessaging.mockReturnValue({
-        requestPermission: jest.fn().mockResolvedValue(messaging.AuthorizationStatus.AUTHORIZED),
-        getToken: jest.fn().mockResolvedValue('token'),
-        onMessage: mockOnMessage,
-        onNotificationOpenedApp: mockOnNotificationOpenedApp,
-        getInitialNotification: mockGetInitialNotification,
-        onTokenRefresh: mockOnTokenRefresh,
-      } as any);
-
-      jest.spyOn(notificationService as any, 'registerToken').mockResolvedValue(undefined);
-
-      await notificationService.initialize();
-
-      expect(mockOnMessage).toHaveBeenCalled();
-      expect(mockOnNotificationOpenedApp).toHaveBeenCalled();
-      expect(mockGetInitialNotification).toHaveBeenCalled();
-      expect(mockOnTokenRefresh).toHaveBeenCalled();
-    });
-
-    it('deve tratar mensagem em foreground', async () => {
-      const remoteMessage = {
-        notification: {
-          title: 'Teste',
-          body: 'Mensagem de teste',
-        },
-        data: { type: 'test' },
-      };
-
-      // Chamar método privado
-      (notificationService as any).handleForegroundMessage(remoteMessage);
-
-      expect(Alert.alert).toHaveBeenCalledWith(
-        'Teste',
-        'Mensagem de teste',
-        expect.any(Array)
-      );
-    });
-
-    it('deve tratar abertura de notificação', async () => {
-      const remoteMessage = {
-        data: {
-          type: 'order',
-          orderId: '123',
-        },
-      };
-
-      const mockNavigate = jest.fn();
-      (navigationService.navigate as jest.Mock) = mockNavigate;
-
-      // Simular delay para navegação
-      setTimeout(() => {
-        (notificationService as any).handleNotificationOpen(remoteMessage);
-      }, 100);
-
-      await new Promise(resolve => setTimeout(resolve, 150));
-
-      expect(mockNavigate).toHaveBeenCalledWith('Orders', { orderId: '123' });
-    });
-  });
-
-  describe('Token Management', () => {
+  describe('registerToken', () => {
     it('deve registrar token no backend', async () => {
-      const mockToken = 'fcm-token-789';
+      const mockToken = 'device-token-123';
       const mockPost = jest.fn().mockResolvedValue({ data: { success: true } });
       (httpClient.post as jest.Mock) = mockPost;
 
-      await (notificationService as any).registerToken(mockToken);
+      await notificationService.registerToken(mockToken);
 
       expect(mockPost).toHaveBeenCalledWith('/notifications/register-token', {
         token: mockToken,
@@ -349,61 +213,17 @@ describe('NotificationService', () => {
       });
     });
 
-    it('deve desregistrar token', async () => {
-      const mockToken = 'fcm-token-to-remove';
-      (notificationService as any).fcmToken = mockToken;
-      
-      const mockDelete = jest.fn().mockResolvedValue({ data: { success: true } });
-      const mockDeleteToken = jest.fn().mockResolvedValue(undefined);
-      
-      (httpClient.delete as jest.Mock) = mockDelete;
-      mockMessaging.mockReturnValue({
-        deleteToken: mockDeleteToken,
-      } as any);
+    it('deve tratar erro ao registrar token', async () => {
+      const mockError = new Error('Registration error');
+      const mockPost = jest.fn().mockRejectedValue(mockError);
+      (httpClient.post as jest.Mock) = mockPost;
 
-      await notificationService.unregisterToken();
-
-      expect(mockDelete).toHaveBeenCalledWith(`/notifications/unregister-token/${mockToken}`);
-      expect(mockDeleteToken).toHaveBeenCalled();
-      expect((notificationService as any).fcmToken).toBeNull();
+      await expect(notificationService.registerToken('token')).rejects.toThrow('Registration error');
+      expect(logger.error).toHaveBeenCalledWith('Error registering device token:', mockError);
     });
   });
 
-  describe('Notification Settings', () => {
-    it('deve obter configurações de notificação', async () => {
-      const mockSettings = {
-        email: true,
-        push: true,
-        marketing: false,
-      };
-      
-      const mockGet = jest.fn().mockResolvedValue({ data: mockSettings });
-      (httpClient.get as jest.Mock) = mockGet;
-
-      const settings = await notificationService.getNotificationSettings();
-
-      expect(settings).toEqual(mockSettings);
-      expect(mockGet).toHaveBeenCalledWith('/notifications/settings');
-    });
-
-    it('deve atualizar configurações de notificação', async () => {
-      const newSettings = {
-        email: false,
-        push: true,
-        marketing: true,
-      };
-      
-      const mockPut = jest.fn().mockResolvedValue({ data: newSettings });
-      (httpClient.put as jest.Mock) = mockPut;
-
-      const _result = await notificationService.updateNotificationSettings(newSettings);
-
-      expect(_result).toEqual(newSettings);
-      expect(mockPut).toHaveBeenCalledWith('/notifications/settings', newSettings);
-    });
-  });
-
-  describe('Notification Management', () => {
+  describe('getNotifications', () => {
     it('deve buscar notificações com paginação', async () => {
       const mockResponse = {
         data: [
@@ -414,37 +234,43 @@ describe('NotificationService', () => {
         page: 1,
         totalPages: 1,
       };
-      
+
       const mockGet = jest.fn().mockResolvedValue({ data: mockResponse });
       (httpClient.get as jest.Mock) = mockGet;
 
-      const _result = await notificationService.getNotifications(1, 10);
+      const result = await notificationService.getNotifications(1, 10);
 
-      expect(_result).toEqual(mockResponse);
+      expect(result).toEqual(mockResponse);
       expect(mockGet).toHaveBeenCalledWith('/notifications', {
-        params: { page: 1, limit: 10 },
+        params: { page: 1, per_page: 10 },
       });
     });
+  });
 
+  describe('markAsRead', () => {
     it('deve marcar notificação como lida', async () => {
       const notificationId = 'notif-123';
-      const mockPut = jest.fn().mockResolvedValue({ data: { success: true } });
-      (httpClient.put as jest.Mock) = mockPut;
+      const mockPatch = jest.fn().mockResolvedValue({ data: { success: true } });
+      (httpClient.patch as jest.Mock) = mockPatch;
 
       await notificationService.markAsRead(notificationId);
 
-      expect(mockPut).toHaveBeenCalledWith(`/notifications/${notificationId}/read`);
+      expect(mockPatch).toHaveBeenCalledWith(`/notifications/${notificationId}/read`);
     });
+  });
 
+  describe('markAllAsRead', () => {
     it('deve marcar todas as notificações como lidas', async () => {
-      const mockPut = jest.fn().mockResolvedValue({ data: { success: true } });
-      (httpClient.put as jest.Mock) = mockPut;
+      const mockPatch = jest.fn().mockResolvedValue({ data: { success: true } });
+      (httpClient.patch as jest.Mock) = mockPatch;
 
       await notificationService.markAllAsRead();
 
-      expect(mockPut).toHaveBeenCalledWith('/notifications/read-all');
+      expect(mockPatch).toHaveBeenCalledWith('/notifications/mark-all-read');
     });
+  });
 
+  describe('deleteNotification', () => {
     it('deve deletar notificação', async () => {
       const notificationId = 'notif-456';
       const mockDelete = jest.fn().mockResolvedValue({ data: { success: true } });
@@ -456,52 +282,198 @@ describe('NotificationService', () => {
     });
   });
 
-  describe('Badge Management', () => {
+  describe('getSettings', () => {
+    it('deve obter configurações de notificação', async () => {
+      const mockSettings = {
+        email: true,
+        push: true,
+        marketing: false,
+      };
+
+      const mockGet = jest.fn().mockResolvedValue({ data: mockSettings });
+      (httpClient.get as jest.Mock) = mockGet;
+
+      const settings = await notificationService.getSettings();
+
+      expect(settings).toEqual(mockSettings);
+      expect(mockGet).toHaveBeenCalledWith('/notifications/settings');
+    });
+  });
+
+  describe('updateSettings', () => {
+    it('deve atualizar configurações de notificação', async () => {
+      const newSettings = {
+        email: false,
+        push: true,
+        marketing: true,
+      };
+
+      const mockPatch = jest.fn().mockResolvedValue({ data: newSettings });
+      (httpClient.patch as jest.Mock) = mockPatch;
+
+      const result = await notificationService.updateSettings(newSettings);
+
+      expect(result).toEqual(newSettings);
+      expect(mockPatch).toHaveBeenCalledWith('/notifications/settings', newSettings);
+    });
+  });
+
+  describe('getBadgeCount', () => {
     it('deve obter contagem de badge', async () => {
       const mockCount = 5;
-      (notifee.getBadgeCount as jest.Mock).mockResolvedValue(mockCount);
+      const mockGet = jest.fn().mockResolvedValue({ data: { count: mockCount } });
+      (httpClient.get as jest.Mock) = mockGet;
 
       const count = await notificationService.getBadgeCount();
 
       expect(count).toBe(mockCount);
-      expect(notifee.getBadgeCount).toHaveBeenCalled();
+      expect(mockGet).toHaveBeenCalledWith('/notifications/badge-count');
     });
 
-    it('deve definir contagem de badge', async () => {
-      const count = 10;
-      (notifee.setBadgeCount as jest.Mock).mockResolvedValue(undefined);
+    it('deve retornar 0 em caso de erro', async () => {
+      const mockGet = jest.fn().mockRejectedValue(new Error('Error'));
+      (httpClient.get as jest.Mock) = mockGet;
 
-      await notificationService.setBadgeCount(count);
+      const count = await notificationService.getBadgeCount();
 
-      expect(notifee.setBadgeCount).toHaveBeenCalledWith(count);
-    });
-
-    it('deve limpar badge', async () => {
-      (notifee.setBadgeCount as jest.Mock).mockResolvedValue(undefined);
-
-      await notificationService.clearBadge();
-
-      expect(notifee.setBadgeCount).toHaveBeenCalledWith(0);
+      expect(count).toBe(0);
     });
   });
 
-  describe('Permission Check', () => {
-    it('deve verificar _status de permissão atual', async () => {
-      const mockHasPermission = jest.fn().mockResolvedValue(messaging.AuthorizationStatus.AUTHORIZED);
-      mockMessaging.mockReturnValue({
-        hasPermission: mockHasPermission,
-      } as any);
+  describe('clearBadgeCount', () => {
+    it('deve limpar badge count', async () => {
+      const mockPatch = jest.fn().mockResolvedValue({ data: { success: true } });
+      (httpClient.patch as jest.Mock) = mockPatch;
 
-      const hasPermission = await notificationService.checkPermissions();
+      await notificationService.clearBadgeCount();
 
-      expect(hasPermission).toBe(true);
-      expect(mockHasPermission).toHaveBeenCalled();
+      expect(mockPatch).toHaveBeenCalledWith('/notifications/clear-badge');
+    });
+  });
+
+  describe('checkPermission', () => {
+    it('deve verificar status de permissão autorizado', async () => {
+      (notifee.getNotificationSettings as jest.Mock).mockResolvedValue({
+        authorizationStatus: 1, // AUTHORIZED
+      });
+
+      const hasPermission = await notificationService.checkPermission();
+
+      expect(hasPermission).toBe('granted');
+      expect(notifee.getNotificationSettings).toHaveBeenCalled();
     });
 
-    it('deve abrir configurações quando solicitado', async () => {
-      await notificationService.openNotificationSettings();
+    it('deve verificar status de permissão negado', async () => {
+      (notifee.getNotificationSettings as jest.Mock).mockResolvedValue({
+        authorizationStatus: 2, // DENIED
+      });
+
+      const hasPermission = await notificationService.checkPermission();
+
+      expect(hasPermission).toBe('denied');
+    });
+
+    it('deve retornar denied em caso de erro', async () => {
+      (notifee.getNotificationSettings as jest.Mock).mockRejectedValue(new Error('Error'));
+
+      const hasPermission = await notificationService.checkPermission();
+
+      expect(hasPermission).toBe('denied');
+      expect(logger.error).toHaveBeenCalled();
+    });
+  });
+
+  describe('openSettings', () => {
+    it('deve abrir configurações no Android', async () => {
+      (Platform.OS as any) = 'android';
+      (Linking.openSettings as jest.Mock).mockResolvedValue(undefined);
+
+      await notificationService.openSettings();
 
       expect(Linking.openSettings).toHaveBeenCalled();
+    });
+
+    it('deve abrir configurações no iOS', async () => {
+      (Platform.OS as any) = 'ios';
+      (Linking.openURL as jest.Mock).mockResolvedValue(undefined);
+
+      await notificationService.openSettings();
+
+      expect(Linking.openURL).toHaveBeenCalledWith('app-settings:');
+    });
+  });
+
+  describe('createNotificationChannel', () => {
+    it('deve criar canais de notificação no Android', async () => {
+      (Platform.OS as any) = 'android';
+      (notifee.createChannel as jest.Mock).mockResolvedValue(undefined);
+
+      await notificationService.createNotificationChannel();
+
+      expect(notifee.createChannel).toHaveBeenCalledTimes(3); // default, orders, promotions
+    });
+
+    it('não deve criar canais no iOS', async () => {
+      (Platform.OS as any) = 'ios';
+
+      await notificationService.createNotificationChannel();
+
+      expect(notifee.createChannel).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('displayLocalNotification', () => {
+    it('deve exibir notificação local', async () => {
+      const notification = {
+        title: 'Teste',
+        body: 'Mensagem de teste',
+        data: { type: 'test' },
+      };
+
+      (notifee.displayNotification as jest.Mock).mockResolvedValue(undefined);
+
+      await notificationService.displayLocalNotification(notification);
+
+      expect(notifee.displayNotification).toHaveBeenCalledWith({
+        title: notification.title,
+        body: notification.body,
+        data: notification.data,
+        android: {
+          channelId: 'default',
+          pressAction: {
+            id: 'default',
+          },
+        },
+        ios: undefined,
+      });
+    });
+  });
+
+  describe('getInitialNotification', () => {
+    it('deve obter notificação inicial', async () => {
+      const mockNotification = {
+        notification: {
+          id: '123',
+          title: 'Test',
+          body: 'Test body',
+        },
+      };
+
+      (notifee.getInitialNotification as jest.Mock).mockResolvedValue(mockNotification);
+
+      const result = await notificationService.getInitialNotification();
+
+      expect(result).toEqual(mockNotification);
+      expect(notifee.getInitialNotification).toHaveBeenCalled();
+    });
+
+    it('deve retornar null em caso de erro', async () => {
+      (notifee.getInitialNotification as jest.Mock).mockRejectedValue(new Error('Error'));
+
+      const result = await notificationService.getInitialNotification();
+
+      expect(result).toBeNull();
+      expect(logger.error).toHaveBeenCalled();
     });
   });
 });

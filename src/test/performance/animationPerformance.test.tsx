@@ -309,7 +309,7 @@ describe('Animation Performance Tests', () => {
 
       for (const scenario of performanceScenarios) {
         // Mock device performance characteristics
-        const mockStartTime = performance.now();
+        const _mockStartTime = performance.now();
         
         // Simulate different CPU performance
         const originalSetTimeout = global.setTimeout;
@@ -368,7 +368,7 @@ describe('Animation Performance Tests', () => {
         await new Promise(resolve => setTimeout(resolve, 2000));
       });
 
-      const duringMemory = (performance as MockPerformance).memory?.usedJSHeapSize || 0;
+      const _duringMemory = (performance as MockPerformance).memory?.usedJSHeapSize || 0;
 
       // Unmount and cleanup
       component.unmount();

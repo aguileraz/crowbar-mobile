@@ -192,7 +192,7 @@ export const useCircularProgress = (
   } = {}
 ) => {
   const {
-    size = 100,
+    size: _size = 100,
     strokeWidth = 10,
     duration = DURATIONS.normal,
   } = options;

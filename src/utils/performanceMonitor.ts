@@ -107,7 +107,7 @@ class PerformanceMonitor {
   /**
    * Inicia monitoramento de performance
    */
-  startMonitoring(testName: string): void {
+  startMonitoring(_testName: string): void {
     if (this.isMonitoring) {
       this.stopMonitoring();
     }

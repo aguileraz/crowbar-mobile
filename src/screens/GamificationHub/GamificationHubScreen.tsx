@@ -19,11 +19,11 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, {
-  FadeInDown,
+  // FadeInDown,
   FadeInUp,
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
+  // useSharedValue,
+  // useAnimatedStyle,
+  // withSpring,
 } from 'react-native-reanimated';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -31,7 +31,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import DailyChallenges from '../../components/DailyChallenges';
 import StreakTracker from '../../components/StreakTracker';
 import DailySpinWheel from '../../components/DailySpinWheel';
-import AnimatedEmoji, { FloatingEmojiReaction } from '../../components/AnimatedEmoji';
+import _AnimatedEmoji, { FloatingEmojiReaction } from '../../components/AnimatedEmoji';
 import CountdownTimer from '../../components/CountdownTimer';
 
 // Hooks e Serviços
@@ -146,7 +146,7 @@ const GamificationHubScreen: React.FC<Props> = ({ navigation }) => {
     }
   };
 
-  const handleWheelReward = (reward: any) => {
+  const handleWheelReward = (_reward: any) => {
     // Processar recompensa da roda
     addEmojiReaction('fire');
     

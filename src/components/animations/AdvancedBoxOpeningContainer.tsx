@@ -11,10 +11,10 @@ import { Text, Button, Card, ProgressBar } from 'react-native-paper';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
-  withTiming,
-  withSequence,
-  runOnJS,
-  interpolate,
+  // withTiming,
+  // withSequence,
+  // runOnJS,
+  // interpolate,
 } from 'react-native-reanimated';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -45,7 +45,7 @@ import {
 import { animationManager, ThemeType } from '../../services/animationManager';
 
 // Theme e utils
-import { theme as appTheme, getSpacing, getBorderRadius } from '../../theme';
+import { theme as _appTheme, getSpacing, getBorderRadius } from '../../theme';
 
 /**
  * Props do container principal
@@ -58,7 +58,7 @@ interface AdvancedBoxOpeningContainerProps {
   enableDebugMode?: boolean;
 }
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+const { width: _SCREEN_WIDTH, height: _SCREEN_HEIGHT } = Dimensions.get('window');
 
 /**
  * Container principal do sistema de abertura de caixas avançado
@@ -369,7 +369,7 @@ const AdvancedBoxOpeningContainer: React.FC<AdvancedBoxOpeningContainerProps> = 
         <Text style={styles.loadingText}>Carregando animações...</Text>
         <ProgressBar 
           progress={0.5} 
-          color={appTheme.colors.primary}
+          color={_appTheme.colors.primary}
           style={styles.progressBar}
         />
       </View>
@@ -473,7 +473,7 @@ const styles = StyleSheet.create({
   loadingText: {
     fontSize: 18,
     fontWeight: '600',
-    color: appTheme.colors.onSurface,
+    color: _appTheme.colors.onSurface,
     marginBottom: getSpacing('lg'),
   },
   progressBar: {
@@ -488,7 +488,7 @@ const styles = StyleSheet.create({
   themeSelectorTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: appTheme.colors.onSurface,
+    color: _appTheme.colors.onSurface,
     marginBottom: getSpacing('md'),
   },
   themeSelectorButtons: {

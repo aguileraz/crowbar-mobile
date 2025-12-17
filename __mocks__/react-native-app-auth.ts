@@ -233,7 +233,7 @@ let mockState: MockState = {
  * @param config - Configuração do OAuth2
  * @returns Promise com tokens de autenticação
  */
-export const authorize = jest.fn(async (config: AuthConfiguration): Promise<AuthorizeResult> => {
+export const authorize = jest.fn(async (_config: AuthConfiguration): Promise<AuthorizeResult> => {
   // Simular delay de rede se configurado
   if (mockState.requestDelay > 0) {
     await new Promise(resolve => setTimeout(resolve, mockState.requestDelay));
@@ -394,8 +394,8 @@ export const revoke = jest.fn(async (
  * @returns Promise void
  */
 export const logout = jest.fn(async (
-  config: AuthConfiguration,
-  logoutConfig: { idToken: string; postLogoutRedirectUrl?: string }
+  _config: AuthConfiguration,
+  _logoutConfig: { idToken: string; postLogoutRedirectUrl?: string }
 ): Promise<void> => {
   // Simular delay de rede
   if (mockState.requestDelay > 0) {

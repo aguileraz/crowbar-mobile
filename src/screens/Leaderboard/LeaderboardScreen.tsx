@@ -3,7 +3,7 @@ import {
   View, 
   StyleSheet, 
   ScrollView, 
-  FlatList,
+  _FlatList,
   Dimensions,
   RefreshControl 
 } from 'react-native';
@@ -13,28 +13,28 @@ import {
   Avatar,
   SegmentedButtons,
   Chip,
-  IconButton,
+  _IconButton,
   ActivityIndicator,
   FAB,
   useTheme,
 } from 'react-native-paper';
 import Animated, {
   FadeInDown,
-  FadeIn,
+  _FadeIn,
   useSharedValue,
   useAnimatedStyle,
   withSpring,
   withRepeat,
   withTiming,
   interpolate,
-  ZoomIn,
+  _ZoomIn,
 } from 'react-native-reanimated';
 import LinearGradient from 'react-native-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppSelector } from '../../store/hooks';
 import { hapticFeedback } from '../../utils/haptic';
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+const { width: SCREEN_WIDTH, height: _SCREEN_HEIGHT } = Dimensions.get('window');
 
 interface LeaderboardUser {
   id: string;
@@ -59,7 +59,7 @@ const LeaderboardScreen: React.FC = () => {
   
   const [timeframe, setTimeframe] = useState<TimeFrame>('weekly');
   const [category, setCategory] = useState<Category>('score');
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, _setIsLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   
   // Mock de dados do leaderboard

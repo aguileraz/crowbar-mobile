@@ -277,7 +277,7 @@ class MonitoringService {
   /**
    * Track screen view (local logging, usar analyticsService)
    */
-  async trackScreenView(screenName: string, screenClass?: string): Promise<void> {
+  async trackScreenView(screenName: string, _screenClass?: string): Promise<void> {
     if (!config.FEATURES.ANALYTICS_ENABLED) return;
 
     try {

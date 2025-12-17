@@ -209,7 +209,7 @@ class AnimationManager {
     themes: ThemeType[],
     config: Partial<PreloadConfig> = {}
   ): Promise<void> {
-    const { priority = 'medium', maxConcurrentLoads = 2, timeout = 10000 } = config;
+    const { _priority = 'medium', maxConcurrentLoads = 2, timeout = 10000 } = config;
 
     const loadPromises: Promise<void>[] = [];
     const semaphore = new Semaphore(maxConcurrentLoads);
@@ -365,14 +365,14 @@ class AnimationManager {
   cleanupCache(): void {
     const currentTime = Date.now();
     const keysToRemove: string[] = [];
-    let freedMemory = 0;
+    let _freedMemory = 0;
 
     for (const [key, entry] of Object.entries(this.cache)) {
       const age = currentTime - entry.timestamp;
       
       if (age > this.maxCacheAge) {
         keysToRemove.push(key);
-        freedMemory += entry.size;
+        _freedMemory += entry.size;
       }
     }
 

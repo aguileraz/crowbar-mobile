@@ -22,7 +22,7 @@ interface SyncButtonProps {
 export const SyncButton: React.FC<SyncButtonProps> = ({
   onSyncComplete,
   variant = 'outlined',
-  size = 'medium',
+  _size = 'medium',
 }) => {
   const theme = useTheme();
   const dispatch = useDispatch<AppDispatch>();

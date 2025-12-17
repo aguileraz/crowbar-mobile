@@ -49,7 +49,7 @@ class ReviewService {
       });
       return response.data;
     } catch (error: any) {
-      if (error.response?._status === 404) {
+      if (error.response?.status === 404) {
         return null; // User hasn't reviewed this box
       }
       throw error;

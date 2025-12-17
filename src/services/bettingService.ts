@@ -6,7 +6,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   Bet,
-  BetOption,
+  _BetOption,
   BetParticipant,
   BetResult,
   SocialUser,

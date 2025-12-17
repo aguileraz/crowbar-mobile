@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { Button, Card, Title, Paragraph } from 'react-native-paper';
 import { env } from '../config/env';
-import { testFirebaseConnection } from '../config/firebase';
+import keycloakService from '../services/keycloakService';
 
 // Realtime components
 import RealtimeStatus from '../components/RealtimeStatus';
@@ -37,7 +37,7 @@ import { usePerformance } from '../hooks/usePerformance';
  */
 
 const HomeScreen: React.FC = () => {
-  const [firebaseStatus, setFirebaseStatus] = useState<boolean | null>(null);
+  const [keycloakStatus, setKeycloakStatus] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   // Realtime hooks
@@ -59,24 +59,26 @@ const HomeScreen: React.FC = () => {
   });
 
   /**
-   * Test Firebase connection
+   * Test Keycloak connection
    */
-  const handleTestFirebase = async () => {
+  const handleTestKeycloak = async () => {
     setIsLoading(true);
-    trackButtonClick('test_firebase', 'home_screen');
+    trackButtonClick('test_keycloak', 'home_screen');
 
     try {
-      const firebaseConnected = await testFirebaseConnection();
-      setFirebaseStatus(firebaseConnected);
+      // Verificar se há token válido ou tentar obter informações do usuário
+      const isAuthenticated = await keycloakService.isAuthenticated();
+      setKeycloakStatus(isAuthenticated);
       
       Alert.alert(
-        'Firebase Test',
-        firebaseConnected ? 'Conexão bem-sucedida!' : 'Falha na conexão',
+        'Keycloak Test',
+        isAuthenticated ? 'Conexão bem-sucedida!' : 'Não autenticado',
         [{ text: 'OK' }]
       );
     } catch (error) {
-      setFirebaseStatus(false);
-      Alert.alert('Erro', 'Erro ao testar Firebase', [{ text: 'OK' }]);
+      setKeycloakStatus(false);
+      logger.error('Error testing Keycloak:', error);
+      Alert.alert('Erro', 'Erro ao testar Keycloak', [{ text: 'OK' }]);
     } finally {
       setIsLoading(false);
     }
@@ -120,14 +122,14 @@ const HomeScreen: React.FC = () => {
               </Text>
             </View>
             <View style={styles.statusRow}>
-              <Text style={styles.statusLabel}>Firebase:</Text>
+              <Text style={styles.statusLabel}>Keycloak:</Text>
               <Text style={[
                 styles.statusValue,
-                firebaseStatus === true && styles.statusSuccess,
-                firebaseStatus === false && styles.statusError,
+                keycloakStatus === true && styles.statusSuccess,
+                keycloakStatus === false && styles.statusError,
               ]}>
-                {firebaseStatus === null ? 'Não testado' : 
-                 firebaseStatus ? 'Conectado' : 'Erro'}
+                {keycloakStatus === null ? 'Não testado' : 
+                 keycloakStatus ? 'Conectado' : 'Não autenticado'}
               </Text>
             </View>
           </Card.Content>
@@ -139,11 +141,11 @@ const HomeScreen: React.FC = () => {
             <Title>Testes do Sistema</Title>
             <Button
               mode="contained"
-              onPress={handleTestFirebase}
+              onPress={handleTestKeycloak}
               loading={isLoading}
               disabled={isLoading}
               style={styles.button}>
-              Testar Firebase
+              Testar Keycloak
             </Button>
             <Button
               mode="outlined"
@@ -274,7 +276,7 @@ const HomeScreen: React.FC = () => {
               Socket URL: {env.SOCKET_URL}
             </Paragraph>
             <Paragraph>
-              Firebase Project: {env.FIREBASE_PROJECT_ID}
+              Keycloak Realm: crowbar
             </Paragraph>
           </Card.Content>
         </Card>

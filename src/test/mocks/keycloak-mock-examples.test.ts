@@ -10,10 +10,10 @@
 import {
   authorize,
   refresh,
-  revoke,
+  _revoke,
   logout,
   __mockHelpers,
-  AuthConfiguration,
+  _AuthConfiguration,
 } from '../../../__mocks__/react-native-app-auth';
 
 import {
@@ -24,10 +24,10 @@ import {
   setupServerError,
   setupNetworkLatency,
   setupAuthenticatedUser,
-  setupUnauthenticatedUser,
+  _setupUnauthenticatedUser,
   isMockAuthenticated,
   getMockTokens,
-  getMockState,
+  _getMockState,
   resetMock,
   expectValidAuthResult,
   expectValidJWT,

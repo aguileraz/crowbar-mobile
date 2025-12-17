@@ -27,7 +27,7 @@ interface ItemRevealCardProps {
 
 const ItemRevealCard: React.FC<ItemRevealCardProps> = ({
   item,
-  index,
+  _index,
   style,
 }) => {
   // Animation refs

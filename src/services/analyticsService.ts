@@ -47,8 +47,8 @@ class AnalyticsService {
       // Restore user ID
       this.userId = await AsyncStorage.getItem(this.STORAGE_KEYS.USER_ID);
       
-      // Initialize Firebase Analytics (mock implementation)
-      await this.initializeFirebaseAnalytics();
+      // Initialize Analytics (Redux-based)
+      await this.initializeAnalytics();
       
       // Process pending events
       await this.processPendingEvents();
@@ -69,12 +69,11 @@ class AnalyticsService {
   }
 
   /**
-   * Initialize Analytics (Redux-based, não Firebase)
+   * Initialize Analytics (Redux-based)
    */
-  private async initializeFirebaseAnalytics(): Promise<void> {
+  private async initializeAnalytics(): Promise<void> {
     try {
-      // Firebase Analytics foi REMOVIDO
-      // Analytics agora é baseado em Redux + backend API
+      // Analytics baseado em Redux + backend API
       logger.debug('Analytics Redux inicializado com sucesso');
 
       // Configurar propriedades locais do usuário
@@ -130,7 +129,7 @@ class AnalyticsService {
         logger.debug('Analytics User Properties:', sanitizedProps);
       }
 
-      // Store locally (Firebase não está mais em uso)
+      // Store locally (Redux-based analytics)
       await AsyncStorage.setItem(
         this.STORAGE_KEYS.USER_PROPERTIES,
         JSON.stringify(sanitizedProps)
@@ -690,7 +689,7 @@ class AnalyticsService {
   }
 
   /**
-   * Sanitize parameters para analytics (anteriormente para Firebase)
+   * Sanitize parameters para analytics
    */
   private sanitizeParameters(parameters?: Record<string, any>): Record<string, any> {
     if (!parameters) return {};

@@ -6,7 +6,7 @@
 
 export const mockUser = {
   id: 'user-123',
-  uid: 'firebase-uid-123',
+  uid: 'keycloak-user-123',
   email: 'usuario@exemplo.com',
   name: 'João Silva',
   phone: '+5511987654321',
@@ -34,7 +34,7 @@ export const mockUser = {
 export const mockUserVendor = {
   ...mockUser,
   id: 'user-456',
-  uid: 'firebase-uid-456',
+  uid: 'keycloak-user-456',
   email: 'vendedor@exemplo.com',
   name: 'Maria Santos',
   role: 'vendor' as const,

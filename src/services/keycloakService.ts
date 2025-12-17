@@ -1,6 +1,6 @@
 import { authorize, refresh, revoke, AuthConfiguration, AuthorizeResult } from 'react-native-app-auth';
 import * as Keychain from 'react-native-keychain';
-import { Platform } from 'react-native';
+import logger from './loggerService';
 
 /**
  * Keycloak Authentication Service
@@ -35,6 +35,20 @@ interface KeycloakTokens {
   accessTokenExpirationDate: string;
 }
 
+/**
+ * Interface para informações do usuário do Keycloak
+ */
+export interface KeycloakUserInfo {
+  sub: string;
+  email?: string;
+  email_verified?: boolean;
+  name?: string;
+  preferred_username?: string;
+  given_name?: string;
+  family_name?: string;
+  [key: string]: unknown;
+}
+
 class KeycloakAuthService {
   private static KEYCHAIN_SERVICE = 'keycloak_tokens';
 
@@ -43,7 +57,7 @@ class KeycloakAuthService {
    */
   async login(): Promise<AuthorizeResult> {
     try {
-      console.log('🔐 Iniciando login Keycloak...');
+      logger.info('Iniciando login Keycloak...');
       const result = await authorize(config);
 
       // Salvar tokens no Keychain
@@ -54,10 +68,10 @@ class KeycloakAuthService {
         accessTokenExpirationDate: result.accessTokenExpirationDate,
       });
 
-      console.log('✅ Login Keycloak bem-sucedido');
+      logger.info('Login Keycloak bem-sucedido');
       return result;
     } catch (error) {
-      console.error('❌ Erro no login Keycloak:', error);
+      logger.error('Erro no login Keycloak:', error);
       throw error;
     }
   }
@@ -77,15 +91,15 @@ class KeycloakAuthService {
             sendClientId: true,
           });
         } catch (error) {
-          console.warn('⚠️  Erro ao revogar token:', error);
+          logger.warn('Erro ao revogar token:', error);
         }
       }
 
       // Limpar tokens do Keychain
       await Keychain.resetGenericPassword({ service: KeycloakAuthService.KEYCHAIN_SERVICE });
-      console.log('✅ Logout realizado');
+      logger.info('Logout realizado');
     } catch (error) {
-      console.error('❌ Erro no logout:', error);
+      logger.error('Erro no logout:', error);
       throw error;
     }
   }
@@ -107,14 +121,14 @@ class KeycloakAuthService {
       const isExpired = expirationDate.getTime() - now.getTime() < 60000; // 1 minuto antes
 
       if (isExpired) {
-        console.log('🔄 Access token expirado, renovando...');
+        logger.debug('Access token expirado, renovando...');
         const newTokens = await this.refreshTokens();
         return newTokens?.accessToken || null;
       }
 
       return tokens.accessToken;
     } catch (error) {
-      console.error('❌ Erro ao obter access token:', error);
+      logger.error('Erro ao obter access token:', error);
       return null;
     }
   }
@@ -127,7 +141,7 @@ class KeycloakAuthService {
       const tokens = await this.getTokens();
       
       if (!tokens || !tokens.refreshToken) {
-        console.warn('⚠️  Nenhum refresh token disponível');
+        logger.warn('Nenhum refresh token disponível');
         return null;
       }
 
@@ -143,11 +157,11 @@ class KeycloakAuthService {
       };
 
       await this.saveTokens(newTokens);
-      console.log('✅ Tokens renovados com sucesso');
+      logger.info('Tokens renovados com sucesso');
       
       return newTokens;
     } catch (error) {
-      console.error('❌ Erro ao renovar tokens:', error);
+      logger.error('Erro ao renovar tokens:', error);
       // Se refresh falhar, limpar tokens (usuário precisa fazer login novamente)
       await Keychain.resetGenericPassword({ service: KeycloakAuthService.KEYCHAIN_SERVICE });
       return null;
@@ -165,7 +179,7 @@ class KeycloakAuthService {
   /**
    * Obter informações do usuário do ID token
    */
-  async getUserInfo(): Promise<any | null> {
+  async getUserInfo(): Promise<KeycloakUserInfo | null> {
     try {
       const tokens = await this.getTokens();
       
@@ -185,7 +199,7 @@ class KeycloakAuthService {
 
       return JSON.parse(jsonPayload);
     } catch (error) {
-      console.error('❌ Erro ao obter informações do usuário:', error);
+      logger.error('Erro ao obter informações do usuário:', error);
       return null;
     }
   }
@@ -216,7 +230,7 @@ class KeycloakAuthService {
 
       return null;
     } catch (error) {
-      console.error('❌ Erro ao obter tokens:', error);
+      logger.error('Erro ao obter tokens:', error);
       return null;
     }
   }

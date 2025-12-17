@@ -10,8 +10,8 @@ import {
   RoomParticipant,
   RoomSettings,
   SocialUser,
-  SocialEvent,
-  SocketMessage,
+  _SocialEvent,
+  _SocketMessage,
   ParticipantReaction,
   ROOM_LIMITS,
 } from '../types/social';

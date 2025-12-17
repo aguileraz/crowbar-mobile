@@ -7,9 +7,11 @@ Este diretório contém testes de integração abrangentes para verificar a comu
 Os testes de integração verificam:
 
 - **Comunicação com API**: Testa todos os endpoints e fluxos de dados
+- **Autenticação Keycloak**: Testa fluxo completo de autenticação OAuth2/OIDC
+- **MFA (Multi-Factor Auth)**: Testa habilitar, desabilitar e verificar status MFA
+- **Notificações Gotify**: Testa recebimento e exibição de notificações push
 - **Tratamento de erros**: Valida comportamento em cenários de falha
 - **Interceptors**: Verifica funcionamento correto dos interceptors HTTP
-- **Autenticação**: Testa gerenciamento de tokens e sessões
 - **Resiliência**: Valida comportamento em cenários de rede instável
 
 ## 🧪 Estrutura dos Testes
@@ -20,7 +22,9 @@ Os testes de integração verificam:
 src/services/__tests__/integration/
 ├── testConfig.ts                    # Configuração base para testes
 ├── setup.ts                         # Setup global do Jest
-├── auth.integration.test.ts         # Testes de autenticação
+├── auth.integration.test.ts         # Testes de autenticação Keycloak
+├── mfa.integration.test.ts          # Testes de MFA (Multi-Factor Auth)
+├── gotify.integration.test.ts       # Testes de notificações Gotify
 ├── boxes.integration.test.ts        # Testes de operações de boxes
 ├── cart.integration.test.ts         # Testes de operações de carrinho
 ├── orders.integration.test.ts       # Testes de operações de pedidos

@@ -359,7 +359,7 @@ describe('CheckoutScreen', () => {
       });
 
       // Botão deve estar desabilitado sem endereço selecionado
-      const continueButton = getByText('Continuar');
+      const _continueButton = getByText('Continuar');
       // React Native Paper Button com disabled não impede press, mas não faz nada
       // Este teste verifica que o componente renderiza corretamente
     });

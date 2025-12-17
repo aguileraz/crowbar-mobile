@@ -16,7 +16,7 @@ import { MysteryBox } from '../types/api';
 import { theme, getSpacing, getBorderRadius } from '../theme';
 import { 
   loadAnimationFrames, 
-  getAnimationInfo,
+  _getAnimationInfo,
   AnimationType,
   preloadAnimationFrames
 } from '../utils/animationLoader';
@@ -36,7 +36,7 @@ interface EnhancedBoxAnimationProps {
   theme?: 'fire' | 'ice' | 'meteor' | 'normal';
 }
 
-const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+const { width: _screenWidth, height: _screenHeight } = Dimensions.get('window');
 
 const EnhancedBoxAnimation: React.FC<EnhancedBoxAnimationProps> = ({
   box,

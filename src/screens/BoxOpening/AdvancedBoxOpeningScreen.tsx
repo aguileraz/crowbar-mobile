@@ -33,8 +33,8 @@ import Animated, {
   withSequence,
   withDelay,
   withTiming,
-  interpolate,
-  runOnJS,
+  // interpolate,
+  // runOnJS,
 } from 'react-native-reanimated';
 
 // Components

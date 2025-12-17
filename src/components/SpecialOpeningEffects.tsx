@@ -10,10 +10,10 @@ import Animated, {
   withSpring,
   interpolate,
   Extrapolate,
-  runOnJS,
+  // runOnJS,
   FadeIn,
   FadeOut,
-  ZoomIn,
+  // ZoomIn,
 } from 'react-native-reanimated';
 
 import { hapticFeedback } from '../utils/haptic';
@@ -359,13 +359,13 @@ const MeteorEffect: React.FC<{ onComplete?: () => void }> = ({ onComplete }) => 
 // Componente Principal
 const SpecialOpeningEffects: React.FC<SpecialOpeningEffectsProps> = ({
   type,
-  rarity,
+  rarity: _rarity,
   onComplete,
   autoPlay = true,
   soundEnabled = true,
 }) => {
   const [isPlaying, setIsPlaying] = useState(autoPlay);
-  const [currentEffect, setCurrentEffect] = useState(type);
+  const [currentEffect, _setCurrentEffect] = useState(type);
   
   // Som
   useEffect(() => {

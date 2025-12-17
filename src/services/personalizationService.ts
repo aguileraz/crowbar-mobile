@@ -8,12 +8,12 @@ import {
   PersonalizationProfile,
   UserSegment,
   FeatureFlags,
-  ActiveExperiment,
+  _ActiveExperiment,
   DynamicContent,
   PersonalizationRule,
   RuleCondition,
   RuleAction,
-  UserBehavior,
+  _UserBehavior,
 } from '../types/ai';
 import aiRecommendationService from './aiRecommendationService';
 import abTestingService from './abTestingService';
@@ -33,7 +33,7 @@ interface SegmentRule {
   value: any;
 }
 
-interface ContentVariation {
+interface _ContentVariation {
   id: string;
   segment: string;
   content: any;

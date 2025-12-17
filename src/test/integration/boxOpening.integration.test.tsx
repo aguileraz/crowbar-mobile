@@ -289,7 +289,7 @@ describe('Box Opening Integration Tests', () => {
       // Mock network error
       mockBoxService.openBox.mockRejectedValue(new Error('Network error'));
 
-      const { getByText, queryByText } = render(
+      const { getByText, _queryByText } = render(
         <Provider store={store}>
           <BoxOpeningScreen 
             route={{ params: { boxId: 'box-123' } }} 

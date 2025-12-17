@@ -5,13 +5,13 @@ import {
   Text, 
   ProgressBar, 
   Button, 
-  IconButton,
+  // IconButton,
   Chip,
   useTheme 
 } from 'react-native-paper';
 import Animated, { 
   FadeInDown, 
-  FadeOut,
+  // FadeOut,
   useSharedValue,
   useAnimatedStyle,
   withSpring,
@@ -24,7 +24,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import CountdownTimer from './CountdownTimer';
 import { hapticFeedback } from '../utils/haptic';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const { width: _SCREEN_WIDTH } = Dimensions.get('window');
 
 export interface Challenge {
   id: string;

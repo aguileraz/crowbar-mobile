@@ -34,7 +34,7 @@ interface MockApiResponse<T = any> {
 export function getMockResponseForUrl(
   url: string,
   method: string = 'GET',
-  body?: any
+  _body?: any
 ): MockApiResponse {
   const lowerUrl = url.toLowerCase();
   const upperMethod = method.toUpperCase();
@@ -296,27 +296,27 @@ export function getMockResponseForUrl(
  */
 export function createMockApiClient() {
   return {
-    get: jest.fn((url: string, config?: any) => {
+    get: jest.fn((url: string, _config?: any) => {
       const response = getMockResponseForUrl(url, 'GET');
       return Promise.resolve(response);
     }),
 
-    post: jest.fn((url: string, body?: any, config?: any) => {
+    post: jest.fn((url: string, body?: any, _config?: any) => {
       const response = getMockResponseForUrl(url, 'POST', body);
       return Promise.resolve(response);
     }),
 
-    put: jest.fn((url: string, body?: any, config?: any) => {
+    put: jest.fn((url: string, body?: any, _config?: any) => {
       const response = getMockResponseForUrl(url, 'PUT', body);
       return Promise.resolve(response);
     }),
 
-    patch: jest.fn((url: string, body?: any, config?: any) => {
+    patch: jest.fn((url: string, body?: any, _config?: any) => {
       const response = getMockResponseForUrl(url, 'PATCH', body);
       return Promise.resolve(response);
     }),
 
-    delete: jest.fn((url: string, config?: any) => {
+    delete: jest.fn((url: string, _config?: any) => {
       const response = getMockResponseForUrl(url, 'DELETE');
       return Promise.resolve(response);
     }),

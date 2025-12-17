@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
-import { Platform as _Platform } from 'react-native';
+import { Platform } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import notifee from '@notifee/react-native';
 import logger from '../services/loggerService';
 
 // Redux

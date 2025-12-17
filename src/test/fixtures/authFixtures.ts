@@ -1,17 +1,18 @@
 /**
  * Mock Fixtures para Authentication (Autenticação)
  *
- * Dados mock reutilizáveis para testes de integração de autenticação.
+ * ⚠️ MIGRATED: Firebase Auth → Keycloak OAuth2/OIDC
+ * Dados mock reutilizáveis para testes de integração de autenticação Keycloak.
  */
 
 export const mockAuthUser = {
-  uid: 'firebase-uid-123',
+  uid: 'keycloak-user-123',
   email: 'usuario@exemplo.com',
   displayName: 'João Silva',
   photoURL: 'https://example.com/avatar.jpg',
   emailVerified: true,
   phoneNumber: '+5511987654321',
-  providerId: 'firebase',
+  providerId: 'keycloak',
   metadata: {
     creationTime: '2024-01-01T10:00:00Z',
     lastSignInTime: '2025-01-06T09:00:00Z',
@@ -19,11 +20,14 @@ export const mockAuthUser = {
 };
 
 export const mockAuthTokens = {
-  idToken: 'mock-firebase-id-token-123',
-  accessToken: 'mock-access-token-123',
-  refreshToken: 'mock-refresh-token-123',
+  idToken: 'mock-keycloak-id-token.eyJzdWIiOiJrZXljbG9hay11c2VyLTEyMyIsImVtYWlsIjoidXN1YXJpb0BleGVtcGxvLmNvbSJ9.signature',
+  accessToken: 'mock-keycloak-access-token-123',
+  refreshToken: 'mock-keycloak-refresh-token-123',
   expiresIn: 3600,
   expiresAt: Date.now() + 3600000,
+  accessTokenExpirationDate: new Date(Date.now() + 3600000).toISOString(),
+  tokenType: 'Bearer',
+  scopes: ['openid', 'profile', 'email'],
 };
 
 export const mockLoginRequest = {
@@ -85,8 +89,10 @@ export const mockRefreshTokenResponse = {
   success: true,
   tokens: {
     ...mockAuthTokens,
-    idToken: 'mock-firebase-id-token-456',
-    accessToken: 'mock-access-token-456',
+    idToken: 'mock-keycloak-id-token.eyJzdWIiOiJrZXljbG9hay11c2VyLTEyMyIsImVtYWlsIjoidXN1YXJpb0BleGVtcGxvLmNvbSJ9.new-signature',
+    accessToken: 'mock-keycloak-access-token-456',
+    refreshToken: 'mock-keycloak-refresh-token-456',
+    accessTokenExpirationDate: new Date(Date.now() + 3600000).toISOString(),
   },
 };
 

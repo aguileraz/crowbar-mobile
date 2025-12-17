@@ -121,7 +121,7 @@ class AccessibilityManager {
         isBoldTextEnabled,
         isGrayscaleEnabled,
         isInvertColorsEnabled,
-        isReduceTransparencyEnabled,
+        _isReduceTransparencyEnabled,
       ] = await Promise.all([
         AccessibilityInfo.isReduceMotionEnabled(),
         Platform.OS === 'ios' ? AccessibilityInfo.isHighContrastEnabled?.() : Promise.resolve(false),

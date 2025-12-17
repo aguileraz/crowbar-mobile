@@ -73,7 +73,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
       case 'cancelled':
         return { color: '#F44336', label: 'Cancelado', icon: 'close-circle-outline' };
       default:
-        return { color: theme.colors.onSurfaceVariant, label: status, icon: 'help-circle-outline' };
+        return { color: theme.colors.onSurfaceVariant, label: _status, icon: 'help-circle-outline' };
     }
   };
 
@@ -198,8 +198,8 @@ const OrderCard: React.FC<OrderCardProps> = ({
           >
             Ver detalhes
           </Button>
-          
-          {(order._status === 'delivered' || order.status === 'cancelled') && (
+
+          {(order._status === 'delivered' || order._status === 'cancelled' || order.status === 'cancelled') && (
             <Button
               mode="contained"
               style={styles.reorderButton}

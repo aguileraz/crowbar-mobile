@@ -13,7 +13,7 @@ import {
   revoke,
   logout,
   __mockHelpers,
-  AuthConfiguration,
+  _AuthConfiguration,
 } from '../react-native-app-auth';
 
 import {
@@ -23,7 +23,7 @@ import {
   setupTimeout,
   setupServerError,
   setupNetworkLatency,
-  setupExpiredToken,
+  _setupExpiredToken,
   setupAuthenticatedUser,
   setupUnauthenticatedUser,
   isMockAuthenticated,
@@ -33,7 +33,7 @@ import {
   expectValidAuthResult,
   expectValidJWT,
   decodeIDToken,
-  VALID_CREDENTIALS,
+  _VALID_CREDENTIALS,
   TEST_KEYCLOAK_CONFIG,
   TEST_USERS,
 } from '../keycloakTestHelpers';

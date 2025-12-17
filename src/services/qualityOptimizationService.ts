@@ -426,7 +426,7 @@ class QualityOptimizationService {
    * Inicia monitoramento de rede
    */
   private startNetworkMonitoring(): void {
-    this.networkUnsubscribe = NetInfo.addEventListener(async state => {
+    this.networkUnsubscribe = NetInfo.addEventListener(async _state => {
       if (!this.currentProfile) return;
       
       const networkProfile = await this.collectNetworkProfile();

@@ -1,6 +1,6 @@
 import io, { Socket } from 'socket.io-client';
 import notifee, { AndroidImportance } from '@notifee/react-native';
-import { Platform } from 'react-native';
+import logger from './loggerService';
 
 /**
  * Gotify Service
@@ -69,9 +69,9 @@ class GotifyService {
         importance: AndroidImportance.DEFAULT,
       });
 
-      console.log('✅ Gotify notification channels created');
+      logger.info('Gotify notification channels created');
     } catch (error) {
-      console.error('❌ Error creating notification channels:', error);
+      logger.error('Error creating notification channels:', error);
     }
   }
 
@@ -80,18 +80,18 @@ class GotifyService {
    */
   connect(clientToken: string): void {
     if (this.socket?.connected) {
-      console.log('⚠️  Already connected to Gotify');
+      logger.warn('Already connected to Gotify');
       return;
     }
 
     if (!clientToken) {
-      console.error('❌ No client token provided');
+      logger.error('No client token provided');
       return;
     }
 
     this.clientToken = clientToken;
 
-    console.log('🔌 Connecting to Gotify:', this.baseURL);
+    logger.info('Connecting to Gotify', { baseURL: this.baseURL });
 
     // Conectar via WebSocket
     this.socket = io(this.baseURL, {
@@ -106,12 +106,12 @@ class GotifyService {
 
     // Event handlers
     this.socket.on('connect', () => {
-      console.log('✅ Connected to Gotify');
+      logger.info('Connected to Gotify');
       this.connected = true;
     });
 
     this.socket.on('disconnect', (reason) => {
-      console.log('❌ Disconnected from Gotify:', reason);
+      logger.warn('Disconnected from Gotify', { reason });
       this.connected = false;
     });
 
@@ -119,12 +119,12 @@ class GotifyService {
       this.handleMessage(message);
     });
 
-    this.socket.on('error', (error: any) => {
-      console.error('❌ Gotify error:', error);
+    this.socket.on('error', (error: Error) => {
+      logger.error('Gotify error:', error);
     });
 
     this.socket.on('reconnect', (attemptNumber) => {
-      console.log(`🔄 Reconnected to Gotify (attempt ${attemptNumber})`);
+      logger.info(`Reconnected to Gotify (attempt ${attemptNumber})`);
     });
   }
 
@@ -133,7 +133,7 @@ class GotifyService {
    */
   disconnect(): void {
     if (this.socket) {
-      console.log('🔌 Disconnecting from Gotify');
+      logger.info('Disconnecting from Gotify');
       this.socket.disconnect();
       this.socket = null;
       this.connected = false;
@@ -158,7 +158,7 @@ class GotifyService {
    * Processar mensagem recebida
    */
   private handleMessage(message: GotifyMessage): void {
-    console.log('📬 New notification:', message.title);
+    logger.info('New notification received', { title: message.title });
 
     // Chamar handler customizado se registrado
     if (this.notificationHandler) {
@@ -198,9 +198,9 @@ class GotifyService {
         },
       });
 
-      console.log('✅ Local notification displayed');
+      logger.debug('Local notification displayed');
     } catch (error) {
-      console.error('❌ Error displaying notification:', error);
+      logger.error('Error displaying notification:', error);
     }
   }
 
@@ -231,7 +231,7 @@ class GotifyService {
       const data = await response.json();
       return data.messages || [];
     } catch (error) {
-      console.error('❌ Error fetching messages:', error);
+      logger.error('Error fetching messages:', error);
       return [];
     }
   }
@@ -250,7 +250,7 @@ class GotifyService {
 
       return response.ok;
     } catch (error) {
-      console.error('❌ Error deleting message:', error);
+      logger.error('Error deleting message:', error);
       return false;
     }
   }
@@ -269,7 +269,7 @@ class GotifyService {
 
       return response.ok;
     } catch (error) {
-      console.error('❌ Error deleting all messages:', error);
+      logger.error('Error deleting all messages:', error);
       return false;
     }
   }
