@@ -48,6 +48,7 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
     <ScrollView
       contentContainerStyle={styles.scrollContent}
       keyboardShouldPersistTaps="handled"
+      testID="register-screen"
     >
       <View style={styles.container}>
         {/* Header */}
@@ -56,8 +57,9 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
             source={require('../../assets/logo.png')}
             style={styles.logo}
             resizeMode="contain"
+            testID="register-logo"
           />
-          <Title style={styles.title}>Criar Nova Conta</Title>
+          <Title style={styles.title} testID="register-title">Criar Nova Conta</Title>
           <Paragraph style={styles.subtitle}>
             Sistema de registro atualizado
           </Paragraph>
@@ -148,6 +150,7 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
               style={styles.primaryButton}
               contentStyle={styles.buttonContent}
               icon="arrow-right"
+              testID="register-continue-button"
             >
               Continuar para Login
             </Button>

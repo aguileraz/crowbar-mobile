@@ -9,9 +9,9 @@ import { ActivityIndicator, Text } from 'react-native-paper';
 
 const LoadingScreen: React.FC = () => {
   return (
-    <View style={styles.container}>
-      <ActivityIndicator size="large" color="#6200EE" />
-      <Text style={styles.text}>Carregando...</Text>
+    <View style={styles.container} testID="loading-screen">
+      <ActivityIndicator size="large" color="#6200EE" testID="loading-indicator" />
+      <Text style={styles.text} testID="loading-text">Carregando...</Text>
     </View>
   );
 };

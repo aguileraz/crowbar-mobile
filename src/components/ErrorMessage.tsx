@@ -62,14 +62,15 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({
     switch (variant) {
       case 'minimal':
         return (
-          <View style={[styles.minimalContainer, style]}>
-            <Text style={styles.minimalMessage}>{message}</Text>
+          <View style={[styles.minimalContainer, style]} testID="error-message-minimal">
+            <Text style={styles.minimalMessage} testID="error-text">{message}</Text>
             {onRetry && (
               <Button
                 mode="text"
                 onPress={onRetry}
                 style={styles.minimalButton}
                 compact
+                testID="error-retry-button"
               >
                 {retryText}
               </Button>
@@ -79,17 +80,18 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({
 
       case 'card':
         return (
-          <Card style={[styles.card, style]} elevation={2}>
+          <Card style={[styles.card, style]} elevation={2} testID="error-message-card">
             <Card.Content style={styles.cardContent}>
               {renderIcon()}
-              <Title style={styles.cardTitle}>{title}</Title>
-              <Paragraph style={styles.cardMessage}>{message}</Paragraph>
+              <Title style={styles.cardTitle} testID="error-title">{title}</Title>
+              <Paragraph style={styles.cardMessage} testID="error-text">{message}</Paragraph>
               {onRetry && (
                 <Button
                   mode="contained"
                   onPress={onRetry}
                   style={styles.cardButton}
                   icon="refresh"
+                  testID="error-retry-button"
                 >
                   {retryText}
                 </Button>
@@ -100,16 +102,17 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({
 
       default:
         return (
-          <View style={[styles.defaultContainer, style]}>
+          <View style={[styles.defaultContainer, style]} testID="error-message-default">
             {renderIcon()}
-            <Title style={styles.defaultTitle}>{title}</Title>
-            <Paragraph style={styles.defaultMessage}>{message}</Paragraph>
+            <Title style={styles.defaultTitle} testID="error-title">{title}</Title>
+            <Paragraph style={styles.defaultMessage} testID="error-text">{message}</Paragraph>
             {onRetry && (
               <Button
                 mode="contained"
                 onPress={onRetry}
                 style={styles.defaultButton}
                 icon="refresh"
+                testID="error-retry-button"
               >
                 {retryText}
               </Button>

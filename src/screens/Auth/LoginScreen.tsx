@@ -86,6 +86,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ _navigation }) => {
     <ScrollView
       contentContainerStyle={styles.scrollContent}
       keyboardShouldPersistTaps="handled"
+      testID="login-screen"
     >
       <View style={styles.container}>
         {/* Header com Logo */}
@@ -94,8 +95,9 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ _navigation }) => {
             source={require('../../assets/logo.png')}
             style={styles.logo}
             resizeMode="contain"
+            testID="login-logo"
           />
-          <Title style={styles.title}>Bem-vindo ao Crowbar</Title>
+          <Title style={styles.title} testID="login-title">Bem-vindo ao Crowbar</Title>
           <Paragraph style={styles.subtitle}>
             Marketplace de caixas misteriosas
           </Paragraph>
@@ -116,7 +118,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ _navigation }) => {
 
             {/* Botão de Login */}
             {isLoading ? (
-              <View style={styles.loadingContainer}>
+              <View style={styles.loadingContainer} testID="login-loading">
                 <ActivityIndicator size="large" color={theme.colors.primary} />
                 <Text style={styles.loadingText}>
                   Autenticando...
@@ -130,6 +132,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ _navigation }) => {
                 style={styles.loginButton}
                 contentStyle={styles.buttonContent}
                 icon="login"
+                testID="login-button"
               >
                 Fazer Login
               </Button>
