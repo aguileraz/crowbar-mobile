@@ -71,7 +71,7 @@ const App: React.FC = () => {
     };
   }, []);
   return (
-    <GestureHandlerRootView style={styles.container}>
+    <GestureHandlerRootView style={styles.container} testID="app-root">
       <SafeAreaProvider>
         <ReduxProvider store={store}>
           <PersistGate loading={<LoadingScreen />} persistor={persistor}>
