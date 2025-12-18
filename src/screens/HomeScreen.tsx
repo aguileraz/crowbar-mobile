@@ -96,10 +96,10 @@ const HomeScreen: React.FC = () => {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} testID="home-screen">
       <View style={styles.content}>
-        <Title style={styles.title}>Crowbar Mobile</Title>
-        <Paragraph style={styles.subtitle}>
+        <Title style={styles.title} testID="home-title">Crowbar Mobile</Title>
+        <Paragraph style={styles.subtitle} testID="home-subtitle">
           Aplicativo móvel para gestão de projetos
         </Paragraph>
 
@@ -136,7 +136,7 @@ const HomeScreen: React.FC = () => {
         </Card>
 
         {/* Actions Card */}
-        <Card style={styles.card}>
+        <Card style={styles.card} testID="home-actions-card">
           <Card.Content>
             <Title>Testes do Sistema</Title>
             <Button
@@ -144,13 +144,15 @@ const HomeScreen: React.FC = () => {
               onPress={handleTestKeycloak}
               loading={isLoading}
               disabled={isLoading}
-              style={styles.button}>
+              style={styles.button}
+              testID="home-test-keycloak-button">
               Testar Keycloak
             </Button>
             <Button
               mode="outlined"
               onPress={handleShowAppInfo}
-              style={styles.button}>
+              style={styles.button}
+              testID="home-info-button">
               Informações do App
             </Button>
           </Card.Content>

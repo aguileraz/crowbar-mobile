@@ -103,12 +103,12 @@ const SettingsScreen: React.FC = () => {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} testID="settings-screen">
       <View style={styles.content}>
-        <Title style={styles.title}>Configurações</Title>
+        <Title style={styles.title} testID="settings-title">Configurações</Title>
 
         {/* Environment Settings */}
-        <Card style={styles.card}>
+        <Card style={styles.card} testID="settings-environment-card">
           <Card.Content>
             <Title>Ambiente</Title>
             <List.Item
@@ -119,7 +119,8 @@ const SettingsScreen: React.FC = () => {
             <Button
               mode="outlined"
               onPress={handleSwitchEnvironment}
-              style={styles.button}>
+              style={styles.button}
+              testID="settings-switch-env-button">
               Trocar Ambiente
             </Button>
           </Card.Content>
@@ -208,14 +209,15 @@ const SettingsScreen: React.FC = () => {
         )}
 
         {/* Actions */}
-        <Card style={styles.card}>
+        <Card style={styles.card} testID="settings-actions-card">
           <Card.Content>
             <Title>Ações</Title>
             <Button
               mode="outlined"
               onPress={handleClearData}
               style={styles.button}
-              textColor="#F44336">
+              textColor="#F44336"
+              testID="settings-clear-data-button">
               Limpar Dados do App
             </Button>
             <Button
@@ -224,7 +226,8 @@ const SettingsScreen: React.FC = () => {
               loading={isLoading}
               disabled={isLoading}
               style={styles.button}
-              buttonColor="#F44336">
+              buttonColor="#F44336"
+              testID="settings-logout-button">
               Sair da Conta
             </Button>
           </Card.Content>

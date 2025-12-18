@@ -181,21 +181,22 @@ const ShopScreen: React.FC<ShopScreenProps> = ({ navigation }) => {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} testID="shop-screen">
       <ScrollView
         style={styles.scrollView}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
         }
         showsVerticalScrollIndicator={false}
+        testID="shop-scroll-view"
       >
         {/* Header com busca */}
         <View style={styles.header}>
-          <Title style={styles.headerTitle}>Crowbar Store</Title>
-          <Paragraph style={styles.headerSubtitle}>
+          <Title style={styles.headerTitle} testID="shop-title">Crowbar Store</Title>
+          <Paragraph style={styles.headerSubtitle} testID="shop-subtitle">
             Descubra caixas misteriosas incríveis
           </Paragraph>
-          
+
           <Searchbar
             placeholder="Buscar caixas misteriosas..."
             value={searchQuery}
@@ -203,6 +204,7 @@ const ShopScreen: React.FC<ShopScreenProps> = ({ navigation }) => {
             onSubmitEditing={navigateToSearch}
             onIconPress={navigateToSearch}
             style={styles.searchBar}
+            testID="shop-searchbar"
           />
         </View>
 
