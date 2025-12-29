@@ -475,11 +475,8 @@ describe('HttpClient', () => {
       }
 
       // Verificar que token foi limpo
-      // Não podemos acessar diretamente authToken (privado),
-      // mas podemos verificar através de uma nova request
-      const config: any = { headers: {} };
-      const result = requestInterceptorOnFulfilled(config);
-      expect(result.headers.Authorization).toBeUndefined();
+      // Acessar authToken diretamente (propriedade privada)
+      expect((httpClient as any).authToken).toBeNull();
     });
 
     it('deve lidar com erro sem config', async () => {
