@@ -45,7 +45,7 @@ class HttpClient {
     this.client.interceptors.response.use(
       (_response) => {
         // Rastrear latência da API
-        const config = response.config as any;
+        const config = _response.config as any;
         if (config.metadata?.startTime) {
           const responseTime = Date.now() - config.metadata.startTime;
           const endpoint = config.url || 'unknown';
@@ -56,7 +56,7 @@ class HttpClient {
             endpoint,
             method,
             responseTime,
-            response.status
+            _response.status
           );
           
           // Rastrear chamada da API para métricas gerais
@@ -67,7 +67,7 @@ class HttpClient {
           );
         }
         
-        return response;
+        return _response;
       },
       (error) => {
         // Rastrear erro
@@ -84,7 +84,7 @@ class HttpClient {
             endpoint,
             method,
             responseTime,
-            status
+            _status
           );
           
           // Rastrear erro específico

@@ -10,54 +10,52 @@
 // Mock API Client com detecção inteligente de endpoints
 // Substitui MSW devido a problemas de ESM com Jest/Babel
 // Usa fixtures e helper para retornar dados realistas baseados na URL
-// COMENTADO TEMPORARIAMENTE para testes unitários funcionarem
-// const { createMockApiClient } = require('./src/test/helpers/mockApiClient');
+const { createMockApiClient } = require('./src/test/helpers/mockApiClient');
 
-// const mockApiClient = createMockApiClient();
+const mockApiClient = createMockApiClient();
 
-// // Adiciona métodos extras não relacionados a HTTP
-// mockApiClient.upload = jest.fn().mockResolvedValue({ data: {} });
-// mockApiClient.setAuthToken = jest.fn();
-// mockApiClient.getAuthToken = jest.fn(() => null);
-// mockApiClient.clearAuthToken = jest.fn();
+// Adiciona métodos extras não relacionados a HTTP
+mockApiClient.upload = jest.fn().mockResolvedValue({ data: {} });
+mockApiClient.setAuthToken = jest.fn();
+mockApiClient.getAuthToken = jest.fn(() => null);
+mockApiClient.clearAuthToken = jest.fn();
 
-// jest.mock('./src/services/api', () => ({
-//   apiClient: mockApiClient,
-// }));
+jest.mock('./src/services/api', () => ({
+  apiClient: mockApiClient,
+}));
 
 // Mock HTTP Client (usado por serviços legados)
 // IMPORTANT: All HTTP methods must return { data: ... } to match real axios behavior
-// COMENTADO TEMPORARIAMENTE para testes unitários funcionarem
-// jest.mock('./src/services/httpClient', () => ({
-//   httpClient: {
-//     get: jest.fn(() => Promise.resolve({ data: {} })),
-//     post: jest.fn(() => Promise.resolve({ data: {} })),
-//     put: jest.fn(() => Promise.resolve({ data: {} })),
-//     patch: jest.fn(() => Promise.resolve({ data: {} })),
-//     delete: jest.fn(() => Promise.resolve({ data: {} })),
-//     request: jest.fn(() => Promise.resolve({ data: {} })),
-//     setAuthToken: jest.fn(),
-//     clearAuthToken: jest.fn(),
-//     defaults: {
-//       baseURL: 'https://api.test.com',
-//       timeout: 30000,
-//       headers: {
-//         common: {
-//           'Content-Type': 'application/json',
-//           'Accept': 'application/json',
-//         },
-//       },
-//     },
-//     interceptors: {
-//       request: {
-//         use: jest.fn(),
-//       },
-//       response: {
-//         use: jest.fn(),
-//       },
-//     },
-//   },
-// }));
+jest.mock('./src/services/httpClient', () => ({
+  httpClient: {
+    get: jest.fn(() => Promise.resolve({ data: {} })),
+    post: jest.fn(() => Promise.resolve({ data: {} })),
+    put: jest.fn(() => Promise.resolve({ data: {} })),
+    patch: jest.fn(() => Promise.resolve({ data: {} })),
+    delete: jest.fn(() => Promise.resolve({ data: {} })),
+    request: jest.fn(() => Promise.resolve({ data: {} })),
+    setAuthToken: jest.fn(),
+    clearAuthToken: jest.fn(),
+    defaults: {
+      baseURL: 'https://api.test.com',
+      timeout: 30000,
+      headers: {
+        common: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+      },
+    },
+    interceptors: {
+      request: {
+        use: jest.fn(),
+      },
+      response: {
+        use: jest.fn(),
+      },
+    },
+  },
+}));
 
 // ===================================
 // REACT NATIVE MOCKS
